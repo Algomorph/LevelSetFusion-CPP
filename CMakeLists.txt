@@ -15,6 +15,7 @@
 #  ================================================================
 
 cmake_minimum_required(VERSION 3.9)
+
 project(LevelSetFusionOptimization LANGUAGES CXX)
 # C++11 standard simplifies things in a lot of obvious ways,
 # it also allows us to use Eigen in multithreaded code w/o special initialization
@@ -26,6 +27,17 @@ set(MODULE_NAME level_set_fusion_optimization)
 # Put our local cmake find scripts at the beginning of the CMake
 # module search path.
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+#=================================================================
+#Hunter stuff
+
+include("cmake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/ruslo/hunter/archive/v0.23.64.zip"
+    SHA1 "acbf4b9b77b5a0160adc1da1cdda35f64b14196a"
+)
+hunter_default_version(Boost VERSION 1.68.0-p1)
+hunter_add_package(Boost COMPONENTS unit_test_framework python)
 
 #=================================================================
 # PYTHON option

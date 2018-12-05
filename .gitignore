@@ -1,9 +1,8 @@
 # Default ignored files
-/.idea/shelf/
-/.idea/workspace.xml
+.idea/
 .project
 .cproject
-.settings
+.settings/
 
 # Datasource local storage ignored files
 /.idea/dataSources/
