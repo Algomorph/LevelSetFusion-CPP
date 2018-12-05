@@ -39,10 +39,6 @@ set_property(CACHE PYTHON_DESIRED_VERSION PROPERTY STRINGS ${PYTHON_OPTIONS})
 # *** Python
 include("DetectPython")
 
-if (NOT BOOST_PYTHON_NUMPY_EIGEN_PYTHON_VERSION)
-    set(BOOST_PYTHON_NUMPY_EIGEN_PYTHON_VERSION 3.4 CACHE STRING "Choose the target Python version (e.g., 3.4, 2.7)" FORCE)
-endif ()
-
 include_directories(include)
 
 # *** Boost (Boost python version based on python option / availability)
