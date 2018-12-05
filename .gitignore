@@ -3,6 +3,7 @@
 .project
 .cproject
 .settings/
+hunter/
 
 # Datasource local storage ignored files
 /.idea/dataSources/

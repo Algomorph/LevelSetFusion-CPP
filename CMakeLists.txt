@@ -13,31 +13,35 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #  ================================================================
-
+#============================================================================================
+# Preliminaries for CMake & Hunter
 cmake_minimum_required(VERSION 3.9)
-
-project(LevelSetFusionOptimization LANGUAGES CXX)
-# C++11 standard simplifies things in a lot of obvious ways,
-# it also allows us to use Eigen in multithreaded code w/o special initialization
-set(CMAKE_CXX_STANDARD 11)
-
-# Name of the target and python module
-set(MODULE_NAME level_set_fusion_optimization)
 
 # Put our local cmake find scripts at the beginning of the CMake
 # module search path.
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-#=================================================================
-#Hunter stuff
-
+set(HUNTER_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/hunter)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include("cmake/HunterGate.cmake")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.64.zip"
-    SHA1 "acbf4b9b77b5a0160adc1da1cdda35f64b14196a"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.64.tar.gz"
+    SHA1 "a5f3c4999e03173d28b8469c4da4545dea740a41"
+    LOCAL
 )
-hunter_default_version(Boost VERSION 1.68.0-p1)
-hunter_add_package(Boost COMPONENTS unit_test_framework python)
+# C++11 standard simplifies things in a lot of obvious ways,
+# it also allows us to use Eigen in multithreaded code w/o special initialization
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+#============================================================================================
+# Project & main target naming
+project(LevelSetFusionOptimization LANGUAGES CXX)
+# Name of the target and python module
+set(MODULE_NAME level_set_fusion_optimization)
+#=================================================================
+#Hunter package discovery
+
+hunter_add_package(Boost COMPONENTS test python)
+hunter_add_package(Eigen)
 
 #=================================================================
 # PYTHON option
@@ -54,15 +58,16 @@ include("DetectPython")
 include_directories(include)
 
 # *** Boost (Boost python version based on python option / availability)
-if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-    # Provisions for typical Boost compiled on Windows
-    # Most commonly, Boost libraries are compiled statically on windows (change as necesssary)
-    set(Boost_USE_STATIC_LIBS TRUE)
-    set(Boost_USE_STATIC_RUNTIME OFF)
-    set(Boost_USE_MULTITHREADED ON)
-    set(Boost_USE_DEBUG_RUNTIME ON)
-    set(Boost_USE_DEBUG_PYTHON OFF)
-endif()
+#TODO: test w/o commented code on Windows and remove if unnecessary
+#if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+#    # Provisions for typical Boost compiled on Windows
+#    # Most commonly, Boost libraries are compiled statically on windows (change as necesssary)
+#    set(Boost_USE_STATIC_LIBS TRUE)
+#    set(Boost_USE_STATIC_RUNTIME OFF)
+#    set(Boost_USE_MULTITHREADED ON)
+#    set(Boost_USE_DEBUG_RUNTIME ON)
+#    set(Boost_USE_DEBUG_PYTHON OFF)
+#endif()
 
 set(BOOST_COMPONENTS unit_test_framework)
 set(BOOST_ALTERNATIVE_COMPONENTS unit_test_framework)
@@ -78,7 +83,7 @@ else ()
     set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
 endif ()
 
-find_package(Boost COMPONENTS ${BOOST_COMPONENTS})
+find_package(Boost COMPONENTS ${BOOST_COMPONENTS} CONFIG)
 if(NOT Boost_FOUND)
 	message(STATUS "Trying alternative Boost.Python component name, python-py<version>...") 
 	find_package(Boost COMPONENTS ${BOOST_ALTERNATIVE_COMPONENTS} REQUIRED)
@@ -185,6 +190,7 @@ add_library(${MODULE_NAME} SHARED
             src/math/convolution.hpp 
             src/math/convolution.cpp 
             )
+
 target_link_libraries(${MODULE_NAME}
         PUBLIC
         ${Boost_LIBRARIES}
@@ -194,14 +200,16 @@ target_link_libraries(${MODULE_NAME}
         PRIVATE
         OpenMP::OpenMP_CXX)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-    # Provisions for typical Boost compiled on Windows
-    # Unless some extra compile options are used on Windows, the libraries won't have prefixes (change as necesssary)
-    target_compile_definitions(${MODULE_NAME} PUBLIC -DBOOST_ALL_NO_LIB -DBOOST_SYSTEM_NO_DEPRECATED)
-else()
-    target_compile_definitions(${MODULE_NAME} PUBLIC -DBOOST_TEST_DYN_LINK)
-endif()
+#if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+#TODO: test w/o commented code on Windows and remove if unnecessary
+#    # Provisions for typical Boost compiled on Windows
+#    # Unless some extra compile options are used on Windows, the libraries won't have prefixes (change as necesssary)
+#    target_compile_definitions(${MODULE_NAME} PUBLIC -DBOOST_ALL_NO_LIB -DBOOST_SYSTEM_NO_DEPRECATED)
+#else()
+#    target_compile_definitions(${MODULE_NAME} PUBLIC -DBOOST_TEST_DYN_LINK)
+#endif()
 
+# left for possible future CMake debugging
 #message(STATUS "${MODULE_NAME}: [archive output name:]  ${ARCHIVE_OUTPUT_NAME} [archive suffix:] ${${MODULE_NAME}_PY_SUFFIX}")
 #message(STATUS "[include dirs:] ${PYTHON_INCLUDE_DIRS} [packages path:] ${PYTHON3_PACKAGES_PATH} [libraries:] ${PYTHON_LIBRARIES}")
 
