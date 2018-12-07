@@ -12,6 +12,7 @@ addons:
         - cmake
         - gcc-7
         - g++-7
+        - libpython3-dev
 
 before_script:
    - export CC=gcc-7
