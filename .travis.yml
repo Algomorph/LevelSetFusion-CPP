@@ -3,7 +3,7 @@ language: cpp
 env:
    global:
       #Ubuntu version
-      - LINUX_DIST=trusty
+      - LINUX_DIST=xenial
       - RUN_TESTS=true
       # Global build options and C++ flags
       # - CXX_FLAGS="-Wall -Werror -Wno-deprecated-declarations"
@@ -28,7 +28,7 @@ matrix:
     ############################################################################
        - mkdir -p build
        - cd build
-       - cmake
+       - cmake ..
        - make
        - ctest
 
