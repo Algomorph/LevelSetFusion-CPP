@@ -1,22 +1,18 @@
 language: cpp
 
-env:
-   global:
-      #Ubuntu version
-      - LINUX_DIST=xenial
-      - RUN_TESTS=true
-      # Global build options and C++ flags
-      # - CXX_FLAGS="-Wall -Werror -Wno-deprecated-declarations"
-
 matrix:
    include:
       script: cmake
       compiler: gcc
       addons:
         apt:
-           packages:
-              - cmake-data
-              - cmake
+        sources:
+            - ubuntu-toolchain-r-test
+        packages:
+            - cmake-data
+            - cmake
+            - gcc-7
+            - g++-7
               
    # before_install:
       # - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
@@ -27,6 +23,9 @@ matrix:
     # Build main and tests
     ############################################################################
     #comment
+       - export CC=gcc-7
+       - export CXX=g++-7
+       - gcc -v && g++ -v && cmake --version
        - mkdir -p build
        - cd build
        - cmake ..
