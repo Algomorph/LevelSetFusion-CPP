@@ -14,6 +14,8 @@ addons:
         - g++-7
         - libpython3-dev
         - python3-numpy
+        - libboost-all-dev
+        - libeigen3-dev
         
 before_script:
    - export CC=gcc-7
