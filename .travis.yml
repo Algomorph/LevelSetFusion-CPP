@@ -18,17 +18,17 @@ matrix:
       # - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
       # - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
       #   install:
-   script:
+   before_script:
     ############################################################################
     # Build main and tests
     ############################################################################
-    #comment
        - export CC=gcc-7
        - export CXX=g++-7
        - gcc -v && g++ -v && cmake --version
-       - mkdir -p build
+       - mkdir build
        - cd build
        - cmake ..
+   script:
        - make
        - ctest
 
