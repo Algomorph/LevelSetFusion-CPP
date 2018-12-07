@@ -2,7 +2,8 @@ language: cpp
 
 matrix:
    include:
-      script: cmake
+      dist: xenial
+      sudo: true
       compiler: gcc
       addons:
         apt:
@@ -13,6 +14,12 @@ matrix:
             - cmake
             - gcc-7
             - g++-7
+   install:
+      - export CC=gcc-7
+      - export CXX=g++-7
+      - ${CXX} --version
+      - ${CXX} -v
+      - cmake --version
               
    # before_install:
       # - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
@@ -22,9 +29,6 @@ matrix:
     ############################################################################
     # Build main and tests
     ############################################################################
-       - export CC=gcc-7
-       - export CXX=g++-7
-       - gcc -v && g++ -v && cmake --version
        - mkdir build
        - cd build
        - cmake ..
