@@ -1,27 +1,17 @@
 language: cpp
 
-matrix:
-   include:
-    - os: linux
-      dist: xenial
-      sudo: true
-      compiler: gcc
-      addons:
-        apt:
-        sources:
-            - ubuntu-toolchain-r-test
-        packages:
-            - cmake-data
-            - cmake
-            - gcc-7
-            - g++-7
-            
-   # before_install:
-      # - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
-      # - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
-            
-#install:
-
+os: linux
+dist: xenial
+compiler: gcc
+addons:
+   apt:
+     sources:
+        - ubuntu-toolchain-r-test
+     packages:
+        - cmake-data
+        - cmake
+        - gcc-7
+        - g++-7
 
 before_script:
    - export CC=gcc-7
