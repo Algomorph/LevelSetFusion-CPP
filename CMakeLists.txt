@@ -31,12 +31,25 @@ HunterGate(
 # C++11 standard simplifies things in a lot of obvious ways,
 # it also allows us to use Eigen in multithreaded code w/o special initialization
 set(CMAKE_CXX_STANDARD 11)
+# "-fPIC" option (if using gcc), include all required code inside binary
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #============================================================================================
 # Project & main target naming
 project(LevelSetFusionOptimization LANGUAGES CXX)
 # Name of the target and python module
 set(MODULE_NAME level_set_fusion_optimization)
+
+#=================================================================
+# Compiler options
+
+if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-deprecated-declarations -fms-extensions")
+endif()
+if ( MSVC )
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
+endif()
+message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
+
 #=================================================================
 #Hunter package discovery
 
@@ -132,7 +145,6 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig; pri
         RESULT_VARIABLE PYTHON_${MODULE_NAME}_PY_PROCESS
         OUTPUT_VARIABLE ${MODULE_NAME}_PY_SUFFIX
         OUTPUT_STRIP_TRAILING_WHITESPACE)
-
 
 #=================== INCLUDE PATHS =====================================================================================
 

@@ -275,7 +275,6 @@ struct EigenTransformFromPython {
 static const int X = Eigen::Dynamic;
 
 #if PY_VERSION_HEX >= 0x03000000
-
 void*
 #else
 void
@@ -338,4 +337,7 @@ SetupEigenConverters() {
 	MAT_CONV(1, X, float);
 	MAT_CONV(3, 4, float);
 	MAT_CONV(2, X, float);
+#if PY_VERSION_HEX >= 0x03000000
+	return 0;
+#endif
 }

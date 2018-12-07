@@ -61,7 +61,6 @@ void locate_max_norm2(float& max_norm, Vector2i& coordinate, const MatrixXv2f& v
 }
 
 float ratio_of_vector_lengths_above_threshold(const MatrixXv2f& vector_field, float threshold){
-	int column_count = static_cast<int>(vector_field.cols());
 	float threshold_squared = threshold*threshold;
 	long count_above = 0;
 	long total_count = vector_field.size();
@@ -76,7 +75,6 @@ float ratio_of_vector_lengths_above_threshold(const MatrixXv2f& vector_field, fl
 }
 
 float mean_vector_length(const MatrixXv2f& vector_field){
-	int column_count = static_cast<int>(vector_field.cols());
 	long total_count = vector_field.size();
 	double total_length = 0.0;
 
@@ -88,7 +86,6 @@ float mean_vector_length(const MatrixXv2f& vector_field){
 }
 
 void mean_and_std_vector_length(float& mean, float& standard_deviation, const MatrixXv2f& vector_field){
-	int column_count = static_cast<int>(vector_field.cols());
 	long total_count = vector_field.size();
 	double total_length = 0.0;
 

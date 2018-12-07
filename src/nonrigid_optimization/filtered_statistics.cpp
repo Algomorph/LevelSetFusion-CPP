@@ -38,7 +38,6 @@ float ratio_of_vector_lengths_above_threshold_band_union(const math::MatrixXv2f&
 
 	check_dimensions(vector_field, warped_live_field, canonical_field);
 
-	int column_count = static_cast<int>(vector_field.cols());
 	float threshold_squared = threshold * threshold;
 	long count_above = 0;
 	long total_count = 0;
@@ -60,7 +59,6 @@ void mean_and_std_vector_length_band_union(float& mean, float& standard_deviatio
 
 	check_dimensions(vector_field, warped_live_field, canonical_field);
 
-	int column_count = static_cast<int>(vector_field.cols());
 	long total_count = 0;
 	double total_length = 0.0;
 
