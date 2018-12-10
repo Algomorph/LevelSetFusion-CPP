@@ -57,7 +57,6 @@ message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 
 #=================================================================
 #Hunter package discovery
-
 hunter_add_package(Boost COMPONENTS test python)
 hunter_add_package(Eigen)
 
@@ -72,23 +71,24 @@ set_property(CACHE PYTHON_DESIRED_VERSION PROPERTY STRINGS ${PYTHON_OPTIONS})
 
 # *** Python
 include("DetectPython")
-
 include_directories(include)
 
 # *** Boost (Boost python version based on python option / availability)
-#TODO: test w/o commented code on Windows and remove if unnecessary
-#if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-#    # Provisions for typical Boost compiled on Windows
-#    # Most commonly, Boost libraries are compiled statically on windows (change as necesssary)
-#    set(Boost_USE_STATIC_LIBS TRUE)
-#    set(Boost_USE_STATIC_RUNTIME OFF)
-#    set(Boost_USE_MULTITHREADED ON)
-#    set(Boost_USE_DEBUG_RUNTIME ON)
-#    set(Boost_USE_DEBUG_PYTHON OFF)
-#endif()
+if(NOT HUNTER_ENABLED)
+	if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+	    # Provisions for typical Boost compiled on Windows
+	    # Most commonly, Boost libraries are compiled statically on windows (change as necesssary)
+	    set(Boost_USE_STATIC_LIBS TRUE)
+	    set(Boost_USE_STATIC_RUNTIME OFF)
+	    set(Boost_USE_MULTITHREADED ON)
+	    set(Boost_USE_DEBUG_RUNTIME ON)
+	    set(Boost_USE_DEBUG_PYTHON OFF)
+	endif()
+endif()
 
 set(BOOST_COMPONENTS unit_test_framework)
 set(BOOST_ALTERNATIVE_COMPONENTS unit_test_framework)
+
 if (${PYTHON_DESIRED_VERSION} STREQUAL "2.X")
     set(Python_ADDITIONAL_VERSIONS ${PYTHON2_VERSION_MAJOR}.${PYTHON2_VERSION_MINOR})
     list(APPEND BOOST_COMPONENTS python${PYTHON2_VERSION_MAJOR}${PYTHON2_VERSION_MINOR})
@@ -106,12 +106,13 @@ if(NOT Boost_FOUND)
 	message(STATUS "Trying alternative Boost.Python component name, python-py<version>...")
 	find_package(Boost COMPONENTS ${BOOST_ALTERNATIVE_COMPONENTS} REQUIRED)
 endif()
-#find_package(Boost COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
+
 # *** Everything else
 find_package(Eigen3 REQUIRED)
 find_package(OpenMP REQUIRED)
 
 #======== PICK PYTHON STUFF========================================
+
 if (${PYTHON_DESIRED_VERSION} STREQUAL "2.X")
     set(PYTHON_INCLUDE_DIRS ${PYTHON2_INCLUDE_DIR} ${PYTHON2_INCLUDE_DIR2} ${PYTHON2_NUMPY_INCLUDE_DIRS})
     set(PYTHON_NUMPY_INCLUDE_DIRS ${PYTHON2_NUMPY_INCLUDE_DIRS})
@@ -217,14 +218,16 @@ target_link_libraries(${MODULE_NAME}
         PRIVATE
         OpenMP::OpenMP_CXX)
 
-#if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-#TODO: test w/o commented code on Windows and remove if unnecessary
-#    # Provisions for typical Boost compiled on Windows
-#    # Unless some extra compile options are used on Windows, the libraries won't have prefixes (change as necesssary)
-#    target_compile_definitions(${MODULE_NAME} PUBLIC -DBOOST_ALL_NO_LIB -DBOOST_SYSTEM_NO_DEPRECATED)
-#else()
-#    target_compile_definitions(${MODULE_NAME} PUBLIC -DBOOST_TEST_DYN_LINK)
-#endif()
+if(NOT HUNTER_ENABLED)
+	if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+	TODO: test w/o commented code on Windows and remove if unnecessary
+	    # Provisions for typical Boost compiled on Windows
+	    # Unless some extra compile options are used on Windows, the libraries won't have prefixes (change as necesssary)
+	    target_compile_definitions(${MODULE_NAME} PUBLIC -DBOOST_ALL_NO_LIB -DBOOST_SYSTEM_NO_DEPRECATED)
+	else()
+	    target_compile_definitions(${MODULE_NAME} PUBLIC -DBOOST_TEST_DYN_LINK)
+	endif()
+endif()
 
 # left for possible future CMake debugging
 #message(STATUS "${MODULE_NAME}: [archive output name:]  ${ARCHIVE_OUTPUT_NAME} [archive suffix:] ${${MODULE_NAME}_PY_SUFFIX}")
@@ -262,10 +265,6 @@ add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
 # ================== UNIT TESTING ======================================================================================
 
 enable_testing()
-
-if(UNIX)
-  ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
-endif()
 
 add_executable(test_nonrigid_optimization tests/test_nonrigid_optimization.cpp)
 add_executable(test_math tests/test_math.cpp tests/test_data_math.hpp tests/test_data_nonrigid_optimization.hpp)
