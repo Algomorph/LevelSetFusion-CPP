@@ -1,6 +1,7 @@
 language: cpp
 
 os: linux
+sudo: true
 dist: xenial
 compiler: gcc
 addons:
@@ -10,29 +11,22 @@ addons:
      packages:
         - cmake-data
         - cmake
-        - gcc-7
         - g++-7
         - libpython3-dev
         - python3-numpy
-        - libboost-all-dev
 install:
-   - wget -q -O eigen.tar.gz https://github.com/eigenteam/eigen-git-mirror/archive/3.3.5.tar.gz
-   - tar -xzf eigen.tar.gz
-   - mv eigen-git-mirror-3.3.5 eigen-3.3.5
-   - export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DEIGEN3_INCLUDE_DIR=$PWD/eigen-3.3.5"
+   - sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+   - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 2
 before_script:
-   - export CC=gcc-7
    - export CXX=g++-7
    - ${CXX} --version
    - cmake --version
+   - python --version
    - mkdir build
    - cd build
-   - cmake -DHUNTER_ENABLED=FALSE ${CMAKE_EXTRA_ARGS} ..
+   - cmake ..
 script:
    - make
-   - which python3
    - ctest
    
-
-
     
