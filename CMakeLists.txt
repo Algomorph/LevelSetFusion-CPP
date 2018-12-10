@@ -98,9 +98,9 @@ else ()
     set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
 endif ()
 
-find_package(Boost COMPONENTS ${BOOST_COMPONENTS} CONFIG)
+find_package(Boost COMPONENTS ${BOOST_COMPONENTS} QUIET)
 if(NOT Boost_FOUND)
-	message(STATUS "Trying alternative Boost.Python component name, python-py<version>...") 
+	message(STATUS "Trying alternative Boost.Python component name, python-py<version>...")
 	find_package(Boost COMPONENTS ${BOOST_ALTERNATIVE_COMPONENTS} REQUIRED)
 endif()
 #find_package(Boost COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
@@ -185,7 +185,7 @@ add_library(${MODULE_NAME} SHARED
             src/nonrigid_optimization/filtered_statistics.hpp
 
 			src/traversal/field_traversal_cpu.hpp
-            
+
             src/math/tensors.hpp
             src/math/tensors.cpp
             src/math/math_utils.hpp
@@ -193,7 +193,7 @@ add_library(${MODULE_NAME} SHARED
             src/math/matrix_base.hpp
             src/math/vector2.hpp
             src/math/platform_independence.hpp
-            src/math/matrix2.hpp 
+            src/math/matrix2.hpp
             src/math/vector3.hpp
             src/math/typedefs.hpp
             src/math/gradients.cpp
@@ -201,8 +201,8 @@ add_library(${MODULE_NAME} SHARED
             src/math/vector_operations.hpp
             src/math/statistics.cpp
             src/math/statistics.hpp
-            src/math/convolution.hpp 
-            src/math/convolution.cpp 
+            src/math/convolution.hpp
+            src/math/convolution.cpp
             )
 
 target_link_libraries(${MODULE_NAME}
@@ -255,16 +255,20 @@ install(TARGETS ${MODULE_NAME}
 # ================== COPY LIBRARY TO PYTHON DIRECTORY ABOVE ============================================================
 add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${MODULE_NAME}> ${PROJECT_SOURCE_DIR}/../$<TARGET_FILE_NAME:${MODULE_NAME}>
-) 
+)
 # ================== UNIT TESTING ======================================================================================
 
 enable_testing()
 
+if(UNIX)
+  ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
+endif()
+
 add_executable(test_nonrigid_optimization tests/test_nonrigid_optimization.cpp)
 add_executable(test_math tests/test_math.cpp tests/test_data_math.hpp tests/test_data_nonrigid_optimization.hpp)
 
-target_link_libraries(test_nonrigid_optimization ${MODULE_NAME})
-target_link_libraries(test_math ${MODULE_NAME})
+target_link_libraries(test_nonrigid_optimization ${MODULE_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_math ${MODULE_NAME} ${Boost_LIBRARIES})
 
 add_test(NAME nonrigid_optimization COMMAND test_nonrigid_optimization)
 add_test(NAME math COMMAND test_math)
