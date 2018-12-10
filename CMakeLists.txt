@@ -45,7 +45,7 @@ set(MODULE_NAME level_set_fusion_optimization)
 # Compiler options
 
 if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-deprecated-declarations -fms-extensions")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-deprecated-declarations -Wno-int-in-bool-context -fms-extensions")
 endif()
 if ( MSVC )
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
