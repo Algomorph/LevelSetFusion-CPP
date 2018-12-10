@@ -18,18 +18,18 @@ addons:
         - libeigen3-dev
         
 before_script:
-   - export TRAVIS=true
    - export CC=gcc-7
    - export CXX=g++-7
    - ${CXX} --version
    - cmake --version
    - mkdir build
    - cd build
-   - cmake ..
+   - cmake -DUSE_HUNTER=FALSE ..
 script:
-   - cmake --version
    - make
+   - which python3
    - ctest
+   
 
 
     

@@ -17,9 +17,13 @@
 # Preliminaries for CMake & Hunter
 cmake_minimum_required(VERSION 3.9)
 
+if(NOT DEFINED USE_HUNTER)
+	set(USE_HUNTER TRUE)
+endif()
+
 # Put our local cmake find scripts at the beginning of the CMake
 # module search path.
-if(NOT ENV{TRAVIS})
+if(USE_HUNTER)
 	set(HUNTER_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/hunter)
 	set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 	include("cmake/HunterGate.cmake")
@@ -53,7 +57,7 @@ message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 
 #=================================================================
 #Hunter package discovery
-if(NOT ENV{TRAVIS})
+if(USE_HUNTER)
 	hunter_add_package(Boost COMPONENTS test python)
 	hunter_add_package(Eigen)
 endif()
