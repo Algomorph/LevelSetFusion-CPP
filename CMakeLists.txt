@@ -220,7 +220,6 @@ target_link_libraries(${MODULE_NAME}
 
 if(NOT HUNTER_ENABLED)
 	if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-	TODO: test w/o commented code on Windows and remove if unnecessary
 	    # Provisions for typical Boost compiled on Windows
 	    # Unless some extra compile options are used on Windows, the libraries won't have prefixes (change as necesssary)
 	    target_compile_definitions(${MODULE_NAME} PUBLIC -DBOOST_ALL_NO_LIB -DBOOST_SYSTEM_NO_DEPRECATED)
