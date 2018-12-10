@@ -27,7 +27,7 @@ before_script:
    - cmake --version
    - mkdir build
    - cd build
-   - cmake -DHUNTER_ENABLED=FALSE ${CMAKE_EXTRA_ARGS}..
+   - cmake -DHUNTER_ENABLED=FALSE ${CMAKE_EXTRA_ARGS} ..
 script:
    - make
    - which python3
