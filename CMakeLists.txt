@@ -17,22 +17,19 @@
 # Preliminaries for CMake & Hunter
 cmake_minimum_required(VERSION 3.9)
 
-if(NOT DEFINED USE_HUNTER)
-	set(USE_HUNTER TRUE)
-endif()
 
 # Put our local cmake find scripts at the beginning of the CMake
 # module search path.
-if(USE_HUNTER)
-	set(HUNTER_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/hunter)
-	set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-	include("cmake/HunterGate.cmake")
-	HunterGate(
-	    URL "https://github.com/ruslo/hunter/archive/v0.23.64.tar.gz"
-	    SHA1 "a5f3c4999e03173d28b8469c4da4545dea740a41"
-	    LOCAL
-	)
-endif()
+
+set(HUNTER_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/hunter)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include("cmake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/ruslo/hunter/archive/v0.23.64.tar.gz"
+    SHA1 "a5f3c4999e03173d28b8469c4da4545dea740a41"
+    LOCAL
+)
+
 # C++11 standard simplifies things in a lot of obvious ways,
 # it also allows us to use Eigen in multithreaded code w/o special initialization
 set(CMAKE_CXX_STANDARD 11)
@@ -57,10 +54,10 @@ message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 
 #=================================================================
 #Hunter package discovery
-if(USE_HUNTER)
-	hunter_add_package(Boost COMPONENTS test python)
-	hunter_add_package(Eigen)
-endif()
+
+hunter_add_package(Boost COMPONENTS test python)
+hunter_add_package(Eigen)
+
 #=================================================================
 # PYTHON option
 
