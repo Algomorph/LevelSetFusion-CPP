@@ -17,10 +17,7 @@
 
 # a simple utility script that prints out basic paths for the python environment in which it is run
 # stdlib
-import sys
-import argparse
-import os
-import os.path
+import sys, argparse, os, os.path
 from sysconfig import get_paths
 
 EXIT_CODE_SUCCESS = 0
