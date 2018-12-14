@@ -18,7 +18,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include "../math/typedefs.hpp"
 
-
 // Short alias for this namespace
 namespace pt = boost::property_tree;
 
@@ -40,19 +39,19 @@ public:
 		void set_from_json(pt::ptree root);
 		void set_from_values(float gradient_descent_rate = 0.1f,
 
-				// termination condition parameters
-				             float maximum_warp_length_lower_threshold = 0.1f,
-				             float maximum_warp_length_upper_threshold = 10000,
-				             int maximum_iteration_count = 100,
-				             int minimum_iteration_count = 1,
+		// termination condition parameters
+		float maximum_warp_length_lower_threshold = 0.1f,
+		float maximum_warp_length_upper_threshold = 10000,
+		int maximum_iteration_count = 100,
+		int minimum_iteration_count = 1,
 
-				// logging
-				             bool enable_focus_spot_analytics = false,
-				             bool enable_energy_and_min_vector_logging = false,
-				             bool enable_live_sdf_progression_logging = false,
-				             bool enable_gradient_logging = false,
-				             bool enable_gradient_component_logging = false,
-				             int focus_spot_x = 0, int focus_spot_y = 0);
+		// logging
+		bool enable_focus_spot_analytics = false,
+		bool enable_energy_and_min_vector_logging = false,
+		bool enable_live_sdf_progression_logging = false,
+		bool enable_gradient_logging = false,
+		bool enable_gradient_component_logging = false,
+		int focus_spot_x = 0, int focus_spot_y = 0);
 
 		float gradient_descent_rate = 0.1f;
 
@@ -75,7 +74,6 @@ public:
 
 		math::Vector2i focus_spot = math::Vector2i(0, 0);
 
-
 	private:
 		SharedParameters() = default;
 	};
@@ -96,9 +94,7 @@ public:
 protected:
 	static bool are_termination_conditions_reached(int completed_iteration_count, float largest_warp_vector);
 
-
 };
 
-}//namespace nonrigid_optimization
-
+}		//namespace nonrigid_optimization
 
