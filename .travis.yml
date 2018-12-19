@@ -14,14 +14,11 @@ addons:
         - g++-7
         - libpython3-dev
         - python3-numpy
-install:
-   - sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-   - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 2
 before_script:
    - export CXX=g++-7
    - ${CXX} --version
    - cmake --version
-   - python --version
+   - python3 --version
    - mkdir build
    - cd build
    - cmake ..
