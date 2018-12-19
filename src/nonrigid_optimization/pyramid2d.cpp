@@ -25,8 +25,7 @@
 
 namespace nonrigid_optimization {
 
-Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) : levels()
-		{
+Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) : levels(){
 	eigen_assert(!is_power_of_two(field.rows()) || !is_power_of_two(field.cols())
 			&& "The argument 'field' must have a power of two for each dimension.");
 	eigen_assert(!is_power_of_two(maximum_chunk_size) &&
