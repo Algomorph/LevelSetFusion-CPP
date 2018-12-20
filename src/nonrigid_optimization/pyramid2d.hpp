@@ -38,8 +38,11 @@ class Pyramid2d {
 public:
 	Pyramid2d(eig::MatrixXf field, int maximum_chunk_size=8);
 	virtual ~Pyramid2d();
+	const eig::MatrixXf& get_level(int i_level) const;
+	size_t get_level_count() const;
 private:
 	std::vector<eig::MatrixXf> levels;
+
 };
 
 } /* namespace nonrigid_optimization */

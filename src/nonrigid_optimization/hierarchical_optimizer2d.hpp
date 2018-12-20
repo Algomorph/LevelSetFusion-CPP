@@ -33,15 +33,16 @@ class HierarchicalOptimizer2d {
 				bool print_iteration_data_energy=false,
 				bool print_iteration_tikhonov_energy=false);
 		//per-iteration parameters
-		const bool print_max_warp_update = false;
+		const bool print_iteration_max_warp_update = false;
 		const bool print_iteration_data_energy = false;
 		const bool print_iteration_tikhonov_energy = false;
 		const bool print_per_iteration_info = false;
 		const bool print_per_level_info = true;
-
 	};
+
 	public:
 	HierarchicalOptimizer2d(
+			VerbosityParameters verbosity_parameters = VerbosityParameters(),
 			int maximum_chunk_size = 8,
 			float rate = 0.1f,
 			float data_term_amplifier = 1.0f,
@@ -52,6 +53,7 @@ class HierarchicalOptimizer2d {
 			bool tikhonov_term_enabled = true,
 			bool gradient_kernel_enabled = true);
 	virtual ~HierarchicalOptimizer2d();
+
 	private:
 	//parameters
 	const int maximum_chunk_size = 8;
@@ -63,6 +65,7 @@ class HierarchicalOptimizer2d {
 	const int maximum_iteration_count = 100;
 	const bool tikhonov_term_enabled = true;
 	const bool gradient_kernel_enabled = true;
+	VerbosityParameters verbosity_parameters;
 
 	//optimization state variables
 	int current_hierarchy_level = 0;

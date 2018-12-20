@@ -233,6 +233,10 @@ add_library(${MODULE_NAME} SHARED
             src/nonrigid_optimization/logging.hpp
             src/nonrigid_optimization/filtered_statistics.cpp
             src/nonrigid_optimization/filtered_statistics.hpp
+            src/nonrigid_optimization/hierarchical_optimizer2d.cpp
+            src/nonrigid_optimization/hierarchical_optimizer2d.hpp
+            src/nonrigid_optimization/pyramid2d.cpp
+            src/nonrigid_optimization/pyramid2d.hpp
 
 			src/traversal/field_traversal_cpu.hpp
 

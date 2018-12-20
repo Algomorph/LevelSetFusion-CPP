@@ -18,11 +18,12 @@
  *   limitations under the License.
  */
 
-#include "hierarchical_optimizer2d.h"
+#include "hierarchical_optimizer2d.hpp"
 
 namespace nonrigid_optimization {
 
 HierarchicalOptimizer2d::HierarchicalOptimizer2d(
+		VerbosityParameters verbosity_parameters,
 		int maximum_chunk_size,
 		float rate,
 		float data_term_amplifier,
@@ -32,6 +33,7 @@ HierarchicalOptimizer2d::HierarchicalOptimizer2d(
 		int maximum_iteration_count,
 		bool tikhonov_term_enabled,
 		bool gradient_kernel_enabled):
+				verbosity_parameters(verbosity_parameters),
 				maximum_chunk_size(maximum_chunk_size),
 				rate(rate),
 				data_term_amplifier(data_term_amplifier),
@@ -51,14 +53,13 @@ HierarchicalOptimizer2d::~HierarchicalOptimizer2d()
 }
 
 HierarchicalOptimizer2d::VerbosityParameters::VerbosityParameters(
-		bool print_max_warp_update=false,
+		bool print_iteration_max_warp_update=false,
 		bool print_iteration_data_energy=false,
 		bool print_iteration_tikhonov_energy=false):
-	print_max_warp_update(print_max_warp_update),
+	print_iteration_max_warp_update(print_iteration_max_warp_update),
 	print_iteration_data_energy(print_iteration_data_energy),
-	print_iteration_tikhonov_energy(print_iteration_tikhonov_energy)
-{
-
-}
+	print_iteration_tikhonov_energy(print_iteration_tikhonov_energy),
+	print_per_iteration_info(print_iteration_max_warp_update || print_iteration_data_energy || print_iteration_tikhonov_energy)
+{}
 
 } /* namespace nonrigid_optimization */
