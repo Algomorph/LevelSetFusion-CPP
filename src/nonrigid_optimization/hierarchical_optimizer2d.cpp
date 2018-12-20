@@ -42,7 +42,7 @@ HierarchicalOptimizer2d::HierarchicalOptimizer2d(
 				maximum_warp_update_threshold(maximum_warp_update_threshold),
 				maximum_iteration_count(maximum_iteration_count),
 				tikhonov_term_enabled(tikhonov_term_enabled && tikhonov_strength > 0.0f),
-				gradient_kernel_enabled(gradient_kernel_enabled && kernel.size > 0)
+				gradient_kernel_enabled(gradient_kernel_enabled && kernel.size() > 0)
 		{
 
 }
@@ -53,9 +53,9 @@ HierarchicalOptimizer2d::~HierarchicalOptimizer2d()
 }
 
 HierarchicalOptimizer2d::VerbosityParameters::VerbosityParameters(
-		bool print_iteration_max_warp_update=false,
-		bool print_iteration_data_energy=false,
-		bool print_iteration_tikhonov_energy=false):
+		bool print_iteration_max_warp_update,
+		bool print_iteration_data_energy,
+		bool print_iteration_tikhonov_energy):
 	print_iteration_max_warp_update(print_iteration_max_warp_update),
 	print_iteration_data_energy(print_iteration_data_energy),
 	print_iteration_tikhonov_energy(print_iteration_tikhonov_energy),

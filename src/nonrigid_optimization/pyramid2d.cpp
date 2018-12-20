@@ -28,9 +28,9 @@ namespace nonrigid_optimization {
 
 Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
 		levels() {
-	eigen_assert(!is_power_of_two(field.rows()) || !is_power_of_two(field.cols()) // @suppress("Suggested parenthesis around expression")
-	&& "The argument 'field' must have a power of two for each dimension.");
-	eigen_assert(!is_power_of_two(maximum_chunk_size) &&
+	eigen_assert((is_power_of_two(field.rows()) && is_power_of_two(field.cols()))
+			&& "The argument 'field' must have a power of two for each dimension.");
+	eigen_assert(is_power_of_two(maximum_chunk_size) &&
 			"The argument 'maximum_chunk_size' must be an integer power of 2, i.e. 4, 8, 16, etc.");
 	int power_of_two_largest_chunk = log2(maximum_chunk_size);
 
@@ -60,12 +60,11 @@ Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
 			}
 		}
 		levels.push_back(current_level);
+		previous_level = current_level;
 	}
 
 	//levels should be ordered from coarsest to finest, reverse the order
 	std::reverse(levels.begin(), levels.end());
-	eigen_assert(false && "Not implemented");
-
 }
 
 Pyramid2d::~Pyramid2d()

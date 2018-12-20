@@ -315,11 +315,22 @@ add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
 
 enable_testing()
 
-add_executable(test_nonrigid_optimization tests/test_nonrigid_optimization.cpp)
-add_executable(test_math tests/test_math.cpp tests/test_data_math.hpp tests/test_data_nonrigid_optimization.hpp)
+add_executable(test_slavcheva_optimizer 
+	tests/test_slavcheva_optimizer.cpp 
+	tests/test_data_slavcheva_optimizer.hpp
+)
+add_executable(test_math 
+	tests/test_math.cpp 
+	tests/test_data_math.hpp
+)
+add_executable(test_hierarchical_optimizer 
+	tests/test_hierarchical_optimizer.cpp
+)
 
-target_link_libraries(test_nonrigid_optimization ${MODULE_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_slavcheva_optimizer ${MODULE_NAME} ${Boost_LIBRARIES})
 target_link_libraries(test_math ${MODULE_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_hierarchical_optimizer ${MODULE_NAME} ${Boost_LIBRARIES})
 
-add_test(NAME nonrigid_optimization COMMAND test_nonrigid_optimization)
+add_test(NAME slavcheva_optimizer COMMAND test_slavcheva_optimizer)
 add_test(NAME math COMMAND test_math)
+add_test(NAME hierarchical_optimizer COMMAND test_hierarchical_optimizer)

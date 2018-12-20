@@ -28,7 +28,7 @@
 #include "../src/math/gradients.hpp"
 
 //test data
-#include "test_data_nonrigid_optimization.hpp"
+#include "test_data_slavcheva_optimizer.hpp"
 
 //test targets
 #include "../src/nonrigid_optimization/data_term.hpp"

@@ -55,7 +55,9 @@ class HierarchicalOptimizer2d {
 	virtual ~HierarchicalOptimizer2d();
 
 	private:
+
 	//parameters
+	VerbosityParameters verbosity_parameters;
 	const int maximum_chunk_size = 8;
 	const float rate = 0.1f;
 	const float data_term_amplifier = 1.0f;
@@ -65,7 +67,6 @@ class HierarchicalOptimizer2d {
 	const int maximum_iteration_count = 100;
 	const bool tikhonov_term_enabled = true;
 	const bool gradient_kernel_enabled = true;
-	VerbosityParameters verbosity_parameters;
 
 	//optimization state variables
 	int current_hierarchy_level = 0;
