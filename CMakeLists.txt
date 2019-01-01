@@ -24,7 +24,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # PYTHON option & interpreter detection
 
 set(PYTHON_RELEASE_OPTIONS "2.X" "3.X")
-set(LSFusion_PYTHON_RELEASE "3.X" CACHE STRING "Choose which python major release to use, options are: ${PYTHON_OPTIONS}.")
+set(LSFusion_PYTHON_RELEASE "3.X" CACHE STRING "Choose which python major release to use, options are: ${PYTHON_RELEASE_OPTIONS}.")
 set_property(CACHE LSFusion_PYTHON_RELEASE PROPERTY STRINGS ${PYTHON_RELEASE_OPTIONS})
 option(LSFusion_PYTHON3_VERSION "Python3 version" "")
 option(LSFusion_PYTHON2_VERSION "Python2 version" "")
