@@ -198,16 +198,6 @@ endif()
 find_package(Eigen3 REQUIRED)
 find_package(OpenMP REQUIRED)
 
-#=================== INCLUDE PATHS =====================================================================================
-
-# Global settings for include paths.
-include_directories(
-        ${PYTHON_INCLUDE_DIRS}
-        ${Boost_INCLUDE_DIRS}
-        ${EIGEN3_INCLUDE_DIR}
-        ${NUMPY_INCLUDE_DIRS}
-)
-
 #=================== TARGET DEFININTIONS ===============================================================================
 
 # main library
@@ -267,6 +257,13 @@ target_link_libraries(${MODULE_NAME}
 target_link_libraries(${MODULE_NAME}
         PRIVATE
         OpenMP::OpenMP_CXX)
+        
+target_include_directories(${MODULE_NAME} PUBLIC
+		 ${PYTHON_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
+        ${EIGEN3_INCLUDE_DIR}
+        ${NUMPY_INCLUDE_DIRS}
+)
 
 if(NOT HUNTER_ENABLED)
 	if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)

@@ -29,9 +29,9 @@ namespace nonrigid_optimization {
 //not thread-safe
 class HierarchicalOptimizer2d {
 	struct VerbosityParameters {
-		VerbosityParameters(bool print_max_warp_update=false,
-				bool print_iteration_data_energy=false,
-				bool print_iteration_tikhonov_energy=false);
+		VerbosityParameters(bool print_max_warp_update = false,
+				bool print_iteration_data_energy = false,
+				bool print_iteration_tikhonov_energy = false);
 		//per-iteration parameters
 		const bool print_iteration_max_warp_update = false;
 		const bool print_iteration_data_energy = false;
@@ -40,7 +40,7 @@ class HierarchicalOptimizer2d {
 		const bool print_per_level_info = true;
 	};
 
-	public:
+public:
 	HierarchicalOptimizer2d(
 			VerbosityParameters verbosity_parameters = VerbosityParameters(),
 			int maximum_chunk_size = 8,
@@ -54,7 +54,9 @@ class HierarchicalOptimizer2d {
 			bool gradient_kernel_enabled = true);
 	virtual ~HierarchicalOptimizer2d();
 
-	private:
+
+
+private:
 
 	//parameters
 	VerbosityParameters verbosity_parameters;
