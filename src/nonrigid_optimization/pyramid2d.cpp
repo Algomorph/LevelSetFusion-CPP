@@ -28,15 +28,15 @@ namespace nonrigid_optimization {
 
 Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
 		levels() {
-	eigen_assert((is_power_of_two(field.rows()) && is_power_of_two(field.cols()))
+	eigen_assert((is_power_of_two(field.rows()) && is_power_of_two(field.cols())) // @suppress("Invalid arguments")
 			&& "The argument 'field' must have a power of two for each dimension.");
-	eigen_assert(is_power_of_two(maximum_chunk_size) &&
+	eigen_assert(is_power_of_two(maximum_chunk_size) && // @suppress("Invalid arguments")
 			"The argument 'maximum_chunk_size' must be an integer power of 2, i.e. 4, 8, 16, etc.");
 	int power_of_two_largest_chunk = log2(maximum_chunk_size);
 
 	//check that we can get a level with the maximum chunk size
 	int max_level_count = std::min(log2(field.rows()), log2(field.cols()));
-	eigen_assert(max_level_count > power_of_two_largest_chunk && "Maximum chunk size too large for the field size.");
+	eigen_assert(max_level_count > power_of_two_largest_chunk && "Maximum chunk size too large for the field size."); // @suppress("Invalid arguments")
 
 	int level_count = max_level_count - power_of_two_largest_chunk;
 	levels.push_back(field);
