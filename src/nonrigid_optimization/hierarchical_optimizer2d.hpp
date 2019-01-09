@@ -31,19 +31,19 @@ namespace nonrigid_optimization {
 
 //not thread-safe
 class HierarchicalOptimizer2d {
-	struct VerbosityParameters {
-		VerbosityParameters(bool print_max_warp_update = false,
-				bool print_iteration_data_energy = false,
-				bool print_iteration_tikhonov_energy = false);
-		//per-iteration parameters
-		const bool print_iteration_max_warp_update = false;
-		const bool print_iteration_data_energy = false;
-		const bool print_iteration_tikhonov_energy = false;
-		const bool print_per_iteration_info = false;
-		const bool print_per_level_info = true;
-	};
 
 public:
+	struct VerbosityParameters {
+			VerbosityParameters(bool print_max_warp_update = false,
+					bool print_iteration_data_energy = false,
+					bool print_iteration_tikhonov_energy = false);
+			//per-iteration parameters
+			const bool print_iteration_max_warp_update = false;
+			const bool print_iteration_data_energy = false;
+			const bool print_iteration_tikhonov_energy = false;
+			const bool print_per_iteration_info = false;
+			const bool print_per_level_info = true;
+		};
 	HierarchicalOptimizer2d(
 			VerbosityParameters verbosity_parameters = VerbosityParameters(),
 			int maximum_chunk_size = 8,

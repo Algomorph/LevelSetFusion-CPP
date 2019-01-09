@@ -32,8 +32,10 @@
 #include "test_data_hierarchical_optimizer.hpp"
 
 // test targets
+#include "../src/math/tensors.hpp"
 #include "../src/nonrigid_optimization/pyramid2d.hpp"
 #include "../src/nonrigid_optimization/field_resampling.hpp"
+#include "../src/nonrigid_optimization/hierarchical_optimizer2d.hpp"
 
 namespace eig = Eigen;
 
@@ -118,4 +120,22 @@ BOOST_AUTO_TEST_CASE(resample_field_test01){
 	eig::MatrixXf resampled_field = nropt::resample_field(field_A_16x16,warp_field_A_16x16);
 	BOOST_REQUIRE(resampled_field.isApprox(fA_resampled_with_wfA));
 
+}
+
+BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
+	// corresponds to test_construction-and_operation in python code (test_hns_optimizer2d.py)
+	nropt::HierarchicalOptimizer2d optimizer(
+			nropt::HierarchicalOptimizer2d::VerbosityParameters(),
+			8,
+			0.2,
+			1.0,
+			0.2,
+			eig::VectorXf(0),
+			0.001,
+			100,
+			false, false);
+	math::MatrixXv2f warp_field_out = optimizer.optimize(canonical_field, live_field);
+	eig::MatrixXf final_live_resampled = nropt::resample_field(live_field,warp_field_out);
+	BOOST_REQUIRE(math::almost_equal(warp_field_out,warp_field,10e-6));
+	BOOST_REQUIRE(final_live_resampled.isApprox(final_live_field));
 }
