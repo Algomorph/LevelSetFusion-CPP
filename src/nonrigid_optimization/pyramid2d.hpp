@@ -17,6 +17,8 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+//A pyramid representation of a contiguous 2d scalar field
+
 //Standard library
 #include <vector>
 
@@ -34,6 +36,9 @@ bool is_power_of_two(int number){
 	return !(number == 0) && !(number & (number - 1));
 }
 
+/**
+ * A pyramid representation of a contiguous 2d scalar field
+ */
 class Pyramid2d {
 public:
 	Pyramid2d(eig::MatrixXf field, int maximum_chunk_size=8);

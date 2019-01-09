@@ -19,6 +19,7 @@
 
 //local
 #include "boolean_operations.hpp"
+#include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
 #include "field_resampling.hpp"
 
@@ -131,6 +132,73 @@ eig::MatrixXf resample_warp_unchanged(
 			substitute_original, truncation_float_threshold);
 }
 
+/*TODO: condense resample_field_aux and resample_aux into a single function with more template parameters to avoid DRY
+ violations*/
+
+template<bool WithReplacement>
+inline eig::MatrixXf resample_field_aux(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
+		float replacement_value = 0.0f) {
+	int matrix_size = static_cast<int>(scalar_field.size());
+	const int column_count = static_cast<int>(scalar_field.cols());
+	const int row_count = static_cast<int>(scalar_field.rows());
+
+	eig::MatrixXf resampled_field(row_count, column_count);
+
+#pragma omp parallel for
+	for (int i_element = 0; i_element < matrix_size; i_element++) {
+		// Any MatrixXf in Eigen is column-major
+		// i_element = x * column_count + y
+		div_t division_result = div(i_element, column_count);
+		int x = division_result.quot;
+		int y = division_result.rem;
+
+		math::Vector2f local_warp = warp_field(i_element);
+		float lookup_x = x + local_warp.u;
+		float lookup_y = y + local_warp.v;
+		int base_x = static_cast<int>(std::floor(lookup_x));
+		int base_y = static_cast<int>(std::floor(lookup_y));
+		float ratio_x = lookup_x - base_x;
+		float ratio_y = lookup_y - base_y;
+		float inverse_ratio_x = 1.0F - ratio_x;
+		float inverse_ratio_y = 1.0F - ratio_y;
+
+		float value00, value01, value10, value11;
+
+		if (WithReplacement) {
+			value00 = sample_tsdf_value_replacing_when_out_of_bounds(scalar_field, base_x, base_y,
+					replacement_value);
+			value01 = sample_tsdf_value_replacing_when_out_of_bounds(scalar_field, base_x, base_y + 1,
+					replacement_value);
+			value10 = sample_tsdf_value_replacing_when_out_of_bounds(scalar_field, base_x + 1, base_y,
+					replacement_value);
+			value11 = sample_tsdf_value_replacing_when_out_of_bounds(scalar_field, base_x + 1, base_y + 1,
+					replacement_value);
+		} else {
+			value00 = sample_tsdf_value_at(scalar_field, base_x, base_y);
+			value01 = sample_tsdf_value_at(scalar_field, base_x, base_y + 1);
+			value10 = sample_tsdf_value_at(scalar_field, base_x + 1, base_y);
+			value11 = sample_tsdf_value_at(scalar_field, base_x + 1, base_y + 1);
+		}
+
+		float interpolated_value0 = value00 * inverse_ratio_y + value01 * ratio_y;
+		float interpolated_value1 = value10 * inverse_ratio_y + value11 * ratio_y;
+		float new_value = interpolated_value0 * inverse_ratio_x + interpolated_value1 * ratio_x;
+
+		resampled_field(i_element) = new_value;
+	}
+
+	return resampled_field;
+}
+
+eig::MatrixXf resample_field(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field) {
+	return resample_field_aux<false>(scalar_field, warp_field);
+}
+
+eig::MatrixXf resample_field_replacement(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
+		float replacement_value) {
+	return resample_field_aux<true>(scalar_field, warp_field, replacement_value);
+}
+
 bp::object py_resample(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,
 		eig::MatrixXf warp_field_v, bool band_union_only, bool known_values_only,
@@ -140,7 +208,7 @@ bp::object py_resample(const eig::MatrixXf& warped_live_field,
 	eig::MatrixXf new_warped_live_field = resample(warp_field, warped_live_field,
 			canonical_field, band_union_only, known_values_only, substitute_original,
 			truncation_float_threshold);
-	math::unstack_xv2f(warp_field_u,warp_field_v,warp_field);
+	math::unstack_xv2f(warp_field_u, warp_field_v, warp_field);
 	bp::object warp_field_u_out(warp_field_u);
 	bp::object warp_field_v_out(warp_field_v);
 	bp::object warped_live_field_out(new_warped_live_field);

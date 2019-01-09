@@ -322,6 +322,7 @@ add_executable(test_math
 )
 add_executable(test_hierarchical_optimizer 
 	tests/test_hierarchical_optimizer.cpp
+	tests/test_data_hierarchical_optimizer.hpp
 )
 
 target_link_libraries(test_slavcheva_optimizer ${MODULE_NAME} ${Boost_LIBRARIES})

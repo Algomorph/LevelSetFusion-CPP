@@ -93,12 +93,12 @@ inline void vector_field_laplacian_aux(const math::MatrixXv2f& field, math::Matr
 	}
 }
 
-void vector_field_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& gradient) {
-	vector_field_laplacian_aux<LaplaceOperatorFunctor>(field,gradient);
+void vector_field_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian) {
+	vector_field_laplacian_aux<LaplaceOperatorFunctor>(field,laplacian);
 }
 
-void vector_field_negative_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& gradient) {
-	vector_field_laplacian_aux<NegativeLaplaceOperatorFunctor>(field,gradient);
+void vector_field_negative_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian) {
+	vector_field_laplacian_aux<NegativeLaplaceOperatorFunctor>(field,laplacian);
 }
 
 /**

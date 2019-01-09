@@ -22,6 +22,9 @@
 //libraries
 #include <Eigen/Eigen>
 
+//local
+#include "../math/tensors.hpp"
+
 namespace eig = Eigen;
 
 namespace nonrigid_optimization {
@@ -54,9 +57,19 @@ public:
 			bool gradient_kernel_enabled = true);
 	virtual ~HierarchicalOptimizer2d();
 
-
+	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
 
 private:
+
+	void optimize_level(
+			math::MatrixXv2f& warp_field,
+			const eig::MatrixXf& canonical_pyramid_level,
+			const eig::MatrixXf& live_pyramid_level,
+			const eig::MatrixXf& live_gradient_x_level,
+			const eig::MatrixXf& live_gradient_y_level
+			);
+
+	bool termination_conditions_reached(float maximum_warp_update_length, int completed_iteration_count);
 
 	//parameters
 	VerbosityParameters verbosity_parameters;
@@ -64,7 +77,7 @@ private:
 	const float rate = 0.1f;
 	const float data_term_amplifier = 1.0f;
 	const float tikhonov_strength = 0.2f;
-	const eig::VectorXf kernel = eig::VectorXf(0);
+	const eig::VectorXf kernel_1d = eig::VectorXf(0);
 	const float maximum_warp_update_threshold = 0.001f;
 	const int maximum_iteration_count = 100;
 	const bool tikhonov_term_enabled = true;

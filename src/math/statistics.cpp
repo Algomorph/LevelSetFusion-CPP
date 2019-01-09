@@ -25,6 +25,12 @@
 
 namespace math{
 
+/**
+ * Locates the maximum L2 norm (length) of the vector in the given field.
+ * @param[out] max_norm length of the longest vector
+ * @param[out] coordinate the location of the longest vector
+ * @param vector_field the field to look at
+ */
 void locate_max_norm(float& max_norm, Vector2i& coordinate, const MatrixXv2f& vector_field){
 	float max_squared_norm = 0;
 	coordinate = math::Vector2i(0);
@@ -42,6 +48,14 @@ void locate_max_norm(float& max_norm, Vector2i& coordinate, const MatrixXv2f& ve
 	max_norm = std::sqrt(max_squared_norm);
 }
 
+
+/**
+ * Locates the maximum L2 norm (length) of the vector in the given field.
+ * Identical to @see locate_max_norm with the exception that this version is using a generic traversal function.
+ * @param[out] max_norm length of the longest vector
+ * @param[out] coordinate the location of the longest vector
+ * @param vector_field the field to look at
+ */
 void locate_max_norm2(float& max_norm, Vector2i& coordinate, const MatrixXv2f& vector_field){
 	float max_squared_norm = 0;
 	coordinate = math::Vector2i(0);
@@ -60,6 +74,12 @@ void locate_max_norm2(float& max_norm, Vector2i& coordinate, const MatrixXv2f& v
 	max_norm = std::sqrt(max_squared_norm);
 }
 
+/**
+ * Given a 2d vector field, computes the lengths and counts up how many of the vectors are above the provided threshold
+ * @param vector_field - vector field to look at
+ * @param threshold - an arbitrary threshold
+ * @return ratio of the counted vectors to the total number of vectors in the field
+ */
 float ratio_of_vector_lengths_above_threshold(const MatrixXv2f& vector_field, float threshold){
 	float threshold_squared = threshold*threshold;
 	long count_above = 0;
@@ -74,6 +94,11 @@ float ratio_of_vector_lengths_above_threshold(const MatrixXv2f& vector_field, fl
 	return static_cast<double>(count_above) / static_cast<double>(total_count);
 }
 
+/**
+ * Computes the mean vector length for all vectors in the given field
+ * @param vector_field the field to look at
+ * @return the arithmetic mean vector length
+ */
 float mean_vector_length(const MatrixXv2f& vector_field){
 	long total_count = vector_field.size();
 	double total_length = 0.0;
@@ -85,6 +110,12 @@ float mean_vector_length(const MatrixXv2f& vector_field){
 	return static_cast<float>(total_length / static_cast<double>(total_count));
 }
 
+/**
+ * Computes the mean vector length and the standard deviation of lengths for vectors in the given field
+ * @param[out] mean the arithmetic mean vector length
+ * @param[out] standard_deviation standard deviation of vector lengths
+ * @param[in] vector_field the field to look at
+ */
 void mean_and_std_vector_length(float& mean, float& standard_deviation, const MatrixXv2f& vector_field){
 	long total_count = vector_field.size();
 	double total_length = 0.0;

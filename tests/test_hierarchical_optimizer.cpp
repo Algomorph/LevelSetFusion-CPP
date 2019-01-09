@@ -29,8 +29,11 @@
 
 // test data
 
+#include "test_data_hierarchical_optimizer.hpp"
+
 // test targets
 #include "../src/nonrigid_optimization/pyramid2d.hpp"
+#include "../src/nonrigid_optimization/field_resampling.hpp"
 
 namespace eig = Eigen;
 
@@ -110,3 +113,9 @@ BOOST_AUTO_TEST_CASE(pyramid_test01) {
 	BOOST_REQUIRE(true);
 }
 
+BOOST_AUTO_TEST_CASE(resample_field_test01){
+	//corresponds to test_resample_field01 in python code
+	eig::MatrixXf resampled_field = nropt::resample_field(field_A_16x16,warp_field_A_16x16);
+	BOOST_REQUIRE(resampled_field.isApprox(fA_resampled_with_wfA));
+
+}

@@ -17,15 +17,18 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-//Standard library
-#include "pyramid2d.hpp"
+//A pyramid representation of a contiguous 2d scalar field
 
+//Standard library
 #include <cmath>
 #include <algorithm>
 //Local
+#include "pyramid2d.hpp"
 
 namespace nonrigid_optimization {
 
+
+//TODO: Pyramid2d templated on the Scalar type to allow alternative element types
 Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
 		levels() {
 	eigen_assert((is_power_of_two(field.rows()) && is_power_of_two(field.cols())) // @suppress("Invalid arguments")

@@ -30,7 +30,6 @@ namespace math {
 typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic> MatrixXv2f;
 typedef Eigen::Matrix<math::Matrix2<float>, Eigen::Dynamic, Eigen::Dynamic> MatrixXm2f;
 
-
 template<typename TMatrix>
 bool almost_equal(TMatrix matrix_a, TMatrix matrix_b, double tolerance = 1e-10) {
 	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.rows()) {
@@ -48,8 +47,8 @@ template<typename TMatrix>
 bool almost_equal_verbose(TMatrix matrix_a, TMatrix matrix_b, double tolerance = 1e-10) {
 	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.rows()) {
 		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.cols() << " columns by " << matrix_a.rows()
-		          << " rows, Matrix b: " << matrix_b.cols() << " columns by " << matrix_b.rows() << " rows."
-		          << std::endl;
+				<< " rows, Matrix b: " << matrix_b.cols() << " columns by " << matrix_b.rows() << " rows."
+				<< std::endl;
 		return false;
 	}
 	for (Eigen::Index index = 0; index < matrix_a.size(); index++) {
@@ -58,8 +57,8 @@ bool almost_equal_verbose(TMatrix matrix_a, TMatrix matrix_b, double tolerance =
 			long x = division_result.quot;
 			long y = division_result.rem;
 			std::cout << "Matrix entries are not within tolerance threshold of each other. First mismatch at row " << y
-			          << ", column " << x << ". " << "Values: " << matrix_a(index) << " vs. " << matrix_b(index)
-			          << ", difference: " << matrix_a(index) - matrix_b(index) << std::endl;
+					<< ", column " << x << ". " << "Values: " << matrix_a(index) << " vs. " << matrix_b(index)
+					<< ", difference: " << matrix_a(index) - matrix_b(index) << std::endl;
 			return false;
 		}
 	}
@@ -69,14 +68,30 @@ bool almost_equal_verbose(TMatrix matrix_a, TMatrix matrix_b, double tolerance =
 MatrixXv2f stack_as_xv2f(const Eigen::MatrixXf& matrix_a, const Eigen::MatrixXf& matrix_b);
 void unstack_xv2f(Eigen::MatrixXf& matrix_a, Eigen::MatrixXf& matrix_b, const MatrixXv2f vector_field);
 
-}//namespace math
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& matrix) {
+	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampled(matrix.rows() * 2, matrix.cols() * 2);
+	for (int dest_col = 0, source_col = 0; source_col < matrix.cols(); dest_col += 2, source_col++) {
+		for (int dest_row = 0, source_row = 0; source_row < matrix.rows(); dest_row += 2, source_row++) {
+			Scalar value = matrix(source_row, source_col);
+			upsampled(dest_row, dest_col) = value;
+			upsampled(dest_row + 1, dest_col) = value;
+			upsampled(dest_row, dest_col + 1) = value;
+			upsampled(dest_row + 1, dest_col + 1) = value;
+		}
+	}
+	return upsampled;
+}
 
+} //namespace math
 
 namespace Eigen {
 
 template<>
 struct NumTraits<math::Vector2<float>>
-		: NumTraits<float> // permits to get the epsilon, dummy_precision, lowest, highest functions
+:
+		NumTraits<float> // permits to get the epsilon, dummy_precision, lowest, highest functions
 {
 	typedef math::Vector2<float> Real;
 	typedef math::Vector2<float> NonInteger;
@@ -94,7 +109,8 @@ struct NumTraits<math::Vector2<float>>
 
 template<>
 struct NumTraits<math::Vector2<double>>
-		: NumTraits<double> // permits to get the epsilon, dummy_precision, lowest, highest functions
+:
+		NumTraits<double> // permits to get the epsilon, dummy_precision, lowest, highest functions
 {
 	typedef math::Vector2<double> Real;
 	typedef math::Vector2<double> NonInteger;
@@ -112,7 +128,8 @@ struct NumTraits<math::Vector2<double>>
 
 template<>
 struct NumTraits<math::Vector2<int>>
-		: NumTraits<int> // permits to get the epsilon, dummy_precision, lowest, highest functions
+:
+		NumTraits<int> // permits to get the epsilon, dummy_precision, lowest, highest functions
 {
 	typedef math::Vector2<int> Real;
 	typedef math::Vector2<int> Integer;
@@ -134,12 +151,28 @@ struct ScalarBinaryOpTraits<math::Vector2<double>, float, BinaryOp> {
 };
 
 template<typename BinaryOp>
+struct ScalarBinaryOpTraits<float,math::Vector2<double>, BinaryOp> {
+	typedef math::Vector2<double> ReturnType;
+};
+
+template<typename BinaryOp>
 struct ScalarBinaryOpTraits<math::Vector2<double>, double, BinaryOp> {
 	typedef math::Vector2<double> ReturnType;
 };
 
 template<typename BinaryOp>
+struct ScalarBinaryOpTraits<double, math::Vector2<double>, BinaryOp> {
+	typedef math::Vector2<double> ReturnType;
+};
+
+
+template<typename BinaryOp>
 struct ScalarBinaryOpTraits<math::Vector2<float>, float, BinaryOp> {
+	typedef math::Vector2<float> ReturnType;
+};
+
+template<typename BinaryOp>
+struct ScalarBinaryOpTraits< float, math::Vector2<float>, BinaryOp> {
 	typedef math::Vector2<float> ReturnType;
 };
 
@@ -148,5 +181,10 @@ struct ScalarBinaryOpTraits<math::Vector2<float>, double, BinaryOp> {
 	typedef math::Vector2<float> ReturnType;
 };
 
-}// namespacd Eigen
+template<typename BinaryOp>
+struct ScalarBinaryOpTraits<double, math::Vector2<float>, BinaryOp> {
+	typedef math::Vector2<float> ReturnType;
+};
+
+} // namespacd Eigen
 
