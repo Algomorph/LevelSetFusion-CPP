@@ -119,7 +119,15 @@ BOOST_AUTO_TEST_CASE(resample_field_test01){
 	//corresponds to test_resample_field01 in python code
 	eig::MatrixXf resampled_field = nropt::resample_field(field_A_16x16,warp_field_A_16x16);
 	BOOST_REQUIRE(resampled_field.isApprox(fA_resampled_with_wfA));
+}
 
+BOOST_AUTO_TEST_CASE(resample_field_test02){
+	//corresponds to test_resample_field_replacement01 in python code
+	eig::MatrixXf resampled_field = nropt::resample_field_replacement(field_B_16x16,warp_field_B_16x16,0);
+//	std::cout << resampled_field(11,0) << std::endl;
+//	std::cout << fB_resampled_with_wfB_replacement(11,0) << std::endl;
+	//BOOST_REQUIRE(math::almost_equal_verbose(resampled_field,fB_resampled_with_wfB_replacement,10e-6));
+	BOOST_REQUIRE(resampled_field.isApprox(fB_resampled_with_wfB_replacement));
 }
 
 BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
@@ -136,6 +144,7 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 			false, false);
 	math::MatrixXv2f warp_field_out = optimizer.optimize(canonical_field, live_field);
 	eig::MatrixXf final_live_resampled = nropt::resample_field(live_field,warp_field_out);
-	BOOST_REQUIRE(math::almost_equal(warp_field_out,warp_field,10e-6));
+
+	BOOST_REQUIRE(math::almost_equal_verbose(warp_field_out,warp_field,10e-6));
 	BOOST_REQUIRE(final_live_resampled.isApprox(final_live_field));
 }

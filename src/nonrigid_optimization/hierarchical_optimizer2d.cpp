@@ -135,8 +135,8 @@ void HierarchicalOptimizer2d::optimize_level(
 		// see how badly our sampled values correspond to the canonical values at the same locations
 		// data_gradient = (warped_live - canonical) * warped_gradient(live)
 		eig::MatrixXf diff = resampled_live - canonical_pyramid_level;
-		eig::MatrixXf data_gradient_x = diff * resampled_live_gradient_x;
-		eig::MatrixXf data_gradient_y = diff * resampled_live_gradient_y;
+		eig::MatrixXf data_gradient_x = diff.cwiseProduct(resampled_live_gradient_x);
+		eig::MatrixXf data_gradient_y = diff.cwiseProduct(resampled_live_gradient_y);
 
 		// this results in the data term gradient
 		math::MatrixXv2f data_gradient = math::stack_as_xv2f(data_gradient_x, data_gradient_y);
@@ -163,6 +163,7 @@ void HierarchicalOptimizer2d::optimize_level(
 
 		iteration_count++;
 	}
+	std::cout << "Optimization level " << current_hierarchy_level << " completed" << std::endl;
 }
 
 bool HierarchicalOptimizer2d::termination_conditions_reached(float maximum_warp_update_length,
