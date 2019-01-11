@@ -23,6 +23,7 @@
 namespace python_export {
 
 void export_math_types();
+void export_math_functions();
 
 } // namespace python_export
 

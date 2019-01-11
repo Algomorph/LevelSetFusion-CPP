@@ -367,6 +367,9 @@ BOOST_AUTO_TEST_CASE(max_norm_test01) {
 BOOST_AUTO_TEST_CASE(mean_and_std_test01) {
 	float mean, std;
 
+	float mean_length = math::mean_vector_length(test_data::vector_field2);
+	BOOST_REQUIRE_CLOSE(mean_length, 0.7339459657669067f, 1e-8);
+
 	math::mean_and_std_vector_length(mean, std, test_data::vector_field);
 	BOOST_REQUIRE_CLOSE(mean, 0.7791687f, 1e-8);
 	BOOST_REQUIRE_CLOSE(std, 0.26306444f, 1e-8);

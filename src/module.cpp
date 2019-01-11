@@ -35,6 +35,7 @@ BOOST_PYTHON_MODULE (level_set_fusion_optimization)
 	bp::def("matrix_product_float32", matrix_product_float);
 
 	pe::export_math_types();
+	pe::export_math_functions();
 	pe::slavcheva::export_auxiliary_functions();
 	pe::slavcheva::export_setting_singletons();
 	pe::slavcheva::export_logging_utilities();

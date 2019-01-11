@@ -18,6 +18,10 @@
  *   limitations under the License.
  */
 
+//stdlib
+#include <cmath>
+
+//local
 #include "statistics.hpp"
 #include "tensors.hpp"
 #include "vector_operations.hpp"
@@ -132,7 +136,7 @@ void mean_and_std_vector_length(float& mean, float& standard_deviation, const Ma
 		float local_deviation = length - mean;
 		total_squared_deviation += local_deviation*local_deviation;
 	}
-	standard_deviation = static_cast<float>(sqrt(total_squared_deviation/static_cast<double>(total_count)));
+	standard_deviation = static_cast<float>(std::sqrt(total_squared_deviation/static_cast<double>(total_count)));
 }
 
 }//namespace math

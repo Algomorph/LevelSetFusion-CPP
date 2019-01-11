@@ -25,6 +25,7 @@
 
 //local
 #include "../math/typedefs.hpp"
+#include "../math/statistics.hpp"
 
 namespace bp = boost::python;
 
@@ -49,6 +50,11 @@ void export_math_types() {
 			.def_readwrite("u", &math::Vector2f::u)
 			.def_readwrite("v", &math::Vector2f::v)
 			;
+}
+
+void export_math_functions(){
+	bp::def("mean_vector_length", &math::mean_vector_length,
+			"Computes the mean vector length for all vectors in the given field", bp::args("vector_field"));
 }
 
 } // namespace python_export

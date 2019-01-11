@@ -298,6 +298,31 @@ static math::MatrixXv2f vector_field = [] {
 	return field;
 }();
 
+static math::MatrixXv2f vector_field2 = []{
+		math::MatrixXv2f vector_field(4,4);
+		vector_field <<
+		math::Vector2f(0.8562016f,0.876527f),
+		math::Vector2f(0.8056713f,0.31369442f),
+		math::Vector2f(0.28571403f,0.38419583f),
+		math::Vector2f(0.86377007f,0.9078812f),
+
+		math::Vector2f(0.12255816f,0.22223428f),
+		math::Vector2f(0.4487159f,0.7280231f),
+		math::Vector2f(0.61369246f,0.43351218f),
+		math::Vector2f(0.3545089f,0.33867624f),
+
+		math::Vector2f(0.5658683f,0.53506494f),
+		math::Vector2f(0.69546276f,0.9331944f),
+		math::Vector2f(0.05706289f,0.06915309f),
+		math::Vector2f(0.5286004f,0.9154799f),
+
+		math::Vector2f(0.98797816f,0.60008055f),
+		math::Vector2f(0.07343615f,0.10326899f),
+		math::Vector2f(0.28764063f,0.05625961f),
+		math::Vector2f(0.32258928f,0.84611595f);
+		return vector_field;
+}();
+
 static math::MatrixXm2f vector_field_gradient = [] {
 	math::MatrixXm2f gradient(4, 4);
 	gradient <<

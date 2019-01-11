@@ -303,7 +303,7 @@ struct EigenMatrixFromPython<math::MatrixXv2f> {
 		int ndims = PyArray_NDIM(array);
 		npy_intp* dimensions = PyArray_DIMS(array);
 
-		int dtype_size = (PyArray_DESCR(array))->elsize;
+		int dtype_size = (PyArray_DESCR(array))->elsize * 2;
 		int s1 = PyArray_STRIDE(array, 0);
 		//CHECK_EQ(0, s1 % dtype_size);
 		int s2 = 0;
