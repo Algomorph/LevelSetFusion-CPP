@@ -31,27 +31,29 @@
 
 namespace nonrigid_optimization {
 
+
 HierarchicalOptimizer2d::HierarchicalOptimizer2d(
-		VerbosityParameters verbosity_parameters,
+		bool tikhonov_term_enabled,
+		bool gradient_kernel_enabled,
 		int maximum_chunk_size,
 		float rate,
+		int maximum_iteration_count,
+		float maximum_warp_update_threshold,
 		float data_term_amplifier,
 		float tikhonov_strength,
 		eig::VectorXf kernel,
-		float maximum_warp_update_threshold,
-		int maximum_iteration_count,
-		bool tikhonov_term_enabled,
-		bool gradient_kernel_enabled) :
-		verbosity_parameters(verbosity_parameters),
+		VerbosityParameters verbosity_parameters
+		) :
+				tikhonov_term_enabled(tikhonov_term_enabled && tikhonov_strength > 0.0f),
+				gradient_kernel_enabled(gradient_kernel_enabled && kernel.size() > 0),
 				maximum_chunk_size(maximum_chunk_size),
 				rate(rate),
+				maximum_iteration_count(maximum_iteration_count),
+				maximum_warp_update_threshold(maximum_warp_update_threshold),
 				data_term_amplifier(data_term_amplifier),
 				tikhonov_strength(tikhonov_strength),
 				kernel_1d(kernel),
-				maximum_warp_update_threshold(maximum_warp_update_threshold),
-				maximum_iteration_count(maximum_iteration_count),
-				tikhonov_term_enabled(tikhonov_term_enabled && tikhonov_strength > 0.0f),
-				gradient_kernel_enabled(gradient_kernel_enabled && kernel.size() > 0)
+				verbosity_parameters(verbosity_parameters)
 {
 
 }

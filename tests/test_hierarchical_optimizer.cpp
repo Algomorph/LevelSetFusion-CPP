@@ -133,15 +133,16 @@ BOOST_AUTO_TEST_CASE(resample_field_test02){
 BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 	// corresponds to test_construction-and_operation in python code (test_hns_optimizer2d.py)
 	nropt::HierarchicalOptimizer2d optimizer(
-			nropt::HierarchicalOptimizer2d::VerbosityParameters(),
+			false, false,
 			8,
 			0.2,
+			100, //max iteration count
+			0.001, //max warp update threshold
 			1.0,
 			0.2,
 			eig::VectorXf(0),
-			0.001,
-			100,
-			false, false);
+			nropt::HierarchicalOptimizer2d::VerbosityParameters()
+			);
 	math::MatrixXv2f warp_field_out = optimizer.optimize(canonical_field, live_field);
 	eig::MatrixXf final_live_resampled = nropt::resample_field(live_field,warp_field_out);
 
