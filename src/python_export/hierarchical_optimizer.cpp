@@ -27,6 +27,16 @@
 namespace bp = boost::python;
 namespace nro = nonrigid_optimization;
 
+//VerbosityParameters verbosity_parameters = VerbosityParameters(),
+//			int maximum_chunk_size = 8,
+//			float rate = 0.1f,
+//			float data_term_amplifier = 1.0f,
+//			float tikhonov_strength = 0.2f,
+//			eig::VectorXf kernel = eig::VectorXf(0),
+//			float maximum_warp_update_threshold = 0.001f,
+//			int maximum_iteration_count = 100,
+//			bool tikhonov_term_enabled = true,
+//			bool gradient_kernel_enabled = true);
 namespace python_export{
 namespace hierarchical_optimizer{
 void export_algorithms(){
@@ -34,8 +44,15 @@ void export_algorithms(){
 		bp::scope outer =
 				bp::class_<nro::HierarchicalOptimizer2d>("HierarchicalOptimizer",
 						bp::init<bp::optional<nro::HierarchicalOptimizer2d::VerbosityParameters,
-						int,float,float,float,eig::VectorXf,float,int,bool,bool> >())
-						.def("optimize", &nro::HierarchicalOptimizer2d::optimize)
+						int,float,float,float,eig::VectorXf,float,int,bool,bool> >(
+								bp::args("self", "verbosity_parameters",
+										"maximum_chunk_size",
+										"rate", "data_term_amplifier", "tikhonov_strength","kernel",
+										"maximum_warp_update_threshold","maximum_iteration_count",
+										"tikhonov_term_enabled", "gradient_kernel_enabled")))
+						.def("optimize", &nro::HierarchicalOptimizer2d::optimize,
+								"Find optimal warp to map given live SDF to given canonical SDF",
+								bp::args("canonical_field","live_field"))
 						;
 		bp::class_<nro::HierarchicalOptimizer2d::VerbosityParameters>("VerbosityParameters",
 				bp::init<bool,bool,bool>());
