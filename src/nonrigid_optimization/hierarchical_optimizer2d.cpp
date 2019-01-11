@@ -163,7 +163,6 @@ void HierarchicalOptimizer2d::optimize_level(
 
 		iteration_count++;
 	}
-	std::cout << "Optimization level " << current_hierarchy_level << " completed" << std::endl;
 }
 
 bool HierarchicalOptimizer2d::termination_conditions_reached(float maximum_warp_update_length,

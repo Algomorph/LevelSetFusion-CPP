@@ -41,7 +41,7 @@ Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
 	int max_level_count = std::min(log2(field.rows()), log2(field.cols()));
 	eigen_assert(max_level_count > power_of_two_largest_chunk && "Maximum chunk size too large for the field size."); // @suppress("Invalid arguments")
 
-	int level_count = max_level_count - power_of_two_largest_chunk;
+	int level_count = power_of_two_largest_chunk + 1;
 	levels.push_back(field);
 	eig::MatrixXf& previous_level = field;
 
