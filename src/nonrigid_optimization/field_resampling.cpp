@@ -144,7 +144,7 @@ inline eig::MatrixXf resample_field_aux(const eig::MatrixXf& scalar_field, math:
 
 	eig::MatrixXf resampled_field(row_count, column_count);
 
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		// Any MatrixXf in Eigen is column-major
 		// i_element = x * column_count + y
