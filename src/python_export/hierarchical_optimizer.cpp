@@ -55,7 +55,7 @@ void export_algorithms(){
 								bp::args("canonical_field","live_field"))
 						;
 		bp::class_<nro::HierarchicalOptimizer2d::VerbosityParameters>("VerbosityParameters",
-				bp::init<bool,bool,bool>());
+				bp::init<bp::optional<bool,bool,bool>>());
 
 	}
 }
