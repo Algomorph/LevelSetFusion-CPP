@@ -47,11 +47,11 @@ endif()
 #=================================================================
 # Preliminaries for Hunter
 # TODO: reset HUNTER_ROOT to default
-set(HUNTER_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/hunter)
+
 include("HunterGate")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.77.tar.gz"
-    SHA1 "600199f151ce34d762c13b9dc84c0f2f056f57ad"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.93.tar.gz"
+    SHA1 "0977005fb76c1380a7d9e41929090376cfd45023"
     LOCAL
 )
 
