@@ -1,9 +1,10 @@
-# Default ignored files
+# Default ignored files (IDE project files, downloaded content, etc)
 .idea/
 .project
 .cproject
 .settings/
 .pydevproject
+*.sublime-project
 hunter/
 
 # Datasource local storage ignored files

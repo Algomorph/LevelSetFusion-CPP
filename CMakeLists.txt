@@ -46,6 +46,7 @@ endif()
 
 #=================================================================
 # Preliminaries for Hunter
+# TODO: reset HUNTER_ROOT to default
 set(HUNTER_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/hunter)
 include("HunterGate")
 HunterGate(
@@ -71,7 +72,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-deprecated-declarations -fms-extensions")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-deprecated-declarations -fms-extensions ")
     if(NOT HUNTER_ENABLED)
     	set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-int-in-bool-context -Wno-ignored-attributes")
     endif()
@@ -203,68 +204,72 @@ find_package(OpenMP REQUIRED)
 
 # main library
 add_library(${MODULE_NAME} SHARED
-            include/eigen_numpy.hpp
-            src/eigen_numpy.cpp
-            src/module.cpp
-            
-            src/python_export/math.hpp
-            src/python_export/math.cpp
-            src/python_export/hierarchical_optimizer.hpp
-            src/python_export/hierarchical_optimizer.cpp
-            src/python_export/slavcheva_optimizer.hpp
-            src/python_export/slavcheva_optimizer.cpp
+			include/eigen_numpy.hpp
+			src/eigen_numpy.cpp
+			src/module.cpp
 
-            src/nonrigid_optimization/data_term.hpp
-            src/nonrigid_optimization/data_term.cpp
-            src/nonrigid_optimization/field_resampling.hpp
-            src/nonrigid_optimization/field_resampling.cpp
-            src/nonrigid_optimization/boolean_operations.hpp
-            src/nonrigid_optimization/full_gradient.cpp
-            src/nonrigid_optimization/full_gradient.hpp
-            src/nonrigid_optimization/smoothing_term.cpp
-            src/nonrigid_optimization/smoothing_term.hpp
-            src/nonrigid_optimization/optimizer2d.cpp
-            src/nonrigid_optimization/optimizer2d.hpp
-            src/nonrigid_optimization/sobolev_optimizer2d.cpp
-            src/nonrigid_optimization/sobolev_optimizer2d.hpp
-            src/nonrigid_optimization/logging.cpp
-            src/nonrigid_optimization/logging.hpp
-            src/nonrigid_optimization/filtered_statistics.cpp
-            src/nonrigid_optimization/filtered_statistics.hpp
-            src/nonrigid_optimization/hierarchical_optimizer2d.cpp
-            src/nonrigid_optimization/hierarchical_optimizer2d.hpp
-            src/nonrigid_optimization/pyramid2d.cpp
-            src/nonrigid_optimization/pyramid2d.hpp
+			src/python_export/math.hpp
+			src/python_export/math.cpp
+			src/python_export/hierarchical_optimizer.hpp
+			src/python_export/hierarchical_optimizer.cpp
+			src/python_export/slavcheva_optimizer.hpp
+			src/python_export/slavcheva_optimizer.cpp
+
+			src/nonrigid_optimization/data_term.hpp
+			src/nonrigid_optimization/data_term.cpp
+			src/nonrigid_optimization/field_resampling.hpp
+			src/nonrigid_optimization/field_resampling.cpp
+			src/nonrigid_optimization/boolean_operations.hpp
+			src/nonrigid_optimization/full_gradient.cpp
+			src/nonrigid_optimization/full_gradient.hpp
+			src/nonrigid_optimization/smoothing_term.cpp
+			src/nonrigid_optimization/smoothing_term.hpp
+			src/nonrigid_optimization/optimizer2d.cpp
+			src/nonrigid_optimization/optimizer2d.hpp
+			src/nonrigid_optimization/sobolev_optimizer2d.cpp
+			src/nonrigid_optimization/sobolev_optimizer2d.hpp
+			src/nonrigid_optimization/logging.cpp
+			src/nonrigid_optimization/logging.hpp
+			src/nonrigid_optimization/filtered_statistics.cpp
+			src/nonrigid_optimization/filtered_statistics.hpp
+			src/nonrigid_optimization/hierarchical_optimizer2d.cpp
+			src/nonrigid_optimization/hierarchical_optimizer2d.hpp
+			src/nonrigid_optimization/pyramid2d.cpp
+			src/nonrigid_optimization/pyramid2d.hpp
 
 			src/traversal/field_traversal_cpu.hpp
 
-            src/math/tensors.hpp
-            src/math/tensors.cpp
-            src/math/math_utils.hpp
-            src/math/vector_base.hpp
-            src/math/matrix_base.hpp
-            src/math/vector2.hpp
-            src/math/platform_independence.hpp
-            src/math/matrix2.hpp
-            src/math/vector3.hpp
-            src/math/typedefs.hpp
-            src/math/gradients.cpp
-            src/math/gradients.hpp
-            src/math/vector_operations.hpp
-            src/math/statistics.cpp
-            src/math/statistics.hpp
-            src/math/convolution.hpp
-            src/math/convolution.cpp
-            )
+			src/math/tensors.hpp
+			src/math/tensors.cpp
+			src/math/math_utils.hpp
+			src/math/vector_base.hpp
+			src/math/matrix_base.hpp
+			src/math/vector2.hpp
+			src/math/platform_independence.hpp
+			src/math/matrix2.hpp
+			src/math/vector3.hpp
+			src/math/typedefs.hpp
+			src/math/gradients.cpp
+			src/math/gradients.hpp
+			src/math/vector_operations.hpp
+			src/math/statistics.cpp
+			src/math/statistics.hpp
+			src/math/convolution.hpp
+			src/math/convolution.cpp
+
+			src/tsdf/ewa.cpp
+			src/tsdf/ewa.hpp)
 
 target_link_libraries(${MODULE_NAME}
         PUBLIC
         ${Boost_LIBRARIES}
-        ${PYTHON_LIBRARIES})
+        ${PYTHON_LIBRARIES}
+)
 
 target_link_libraries(${MODULE_NAME}
         PRIVATE
-        OpenMP::OpenMP_CXX)
+        OpenMP::OpenMP_CXX
+)
         
 target_include_directories(${MODULE_NAME} PUBLIC
 		 ${PYTHON_INCLUDE_DIRS}
@@ -317,26 +322,35 @@ add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${MODULE_NAME}> ${PROJECT_SOURCE_DIR}/../$<TARGET_FILE_NAME:${MODULE_NAME}>
 )
 # ================== UNIT TESTING ======================================================================================
-
 enable_testing()
 
-add_executable(test_slavcheva_optimizer 
-	tests/test_slavcheva_optimizer.cpp 
-	tests/test_data_slavcheva_optimizer.hpp
+add_executable(test_tsdf 
+	tests/test_tsdf.cpp 
+	tests/test_data_tsdf.hpp
 )
 add_executable(test_math 
 	tests/test_math.cpp 
 	tests/test_data_math.hpp
+)
+add_executable(test_slavcheva_optimizer 
+	tests/test_slavcheva_optimizer.cpp 
+	tests/test_data_slavcheva_optimizer.hpp
 )
 add_executable(test_hierarchical_optimizer 
 	tests/test_hierarchical_optimizer.cpp
 	tests/test_data_hierarchical_optimizer.hpp
 )
 
-target_link_libraries(test_slavcheva_optimizer ${MODULE_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_tsdf ${MODULE_NAME} ${Boost_LIBRARIES})
+target_include_directories(test_tsdf PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(test_math ${MODULE_NAME} ${Boost_LIBRARIES})
+target_include_directories(test_math PRIVATE ${EIGEN3_INCLUDE_DIRS})
+target_link_libraries(test_slavcheva_optimizer ${MODULE_NAME} ${Boost_LIBRARIES})
+target_include_directories(test_slavcheva_optimizer PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(test_hierarchical_optimizer ${MODULE_NAME} ${Boost_LIBRARIES})
+target_include_directories(test_hierarchical_optimizer PRIVATE ${EIGEN3_INCLUDE_DIRS})
 
-add_test(NAME slavcheva_optimizer COMMAND test_slavcheva_optimizer)
+add_test(NAME tsdf COMMAND test_tsdf)
 add_test(NAME math COMMAND test_math)
+add_test(NAME slavcheva_optimizer COMMAND test_slavcheva_optimizer)
 add_test(NAME hierarchical_optimizer COMMAND test_hierarchical_optimizer)
