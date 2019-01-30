@@ -5,6 +5,7 @@
 .settings/
 .pydevproject
 *.sublime-project
+*.sublime-workspace
 hunter/
 
 # Datasource local storage ignored files
