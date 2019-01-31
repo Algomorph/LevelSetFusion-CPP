@@ -239,23 +239,25 @@ add_library(${MODULE_NAME} SHARED
 
 			src/traversal/field_traversal_cpu.hpp
 
-			src/math/tensors.hpp
-			src/math/tensors.cpp
-			src/math/math_utils.hpp
-			src/math/vector_base.hpp
-			src/math/matrix_base.hpp
-			src/math/vector2.hpp
-			src/math/platform_independence.hpp
-			src/math/matrix2.hpp
-			src/math/vector3.hpp
-			src/math/typedefs.hpp
-			src/math/gradients.cpp
-			src/math/gradients.hpp
-			src/math/vector_operations.hpp
-			src/math/statistics.cpp
-			src/math/statistics.hpp
+			src/math/conics.cpp
+			src/math/conics.hpp
 			src/math/convolution.hpp
 			src/math/convolution.cpp
+			src/math/gradients.cpp
+			src/math/gradients.hpp
+			src/math/math_utils.hpp
+			src/math/matrix_base.hpp
+			src/math/matrix2.hpp
+			src/math/platform_independence.hpp
+			src/math/statistics.cpp
+			src/math/statistics.hpp
+			src/math/tensors.hpp
+			src/math/tensors.cpp
+			src/math/typedefs.hpp
+			src/math/vector_base.hpp
+			src/math/vector_operations.hpp
+			src/math/vector2.hpp
+			src/math/vector3.hpp
 
 			src/tsdf/ewa.cpp
 			src/tsdf/ewa.hpp)
