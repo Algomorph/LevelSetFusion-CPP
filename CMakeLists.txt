@@ -239,6 +239,7 @@ add_library(${MODULE_NAME} SHARED
 
 			src/traversal/field_traversal_cpu.hpp
 
+			src/math/assessment.hpp
 			src/math/conics.cpp
 			src/math/conics.hpp
 			src/math/convolution.hpp
@@ -258,7 +259,8 @@ add_library(${MODULE_NAME} SHARED
 			src/math/vector_operations.hpp
 			src/math/vector2.hpp
 			src/math/vector3.hpp
-
+			
+			
 			src/tsdf/ewa.cpp
 			src/tsdf/ewa.hpp)
 

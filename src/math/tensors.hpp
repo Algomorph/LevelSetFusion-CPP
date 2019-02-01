@@ -31,41 +31,6 @@ typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic> Matr
 typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> MatrixXv2f_rm;
 typedef Eigen::Matrix<math::Matrix2<float>, Eigen::Dynamic, Eigen::Dynamic> MatrixXm2f;
 
-template<typename TMatrix>
-bool almost_equal(TMatrix matrix_a, TMatrix matrix_b, double tolerance = 1e-10) {
-	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.rows()) {
-		return false;
-	}
-	for (Eigen::Index index = 0; index < matrix_a.size(); index++) {
-		if (!matrix_a(index).is_close(matrix_b(index), tolerance)) {
-			return false;
-		}
-	}
-	return true;
-}
-
-template<typename TMatrix>
-bool almost_equal_verbose(TMatrix matrix_a, TMatrix matrix_b, double tolerance = 1e-10) {
-	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.rows()) {
-		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.cols() << " columns by " << matrix_a.rows()
-				<< " rows, Matrix b: " << matrix_b.cols() << " columns by " << matrix_b.rows() << " rows."
-				<< std::endl;
-		return false;
-	}
-	for (Eigen::Index index = 0; index < matrix_a.size(); index++) {
-		if (!matrix_a(index).is_close(matrix_b(index), tolerance)) {
-			ldiv_t division_result = div(index, matrix_a.cols());
-			long x = division_result.quot;
-			long y = division_result.rem;
-			std::cout << "Matrix entries are not within tolerance threshold of each other. First mismatch at row " << y
-					<< ", column " << x << ". " << "Values: " << matrix_a(index) << " vs. " << matrix_b(index)
-					<< ", difference: " << matrix_a(index) - matrix_b(index) << std::endl;
-			return false;
-		}
-	}
-	return true;
-}
-
 MatrixXv2f stack_as_xv2f(const Eigen::MatrixXf& matrix_a, const Eigen::MatrixXf& matrix_b);
 void unstack_xv2f(Eigen::MatrixXf& matrix_a, Eigen::MatrixXf& matrix_b, const MatrixXv2f vector_field);
 

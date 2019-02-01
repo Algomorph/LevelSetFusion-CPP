@@ -25,6 +25,7 @@
 
 //test targets
 #include "../src/math/gradients.hpp"
+#include "../src/math/assessment.hpp"
 #include "../src/math/tensors.hpp"
 #include "../src/math/typedefs.hpp"
 #include "../src/math/convolution.hpp"

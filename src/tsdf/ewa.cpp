@@ -22,11 +22,16 @@ namespace tsdf {
 
 eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		int image_y_coordinate,
-		const eig::Matrix<unsigned char, eig::Dynamic, eig::Dynamic>& depth_image, float depth_unit_ratio,
-		const eig::Matrix3f& camera_intrinsic_matrix, const eig::Matrix4f& camera_pose,
-		const eig::Vector3f& array_offset, int field_size, float voxel_size, int narrow_band_width_voxels) {
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
+		float depth_unit_ratio,
+		const eig::Matrix3f& camera_intrinsic_matrix,
+		const eig::Matrix4f& camera_pose,
+		const eig::Vector3i& array_offset,
+		int field_size,
+		float voxel_size,
+		int narrow_band_width_voxels) {
 	eig::MatrixXf field(field_size, field_size);
-	int narrow_band_half_width = narrow_band_width_voxels / 2 * voxel_size;
+	float narrow_band_half_width = static_cast<float>(narrow_band_width_voxels / 2) * voxel_size;
 
 	float w_voxel = 1.0f;
 	float y_voxel = 0.0f;
@@ -39,7 +44,7 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 	float squared_radius_threshold = 4.0f;
 	int matrix_size = static_cast<int>(field.size());
 
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		// Any MatrixXf in Eigen is column-major
 		// i_element = x * column_count + y
@@ -60,7 +65,7 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		float ray_distance = voxel_camera.norm();
 		// squared distance along optical axis from camera to voxel
 		float z_cam_squared = voxel_camera(2) * voxel_camera(2);
-		float inv_z_cam = 1.0f / z_cam_squared;
+		float inv_z_cam = 1.0f / voxel_camera(2);
 
 		// Jacobian for first-order tailor approximation of affine transform at pixel
 		eig::Matrix3f projection_jacobian;
@@ -90,7 +95,7 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 
 		// check that at least some samples within sampling range fall within the depth image
 		if (x_sample_start > depth_image.cols() || x_sample_end <= 0
-				|| y_sample_start > depth_image.rows() || y_sample_start <= 0) {
+				|| y_sample_start > depth_image.rows() || y_sample_end <= 0) {
 			continue;
 		}
 
@@ -103,9 +108,12 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		float weights_sum = 0.0f;
 		float depth_sum = 0.0f;
 
+		int samples_counted = 0;
+
 		// collect sample readings
-		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
-			for (int y_sample = y_sample_start; y_sample < y_sample_end; y_sample++) {
+		//TODO: change loop order back
+		for (int y_sample = y_sample_start; y_sample < y_sample_end; y_sample++) {
+			for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
 				eig::Vector2f sample_centered;
 				sample_centered <<
 						static_cast<float>(x_sample) - voxel_image(0),
@@ -115,15 +123,16 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 					continue;
 				}
 				float weight = std::exp(-0.5f * dist_sq);
-				float surface_depth = depth_image(x_sample, y_sample) * depth_unit_ratio;
+				float surface_depth = static_cast<float>(depth_image(y_sample, x_sample)) * depth_unit_ratio;
 				if (surface_depth <= 0.0f) {
 					continue;
 				}
 				depth_sum += weight * surface_depth;
 				weights_sum += weight;
+				samples_counted++;
 			}
 		}
-		if(depth_sum <= 0.0){
+		if (depth_sum <= 0.0) {
 			continue;
 		}
 		float final_depth = depth_sum / weights_sum;
@@ -132,12 +141,12 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		// TODO: try with "along ray" and compare. Newcombe et al. in KinectFusion claim there won't be a difference...
 		float signed_distance = final_depth - voxel_camera[2];
 
-		if (signed_distance < -narrow_band_half_width){
-			field(y_field,x_field) = -1.0;
-		}else if(signed_distance > narrow_band_half_width){
-			field(y_field,x_field) = 1.0;
-		}else{
-			field(y_field,x_field) = signed_distance / narrow_band_half_width;
+		if (signed_distance < -narrow_band_half_width) {
+			field(y_field, x_field) = -1.0;
+		} else if (signed_distance > narrow_band_half_width) {
+			field(y_field, x_field) = 1.0;
+		} else {
+			field(y_field, x_field) = signed_distance / narrow_band_half_width;
 		}
 
 	}

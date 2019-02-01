@@ -33,6 +33,7 @@
 
 // test targets
 #include "../src/math/tensors.hpp"
+#include "../src/math/assessment.hpp"
 #include "../src/nonrigid_optimization/pyramid2d.hpp"
 #include "../src/nonrigid_optimization/field_resampling.hpp"
 #include "../src/nonrigid_optimization/hierarchical_optimizer2d.hpp"
@@ -124,9 +125,6 @@ BOOST_AUTO_TEST_CASE(resample_field_test01){
 BOOST_AUTO_TEST_CASE(resample_field_test02){
 	//corresponds to test_resample_field_replacement01 in python code
 	eig::MatrixXf resampled_field = nropt::resample_field_replacement(field_B_16x16,warp_field_B_16x16,0);
-//	std::cout << resampled_field(11,0) << std::endl;
-//	std::cout << fB_resampled_with_wfB_replacement(11,0) << std::endl;
-	//BOOST_REQUIRE(math::almost_equal_verbose(resampled_field,fB_resampled_with_wfB_replacement,10e-6));
 	BOOST_REQUIRE(resampled_field.isApprox(fB_resampled_with_wfB_replacement));
 }
 

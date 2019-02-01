@@ -15,6 +15,9 @@
 //  ================================================================
 #pragma once
 
+//libraries
+#include <Eigen/Eigen>
+
 //local
 #include "vector2.hpp"
 #include "vector3.hpp"
@@ -37,6 +40,13 @@ typedef class math::Vector3<int> Vector3i;
 typedef class math::Vector3<uint> Vector3ui;
 typedef class math::Vector3<uchar> Vector3u;
 typedef class math::Vector3<float> Vector3f;
-
 typedef class math::Matrix2<float> Matrix2f;
+
 }//namespace math
+
+namespace Eigen{
+
+typedef class Eigen::Matrix<unsigned short, Eigen::Dynamic,Eigen::Dynamic> MatrixXus;
+typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,Eigen::Dynamic> MatrixXuc;
+
+}//namespace Eigen
