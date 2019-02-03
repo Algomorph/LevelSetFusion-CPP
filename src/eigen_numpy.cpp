@@ -34,15 +34,27 @@ struct NumpyEquivalentType<double> {
 	};
 };
 template<>
+struct NumpyEquivalentType<float> {
+	enum {
+		type_code = NPY_FLOAT
+	};
+};
+template<>
 struct NumpyEquivalentType<int> {
 	enum {
 		type_code = NPY_INT
 	};
 };
 template<>
-struct NumpyEquivalentType<float> {
+struct NumpyEquivalentType<unsigned short>{
 	enum {
-		type_code = NPY_FLOAT
+		type_code = NPY_USHORT
+	};
+};
+template<>
+struct NumpyEquivalentType<unsigned char>{
+	enum {
+		type_code = NPY_UBYTE
 	};
 };
 template<>

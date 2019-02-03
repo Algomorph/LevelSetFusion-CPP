@@ -208,12 +208,14 @@ add_library(${MODULE_NAME} SHARED
 			src/eigen_numpy.cpp
 			src/module.cpp
 
-			src/python_export/math.hpp
-			src/python_export/math.cpp
 			src/python_export/hierarchical_optimizer.hpp
 			src/python_export/hierarchical_optimizer.cpp
+			src/python_export/math.hpp
+			src/python_export/math.cpp
 			src/python_export/slavcheva_optimizer.hpp
 			src/python_export/slavcheva_optimizer.cpp
+			src/python_export/tsdf.hpp
+			src/python_export/tsdf.cpp
 
 			src/nonrigid_optimization/data_term.hpp
 			src/nonrigid_optimization/data_term.cpp

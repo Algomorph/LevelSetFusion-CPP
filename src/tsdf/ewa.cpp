@@ -20,6 +20,26 @@
 
 namespace tsdf {
 
+/**
+ * Generate 2D TSDF field from depth image using Elliptical Weighed Average resampling approach.
+ * A 3D Gaussian (standard deviation of 1 voxel) around every voxel is projected onto the depth image, the resulting
+ * projection is convolved with a 2D Gaussian (standard deviation of 1 pixel), the resulting gaussian is used
+ * as a weighted-average filter to sample from the depth image.
+ * For details on EWA methods, refer to [1] and [2].
+ * [1] P. S. Heckbert, “Fundamentals of Texture Mapping and Image Warping,” Jun. 1989.
+ * [2] M. Zwicker, H. Pfister, J. Van Baar, and M. Gross, “EWA volume splatting,” in Visualization, 2001.
+ *     VIS’01. Proceedings, 2001, pp. 29–538.
+ * @param image_y_coordinate
+ * @param depth_image
+ * @param depth_unit_ratio
+ * @param camera_intrinsic_matrix
+ * @param camera_pose
+ * @param array_offset
+ * @param field_size
+ * @param voxel_size
+ * @param narrow_band_width_voxels
+ * @return
+ */
 eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		int image_y_coordinate,
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
