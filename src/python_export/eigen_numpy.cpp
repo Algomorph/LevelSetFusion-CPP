@@ -2,8 +2,10 @@
 
 #include <boost/python.hpp>
 #include <Eigen/Eigen>
-#include "math/tensors.hpp"
 #include <Python.h>
+
+#include "../math/tensors.hpp"
+#include "../math/typedefs.hpp"
 
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
@@ -436,6 +438,10 @@ SetupEigenConverters() {
 	EIGEN_MATRIX_CONVERTER(Vector3d);
 	EIGEN_MATRIX_CONVERTER(Vector4d);
 
+	EIGEN_MATRIX_CONVERTER(Vector2i);
+	EIGEN_MATRIX_CONVERTER(Vector3i);
+	EIGEN_MATRIX_CONVERTER(Vector4i);
+
 	EIGEN_MATRIX_CONVERTER(RowVector2f);
 	EIGEN_MATRIX_CONVERTER(RowVector3f);
 	EIGEN_MATRIX_CONVERTER(RowVector4f);
@@ -466,6 +472,7 @@ SetupEigenConverters() {
 	MAT_CONV(3, 4, double);
 	MAT_CONV(2, X, double);
 
+
 	MAT_CONV(2, 3, float);
 	MAT_CONV(X, 3, float);
 	MAT_CONV(X, X, float);
@@ -473,6 +480,14 @@ SetupEigenConverters() {
 	MAT_CONV(1, X, float);
 	MAT_CONV(3, 4, float);
 	MAT_CONV(2, X, float);
+
+	EIGEN_MATRIX_CONVERTER(MatrixXus);
+	EIGEN_MATRIX_CONVERTER(MatrixX1us);
+	EIGEN_MATRIX_CONVERTER(Matrix1Xus);
+
+	EIGEN_MATRIX_CONVERTER(MatrixXuc);
+	EIGEN_MATRIX_CONVERTER(MatrixX1uc);
+	EIGEN_MATRIX_CONVERTER(Matrix1Xuc);
 
 	EigenMatrixFromPython<math::MatrixXv2f>();
 	bp::to_python_converter<math::MatrixXv2f, EigenMatrixToPython<math::MatrixXv2f> >();

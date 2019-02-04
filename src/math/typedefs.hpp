@@ -47,6 +47,12 @@ typedef class math::Matrix2<float> Matrix2f;
 namespace Eigen{
 
 typedef class Eigen::Matrix<unsigned short, Eigen::Dynamic,Eigen::Dynamic> MatrixXus;
+typedef class Eigen::Matrix<unsigned short, Eigen::Dynamic,1> MatrixX1us;
+typedef class Eigen::Matrix<unsigned short, 1, Eigen::Dynamic> Matrix1Xus;
+typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,Eigen::Dynamic> MatrixXuc;
+typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,1> MatrixX1uc;
+typedef class Eigen::Matrix<unsigned char, 1, Eigen::Dynamic> Matrix1Xuc;
+
 typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,Eigen::Dynamic> MatrixXuc;
 
 }//namespace Eigen

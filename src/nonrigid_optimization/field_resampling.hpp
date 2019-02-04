@@ -21,7 +21,6 @@
 #include <boost/python.hpp>
 
 //local
-#include "eigen_numpy.hpp"
 #include "../math/tensors.hpp"
 
 namespace bp = boost::python;

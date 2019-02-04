@@ -7,7 +7,7 @@
 #include <boost/shared_ptr.hpp>
 
 //local
-#include <eigen_numpy.hpp>
+#include "python_export/eigen_numpy.hpp"
 #include "python_export/math.hpp"
 #include "python_export/slavcheva_optimizer.hpp"
 #include "python_export/hierarchical_optimizer.hpp"

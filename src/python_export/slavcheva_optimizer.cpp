@@ -26,7 +26,7 @@
 #include <boost/shared_ptr.hpp>
 
 //local
-#include <eigen_numpy.hpp>
+#include "eigen_numpy.hpp"
 #include "../nonrigid_optimization/data_term.hpp"
 #include "../nonrigid_optimization/field_resampling.hpp"
 #include "../nonrigid_optimization/sobolev_optimizer2d.hpp"

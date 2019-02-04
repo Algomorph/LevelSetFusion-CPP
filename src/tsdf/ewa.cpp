@@ -21,7 +21,7 @@
 namespace tsdf {
 
 /**
- * Generate 2D TSDF field from depth image using Elliptical Weighed Average resampling approach.
+ * Generate a square 2D TSDF field from depth image using Elliptical Weighed Average resampling approach.
  * A 3D Gaussian (standard deviation of 1 voxel) around every voxel is projected onto the depth image, the resulting
  * projection is convolved with a 2D Gaussian (standard deviation of 1 pixel), the resulting gaussian is used
  * as a weighted-average filter to sample from the depth image.
@@ -29,16 +29,17 @@ namespace tsdf {
  * [1] P. S. Heckbert, “Fundamentals of Texture Mapping and Image Warping,” Jun. 1989.
  * [2] M. Zwicker, H. Pfister, J. Van Baar, and M. Gross, “EWA volume splatting,” in Visualization, 2001.
  *     VIS’01. Proceedings, 2001, pp. 29–538.
- * @param image_y_coordinate
- * @param depth_image
- * @param depth_unit_ratio
- * @param camera_intrinsic_matrix
- * @param camera_pose
- * @param array_offset
- * @param field_size
- * @param voxel_size
- * @param narrow_band_width_voxels
- * @return
+ * @param image_y_coordinate since this is a 2D simulation, only this row of pixels in the image will be used
+ * @param depth_image a 2D field of unsigned shorts, where every entry represents surface distance along the camera optical axis
+ * @param depth_unit_ratio factor needed to convert depth values to meters, i.e. 0.001 for depth values with 1mm increments
+ * @param camera_intrinsic_matrix intrinsic matrix of the camera, sometimes denoted as K (see Wikipedia for more info)
+ * @param camera_pose camera extrinsic matrix (relative to world origin) / pose as a 4x4 matrix, which includes both
+ * rotation matrix and translational components
+ * @param array_offset offset of the minimum corner of the resulting SDF field from the world origin
+ * @param field_size field's side length, in voxels
+ * @param voxel_size size of every (2D) voxel's (edge) in meters
+ * @param narrow_band_width_voxels width of the narrow band containing values in (-1.,1.0), or non-truncated values
+ * @return resulting 2D square TSDF field
  */
 eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		int image_y_coordinate,

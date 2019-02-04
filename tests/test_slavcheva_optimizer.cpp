@@ -312,7 +312,7 @@ BOOST_AUTO_TEST_CASE(test_sobolev_optimizer01) {
 	sobolev_kernel << 0.06742075f, 0.99544406f, 0.06742075f;
 	no::SobolevOptimizer2d::shared_parameters().maximum_iteration_count = 1;
 	no::SobolevOptimizer2d::sobolev_parameters().sobolev_kernel = sobolev_kernel;
-	no::SobolevOptimizer2d optimizer;
+	no::SobolevOptimizer2d optimizer; // @suppress("Abstract class cannot be instantiated")
 	eig::MatrixXf live_field(4, 4), canonical_field(4, 4);
 	live_field << 1.f, 1.f, 0.49999955f, 0.42499956f,
 			1.f, 0.44999936f, 0.34999937f, 0.32499936f,
@@ -344,7 +344,7 @@ BOOST_AUTO_TEST_CASE(test_sobolev_optimizer02) {
 	no::SobolevOptimizer2d::shared_parameters().maximum_iteration_count = 2;
 	no::SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold = 0.05f;
 	no::SobolevOptimizer2d::sobolev_parameters().sobolev_kernel = sobolev_kernel;
-	no::SobolevOptimizer2d optimizer;
+	no::SobolevOptimizer2d optimizer; // @suppress("Abstract class cannot be instantiated")
 	eig::MatrixXf live_field(4, 4), canonical_field(4, 4);
 	live_field << 1.f, 1.f, 0.49999955f, 0.42499956f,
 			1.f, 0.44999936f, 0.34999937f, 0.32499936f,

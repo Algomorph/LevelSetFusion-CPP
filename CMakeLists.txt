@@ -204,10 +204,11 @@ find_package(OpenMP REQUIRED)
 
 # main library
 add_library(${MODULE_NAME} SHARED
-			include/eigen_numpy.hpp
-			src/eigen_numpy.cpp
+			
 			src/module.cpp
-
+			
+			src/python_export/eigen_numpy.hpp
+			src/python_export/eigen_numpy.cpp
 			src/python_export/hierarchical_optimizer.hpp
 			src/python_export/hierarchical_optimizer.cpp
 			src/python_export/math.hpp
