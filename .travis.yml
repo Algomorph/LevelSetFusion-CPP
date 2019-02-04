@@ -16,8 +16,15 @@ addons:
         - python3-numpy
         - python3-numpy-dbg
         #- libeigen3-dev
-        #- libboost-python-dev
-        #- libboost-test-dev
+        - libboost-python-dev
+        - libboost-test-dev
+before_install:
+   - wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2
+   - mv 3.3.4.tar.bz2 eigen3.3.4.tar.bz2
+   - tar -xvf eigen3.3.4.tar.bz2
+   - rm eigen3.3.4.tar.bz2
+   - mv eigen-eigen-* eigen
+   - export Eigen3_ROOT=`pwd`/eigen
 before_script:
    - export CXX=g++-7
    - ${CXX} --version
@@ -25,8 +32,8 @@ before_script:
    - python3 --version
    - mkdir build
    - cd build
-   - cmake ..
-   #- cmake -DHUNTER_ENABLED=OFF ..
+   #- cmake ..
+   - cmake -DHUNTER_ENABLED=OFF -DEIGEN3_INCLUDE_DIR=${Eigen3_ROOT} ..
 script:
    - make
    - ctest
