@@ -14,6 +14,9 @@ addons:
         - g++-7
         - libpython3-dev
         - python3-numpy
+        - python3-numpy-dbg
+        - libboost-python-dev
+        - libboost-test-dev
 before_script:
    - export CXX=g++-7
    - ${CXX} --version
@@ -21,7 +24,8 @@ before_script:
    - python3 --version
    - mkdir build
    - cd build
-   - cmake ..
+   #- cmake ..
+   - cmake -DHUNTER_ENABLED=OFF ..
 script:
    - make
    - ctest
