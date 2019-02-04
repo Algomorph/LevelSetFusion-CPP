@@ -15,7 +15,7 @@
 #  ================================================================
 #============================================================================================
 # Preliminaries for CMake
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.5.1)
 # Put our local cmake find scripts at the beginning of the CMake
 # module search path.
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
