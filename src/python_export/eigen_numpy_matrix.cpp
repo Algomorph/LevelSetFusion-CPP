@@ -10,7 +10,7 @@
 #include <numpy/arrayobject.h>
 
 //local
-#include "eigen_numpy.hpp"
+
 #include "numpy_conversions_shared.hpp"
 #include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
@@ -335,6 +335,7 @@ struct EigenTransformFromPython {
 	}
 };
 
+// === Lower-level macros ===
 #define EIGEN_MATRIX_CONVERTER(Type) \
   EigenMatrixFromPython<Type>();  \
   bp::to_python_converter<Type, EigenMatrixToPython<Type> >();
@@ -343,11 +344,13 @@ struct EigenTransformFromPython {
   EigenTransformFromPython<Type>();  \
   bp::to_python_converter<Type, EigenTransformToPython<Type> >();
 
+// === Higher-level macros ===
+
 #define MAT_CONV(R, C, T) \
   typedef Matrix<T, R, C> Matrix ## R ## C ## T; \
   EIGEN_MATRIX_CONVERTER(Matrix ## R ## C ## T);
 
-// This require a MAT_CONV for that Matrix type to be registered first
+// This requires a MAT_CONV for that Matrix type to be registered first
 #define MAP_CONV(R, C, T) \
   typedef Map<Matrix ## R ## C ## T> Map ## R ## C ## T; \
   EIGEN_MATRIX_CONVERTER(Map ## R ## C ## T);
@@ -440,6 +443,7 @@ setup_Eigen_matrix_converters() {
 	EIGEN_MATRIX_CONVERTER(MatrixX1uc);
 	EIGEN_MATRIX_CONVERTER(Matrix1Xuc);
 
+	//TODO: generalize these to math::Matrix<subtype> in a separate converter
 	EigenMatrixFromPython<math::MatrixXv2f>();
 	bp::to_python_converter<math::MatrixXv2f, EigenMatrixToPython<math::MatrixXv2f> >();
 
