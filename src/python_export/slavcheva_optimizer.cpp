@@ -30,7 +30,7 @@
 #include "../nonrigid_optimization/field_resampling.hpp"
 #include "../nonrigid_optimization/sobolev_optimizer2d.hpp"
 #include "../nonrigid_optimization/logging.hpp"
-#include "eigen_numpy_matrix.hpp"
+#include "eigen_numpy.hpp"
 
 namespace bp = boost::python;
 namespace nro = nonrigid_optimization;

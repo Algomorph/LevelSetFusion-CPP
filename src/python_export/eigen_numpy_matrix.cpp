@@ -10,6 +10,7 @@
 #include <numpy/arrayobject.h>
 
 //local
+#include "eigen_numpy.hpp"
 #include "numpy_conversions_shared.hpp"
 #include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
@@ -366,7 +367,7 @@ void*
 #else
 void
 #endif
-SetupEigenConverters() {
+setup_Eigen_matrix_converters() {
 	static bool is_setup = false;
 	if (is_setup)
 		return NUMPY_IMPORT_ARRAY_RETVAL;

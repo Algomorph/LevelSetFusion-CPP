@@ -8,7 +8,7 @@
 
 //local
 #include <lsf_config.h>
-#include "python_export/eigen_numpy_matrix.hpp"
+#include "python_export/eigen_numpy.hpp"
 #include "python_export/math.hpp"
 #include "python_export/slavcheva_optimizer.hpp"
 #include "python_export/hierarchical_optimizer.hpp"
@@ -17,23 +17,10 @@
 namespace bp = boost::python;
 namespace pe = python_export;
 
-Eigen::MatrixXd matrix_product_double(Eigen::MatrixXd a, Eigen::MatrixXd b) {
-	return a * b;
-}
-
-Eigen::MatrixXf matrix_product_float(Eigen::MatrixXf a, Eigen::MatrixXf b) {
-	return a * b;
-}
-
-
-
 BOOST_PYTHON_MODULE ( MODULE_NAME )
 {
-	SetupEigenConverters();
-
-	// test functions
-	bp::def("matrix_product_float64", matrix_product_double);
-	bp::def("matrix_product_float32", matrix_product_float);
+	setup_Eigen_matrix_converters();
+	setup_Eigen_tensor_converters();
 
 	pe::export_math_types();
 	pe::export_math_functions();
@@ -46,8 +33,4 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 	pe::slavcheva::export_algorithms();
 
 	pe::hierarchical_optimizer::export_algorithms();
-
-
-
-	// endregion
 }
