@@ -14,6 +14,9 @@
 #  limitations under the License.
 #  ================================================================
 #============================================================================================
+
+# TODO: up the required CMake version to 3.12.4 and replace fancy python utilities with `find_package(Python3 REQUIRED)`
+
 # Preliminaries for CMake
 cmake_minimum_required(VERSION 3.5.1)
 # Put our local cmake find scripts at the beginning of the CMake
@@ -23,26 +26,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 #=================================================================
 # PYTHON option & interpreter detection
 
-set(PYTHON_RELEASE_OPTIONS "2.X" "3.X")
-set(LSFusion_PYTHON_RELEASE "3.X" CACHE STRING "Choose which python major release to use, options are: ${PYTHON_RELEASE_OPTIONS}.")
-set_property(CACHE LSFusion_PYTHON_RELEASE PROPERTY STRINGS ${PYTHON_RELEASE_OPTIONS})
 option(LSFusion_PYTHON3_VERSION "Python3 version" "")
-option(LSFusion_PYTHON2_VERSION "Python2 version" "")
+
 include("PythonUtilities")
 
-find_python_interpreter(${LSFusion_PYTHON2_VERSION} 2.7 PYTHON2_LIBRARY PYTHON2_INCLUDE_DIR
-            			PYTHON2INTERP_FOUND PYTHON2_EXECUTABLE PYTHON2_VERSION_STRING
-            			PYTHON2_VERSION_MAJOR PYTHON2_VERSION_MINOR PYTHON2_VERSION_PATCH)
+# TODO: not sure if this line is needed for anything -- to be removed
+#Python_ADDITIONAL_VERSIONS is only used inside the find_python_interpreter on Windows
+#set(Python_ADDITIONAL_VERSIONS ${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR})
 
 find_python_interpreter(${LSFusion_PYTHON3_VERSION} 3.4 PYTHON3_LIBRARY PYTHON3_INCLUDE_DIR
             			PYTHON3INTERP_FOUND PYTHON3_EXECUTABLE PYTHON3_VERSION_STRING
             			PYTHON3_VERSION_MAJOR PYTHON3_VERSION_MINOR PYTHON3_VERSION_PATCH)
-            			
-if (${LSFusion_PYTHON_RELEASE} STREQUAL "2.X")
-	set(PYTHON_VERSION_STRING ${PYTHON2_VERSION_STRING})
-else()
-	set(PYTHON_VERSION_STRING ${PYTHON3_VERSION_STRING})
-endif()
 
 #=================================================================
 # Preliminaries for Hunter
@@ -60,6 +54,8 @@ HunterGate(
 project(LevelSetFusionOptimization LANGUAGES CXX)
 # Name of the target and python module
 set(MODULE_NAME level_set_fusion_optimization)
+# TODO: replace with toolchain file, here and in `cmake/Hunter/config.cmake`?
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 #=================================================================
 # Compiler options
@@ -68,8 +64,6 @@ set(MODULE_NAME level_set_fusion_optimization)
 # C++11 standard simplifies things in a lot of obvious ways,
 # it also allows us to use Eigen in multithreaded code w/o special initialization
 set(CMAKE_CXX_STANDARD 11)
-# "-fPIC" option (if using gcc), include all required code inside binary
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-deprecated-declarations -fms-extensions ")
@@ -84,17 +78,6 @@ message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 
 #=================================================================
 # PYTHON library detection & final configuration
-
-#TODO: eliminate support for python 2 and remove redundant code
-
-find_python(${LSFusion_PYTHON2_VERSION} 2.7 PYTHON2_LIBRARY PYTHON2_INCLUDE_DIR
-            ${PYTHON2INTERP_FOUND} ${PYTHON2_EXECUTABLE} ${PYTHON2_VERSION_STRING}
-            ${PYTHON2_VERSION_MAJOR} ${PYTHON2_VERSION_MINOR} ${PYTHON2_VERSION_PATCH} 
-            PYTHON2LIBS_FOUND
-            PYTHON2LIBS_VERSION_STRING PYTHON2_LIBRARIES PYTHON2_LIBRARY
-            PYTHON2_DEBUG_LIBRARIES PYTHON2_LIBRARY_DEBUG PYTHON2_INCLUDE_PATH
-            PYTHON2_INCLUDE_DIR PYTHON2_INCLUDE_DIR2 PYTHON2_PACKAGES_PATH
-            PYTHON2_NUMPY_INCLUDE_DIRS PYTHON2_NUMPY_VERSION)
             
 find_python(${LSFusion_PYTHON3_VERSION} 3.4 PYTHON3_LIBRARY PYTHON3_INCLUDE_DIR
             ${PYTHON3INTERP_FOUND} ${PYTHON3_EXECUTABLE} ${PYTHON3_VERSION_STRING}
@@ -105,32 +88,20 @@ find_python(${LSFusion_PYTHON3_VERSION} 3.4 PYTHON3_LIBRARY PYTHON3_INCLUDE_DIR
             PYTHON3_INCLUDE_DIR PYTHON3_INCLUDE_DIR2 PYTHON3_PACKAGES_PATH
             PYTHON3_NUMPY_INCLUDE_DIRS PYTHON3_NUMPY_VERSION)
 
-if (${LSFusion_PYTHON_RELEASE} STREQUAL "2.X")
-    set(PYTHON_INCLUDE_DIRS ${PYTHON2_INCLUDE_DIR} ${PYTHON2_INCLUDE_DIR2} ${PYTHON2_NUMPY_INCLUDE_DIRS})
-    set(PYTHON_NUMPY_INCLUDE_DIRS ${PYTHON2_NUMPY_INCLUDE_DIRS})
-    set(PYTHON_LIBRARIES ${PYTHON2_LIBRARY})
-    set(PYTHON_EXECUTABLE ${PYTHON2_EXECUTABLE})
-    set(PYTHON_PACKAGES_PATH ${PYTHON2_PACKAGES_PATH})
-    set(ARCHIVE_OUTPUT_NAME ${MODULE_NAME}_py2)
-else ()
-    set(PYTHON_INCLUDE_DIRS ${PYTHON3_INCLUDE_DIR} ${PYTHON3_INCLUDE_DIR2} ${PYTHON3_NUMPY_INCLUDE_DIRS})
-    set(PYTHON_NUMPY_INCLUDE_DIRS ${PYTHON3_NUMPY_INCLUDE_DIRS})
-    set(PYTHON_LIBRARIES ${PYTHON3_LIBRARY})
-    set(PYTHON_EXECUTABLE ${PYTHON3_EXECUTABLE})
-    set(PYTHON_PACKAGES_PATH ${PYTHON3_PACKAGES_PATH})
-    set(ARCHIVE_OUTPUT_NAME ${MODULE_NAME}_py3)
-endif ()
+set(PYTHON3_INCLUDE_DIRS ${PYTHON3_INCLUDE_DIR} ${PYTHON3_INCLUDE_DIR2} ${PYTHON3_NUMPY_INCLUDE_DIRS})
+
+set(ARCHIVE_OUTPUT_NAME ${MODULE_NAME}_py3)
 
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args(Python DEFAULT_MSG PYTHON_INCLUDE_DIRS PYTHON_NUMPY_INCLUDE_DIRS PYTHON_LIBRARIES PYTHON_EXECUTABLE PYTHON_PACKAGES_PATH)
+find_package_handle_standard_args(Python DEFAULT_MSG PYTHON3_INCLUDE_DIRS PYTHON3_NUMPY_INCLUDE_DIRS PYTHON3_LIBRARIES PYTHON3_EXECUTABLE PYTHON3_PACKAGES_PATH)
 if(NOT Python_FOUND)
     message(SEND_ERROR "Not all requred components of Numpy/Python found.")
 endif()
 
 # Find true site-packages site on this machine, since find_package(PythonLibs) doesn't seem to get the correct one
 # (Adapted from OpenCV3)
-execute_process(COMMAND ${PYTHON_EXECUTABLE} -c
+execute_process(COMMAND ${PYTHON3_EXECUTABLE} -c
         "from distutils.sysconfig import get_python_lib;\
   print(get_python_lib(plat_specific=True, prefix=''))"
         OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
@@ -146,7 +117,7 @@ if({PYTHON_DESIRED_VERSION} STREQUAL "2.X")
 endif()
 
 # get proper extension for python binary shared object on this platform
-execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig; print(distutils.sysconfig.get_config_var('${__python_ext_suffix_var}'))"
+execute_process(COMMAND ${PYTHON3_EXECUTABLE} -c "import distutils.sysconfig; print(distutils.sysconfig.get_config_var('${__python_ext_suffix_var}'))"
         RESULT_VARIABLE PYTHON_${MODULE_NAME}_PY_PROCESS
         OUTPUT_VARIABLE ${MODULE_NAME}_PY_SUFFIX
         OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -178,17 +149,9 @@ endif()
 set(BOOST_COMPONENTS unit_test_framework)
 set(BOOST_ALTERNATIVE_COMPONENTS unit_test_framework)
 
-if (${LSFusion_PYTHON_RELEASE} STREQUAL "2.X")
-    set(Python_ADDITIONAL_VERSIONS ${PYTHON2_VERSION_MAJOR}.${PYTHON2_VERSION_MINOR})
-    list(APPEND BOOST_COMPONENTS python${PYTHON2_VERSION_MAJOR}${PYTHON2_VERSION_MINOR})
-    list(APPEND BOOST_ALTERNATIVE_COMPONENTS python-py${PYTHON2_VERSION_MAJOR}${PYTHON2_VERSION_MINOR})
-    set(PYTHON_EXECUTABLE ${Python2_EXECUTABLE})
-else ()
-    set(Python_ADDITIONAL_VERSIONS ${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR})
-    list(APPEND BOOST_COMPONENTS python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR})
-    list(APPEND BOOST_ALTERNATIVE_COMPONENTS python-py${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR})
-    set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
-endif ()
+list(APPEND BOOST_COMPONENTS python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR})
+list(APPEND BOOST_ALTERNATIVE_COMPONENTS python-py${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR})
+set(PYTHON3_EXECUTABLE ${Python3_EXECUTABLE})
 
 find_package(Boost COMPONENTS ${BOOST_COMPONENTS} QUIET)
 if(NOT Boost_FOUND)
@@ -270,7 +233,7 @@ add_library(${MODULE_NAME} SHARED
 target_link_libraries(${MODULE_NAME}
         PUBLIC
         ${Boost_LIBRARIES}
-        ${PYTHON_LIBRARIES}
+        ${PYTHON3_LIBRARIES}
 )
 
 target_link_libraries(${MODULE_NAME}
@@ -279,7 +242,7 @@ target_link_libraries(${MODULE_NAME}
 )
         
 target_include_directories(${MODULE_NAME} PUBLIC
-		 ${PYTHON_INCLUDE_DIRS}
+		 ${PYTHON3_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIRS}
         ${EIGEN3_INCLUDE_DIR}
         ${NUMPY_INCLUDE_DIRS}
@@ -296,8 +259,9 @@ if(NOT HUNTER_ENABLED)
 endif()
 
 # left for possible future CMake debugging
+# TODO: print when CMake is envoked with debugger flags (see how it's done in other CMake projects)
 #message(STATUS "${MODULE_NAME}: [archive output name:]  ${ARCHIVE_OUTPUT_NAME} [archive suffix:] ${${MODULE_NAME}_PY_SUFFIX}")
-#message(STATUS "[include dirs:] ${PYTHON_INCLUDE_DIRS} [packages path:] ${PYTHON3_PACKAGES_PATH} [libraries:] ${PYTHON_LIBRARIES}")
+#message(STATUS "[include dirs:] ${PYTHON3_INCLUDE_DIRS} [packages path:] ${PYTHON3_PACKAGES_PATH} [libraries:] ${PYTHON3_LIBRARIES}")
 
 #======== INSTALLATION MAKE TARGET =====================================================================================
 set_target_properties(${MODULE_NAME} PROPERTIES
@@ -315,13 +279,13 @@ endif ()
 if (WIN32)
     set(PYTHON_INSTALL_ARCHIVE "")
 else ()
-    set(PYTHON_INSTALL_ARCHIVE ARCHIVE DESTINATION ${PYTHON_PACKAGES_PATH} COMPONENT python)
+    set(PYTHON_INSTALL_ARCHIVE ARCHIVE DESTINATION ${PYTHON3_PACKAGES_PATH} COMPONENT python)
 endif ()
 
 install(TARGETS ${MODULE_NAME}
         ${PYTHON_INSTALL_CONFIGURATIONS}
-        RUNTIME DESTINATION ${PYTHON_PACKAGES_PATH} COMPONENT python
-        LIBRARY DESTINATION ${PYTHON_PACKAGES_PATH} COMPONENT python
+        RUNTIME DESTINATION ${PYTHON3_PACKAGES_PATH} COMPONENT python
+        LIBRARY DESTINATION ${PYTHON3_PACKAGES_PATH} COMPONENT python
         ${PYTHON_INSTALL_ARCHIVE}
         )
 # ================== COPY LIBRARY TO PYTHON DIRECTORY ABOVE ============================================================
