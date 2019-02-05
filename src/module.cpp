@@ -8,7 +8,7 @@
 
 //local
 #include <lsf_config.h>
-#include "python_export/eigen_numpy.hpp"
+#include "python_export/eigen_numpy_matrix.hpp"
 #include "python_export/math.hpp"
 #include "python_export/slavcheva_optimizer.hpp"
 #include "python_export/hierarchical_optimizer.hpp"

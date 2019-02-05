@@ -1,16 +1,18 @@
 // Modified work copyright (c) 2019 Gregory Kramida
 
+//libraries
 #include <boost/python.hpp>
 #include <Eigen/Eigen>
 #include <Python.h>
 
-#include "../math/tensors.hpp"
-#include "../math/typedefs.hpp"
-
-
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
 #include <numpy/arrayobject.h>
+
+//local
+#include "numpy_conversions_shared.hpp"
+#include "../math/tensors.hpp"
+#include "../math/typedefs.hpp"
 
 // These macros were renamed in NumPy 1.7.1.
 #if !defined(NPY_ARRAY_C_CONTIGUOUS) && defined(NPY_C_CONTIGUOUS)
@@ -25,58 +27,6 @@ namespace bp = boost::python;
 
 using namespace Eigen;
 
-template<typename SCALAR>
-struct NumpyEquivalentType {
-};
-
-template<>
-struct NumpyEquivalentType<double> {
-	enum {
-		type_code = NPY_DOUBLE
-	};
-};
-template<>
-struct NumpyEquivalentType<float> {
-	enum {
-		type_code = NPY_FLOAT
-	};
-};
-template<>
-struct NumpyEquivalentType<int> {
-	enum {
-		type_code = NPY_INT
-	};
-};
-template<>
-struct NumpyEquivalentType<unsigned short>{
-	enum {
-		type_code = NPY_USHORT
-	};
-};
-template<>
-struct NumpyEquivalentType<unsigned char>{
-	enum {
-		type_code = NPY_UBYTE
-	};
-};
-template<>
-struct NumpyEquivalentType<math::Vector2<float>> {
-	enum {
-		type_code = NPY_FLOAT
-	};
-};
-template<>
-struct NumpyEquivalentType<math::Matrix2<float>> {
-	enum {
-		type_code = NPY_FLOAT
-	};
-};
-template<>
-struct NumpyEquivalentType<std::complex<double> > {
-	enum {
-		type_code = NPY_CDOUBLE
-	};
-};
 
 template<typename SourceType, typename DestType>
 static void copy_array(const SourceType* source, DestType* dest,
@@ -136,7 +86,7 @@ template<>
 struct EigenMatrixToPython<math::MatrixXv2f>{
 	static PyObject* convert(const math::MatrixXv2f& mat) {
 		npy_intp shape[3] = { mat.rows(), mat.cols(), 2 };
-		PyArrayObject* python_array = (PyArrayObject*) PyArray_SimpleNew(
+		PyArrayObject* python_array = (PyArrayObject*) PyArray_SimpleNew( // @suppress("Symbol is not resolved")
 				3, shape, NumpyEquivalentType<math::MatrixXv2f::Scalar>::type_code);
 		copy_array(mat.data(),
 				(math::MatrixXv2f::Scalar*) PyArray_DATA(python_array),
@@ -290,7 +240,7 @@ struct EigenMatrixFromPython<math::MatrixXv2f> {
 			//LOG(ERROR) << "PyArray_Check failed";
 			return 0;
 		}
-		if (PyArray_ObjectType(obj_ptr, 0) != NumpyEquivalentType<T>::type_code) {
+		if (PyArray_ObjectType(obj_ptr, 0) != NumpyEquivalentType<T>::type_code) { // @suppress("Symbol is not resolved")
 			//LOG(ERROR) << "types not compatible";
 			return 0;
 		}
