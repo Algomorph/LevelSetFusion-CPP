@@ -162,6 +162,10 @@ endif()
 # *** Everything else
 find_package(Eigen3 REQUIRED)
 find_package(OpenMP REQUIRED)
+#=================== HEADER CONFIGURATION ==============================================================================
+
+configure_file(include/lsf_config.h.in include/lsf_config.h @ONLY)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 #=================== TARGET DEFININTIONS ===============================================================================
 

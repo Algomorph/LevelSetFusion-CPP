@@ -7,6 +7,7 @@
 #include <boost/shared_ptr.hpp>
 
 //local
+#include <lsf_config.h>
 #include "python_export/eigen_numpy.hpp"
 #include "python_export/math.hpp"
 #include "python_export/slavcheva_optimizer.hpp"
@@ -26,7 +27,7 @@ Eigen::MatrixXf matrix_product_float(Eigen::MatrixXf a, Eigen::MatrixXf b) {
 
 
 
-BOOST_PYTHON_MODULE (level_set_fusion_optimization)
+BOOST_PYTHON_MODULE ( MODULE_NAME )
 {
 	SetupEigenConverters();
 
