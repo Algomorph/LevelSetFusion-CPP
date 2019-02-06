@@ -19,7 +19,6 @@
  */
 
 //stdlib
-#include <iostream>
 #include <vector>
 
 //librarires
@@ -51,6 +50,12 @@ eig::Tensor<float,4> return_input_F4(eig::Tensor<float,4> input){
 	return input;
 }
 
+eig::Tensor<float,3, eig::RowMajor> return_tensor_F3RM(){
+	std::vector<float> v = arange(1.0f,25.0f);
+	Eigen::Tensor<float, 3, Eigen::RowMajor> tensor = Eigen::TensorMap<Eigen::Tensor<float, 3, Eigen::RowMajor>>(&v[0], 2, 4, 3);
+	return tensor;
+}
+
 eig::Tensor<float,4, eig::RowMajor> return_tensor_F4RM(){
 	std::vector<float> v = arange(1.0f,49.0f);
 	return Eigen::TensorMap<Eigen::Tensor<float, 4, Eigen::RowMajor>>(&v[0], 2, 4, 2, 3);
@@ -71,6 +76,8 @@ eig::Tensor<float,3> add_tensors(eig::Tensor<float,3> a, eig::Tensor<float,3> b)
 void export_conversion_tests(){
 	bp::def("return_input_f3", &return_input_F3,"Returns the input 3-dimensional tensor", bp::args("input"));
 	bp::def("return_input_f4", &return_input_F4,"Returns the input 4-dimensional tensor", bp::args("input"));
+	bp::def("return_tensor_f3rm", &return_tensor_F3RM,"Returns a 3-dimensional tensor of dimensions (2, 4, 3) "
+				"containing in range [1,24].");
 	bp::def("return_tensor_f4rm", &return_tensor_F4RM,"Returns a 4-dimensional tensor of dimensions (2, 4, 2, 3) "
 			"containing in range [1,48].");
 	bp::def("scale", &scale,"Scales the input 3-dimensional tensor by the given factor",

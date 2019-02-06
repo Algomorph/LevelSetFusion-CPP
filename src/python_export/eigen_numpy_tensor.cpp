@@ -52,22 +52,22 @@ namespace bp = boost::python;
 
 using namespace Eigen;
 
+//Assumes row-major destination
 template<typename SourceType, typename DestType>
 static void copy_tensor(
 		const SourceType* source, DestType* dest,
 		const int& num_dimensions,
 		const npy_intp* shape,
+		const int& size,
 		const bool& is_source_row_major = false) {
-	//TODO
-	// determine source strides
-	int row_stride = 1, col_stride = 1;
-
 	if (is_source_row_major) {
-		row_stride = shape[1];
-	} else {
-		col_stride = shape[0];
+		for(int i_element = 0; i_element < size; i_element++,dest++){
+			*dest = source[i_element];
+		}
+		return;
 	}
 
+	int col_stride = shape[0];
 	std::vector<int> strides;
 	std::vector<int> remaining_dims;
 	int cumulative_stride = shape[0] * shape[1];
@@ -80,11 +80,9 @@ static void copy_tensor(
 		cumulative_stride *= dim;
 		chunk_size *= dim;
 	}
-	if (!is_source_row_major) {
-		std::cout << remaining_dims.size() << std::endl;
-		std::reverse(remaining_dims.begin(), remaining_dims.end());
-		std::reverse(strides.begin(), strides.end());
-	}
+
+	std::reverse(remaining_dims.begin(), remaining_dims.end());
+	std::reverse(strides.begin(), strides.end());
 
 	auto proces_chunk = [&](int row_and_col_offset) {
 		for (int ix_element = 0; ix_element < chunk_size; ix_element++) {
@@ -100,14 +98,12 @@ static void copy_tensor(
 			dest++;
 		}
 	};
-
 	for (int r = 0; r < shape[0]; r++) {
 		for (int c = 0; c < shape[1]; c++) {
-			int row_and_col_offset = r * row_stride + c * col_stride;
+			int row_and_col_offset = r + c * col_stride;
 			proces_chunk(row_and_col_offset);
 		}
 	}
-
 }
 
 template<class TensorType>
@@ -128,6 +124,7 @@ struct EigenTensorToPython {
 				(typename TensorType::Scalar*) PyArray_DATA(python_array),
 				num_dimensions,
 				shape,
+				tensor.size(),
 				static_cast<Eigen::StorageOptions>(TensorType::Layout) == Eigen::RowMajor);
 		free(shape);
 		return (PyObject*) python_array;
@@ -190,15 +187,6 @@ struct EigenTensorFromPython {
 		PyArrayObject* array = reinterpret_cast<PyArrayObject*>(obj_ptr);
 		npy_intp* numpy_array_dimensions = PyArray_DIMS(array);
 
-		//int dtype_size = (PyArray_DESCR(array))->elsize;
-		//int stride_row = PyArray_STRIDE(array, 0);
-		//CHECK_EQ(0, stride_row % dtype_size);
-		//int stride_col = PyArray_STRIDE(array, 1);
-		//CHECK_EQ(0, stride_col % dtype_size);
-
-//		int nrows = numpy_array_dimensions[0];
-//		int ncols = numpy_array_dimensions[1];
-
 		T* raw_data = reinterpret_cast<T*>(PyArray_DATA(array));
 
 		typedef TensorMap<Tensor<T, TensorType::NumDimensions, RowMajor>, Aligned> TensorMapType;
@@ -244,6 +232,7 @@ setup_Eigen_tensor_converters() {
 	EigenTensorFromPython<Eigen::Tensor<float, 4>>();
 	bp::to_python_converter<Eigen::Tensor<float, 4>, EigenTensorToPython<Eigen::Tensor<float, 4>>>();
 
+	bp::to_python_converter<Eigen::Tensor<float, 3, RowMajor>, EigenTensorToPython<Eigen::Tensor<float, 3, RowMajor>>>();
 	bp::to_python_converter<Eigen::Tensor<float, 4, RowMajor>, EigenTensorToPython<Eigen::Tensor<float, 4, RowMajor>>>();
 
 #if PY_VERSION_HEX >= 0x03000000
