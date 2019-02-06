@@ -13,6 +13,7 @@
 #include "python_export/slavcheva_optimizer.hpp"
 #include "python_export/hierarchical_optimizer.hpp"
 #include "python_export/tsdf.hpp"
+#include "python_export/conversion_tests.hpp"
 
 namespace bp = boost::python;
 namespace pe = python_export;
@@ -21,6 +22,8 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 {
 	setup_Eigen_matrix_converters();
 	setup_Eigen_tensor_converters();
+
+	pe::export_conversion_tests();
 
 	pe::export_math_types();
 	pe::export_math_functions();

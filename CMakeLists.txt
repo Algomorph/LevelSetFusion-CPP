@@ -66,7 +66,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_STANDARD 11)
 
 if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-deprecated-declarations -fms-extensions ")
+	# -Wno-ignored-attributes -- avoiding the ignored attribute warning when mapping tensors in Eigen 3.3.7
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-deprecated-declarations -fms-extensions -Wno-ignored-attributes ")
     if(NOT HUNTER_ENABLED)
     	set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-int-in-bool-context -Wno-ignored-attributes")
     endif()
@@ -174,6 +175,8 @@ add_library(${MODULE_NAME} SHARED
 			
 			src/module.cpp
 			
+			src/python_export/conversion_tests.hpp
+			src/python_export/conversion_tests.cpp
 			src/python_export/eigen_numpy.hpp
 			src/python_export/eigen_numpy_matrix.cpp
 			src/python_export/eigen_numpy_tensor.cpp
