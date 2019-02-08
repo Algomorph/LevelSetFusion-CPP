@@ -35,7 +35,8 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		const eig::Matrix4f& camera_pose = eig::Matrix4f::Identity(4, 4),
 		const eig::Vector3i& array_offset =
 				[] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
-		std::array<int, 3> field_shape = {128, 128, 128},
+		const eig::Vector3i& field_size =
+				[] {eig::Vector3i default_offset; default_offset << 128, 128, 128; return default_offset;}(),
 		float voxel_size = 0.004,
 		int narrow_band_width_voxels = 20);
 
@@ -59,6 +60,7 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 		const eig::Matrix4f& camera_pose = eig::Matrix4f::Identity(4, 4),
 		const eig::Vector3i& array_offset =
 				[] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
-		float voxel_size = 0.004, int scale=20);
+		float voxel_size = 0.004,
+		int scale=20);
 
 } // namespace tsdf

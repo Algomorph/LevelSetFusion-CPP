@@ -46,7 +46,7 @@ void export_ewa() {
 					"camera_intrinsic_matrix",
 					"camera_pose",
 					"array_offset",
-					"field_size",
+					"field_shape",
 					"voxel_size",
 					"narrow_band_width_voxels"));
 
@@ -79,7 +79,8 @@ void export_ewa() {
 					"camera_intrinsic_matrix",
 					"camera_pose",
 					"array_offset",
-					"voxel_size"));
+					"voxel_size",
+					"scale"));
 }
 
 } //namespace python_export

@@ -49,7 +49,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		const eig::Matrix3f& camera_intrinsic_matrix,
 		const eig::Matrix4f& camera_pose,
 		const eig::Vector3i& array_offset,
-		std::array<int, 3> field_shape,
+		const eig::Vector3i& field_shape,
 		float voxel_size,
 		int narrow_band_width_voxels) {
 
