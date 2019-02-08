@@ -390,6 +390,9 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 		int y_field = y_stride_division_result.quot;
 		int z_field = y_stride_division_result.rem;
 
+		float tsdf_value = field(x_field,y_field,x_field);
+		if(tsdf_value <= -1.0f || tsdf_value >= 1.0f) continue;
+
 		float x_voxel = (x_field + array_offset(0)) * voxel_size;
 		float y_voxel = (y_field + array_offset(1)) * voxel_size;
 		float z_voxel = (z_field + array_offset(2)) * voxel_size;
