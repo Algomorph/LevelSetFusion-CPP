@@ -27,12 +27,16 @@
 //libraries
 #include <Eigen/Eigen>
 
+//local
+#include "typedefs.hpp"
+
 namespace eig = Eigen;
 
 namespace math{
 
 eig::Vector2f compute_centered_ellipse_bound_points(const eig::Matrix2f& ellipse_matrix, float ellipse_scale);
-
+void draw_ellipse(eig::MatrixXuc& image, eig::Vector2f center,
+		const eig::Matrix2f& ellipse_matrix, float ellipse_scale);
 }//namespace math
 
 

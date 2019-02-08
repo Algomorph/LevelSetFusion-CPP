@@ -22,6 +22,7 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 
 //local
+#include "../math/typedefs.hpp"
 
 namespace eig = Eigen;
 
@@ -37,6 +38,16 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		std::array<int, 3> field_shape = {128, 128, 128},
 		float voxel_size = 0.004,
 		int narrow_band_width_voxels = 20);
+
+eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
+		float depth_unit_ratio,
+		const eig::Tensor<float, 3>& field,
+		const eig::Matrix3f& camera_intrinsic_matrix,
+		const eig::Matrix4f& camera_pose = eig::Matrix4f::Identity(4, 4),
+		const eig::Vector3i& array_offset =
+				[] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
+		float voxel_size = 0.004, int scale=20);
 
 eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		int image_y_coordinate,
