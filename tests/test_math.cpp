@@ -21,7 +21,7 @@
 #include <Eigen/Eigen>
 
 //test data
-#include "test_data_math.hpp"
+#include "data/test_data_math.hpp"
 
 //test targets
 #include "../src/math/gradients.hpp"

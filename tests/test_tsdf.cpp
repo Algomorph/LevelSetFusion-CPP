@@ -29,41 +29,131 @@
 #include <Eigen/Dense>
 
 //test data
-#include "test_data_tsdf.hpp"
+#include "data/test_data_tsdf.hpp"
 
 //test targets
 #include "../src/tsdf/ewa.hpp"
 #include "../src/math/typedefs.hpp"
 #include "../src/math/assessment.hpp"
+#include "../src/imageio/png_eigen.hpp"
 
 namespace eig = Eigen;
 
+BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 
-
-BOOST_AUTO_TEST_CASE(test_EWA_generation01){
-
-	eig::MatrixXus depth_image = eig::MatrixXus::Constant(3,640,USHRT_MAX);
-	depth_image.block(0,399,3,18) = test_data::depth_image_region;
+	eig::MatrixXus depth_image = eig::MatrixXus::Constant(3, 640, USHRT_MAX);
+	depth_image.block(0, 399, 3, 18) = test_data::depth_image_region;
 
 	eig::Matrix3f camera_intrinsic_matrix;
 	camera_intrinsic_matrix <<
 			700.0f, 0.0f, 320.0f,
 			0.0f, 700.0f, 240.0f,
-			0.0f,0.0f,1.0f;
+			0.0f, 0.0f, 1.0f;
 	eig::Vector3i offset;
-		offset << 94, -256, 804;
+	offset << 94, -256, 804;
 
 	eig::MatrixXf field = tsdf::generate_2d_TSDF_field_from_depth_image_EWA(
-		1, // y coord
-		depth_image,
-		0.001f, //depth unit ratio
-		camera_intrinsic_matrix,
-		eig::MatrixXf::Identity(4,4), //camera pose
-		offset,
-		16, //field size
-		0.004f, //voxel size
-		20 // narrow band width
-		);
+			1, // y coord
+			depth_image,
+			0.001f, //depth unit ratio
+			camera_intrinsic_matrix,
+			eig::Matrix4f::Identity(), //camera pose
+			offset,
+			16, //field size
+			0.004f, //voxel size
+			20 // narrow band width
+			);
 
-	BOOST_REQUIRE(math::almost_equal_verbose(field,test_data::out_sdf_field,2e-5));
+	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::out_sdf_field, 3e-5));
+}
+
+BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
+
+	eig::Matrix3f camera_intrinsic_matrix;
+	camera_intrinsic_matrix <<
+			700.0f, 0.0f, 320.0f,
+			0.0f, 700.0f, 240.0f,
+			0.0f, 0.0f, 1.0f;
+
+
+
+	eig::MatrixXus depth_image;
+
+	bool image_read = imageio::png::read_GRAY16("test_data/depth_00064.png", depth_image);
+	if(!image_read){
+		//are we running from the project root dir, maybe?
+		image_read = imageio::png::read_GRAY16("tests/data/depth_00064.png", depth_image);
+	}
+
+	BOOST_REQUIRE(image_read);
+
+	eig::MatrixXus sample = depth_image.block(40, 60, 1, 20);
+
+	BOOST_REQUIRE_EQUAL(depth_image.rows(), 480);
+	BOOST_REQUIRE_EQUAL(depth_image.cols(), 640);
+	BOOST_REQUIRE_EQUAL(depth_image(0, 0), (unsigned short )1997);
+	BOOST_REQUIRE_EQUAL(depth_image(479, 0), (unsigned short )1997);
+	BOOST_REQUIRE_EQUAL(depth_image(479, 639), (unsigned short ) 5154);
+	BOOST_REQUIRE(sample.isApprox(test_data::depth_00064_sample));
+//#define THIN_SLICE
+//#define CENTER_BOX
+
+#if !defined(THIN_SLICE) && !defined(CENTER_BOX)
+	eig::Vector3i offset;
+	offset << -256, -256, 480;
+
+	eig::Vector3i field_size;
+	field_size << 512, 512, 512;
+
+	eig::Tensor<float, 3> field = tsdf::generate_3d_TSDF_field_from_depth_image_EWA(
+			depth_image,
+			0.001f, //depth unit ratio
+			camera_intrinsic_matrix,
+			eig::Matrix4f::Identity(), //camera pose
+			offset,
+			field_size, //field size
+			0.004f, //voxel size
+			20 // narrow band width
+			);
+#elif defined(THIN_SLICE)
+	eig::Vector3i offset;
+	offset << -256, -256, 480;
+
+	eig::Vector3i field_size;
+	field_size << 1, 512, 512;
+
+	eig::Tensor<float, 3> field = tsdf::generate_3d_TSDF_field_from_depth_image_EWA(
+			depth_image,
+			0.001f, //depth unit ratio
+			camera_intrinsic_matrix,
+			eig::Matrix4f::Identity(), //camera pose
+			offset,
+			field_size, //field size
+			0.004f, //voxel size
+			20 // narrow band width
+			);
+#elif defined(CENTER_BOX)
+//	eig::Vector3i offset;
+//	offset << -32, -32, 684;
+//
+//	eig::Vector3i field_size;
+//	field_size << 64, 64, 64;
+//
+//	eig::Tensor<float, 3> field = tsdf::generate_3d_TSDF_field_from_depth_image_EWA(
+//			depth_image,
+//			0.001f, //depth unit ratio
+//			camera_intrinsic_matrix,
+//			eig::Matrix4f::Identity(), //camera pose
+//			offset,
+//			field_size, //field size
+//			0.004f, //voxel size
+//			20 // narrow band width
+//			);
+#endif
+
+	eig::MatrixXuc image = tsdf::generate_3d_TSDF_field_from_depth_image_EWA_viz(
+			depth_image, 0.001f, field,
+			camera_intrinsic_matrix, eig::Matrix4f::Identity(),
+			offset, 0.004f);
+
 }

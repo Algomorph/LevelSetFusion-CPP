@@ -29,7 +29,7 @@
 
 // test data
 
-#include "test_data_hierarchical_optimizer.hpp"
+#include "data/test_data_hierarchical_optimizer.hpp"
 
 // test targets
 #include "../src/math/tensors.hpp"

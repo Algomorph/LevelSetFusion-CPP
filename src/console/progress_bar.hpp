@@ -1,7 +1,7 @@
 /*
- * lsf_config.h.in
+ * progress_bar.hpp
  *
- *  Created on: Feb 5, 2019
+ *  Created on: Feb 12, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -19,9 +19,28 @@
  */
 
 #pragma once
+#include <string>
 
-#cmakedefine MODULE_NAME @MODULE_NAME@
-#cmakedefine SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
+namespace console{
 
+class ProgressBar {
 
+public:
+	ProgressBar();
+	ProgressBar(int filler_count_cap);
 
+    void update(double progress_increment);
+    void print();
+    std::string opener = "[", //beginning and end 'bracket' characters of the progress bar
+        closer = "]",
+        filler = "=",
+        bar_end_characters = "/-\\|"; //will be cycled through
+private:
+    int filler_count = 0,
+        filler_count_cap = 50,
+        bar_end_character_index = 0;
+    double current_progress = 0,
+        needed_progress = 1.0;
+};
+
+}//namespace console

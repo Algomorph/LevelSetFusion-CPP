@@ -22,6 +22,7 @@
 
 #include <Eigen/Eigen>
 #include "../src/math/tensors.hpp"
+#include "../src/math/typedefs.hpp"
 
 namespace eig = Eigen;
 
@@ -57,5 +58,13 @@ static eig::MatrixXf out_sdf_field =
 			-0.80368346f, -0.6961099f, -0.5941181f, -0.47093272f, -0.36117333f, -0.24660648f, -0.13451731f, -0.02647889f, 0.08059675f, 0.17470567f, 0.29374388f, 0.38287818f, 0.48430267f, 0.58674127f, 0.6899247f, 0.79556435f;
 			return out_sdf_field;
 		}();
+
+static eig::MatrixXus depth_00064_sample = []{
+		eig::MatrixXus depth_00064_sample(1,20);
+		depth_00064_sample << 2121, 2126, 2124, 2123, 2128, 2133, 2138, 2130, 2135, 2140, 2145,
+			       2147, 2142, 2147, 2152, 2158, 2150, 2155, 2160, 2165;
+		return depth_00064_sample;
+
+}();
 
 } //namespace test_data
