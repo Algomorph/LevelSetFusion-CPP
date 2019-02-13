@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 	BOOST_REQUIRE_EQUAL(depth_image(479, 0), (unsigned short )1997);
 	BOOST_REQUIRE_EQUAL(depth_image(479, 639), (unsigned short ) 5154);
 	BOOST_REQUIRE(sample.isApprox(test_data::depth_00064_sample));
-//#define THIN_SLICE
+#define THIN_SLICE
 //#define CENTER_BOX
 
 #if !defined(THIN_SLICE) && !defined(CENTER_BOX)
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 			);
 #elif defined(THIN_SLICE)
 	eig::Vector3i offset;
-	offset << -256, -256, 480;
+	offset << -224, -256, 480;
 
 	eig::Vector3i field_size;
 	field_size << 1, 512, 512;
@@ -155,5 +155,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 			depth_image, 0.001f, field,
 			camera_intrinsic_matrix, eig::Matrix4f::Identity(),
 			offset, 0.004f);
+
+
 
 }

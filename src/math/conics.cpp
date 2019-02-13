@@ -98,13 +98,17 @@ void draw_ellipse(eig::MatrixXuc& image, eig::Vector2f ellipse_center,
 		if(std::abs(denominator) > 10e-6){
 			float y_0_ellipse_space =  denominator / (2 * a);
 			int y_0 = int(y_0_ellipse_space + ellipse_center[1] + 0.5);
-			image(y_0,x) = 0;
+			if(y_0 >= 0 && y_0 < image.rows()){
+				image(y_0,x) = 0;
+			}
 		}
 		denominator = -b + addand;
 		if(std::abs(denominator) > 10e-6){
 			float y_1_ellipse_space =  denominator / (2 * a);
 			int y_1 = int(y_1_ellipse_space + ellipse_center[1] + 0.5);
-			image(y_1,x) = 0;
+			if(y_1 >= 0 && y_1 < image.rows()){
+				image(y_1,x) = 0;
+			}
 		}
 	}
 	for (int y = y_start; y< y_end; y++){
@@ -119,13 +123,17 @@ void draw_ellipse(eig::MatrixXuc& image, eig::Vector2f ellipse_center,
 		if(std::abs(denominator) > 10e-6){
 			float x_0_ellipse_space =  denominator / (2 * a);
 			int x_0 = int(x_0_ellipse_space + ellipse_center[0] + 0.5);
-			image(y,x_0) = 0;
+			if(x_0 >= 0 && x_0 < image.cols()){
+				image(y,x_0) = 0;
+			}
 		}
 		denominator = -b + addand;
 		if(std::abs(denominator) > 10e-6){
 			float x_1_ellipse_space =  denominator / (2 * a);
 			int x_1 = int(x_1_ellipse_space + ellipse_center[0] + 0.5);
-			image(y,x_1) = 0;
+			if(x_1 >= 0 && x_1 < image.cols()){
+				image(y,x_1) = 0;
+			}
 		}
 	}
 }

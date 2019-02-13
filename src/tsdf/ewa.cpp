@@ -21,7 +21,6 @@
 #include <limits>
 #include <iostream>
 
-
 //libraries
 #include <unsupported/Eigen/CXX11/Tensor>
 
@@ -69,7 +68,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		float voxel_size,
 		int narrow_band_width_voxels) {
 
-	eig::Tensor<float, 3> field(field_shape[0],field_shape[1],field_shape[2]);
+	eig::Tensor<float, 3> field(field_shape[0], field_shape[1], field_shape[2]);
 	std::fill_n(field.data(), field.size(), 1.0f);
 	float narrow_band_half_width = static_cast<float>(narrow_band_width_voxels / 2) * voxel_size;
 
@@ -83,10 +82,9 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 	float squared_radius_threshold = 4.0f;
 	int voxel_count = static_cast<int>(field.size());
 
-	int y_stride = field.dimension(2);
-	int x_stride = y_stride * field.dimension(1);
+	int y_stride = field.dimension(0);
+	int z_stride = y_stride * field.dimension(1);
 
-	//DEBUG: PROGRESS REPORTS
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
 	std::atomic<long> processed_voxel_count(0);
 	long report_interval = voxel_count / 100; //1% intervals
@@ -94,19 +92,32 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 	console::ProgressBar progress_bar;
 #endif
 
+	//DEBUG
+	int i_debug_element = 5208;
+	//int i_debug_element = 131097;
+	//int i_debug_element = -1;
+
 #pragma omp parallel for
-	for (int i_voxel = 0; i_voxel < voxel_count; i_voxel++) {
+	for (int i_element = 0; i_element < voxel_count; i_element++) {
 		// Any MatrixXf in Eigen is column-major
 		// i_element = x * column_count + y
-		div_t x_stride_division_result = std::div(i_voxel, x_stride);
-		int x_field = x_stride_division_result.quot;
-		div_t y_stride_division_result = std::div(x_stride_division_result.rem, y_stride);
+		div_t z_stride_division_result = std::div(i_element, z_stride);
+		int z_field = z_stride_division_result.quot;
+		div_t y_stride_division_result = std::div(z_stride_division_result.rem, y_stride);
 		int y_field = y_stride_division_result.quot;
-		int z_field = y_stride_division_result.rem;
+		int x_field = y_stride_division_result.rem;
 
 		float x_voxel = (x_field + array_offset(0)) * voxel_size;
 		float y_voxel = (y_field + array_offset(1)) * voxel_size;
 		float z_voxel = (z_field + array_offset(2)) * voxel_size;
+
+		//DEBUG
+		if (i_element == i_debug_element) {
+			std::cout << i_element << ": " << x_field << ", " << y_field << ", " << z_field
+					<< " [" << x_voxel << ", " << y_voxel << ", " << z_voxel << "]"
+					<< std::endl;
+			std::cout.flush();
+		}
 
 		eig::Vector4f voxel_world;
 		voxel_world << x_voxel, y_voxel, z_voxel, w_voxel;
@@ -148,6 +159,8 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		int y_sample_start = static_cast<int>(voxel_image(1) - bounds_max(1) + 0.5);
 		int y_sample_end = static_cast<int>(voxel_image(1) + bounds_max(1) + 1.5);
 
+
+
 		// check that at least some samples within sampling range fall within the depth image
 		if (x_sample_start > depth_image.cols() || x_sample_end <= 0
 				|| y_sample_start > depth_image.rows() || y_sample_end <= 0) {
@@ -159,6 +172,13 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		x_sample_end = std::min(static_cast<int>(depth_image.cols()), x_sample_end);
 		y_sample_start = std::max(0, y_sample_start);
 		y_sample_end = std::min(static_cast<int>(depth_image.rows()), y_sample_end);
+
+		//DEBUG
+		if (i_element == i_debug_element) {
+			std::cout << "image range x: [" << x_sample_start << ", " << x_sample_end << ") " << std::endl
+					<< "image range y: [" << y_sample_start << ", " << y_sample_end << ") " << std::endl;
+			std::cout.flush();
+		}
 
 		float weights_sum = 0.0f;
 		float depth_sum = 0.0f;
@@ -191,30 +211,42 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		}
 		float final_depth = depth_sum / weights_sum;
 
+		if (i_element == i_debug_element) {
+			std::cout << "depth_sum: " << depth_sum << ", weights_sum: " << weights_sum
+					<< ", final_depth: " << final_depth << ", samples_counted: " << samples_counted << std::endl;
+			std::cout.flush();
+		}
+
 		// signed distance from surface to voxel along camera axis
 		// TODO: try with "along ray" and compare. Newcombe et al. in KinectFusion claim there won't be a difference...
 		float signed_distance = final_depth - voxel_camera[2];
 
 		if (signed_distance < -narrow_band_half_width) {
-			field(z_field, y_field, x_field) = -1.0;
+			field(x_field, y_field, z_field) = -1.0;
 		} else if (signed_distance > narrow_band_half_width) {
-			field(z_field, y_field, x_field) = 1.0;
+			field(x_field, y_field, z_field) = 1.0;
 		} else {
-			field(z_field, y_field, x_field) = signed_distance / narrow_band_half_width;
+			field(x_field, y_field, z_field) = signed_distance / narrow_band_half_width;
 		}
-		//DEBUG: PROGRESS REPORTS
-		#ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
-			++processed_voxel_count;
-#pragma omp critical
-			if(processed_voxel_count % report_interval == 0){
-				double current_progress = static_cast<float>(processed_voxel_count) / static_cast<float>(voxel_count);
-				double progress_increment = current_progress - last_reported_progress;
-				last_reported_progress = current_progress;
-				progress_bar.update(progress_increment);
-				progress_bar.print();
-			}
+		if (i_element == i_debug_element) {
+			std::cout << "signed distance: " << signed_distance << ", final value: "
+					<< field(x_field, y_field, z_field) << std::endl;
+			std::cout.flush();
+		}
 
-		#endif
+		//DEBUG: PROGRESS REPORTS
+#ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
+		++processed_voxel_count;
+#pragma omp critical
+		if (processed_voxel_count % report_interval == 0) {
+			double current_progress = static_cast<float>(processed_voxel_count) / static_cast<float>(voxel_count);
+			double progress_increment = current_progress - last_reported_progress;
+			last_reported_progress = current_progress;
+			progress_bar.update(progress_increment);
+			progress_bar.print();
+		}
+
+#endif
 	}
 
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
@@ -406,8 +438,8 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 		float voxel_size,
 		int scale) {
 
-
-	eig::MatrixXuc output_image = eig::MatrixXuc::Constant(depth_image.rows()*scale,depth_image.cols()*scale,255);
+	eig::MatrixXuc output_image = eig::MatrixXuc::Constant(depth_image.rows() * scale, depth_image.cols() * scale, 255);
+	float tsdf_threshold = 0.1f;
 
 	float w_voxel = 1.0f;
 
@@ -419,38 +451,46 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 	float squared_radius_threshold = 4.0f;
 	int field_size = static_cast<int>(field.size());
 
-	int y_stride = field.dimension(2);
-	int x_stride = y_stride * field.dimension(1);
+	int y_stride = field.dimension(0);
+	int z_stride = y_stride * field.dimension(1);
 
 	//DEBUG
 	float closest_to_zero = std::numeric_limits<float>::max();
 
-	for (int i_element = 0; i_element < field_size; i_element++) {
-		// Any MatrixXf in Eigen is column-major
-		// i_element = x * column_count + y
-		div_t x_stride_division_result = std::div(i_element, x_stride);
-		int x_field = x_stride_division_result.quot;
-		div_t y_stride_division_result = std::div(x_stride_division_result.rem, y_stride);
-		int y_field = y_stride_division_result.quot;
-		int z_field = y_stride_division_result.rem;
 
-		float tsdf_value = field(x_field,y_field,x_field);
+
+	int i_debug_element = 5208;
+	//int i_debug_element = 2666528;
+	//int i_debug_element = -1;
+
+	for (int i_element = 0; i_element < field_size; i_element++) {
+
+		div_t z_stride_division_result = std::div(i_element, z_stride);
+		int z_field = z_stride_division_result.quot;
+		div_t y_stride_division_result = std::div(z_stride_division_result.rem, y_stride);
+		int y_field = y_stride_division_result.quot;
+		int x_field = y_stride_division_result.rem;
+
+		float tsdf_value = field(x_field, y_field, z_field);
 
 		//DEBUG
 		//std::cout << i_element << ": "   << x_field << ", " << y_field << ", " << z_field  << std::endl;
-		//if(i_element == 266){
-		if(i_element == 6684697){
+		if(i_element == i_debug_element){
 			float x_voxel = (x_field + array_offset(0)) * voxel_size;
 			float y_voxel = (y_field + array_offset(1)) * voxel_size;
 			float z_voxel = (z_field + array_offset(2)) * voxel_size;
-			std::cout << i_element << ": "   << x_field << ", " << y_field << ", " << z_field << " [" << x_voxel << ", " << y_voxel << ", " << z_voxel  <<"]" << std::endl;
+			std::cout << "(VIZ) " << i_element << ": "   << x_field << ", " << y_field << ", " << z_field
+					<< " [" << x_voxel << ", " << y_voxel << ", " << z_voxel  <<"]"
+					<< "; TSDF value: " << tsdf_value
+					<< std::endl;
 			std::cout.flush();
 		}
 
-		if(tsdf_value <= -1.0f || tsdf_value >= 1.0f) continue;
+		if (std::abs(tsdf_value) > tsdf_threshold)
+			continue;
 
 		//DEBUG
-		if(std::abs(tsdf_value) < closest_to_zero){
+		if (std::abs(tsdf_value) < closest_to_zero) {
 			closest_to_zero = std::abs(tsdf_value);
 		}
 
@@ -490,11 +530,10 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 	}
 
 	//DEBUG
-	std::cout <<"Closest to zero:" << std::endl;
+	std::cout << "Closest to zero:" << std::endl;
 	std::cout << closest_to_zero << std::endl;
 
 	return output_image;
 }
-
 
 } // namespace tsdf
