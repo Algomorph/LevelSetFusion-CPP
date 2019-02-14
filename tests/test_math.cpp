@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(gradient_test04) {
 	math::MatrixXv2f gradient;
 	math::scalar_field_gradient(field, gradient);
 
-	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal(gradient, expected_gradient, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(gradient_test05) {
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(gradient_test05) {
 	math::MatrixXv2f gradient;
 	math::scalar_field_gradient(field, gradient);
 
-	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal(gradient, expected_gradient, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(gradient_test06) {
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(gradient_test06) {
 
 	math::MatrixXv2f expected_gradient = math::stack_as_xv2f(test_data::expected_gradient_x,
 			test_data::expected_gradient_y);
-	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal(gradient, expected_gradient, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
@@ -154,13 +154,13 @@ BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
 	expected_gradient << math::Matrix2f(1.0f, -1.0f, -1.0f, 1.0f), math::Matrix2f(1.0f, 0.0f, -1.0f, 2.0f),
 			math::Matrix2f(2.0f, -1.0f, 0.0f, 1.0f), math::Matrix2f(2.0f, 0.0f, 0.0f, 2.0f);
 
-	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal(gradient, expected_gradient, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(vector_field_gradient_test02) {
 	math::MatrixXm2f gradient;
 	math::vector_field_gradient(test_data::vector_field, gradient);
-	BOOST_REQUIRE(math::almost_equal(gradient, test_data::vector_field_gradient, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal(gradient, test_data::vector_field_gradient, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(convolution_test01) {
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(convolution_test01) {
 	field << 85.f, 168.f, 99.f, 124.f, 228.f, 132.f, 67.f, 120.f, 69.f;
 	math::MatrixXv2f expected_output = math::stack_as_xv2f(field, field);
 	math::convolve_with_kernel_preserve_zeros(vector_field, kernel);
-	BOOST_REQUIRE(math::almost_equal(vector_field, vector_field, 1e-10));
+	BOOST_REQUIRE(math::matrix_almost_equal(vector_field, vector_field, 1e-10));
 }
 
 BOOST_AUTO_TEST_CASE(convolution_test02) {
@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE(convolution_test02) {
 			math::Vector2f(-0.13971105f, -0.2855439f);
 
 	math::convolve_with_kernel_preserve_zeros(vector_field, kernel);
-	BOOST_REQUIRE(math::almost_equal(vector_field, expected_output, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal(vector_field, expected_output, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(convolution_test03) {
@@ -277,7 +277,7 @@ BOOST_AUTO_TEST_CASE(convolution_test03) {
 
 	math::convolve_with_kernel_y(vector_field, kernel);
 
-	BOOST_REQUIRE(math::almost_equal_verbose(vector_field, expected_output, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(vector_field, expected_output, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(convolution_test04) {
@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE(convolution_test04) {
 
 	math::convolve_with_kernel_x(vector_field, kernel);
 
-	BOOST_REQUIRE(math::almost_equal(vector_field, expected_output, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal(vector_field, expected_output, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(max_norm_test01) {

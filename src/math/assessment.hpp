@@ -22,6 +22,7 @@
 
 //stdlib
 #include <cmath>
+#include <string>
 #include <iostream>
 
 //libraries
@@ -29,7 +30,7 @@
 
 namespace math {
 template<typename TMatrix>
-bool almost_equal(TMatrix matrix_a, TMatrix matrix_b, double tolerance = 1e-10) {
+bool matrix_almost_equal(TMatrix matrix_a, TMatrix matrix_b, double tolerance = 1e-10) {
 	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.rows()) {
 		return false;
 	}
@@ -42,7 +43,7 @@ bool almost_equal(TMatrix matrix_a, TMatrix matrix_b, double tolerance = 1e-10) 
 }
 
 template<typename TMatrix>
-bool almost_equal_verbose(TMatrix matrix_a, TMatrix matrix_b, double tolerance = 1e-10) {
+bool matrix_almost_equal_verbose(TMatrix matrix_a, TMatrix matrix_b, double tolerance = 1e-10) {
 	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.rows()) {
 		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.cols() << " columns by " << matrix_a.rows()
 				<< " rows, Matrix b: " << matrix_b.cols() << " columns by " << matrix_b.rows() << " rows."
@@ -64,7 +65,7 @@ bool almost_equal_verbose(TMatrix matrix_a, TMatrix matrix_b, double tolerance =
 }
 
 template<>
-bool almost_equal_verbose<Eigen::MatrixXf>(Eigen::MatrixXf matrix_a, Eigen::MatrixXf matrix_b, double tolerance){
+bool matrix_almost_equal_verbose<Eigen::MatrixXf>(Eigen::MatrixXf matrix_a, Eigen::MatrixXf matrix_b, double tolerance){
 	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.rows()) {
 		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.cols() << " columns by " << matrix_a.rows()
 				<< " rows, Matrix b: " << matrix_b.cols() << " columns by " << matrix_b.rows() << " rows."
@@ -84,5 +85,20 @@ bool almost_equal_verbose<Eigen::MatrixXf>(Eigen::MatrixXf matrix_a, Eigen::Matr
 	}
 	return true;
 }
+
+////TODO Tensor almost equal
+//template<typename TEigenContainer>
+//bool almost_equal_verbose(TEigenContainer container_a, TEigenContainer container_b,
+//		const std::function <bool (TEigenContainer container_a, TEigenContainer container_b)>& compare_dimensions,
+//		const std::function <bool (typename TEigenContainer::Scalar container_a, typename TEigenContainer::Scalar container_b)>& compare_elements,
+//		const std::function <void (TEigenContainer container_a, Eigen::Index index)>& print_local_error,
+//		){
+//	compare_dimensions(container_a, container_b);
+//	for (Eigen::Index index = 0; index < container_a.size(); index++){
+//		if(!compare_elements(container_a(index),container_b(index))){
+//			print_local_error(container_a,index);
+//		}
+//	}
+//}
 
 } //namespace math

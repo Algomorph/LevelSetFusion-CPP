@@ -140,7 +140,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 
 		// Resampling filter combines the covariance matrices of the
 		// warped prefilter (remapped_covariance) and reconstruction filter (identity) of by adding them.
-		//TODO: why is the conic matrix not the inverse of the combined covariances?
+		//TODO: This something around here is fishy
 		eig::Matrix2f final_covariance = remapped_covariance.block(0, 0, 2, 2) + eig::Matrix2f::Identity();
 		eig::Matrix2f ellipse_matrix = final_covariance.inverse();
 
@@ -171,7 +171,8 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		float weights_sum = 0.0f;
 		float depth_sum = 0.0f;
 
-		int samples_counted = 0;
+		//DEBUG
+		//int samples_counted = 0;
 
 		// collect sample readings
 		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
@@ -192,14 +193,12 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 				}
 				depth_sum += weight * surface_depth;
 				weights_sum += weight;
-				samples_counted++;
+				//samples_counted++;
 			}
 		}
 		if (depth_sum <= 0.0) {
 			continue;
 		}
-
-
 
 		float final_depth = depth_sum / weights_sum;
 
@@ -235,8 +234,6 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 //				}
 //			}
 		}
-
-
 
 		//DEBUG: PROGRESS REPORTS
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
