@@ -20,10 +20,22 @@
 namespace eig = Eigen;
 
 namespace nonrigid_optimization{
-    inline bool is_outside_narrow_band_tolerance(float live_tsdf_value, float canonical_tsdf_value, float tolerance = 10e-6f){
-        return (1.0f - std::abs(live_tsdf_value) < tolerance && 1.0f - std::abs(canonical_tsdf_value) < tolerance);
+
+	/**
+	 * @param tsdf_value_a
+	 * @param tsdf_value_b
+	 * @param tolerance
+	 * @return whether both SDF values is within tolerance of the truncation thresholds -1.0f and 1.0f
+	 */
+    inline bool are_both_SDF_values_truncated_tolerance(float tsdf_value_a, float tsdf_value_b, float tolerance = 10e-6f){
+        return (1.0f - std::abs(tsdf_value_a) < tolerance && 1.0f - std::abs(tsdf_value_b) < tolerance);
     }
-    inline bool is_outside_narrow_band(float live_tsdf_value, float canonical_tsdf_value){
-    	return std::abs(live_tsdf_value) == 1.0 && std::abs(canonical_tsdf_value) == 1.0;
+    /**
+     * @param tsdf_value_a
+     * @param tsdf_value_b
+     * @return whether both SDF values have absolute value of 1.0f
+     */
+    inline bool are_both_SDF_values_truncated(float tsdf_value_a, float tsdf_value_b){
+    	return std::abs(tsdf_value_a) == 1.0 && std::abs(tsdf_value_b) == 1.0;
     }
 }// namespace boolean_ops

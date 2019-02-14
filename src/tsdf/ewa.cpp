@@ -16,6 +16,8 @@
 
 //standard library
 #include <algorithm>
+#include <atomic>
+#include <cfloat>
 
 //DEBUG
 #include <limits>
@@ -30,11 +32,11 @@
 #include "../math/conics.hpp"
 
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
-//stdlib
-#include <atomic>
 //local
 #include "../console/progress_bar.hpp"
 #endif
+
+//TODO: clean out statements & commented code marked as //DEBUG after this is fully fixed
 
 namespace tsdf {
 
@@ -93,9 +95,10 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 #endif
 
 	//DEBUG
-	int i_debug_element = 5208;
-	//int i_debug_element = 131097;
-	//int i_debug_element = -1;
+//	std::atomic<long> sampled_voxel_count(0);
+//	std::atomic<long long> total_pixels_sampled(0.0);
+//	std::atomic<int> max_voxel_samples(0);
+//	std::atomic<int> min_voxel_samples(std::numeric_limits<int>::max());
 
 #pragma omp parallel for
 	for (int i_element = 0; i_element < voxel_count; i_element++) {
@@ -110,14 +113,6 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		float x_voxel = (x_field + array_offset(0)) * voxel_size;
 		float y_voxel = (y_field + array_offset(1)) * voxel_size;
 		float z_voxel = (z_field + array_offset(2)) * voxel_size;
-
-		//DEBUG
-		if (i_element == i_debug_element) {
-			std::cout << i_element << ": " << x_field << ", " << y_field << ", " << z_field
-					<< " [" << x_voxel << ", " << y_voxel << ", " << z_voxel << "]"
-					<< std::endl;
-			std::cout.flush();
-		}
 
 		eig::Vector4f voxel_world;
 		voxel_world << x_voxel, y_voxel, z_voxel, w_voxel;
@@ -146,7 +141,8 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		// Resampling filter combines the covariance matrices of the
 		// warped prefilter (remapped_covariance) and reconstruction filter (identity) of by adding them.
 		//TODO: why is the conic matrix not the inverse of the combined covariances?
-		eig::Matrix2f ellipse_matrix = remapped_covariance.block(0, 0, 2, 2) + eig::Matrix2f::Identity();
+		eig::Matrix2f final_covariance = remapped_covariance.block(0, 0, 2, 2) + eig::Matrix2f::Identity();
+		eig::Matrix2f ellipse_matrix = final_covariance.inverse();
 
 		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
 
@@ -154,12 +150,11 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 				squared_radius_threshold);
 
 		// compute sampling bounds
-		int x_sample_start = static_cast<int>(voxel_image(0) - bounds_max(0) + 0.5);
-		int x_sample_end = static_cast<int>(voxel_image(0) + bounds_max(0) + 1.5);
-		int y_sample_start = static_cast<int>(voxel_image(1) - bounds_max(1) + 0.5);
-		int y_sample_end = static_cast<int>(voxel_image(1) + bounds_max(1) + 1.5);
-
-
+		//TODO: change to conservative bounds
+		int x_sample_start = static_cast<int>(voxel_image(0) - bounds_max(0) + 0.5f);
+		int x_sample_end = static_cast<int>(voxel_image(0) + bounds_max(0) + 1.5f);
+		int y_sample_start = static_cast<int>(voxel_image(1) - bounds_max(1) + 0.5f);
+		int y_sample_end = static_cast<int>(voxel_image(1) + bounds_max(1) + 1.5f);
 
 		// check that at least some samples within sampling range fall within the depth image
 		if (x_sample_start > depth_image.cols() || x_sample_end <= 0
@@ -172,13 +167,6 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		x_sample_end = std::min(static_cast<int>(depth_image.cols()), x_sample_end);
 		y_sample_start = std::max(0, y_sample_start);
 		y_sample_end = std::min(static_cast<int>(depth_image.rows()), y_sample_end);
-
-		//DEBUG
-		if (i_element == i_debug_element) {
-			std::cout << "image range x: [" << x_sample_start << ", " << x_sample_end << ") " << std::endl
-					<< "image range y: [" << y_sample_start << ", " << y_sample_end << ") " << std::endl;
-			std::cout.flush();
-		}
 
 		float weights_sum = 0.0f;
 		float depth_sum = 0.0f;
@@ -193,6 +181,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 						static_cast<float>(x_sample) - voxel_image(0),
 						static_cast<float>(y_sample) - voxel_image(1);
 				float dist_sq = sample_centered.transpose() * ellipse_matrix * sample_centered;
+				//potential speedup
 				if (dist_sq > squared_radius_threshold) {
 					continue;
 				}
@@ -209,13 +198,10 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		if (depth_sum <= 0.0) {
 			continue;
 		}
-		float final_depth = depth_sum / weights_sum;
 
-		if (i_element == i_debug_element) {
-			std::cout << "depth_sum: " << depth_sum << ", weights_sum: " << weights_sum
-					<< ", final_depth: " << final_depth << ", samples_counted: " << samples_counted << std::endl;
-			std::cout.flush();
-		}
+
+
+		float final_depth = depth_sum / weights_sum;
 
 		// signed distance from surface to voxel along camera axis
 		// TODO: try with "along ray" and compare. Newcombe et al. in KinectFusion claim there won't be a difference...
@@ -226,13 +212,31 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		} else if (signed_distance > narrow_band_half_width) {
 			field(x_field, y_field, z_field) = 1.0;
 		} else {
-			field(x_field, y_field, z_field) = signed_distance / narrow_band_half_width;
+			float tsdf_value = signed_distance / narrow_band_half_width;
+			field(x_field, y_field, z_field) = tsdf_value;
+
+			//DEBUG
+//			if(std::abs(tsdf_value) < 0.1 ){
+//				sampled_voxel_count++;
+//				total_pixels_sampled.fetch_add(samples_counted);
+//				int prev_value = max_voxel_samples;
+//				while (prev_value < samples_counted && !max_voxel_samples.compare_exchange_weak(prev_value, samples_counted))
+//					;
+//				prev_value = min_voxel_samples;
+//				while (prev_value > samples_counted && !min_voxel_samples.compare_exchange_weak(prev_value, samples_counted))
+//					;
+//
+//				if (samples_counted == 14) {
+//					std::cout << "(EWA) " << i_element << ": " << x_field << ", " << y_field << ", " << z_field
+//							<< " [" << x_voxel << ", " << y_voxel << ", " << z_voxel << "]" << "; ranges x, y: ["
+//							<< x_sample_start << ", " << x_sample_end << ") , [" << y_sample_start << ", " << y_sample_end << ");"
+//							<< " voxel_image: " << voxel_image << "; TSDF value: " << tsdf_value
+//							<< "; bounds: " << bounds_max << std::endl;
+//				}
+//			}
 		}
-		if (i_element == i_debug_element) {
-			std::cout << "signed distance: " << signed_distance << ", final value: "
-					<< field(x_field, y_field, z_field) << std::endl;
-			std::cout.flush();
-		}
+
+
 
 		//DEBUG: PROGRESS REPORTS
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
@@ -245,9 +249,15 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 			progress_bar.update(progress_increment);
 			progress_bar.print();
 		}
-
 #endif
 	}
+
+	//DEBUG
+//	std::cout << "[EWA STATISTICS]" << std::endl;
+//	std::cout << "Average samples per voxel: " << static_cast<double>(total_pixels_sampled)
+//			/ static_cast<double>(sampled_voxel_count) << std::endl;
+//	std::cout << "Minimum samples per voxel: " << min_voxel_samples << std::endl;
+//	std::cout << "Maximum samples per voxel: " << max_voxel_samples << std::endl;
 
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
 	std::cout << std::endl;
@@ -436,10 +446,10 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 		const eig::Matrix4f& camera_pose,
 		const eig::Vector3i& array_offset,
 		float voxel_size,
-		int scale) {
+		int scale,
+		float tsdf_threshold) {
 
 	eig::MatrixXuc output_image = eig::MatrixXuc::Constant(depth_image.rows() * scale, depth_image.cols() * scale, 255);
-	float tsdf_threshold = 0.1f;
 
 	float w_voxel = 1.0f;
 
@@ -456,12 +466,17 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 
 	//DEBUG
 	float closest_to_zero = std::numeric_limits<float>::max();
+	long total_truncated = 0;
+	long total_nontruncated = 0;
 
-
-
-	int i_debug_element = 5208;
+	//DEBUG
+	//int i_debug_element = 27918551;
 	//int i_debug_element = 2666528;
 	//int i_debug_element = -1;
+
+	//DEBUG
+//	float smallest_ellipse_size = std::numeric_limits<float>::max();
+//	float largest_ellipse_size = 0.0f;
 
 	for (int i_element = 0; i_element < field_size; i_element++) {
 
@@ -474,23 +489,18 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 		float tsdf_value = field(x_field, y_field, z_field);
 
 		//DEBUG
-		//std::cout << i_element << ": "   << x_field << ", " << y_field << ", " << z_field  << std::endl;
-		if(i_element == i_debug_element){
-			float x_voxel = (x_field + array_offset(0)) * voxel_size;
-			float y_voxel = (y_field + array_offset(1)) * voxel_size;
-			float z_voxel = (z_field + array_offset(2)) * voxel_size;
-			std::cout << "(VIZ) " << i_element << ": "   << x_field << ", " << y_field << ", " << z_field
-					<< " [" << x_voxel << ", " << y_voxel << ", " << z_voxel  <<"]"
-					<< "; TSDF value: " << tsdf_value
-					<< std::endl;
-			std::cout.flush();
+		float abs_tsdf_value = std::abs(tsdf_value);
+		if (std::abs(abs_tsdf_value - 1.0f) < FLT_EPSILON){
+			total_truncated++;
+		}else{
+			total_nontruncated++;
 		}
 
-		if (std::abs(tsdf_value) > tsdf_threshold)
+		if (abs_tsdf_value > tsdf_threshold)
 			continue;
 
 		//DEBUG
-		if (std::abs(tsdf_value) < closest_to_zero) {
+		if (abs_tsdf_value < closest_to_zero) {
 			closest_to_zero = std::abs(tsdf_value);
 		}
 
@@ -522,16 +532,48 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 		// Resampling filter combines the covariance matrices of the
 		// warped prefilter (remapped_covariance) and reconstruction filter (identity) of by adding them.
 		//TODO: why is the conic matrix not the inverse of the combined covariances?
-		eig::Matrix2f ellipse_matrix = remapped_covariance.block(0, 0, 2, 2) + eig::Matrix2f::Identity();
+		eig::Matrix2f final_covariance = remapped_covariance.block(0, 0, 2, 2) + eig::Matrix2f::Identity();
+		eig::Matrix2f ellipse_matrix = final_covariance.inverse();
+
+//		float ellipse_size = ellipse_matrix(0, 0) * ellipse_matrix(1, 1)
+//				- (ellipse_matrix(0, 1) * (ellipse_matrix(0, 1)));
+//
+//		//DEBUG
+//		if (ellipse_size > largest_ellipse_size) {
+//			largest_ellipse_size = ellipse_size;
+//		}
+//		if (ellipse_size < smallest_ellipse_size) {
+//			smallest_ellipse_size = ellipse_size;
+//		}
 
 		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
-		math::draw_ellipse(output_image, voxel_image * scale, ellipse_matrix, squared_radius_threshold * scale);
+
+		//DEBUG
+//		if(i_element == i_debug_element){
+//				float x_voxel = (x_field + array_offset(0)) * voxel_size;
+//				float y_voxel = (y_field + array_offset(1)) * voxel_size;
+//				float z_voxel = (z_field + array_offset(2)) * voxel_size;
+//				std::cout << "(VIZ) " << i_element << ": " << x_field << ", " << y_field << ", " << z_field
+//						<< " [" << x_voxel << ", " << y_voxel << ", " << z_voxel << "]"
+//						<< "; TSDF value: " << tsdf_value << "; voxel_image: " << voxel_image
+//						<< std::endl;
+//				std::cout.flush();
+//			math::draw_ellipse(output_image, voxel_image * scale, ellipse_matrix,
+//								squared_radius_threshold * scale*scale /* ellipse_size*/, true);
+//		}else{
+			math::draw_ellipse(output_image, voxel_image * scale, ellipse_matrix,
+					squared_radius_threshold * scale*scale /* ellipse_size*/);
+		//DEBUG
+//		}
 
 	}
 
 	//DEBUG
-	std::cout << "Closest to zero:" << std::endl;
-	std::cout << closest_to_zero << std::endl;
+	std::cout << "Closest TSDF value to zero: " << closest_to_zero /*<< ", smallest ellipse F: "
+			<< smallest_ellipse_size << ", largest ellipse F: " << largest_ellipse_size*/
+			<< "; Truncated SDF values: " << static_cast<double>(total_truncated) /
+			static_cast<double>(total_truncated + total_nontruncated) * 100.0 << "%"
+			<< std::endl;
 
 	return output_image;
 }

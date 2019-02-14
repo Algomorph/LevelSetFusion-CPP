@@ -350,9 +350,13 @@ add_test(NAME slavcheva_optimizer COMMAND test_slavcheva_optimizer)
 add_test(NAME hierarchical_optimizer COMMAND test_hierarchical_optimizer)
 
 # copy test data
+file(GLOB PNG_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/*.png") 
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_data")
-configure_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/tests/data/depth_00064.png" 
-	"${CMAKE_CURRENT_BINARY_DIR}/test_data/depth_00064.png" 
-	COPYONLY
-)
+foreach(PNG_DATA_FILE ${PNG_DATA_FILES})
+	get_filename_component(FILENAME ${PNG_DATA_FILE} NAME)
+	configure_file(
+		${PNG_DATA_FILE} 
+		"${CMAKE_CURRENT_BINARY_DIR}/test_data/${FILENAME}" 
+		COPYONLY
+	)
+endforeach(PNG_DATA_FILE) 

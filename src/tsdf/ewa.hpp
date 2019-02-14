@@ -61,6 +61,7 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 		const eig::Vector3i& array_offset =
 				[] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
 		float voxel_size = 0.004,
-		int scale=20);
+		int scale=20,
+		float tsdf_threshold = 0.1f);
 
 } // namespace tsdf

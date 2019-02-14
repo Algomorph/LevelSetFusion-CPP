@@ -71,6 +71,8 @@ void export_ewa() {
 
 	bp::def("generate_3d_tsdf_field_from_depth_image_ewa_viz", &tsdf::generate_3d_TSDF_field_from_depth_image_EWA_viz,
 			"Draw a visualization of voxel sampling over image space using Elliptical Weighed Average resampling approach."
+			"To limit the density, only ellipses corresponding to voxels with abs(TSDF value) below the given truncation "
+			"threshold will be drawn."
 			"See generate_3d_TSDF_field_from_depth_image_EWA() for method description. "
 			"Draws the projected ellipses corresponding to 1 standard deviation away from each voxel sampling center.",
 			bp::args("depth_image",
@@ -80,7 +82,8 @@ void export_ewa() {
 					"camera_pose",
 					"array_offset",
 					"voxel_size",
-					"scale"));
+					"scale",
+					"tsdf_threshold"));
 }
 
 } //namespace python_export

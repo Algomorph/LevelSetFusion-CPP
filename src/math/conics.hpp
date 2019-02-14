@@ -36,7 +36,8 @@ namespace math{
 
 eig::Vector2f compute_centered_ellipse_bound_points(const eig::Matrix2f& ellipse_matrix, float ellipse_scale);
 void draw_ellipse(eig::MatrixXuc& image, eig::Vector2f center,
-		const eig::Matrix2f& ellipse_matrix, float ellipse_scale);
+		//DEBUG -- verbose
+		const eig::Matrix2f& ellipse_matrix, float ellipse_scale, bool verbose = false);
 }//namespace math
 
 

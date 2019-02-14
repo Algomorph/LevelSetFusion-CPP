@@ -37,7 +37,7 @@ void compute_tikhonov_regularization_gradient_aux(math::MatrixXv2f& gradient, fl
 	math::Vector2<float> some_vector(1.0f,3.0f);
 
 	auto is_truncated = [&](eig::Index i_row, eig::Index i_col) {
-		return TSkipTruncated && is_outside_narrow_band((*live_field)(i_row, i_col), (*canonical_field)(i_row, i_col));
+		return TSkipTruncated && are_both_SDF_values_truncated((*live_field)(i_row, i_col), (*canonical_field)(i_row, i_col));
 	};
 
 #pragma omp parallel for reduction(+:energy)
