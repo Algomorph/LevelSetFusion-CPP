@@ -81,6 +81,8 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 	eig::Matrix3f covariance_camera_space =
 			camera_rotation_matrix * covariance_voxel_sphere_world_space * camera_rotation_matrix.transpose();
 
+	eig::Matrix2f image_space_scaling_matrix = camera_intrinsic_matrix.block(0, 0, 2, 2);
+
 	float squared_radius_threshold = 4.0f;
 	int voxel_count = static_cast<int>(field.size());
 
@@ -141,7 +143,10 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		// Resampling filter combines the covariance matrices of the
 		// warped prefilter (remapped_covariance) and reconstruction filter (identity) of by adding them.
 		//TODO: This something around here is fishy
-		eig::Matrix2f final_covariance = remapped_covariance.block(0, 0, 2, 2) + eig::Matrix2f::Identity();
+		eig::Matrix2f final_covariance =
+				image_space_scaling_matrix * remapped_covariance.block(0, 0, 2, 2)
+						* image_space_scaling_matrix.transpose()
+						+ eig::Matrix2f::Identity();
 		eig::Matrix2f ellipse_matrix = final_covariance.inverse();
 
 		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
@@ -309,6 +314,8 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 	float squared_radius_threshold = 4.0f;
 	int matrix_size = static_cast<int>(field.size());
 
+	eig::Matrix2f image_space_scaling_matrix = camera_intrinsic_matrix.block(0, 0, 2, 2);
+
 #pragma omp parallel for
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		// Any MatrixXf in Eigen is column-major
@@ -344,7 +351,8 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		// Resampling filter combines the covariance matrices of the
 		// warped prefilter (remapped_covariance) and reconstruction filter (identity) of by adding them.
 		//TODO: why is the conic matrix not the inverse of the combined covariances?
-		eig::Matrix2f ellipse_matrix = remapped_covariance.block(0, 0, 2, 2) + eig::Matrix2f::Identity();
+		eig::Matrix2f ellipse_matrix = image_space_scaling_matrix * remapped_covariance.block(0, 0, 2, 2)
+				* image_space_scaling_matrix.transpose() + eig::Matrix2f::Identity();
 
 		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
 		voxel_image(1) = image_y_coordinate;
@@ -466,6 +474,7 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 	long total_truncated = 0;
 	long total_nontruncated = 0;
 
+	eig::Matrix2f image_space_scaling_matrix = camera_intrinsic_matrix.block(0, 0, 2, 2);
 	//DEBUG
 	//int i_debug_element = 27918551;
 	//int i_debug_element = 2666528;
@@ -487,9 +496,9 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 
 		//DEBUG
 		float abs_tsdf_value = std::abs(tsdf_value);
-		if (std::abs(abs_tsdf_value - 1.0f) < FLT_EPSILON){
+		if (std::abs(abs_tsdf_value - 1.0f) < FLT_EPSILON) {
 			total_truncated++;
-		}else{
+		} else {
 			total_nontruncated++;
 		}
 
@@ -529,7 +538,8 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 		// Resampling filter combines the covariance matrices of the
 		// warped prefilter (remapped_covariance) and reconstruction filter (identity) of by adding them.
 		//TODO: why is the conic matrix not the inverse of the combined covariances?
-		eig::Matrix2f final_covariance = remapped_covariance.block(0, 0, 2, 2) + eig::Matrix2f::Identity();
+		eig::Matrix2f final_covariance = image_space_scaling_matrix * remapped_covariance.block(0, 0, 2, 2) *
+				image_space_scaling_matrix.transpose() + eig::Matrix2f::Identity();
 		eig::Matrix2f ellipse_matrix = final_covariance.inverse();
 
 //		float ellipse_size = ellipse_matrix(0, 0) * ellipse_matrix(1, 1)
@@ -558,8 +568,8 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 //			math::draw_ellipse(output_image, voxel_image * scale, ellipse_matrix,
 //								squared_radius_threshold * scale*scale /* ellipse_size*/, true);
 //		}else{
-			math::draw_ellipse(output_image, voxel_image * scale, ellipse_matrix,
-					squared_radius_threshold * scale*scale /* ellipse_size*/);
+		math::draw_ellipse(output_image, voxel_image * scale, ellipse_matrix,
+				squared_radius_threshold * scale * scale /* ellipse_size*/);
 		//DEBUG
 //		}
 
@@ -567,8 +577,8 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 
 	//DEBUG
 	std::cout << "Closest TSDF value to zero: " << closest_to_zero /*<< ", smallest ellipse F: "
-			<< smallest_ellipse_size << ", largest ellipse F: " << largest_ellipse_size*/
-			<< "; Truncated SDF values: " << static_cast<double>(total_truncated) /
+	 << smallest_ellipse_size << ", largest ellipse F: " << largest_ellipse_size*/
+	<< "; Truncated SDF values: " << static_cast<double>(total_truncated) /
 			static_cast<double>(total_truncated + total_nontruncated) * 100.0 << "%"
 			<< std::endl;
 
