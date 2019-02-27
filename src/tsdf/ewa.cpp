@@ -135,7 +135,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 //	std::atomic<int> max_voxel_samples(0);
 //	std::atomic<int> min_voxel_samples(std::numeric_limits<int>::max());
 
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int i_element = 0; i_element < voxel_count; i_element++) {
 		// Any MatrixXf in Eigen is column-major
 		// i_element = x * column_count + y
@@ -208,7 +208,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 						static_cast<float>(x_sample) - voxel_image(0),
 						static_cast<float>(y_sample) - voxel_image(1);
 				float dist_sq = sample_centered.transpose() * ellipse_matrix * sample_centered;
-				//potential speedup
+				//TODO: potential speedup -- remove check
 				if (dist_sq > squared_radius_threshold) {
 					continue;
 				}

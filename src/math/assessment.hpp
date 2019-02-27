@@ -90,50 +90,100 @@ bool matrix_almost_equal_verbose<Eigen::MatrixXf>(Eigen::MatrixXf matrix_a, Eige
 	return true;
 }
 
-//TODO Tensor almost equal
-template<typename TEigenContainer>
-bool almost_equal_verbose(TEigenContainer container_a, TEigenContainer container_b,
-		const std::function<bool(TEigenContainer container_a, TEigenContainer container_b)>& compare_dimensions,
-		const std::function<bool(typename TEigenContainer::Scalar element_a,
-				typename TEigenContainer::Scalar element_b, double tolerance)>& compare_elements,
-		const std::function<void(TEigenContainer container_a, TEigenContainer container_b, Eigen::Index index)>& print_local_error,
+template<typename TEigenContainer, typename LambdaCompareDimensions, typename LambdaCompareElements,
+		typename LambdaPrintLocalError>
+bool almost_equal(TEigenContainer container_a, TEigenContainer container_b,
+		LambdaCompareDimensions&& compare_dimensions,
+		LambdaCompareElements&& compare_elements,
+		LambdaPrintLocalError&& print_local_error,
 		double tolerance
 		) {
-	compare_dimensions(container_a, container_b);
+	std::forward<LambdaCompareDimensions>(compare_dimensions)(container_a, container_b);
 	for (Eigen::Index index = 0; index < container_a.size(); index++) {
-		if (!compare_elements(container_a(index), container_b(index))) {
-			print_local_error(container_a, container_b, index);
+		if (!std::forward<LambdaCompareElements>(compare_elements)(container_a(index), container_b(index), tolerance)) {
+			std::forward<LambdaPrintLocalError>(print_local_error)(container_a, container_b, index);
 			return false;
 		}
 	}
 	return true;
 }
 
-typedef Eigen::Tensor<float, 3> ten3;
+typedef Eigen::Tensor<float, 3> TenF3;
 
-//TODO: break up into generic, regular, and nested
-template<typename TTensor>
-bool tensor_almost_equal_verbose(TTensor container_a, TTensor container_b) {
-	return almost_equal_verbose<TTensor>(container_a, container_b,
+template<typename TTensor, typename LambdaCompareElements, typename LambdaPrintLocalError>
+bool tensor_almost_equal_generic_elements_generic_reporting(TTensor container_a, TTensor container_b,
+		LambdaCompareElements&& compare_elements, LambdaPrintLocalError&& print_local_error,
+		double tolerance) {
+	return almost_equal(container_a, container_b,
 			[](TTensor container_a, TTensor container_b)-> bool {
-				for (int i_dim = 0; i_dim < TTensor::NumDimensions; i_dim++){
-					if(container_a.dimension(i_dim) != container_b.dimension(i_dim)){
+				for (int i_dim = 0; i_dim < TTensor::NumDimensions; i_dim++) {
+					if(container_a.dimension(i_dim) != container_b.dimension(i_dim)) {
 						std::cout << "Tensor dimension " << i_dim << " (0-based) doesn't match. Tensor a dimension: "
-								<< container_a.dimension(i_dim) << ". Corresponding tensor b dimension: " <<
-								container_b.dimension(i_dim) << std::endl;
+						<< container_a.dimension(i_dim) << ". Corresponding tensor b dimension: " <<
+						container_b.dimension(i_dim) << std::endl;
 						return false;
 					}
 				}
 				return true;
 			},
-			[](typename TTensor::Scalar element_a, typename TTensor::Scalar element_b, double tolerance)-> bool {
-				return static_cast<double>(std::abs(element_a - element_b)) < tolerance;
-			},
+			compare_elements,
+			print_local_error,
+			tolerance
+			);
+}
+
+template<typename TTensor>
+inline std::vector<int> unravel_index(TTensor container, Eigen::Index index) {
+	std::vector<int> unraveled_index;
+	long remainder = static_cast<long>(index);
+	for (int i_dimension = 0; i_dimension < TTensor::NumDimensions; i_dimension++) {
+		int dimension = container.dimension(i_dimension);
+		long new_remainder = remainder / dimension;
+		unraveled_index.push_back(remainder % dimension);
+		remainder = new_remainder;
+	}
+	return unraveled_index;
+}
+
+template<typename TTensor, typename LambdaCompareElements>
+bool tensor_almost_equal_verbose_generic_elements(TTensor container_a, TTensor container_b,
+		LambdaCompareElements&& compare_elements, double tolerance) {
+	return tensor_almost_equal_generic_elements_generic_reporting(
+			container_a, container_b, compare_elements,
 			[](TTensor container_a, TTensor container_b, Eigen::Index index) -> void {
+				std::vector<int> unraveled_index = unravel_index(container_a, index);
+				std::cout << "Tensor elements do not match. First mismatch at linear index " << unraveled_index[0];
+				for (size_t ix_index = 1; ix_index < unraveled_index.size(); ix_index++) {
+					std::cout << ", " << unraveled_index[ix_index];
+				}
+				std::cout << ". Values: " << container_a(index) << " vs. " << container_b(index);
+			},
+			tolerance);
+}
 
-			}
+template<typename TTensor, typename LambdaCompareElements>
+bool tensor_almost_equal_silent_generic_elements(TTensor container_a, TTensor container_b,
+		LambdaCompareElements&& compare_elements, double tolerance) {
+	return tensor_almost_equal_generic_elements_generic_reporting(container_a, container_b,
+			[](TTensor container_a, TTensor container_b, Eigen::Index index) -> void {
+			},
+			tolerance);
+}
 
-	);
+template<typename TTensor>
+bool tensor_almost_equal_verbose(TTensor container_a, TTensor container_b, double tolerance) {
+	return tensor_almost_equal_verbose_generic_elements(container_a, container_b,
+			[](typename TTensor::Scalar element_a, typename TTensor::Scalar element_b, double tolerance)-> bool {
+				return std::abs(static_cast<double>(element_a) - static_cast<double>(element_b)) < tolerance;
+			}, tolerance);
+}
+
+template<typename TTensor>
+bool tensor_almost_equal(TTensor container_a, TTensor container_b, double tolerance) {
+	return tensor_almost_equal_silent_generic_elements(container_a, container_b,
+			[](typename TTensor::Scalar element_a, typename TTensor::Scalar element_b, double tolerance)-> bool {
+				return std::abs(static_cast<double>(element_a) - static_cast<double>(element_b)) < tolerance;
+			}, tolerance);
 }
 
 } //namespace math
