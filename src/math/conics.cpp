@@ -55,9 +55,8 @@ eig::Vector2f compute_centered_ellipse_bound_points(const eig::Matrix2f& ellipse
 		bounds_max << std::sqrt(F / A), std::sqrt(F / C);
 	} else {
 		float B_squared = B * B;
-		float C_squared = C * C;
 		bounds_max <<
-				std::sqrt(F / ((4 * A * C_squared) / B_squared - C)),
+				std::sqrt(F / (C - B_squared / (4 * A))),
 				std::sqrt(F / (A - B_squared / (4 * C)));
 	}
 	return bounds_max;

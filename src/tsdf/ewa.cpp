@@ -40,6 +40,42 @@
 
 namespace tsdf {
 
+static inline eig::Matrix3f compute_covariance_camera_space(float voxel_size, const eig::Matrix4f& camera_pose) {
+	eig::Matrix3f camera_rotation_matrix = camera_pose.block(0, 0, 3, 3);
+	eig::Matrix3f covariance_voxel_sphere_world_space = eig::Matrix3f::Identity() * voxel_size; // / 2;
+	eig::Matrix3f covariance_camera_space =
+			camera_rotation_matrix * covariance_voxel_sphere_world_space * camera_rotation_matrix.transpose();
+	return covariance_camera_space;
+}
+
+static inline bool compute_sampling_bounds(
+		int& x_sample_start,
+		int& x_sample_end,
+		int& y_sample_start,
+		int& y_sample_end,
+		const eig::Vector2f& bounds_max,
+		const eig::Vector2f& voxel_image,
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image) {
+	// compute sampling bounds
+	x_sample_start = static_cast<int>(voxel_image(0) - bounds_max(0));
+	x_sample_end = static_cast<int>(std::ceil(voxel_image(0) + bounds_max(0) + 1.0f));
+	y_sample_start = static_cast<int>(voxel_image(1) - bounds_max(1));
+	y_sample_end = static_cast<int>(std::ceil(voxel_image(1) + bounds_max(1) + 1.0f));
+
+	// check that at least some samples within sampling range fall within the depth image
+	if (x_sample_start > depth_image.cols() || x_sample_end <= 0
+			|| y_sample_start > depth_image.rows() || y_sample_end <= 0) {
+		return false;
+	}
+
+	// limit sampling bounds to image bounds
+	x_sample_start = std::max(0, x_sample_start);
+	x_sample_end = std::min(static_cast<int>(depth_image.cols()), x_sample_end);
+	y_sample_start = std::max(0, y_sample_start);
+	y_sample_end = std::min(static_cast<int>(depth_image.rows()), y_sample_end);
+	return true;
+}
+
 /**
  * Generate a 3D TSDF field from the provided depth image using Elliptical Weighed Average resampling approach.
  * A 3D Gaussian (standard deviation of 1 voxel) around every voxel is projected onto the depth image, the resulting
@@ -76,14 +112,11 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 
 	float w_voxel = 1.0f;
 
-	eig::Matrix3f camera_rotation_matrix = camera_pose.block(0, 0, 3, 3);
-	eig::Matrix3f covariance_voxel_sphere_world_space = eig::Matrix3f::Identity() * voxel_size;
-	eig::Matrix3f covariance_camera_space =
-			camera_rotation_matrix * covariance_voxel_sphere_world_space * camera_rotation_matrix.transpose();
+	eig::Matrix3f covariance_camera_space = compute_covariance_camera_space(voxel_size, camera_pose);
 
 	eig::Matrix2f image_space_scaling_matrix = camera_intrinsic_matrix.block(0, 0, 2, 2);
 
-	float squared_radius_threshold = 4.0f;
+	float squared_radius_threshold = 4.0f * voxel_size; //4.0f * (voxel_size / 2);
 	int voxel_count = static_cast<int>(field.size());
 
 	int y_stride = field.dimension(0);
@@ -155,29 +188,17 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 				squared_radius_threshold);
 
 		// compute sampling bounds
-		//TODO: change to conservative bounds
-		int x_sample_start = static_cast<int>(voxel_image(0) - bounds_max(0) + 0.5f);
-		int x_sample_end = static_cast<int>(voxel_image(0) + bounds_max(0) + 1.5f);
-		int y_sample_start = static_cast<int>(voxel_image(1) - bounds_max(1) + 0.5f);
-		int y_sample_end = static_cast<int>(voxel_image(1) + bounds_max(1) + 1.5f);
-
-		// check that at least some samples within sampling range fall within the depth image
-		if (x_sample_start > depth_image.cols() || x_sample_end <= 0
-				|| y_sample_start > depth_image.rows() || y_sample_end <= 0) {
+		int x_sample_start, x_sample_end, y_sample_start, y_sample_end;
+		if (!compute_sampling_bounds(x_sample_start, x_sample_end, y_sample_start, y_sample_end,
+				bounds_max, voxel_image, depth_image)) {
 			continue;
 		}
 
-		// limit sampling bounds to image bounds
-		x_sample_start = std::max(0, x_sample_start);
-		x_sample_end = std::min(static_cast<int>(depth_image.cols()), x_sample_end);
-		y_sample_start = std::max(0, y_sample_start);
-		y_sample_end = std::min(static_cast<int>(depth_image.rows()), y_sample_end);
-
 		float weights_sum = 0.0f;
 		float depth_sum = 0.0f;
-
-		//DEBUG
-		//int samples_counted = 0;
+//
+//		//DEBUG
+//		int samples_counted = 0;
 
 		// collect sample readings
 		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
@@ -220,14 +241,16 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 			field(x_field, y_field, z_field) = tsdf_value;
 
 			//DEBUG
-//			if(std::abs(tsdf_value) < 0.1 ){
+//			if (std::abs(tsdf_value) < 0.1) {
 //				sampled_voxel_count++;
 //				total_pixels_sampled.fetch_add(samples_counted);
 //				int prev_value = max_voxel_samples;
-//				while (prev_value < samples_counted && !max_voxel_samples.compare_exchange_weak(prev_value, samples_counted))
+//				while (prev_value < samples_counted
+//						&& !max_voxel_samples.compare_exchange_weak(prev_value, samples_counted))
 //					;
 //				prev_value = min_voxel_samples;
-//				while (prev_value > samples_counted && !min_voxel_samples.compare_exchange_weak(prev_value, samples_counted))
+//				while (prev_value > samples_counted
+//						&& !min_voxel_samples.compare_exchange_weak(prev_value, samples_counted))
 //					;
 //
 //				if (samples_counted == 14) {
@@ -301,17 +324,15 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		float voxel_size,
 		int narrow_band_width_voxels) {
 	eig::MatrixXf field(field_size, field_size);
+	std::fill_n(field.data(), field.size(), 1.0f);
 	float narrow_band_half_width = static_cast<float>(narrow_band_width_voxels / 2) * voxel_size;
 
 	float w_voxel = 1.0f;
 	float y_voxel = 0.0f;
 
-	eig::Matrix3f camera_rotation_matrix = camera_pose.block(0, 0, 3, 3);
-	eig::Matrix3f covariance_voxel_sphere_world_space = eig::Matrix3f::Identity() * voxel_size;
-	eig::Matrix3f covariance_camera_space =
-			camera_rotation_matrix * covariance_voxel_sphere_world_space * camera_rotation_matrix.transpose();
+	eig::Matrix3f covariance_camera_space = compute_covariance_camera_space(voxel_size, camera_pose);
 
-	float squared_radius_threshold = 4.0f;
+	float squared_radius_threshold = 4.0f * voxel_size; //4.0f * (voxel_size / 2);
 	int matrix_size = static_cast<int>(field.size());
 
 	eig::Matrix2f image_space_scaling_matrix = camera_intrinsic_matrix.block(0, 0, 2, 2);
@@ -350,9 +371,9 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 
 		// Resampling filter combines the covariance matrices of the
 		// warped prefilter (remapped_covariance) and reconstruction filter (identity) of by adding them.
-		//TODO: why is the conic matrix not the inverse of the combined covariances?
-		eig::Matrix2f ellipse_matrix = image_space_scaling_matrix * remapped_covariance.block(0, 0, 2, 2)
-				* image_space_scaling_matrix.transpose() + eig::Matrix2f::Identity();
+		eig::Matrix2f final_covariance = image_space_scaling_matrix * remapped_covariance.block(0, 0, 2, 2)
+						* image_space_scaling_matrix.transpose() + eig::Matrix2f::Identity();
+		eig::Matrix2f ellipse_matrix = final_covariance.inverse();
 
 		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
 		voxel_image(1) = image_y_coordinate;
@@ -361,23 +382,11 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 				squared_radius_threshold);
 
 		// compute sampling bounds
-		int x_sample_start = static_cast<int>(voxel_image(0) - bounds_max(0) + 0.5);
-		int x_sample_end = static_cast<int>(voxel_image(0) + bounds_max(0) + 1.5);
-		int y_sample_start = static_cast<int>(voxel_image(1) - bounds_max(1) + 0.5);
-		int y_sample_end = static_cast<int>(voxel_image(1) + bounds_max(1) + 1.5);
-
-		// check that at least some samples within sampling range fall within the depth image
-		if (x_sample_start > depth_image.cols() || x_sample_end <= 0
-				|| y_sample_start > depth_image.rows() || y_sample_end <= 0) {
+		int x_sample_start, x_sample_end, y_sample_start, y_sample_end;
+		if (!compute_sampling_bounds(x_sample_start, x_sample_end, y_sample_start, y_sample_end,
+				bounds_max, voxel_image, depth_image)) {
 			continue;
 		}
-
-		// limit sampling bounds to image bounds
-		x_sample_start = std::max(0, x_sample_start);
-		x_sample_end = std::min(static_cast<int>(depth_image.cols()), x_sample_end);
-		y_sample_start = std::max(0, y_sample_start);
-		y_sample_end = std::min(static_cast<int>(depth_image.rows()), y_sample_end);
-
 		float weights_sum = 0.0f;
 		float depth_sum = 0.0f;
 
@@ -458,12 +467,9 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 
 	float w_voxel = 1.0f;
 
-	eig::Matrix3f camera_rotation_matrix = camera_pose.block(0, 0, 3, 3);
-	eig::Matrix3f covariance_voxel_sphere_world_space = eig::Matrix3f::Identity() * voxel_size;
-	eig::Matrix3f covariance_camera_space =
-			camera_rotation_matrix * covariance_voxel_sphere_world_space * camera_rotation_matrix.transpose();
+	eig::Matrix3f covariance_camera_space = compute_covariance_camera_space(voxel_size, camera_pose);
 
-	float squared_radius_threshold = 4.0f;
+	float squared_radius_threshold = 2.0f * voxel_size; //4.0f * (voxel_size / 2);
 	int field_size = static_cast<int>(field.size());
 
 	int y_stride = field.dimension(0);
@@ -576,11 +582,11 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 	}
 
 	//DEBUG
-	std::cout << "Closest TSDF value to zero: " << closest_to_zero /*<< ", smallest ellipse F: "
-	 << smallest_ellipse_size << ", largest ellipse F: " << largest_ellipse_size*/
-	<< "; Truncated SDF values: " << static_cast<double>(total_truncated) /
-			static_cast<double>(total_truncated + total_nontruncated) * 100.0 << "%"
-			<< std::endl;
+//	std::cout << "Closest TSDF value to zero: " << closest_to_zero /*<< ", smallest ellipse F: "
+//	 << smallest_ellipse_size << ", largest ellipse F: " << largest_ellipse_size*/
+//	<< "; Truncated SDF values: " << static_cast<double>(total_truncated) /
+//			static_cast<double>(total_truncated + total_nontruncated) * 100.0 << "%"
+//			<< std::endl;
 
 	return output_image;
 }

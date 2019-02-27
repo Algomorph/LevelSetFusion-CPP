@@ -39,6 +39,34 @@
 
 namespace eig = Eigen;
 
+
+static inline bool read_image_helper(eig::MatrixXus& depth_image, std::string filename){
+	std::string full_path = "test_data/" + filename;
+	bool image_read = imageio::png::read_GRAY16( full_path.c_str(), depth_image);
+	if (!image_read) {
+		//are we running from the project root dir, maybe?
+		std::string full_path = "tests/data/" + filename;
+		image_read = imageio::png::read_GRAY16(full_path.c_str(), depth_image);
+	}
+	return image_read;
+}
+
+
+//TODO: move image testing to it's own test suite
+BOOST_AUTO_TEST_CASE(test_image_read01) {
+	eig::MatrixXus depth_image;
+	bool image_read = read_image_helper(depth_image, "zigzag_depth_00064.png");
+	BOOST_REQUIRE(image_read);
+	BOOST_REQUIRE_EQUAL(depth_image.rows(), 480);
+	BOOST_REQUIRE_EQUAL(depth_image.cols(), 640);
+	BOOST_REQUIRE_EQUAL(depth_image(0, 0), (unsigned short )1997);
+	BOOST_REQUIRE_EQUAL(depth_image(479, 0), (unsigned short )1997);
+	BOOST_REQUIRE_EQUAL(depth_image(479, 639), (unsigned short ) 5154);
+	eig::MatrixXus sample = depth_image.block(40, 60, 1, 20);
+	BOOST_REQUIRE(sample.isApprox(test_data::depth_00064_sample));
+
+}
+
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 
 	eig::MatrixXus depth_image = eig::MatrixXus::Constant(3, 640, USHRT_MAX);
@@ -64,48 +92,46 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 			20 // narrow band width
 			);
 
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field, test_data::out_sdf_field, 3e-5));
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field, test_data::out_sdf_field, 1e-6));
 }
 
-//TODO: move image testing to it's own test suite
-BOOST_AUTO_TEST_CASE(test_image_read01) {
-#define PNG_FILENAME "zigzag_depth_00064.png"
+BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 	eig::MatrixXus depth_image;
-	bool image_read = imageio::png::read_GRAY16("test_data/" PNG_FILENAME, depth_image);
-	if (!image_read) {
-		//are we running from the project root dir, maybe?
-		image_read = imageio::png::read_GRAY16("tests/data/" PNG_FILENAME, depth_image);
-	}
-#undef PNG_FILENAME
+	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
-	BOOST_REQUIRE_EQUAL(depth_image.rows(), 480);
-	BOOST_REQUIRE_EQUAL(depth_image.cols(), 640);
-	BOOST_REQUIRE_EQUAL(depth_image(0, 0), (unsigned short )1997);
-	BOOST_REQUIRE_EQUAL(depth_image(479, 0), (unsigned short )1997);
-	BOOST_REQUIRE_EQUAL(depth_image(479, 639), (unsigned short ) 5154);
-	eig::MatrixXus sample = depth_image.block(40, 60, 1, 20);
-	BOOST_REQUIRE(sample.isApprox(test_data::depth_00064_sample));
+	eig::Matrix3f camera_intrinsic_matrix;
+	camera_intrinsic_matrix <<
+			700.0f, 0.0f, 320.0f,
+			0.0f, 700.0f, 240.0f,
+			0.0f, 0.0f, 1.0f;
+	eig::Vector3i offset;
+	offset << -256, -256, 0;
 
+	eig::MatrixXf field = tsdf::generate_2d_TSDF_field_from_depth_image_EWA(
+			1, // y coord
+			depth_image,
+			0.001f, //depth unit ratio
+			camera_intrinsic_matrix,
+			eig::Matrix4f::Identity(), //camera pose
+			offset,
+			512, //field size
+			0.004f, //voxel size
+			20 // narrow band width
+			);
+
+	//BOOST_REQUIRE(math::matrix_almost_equal_verbose(field, test_data::out_sdf_field, 3e-5));
 }
+
 
 BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 	eig::MatrixXus depth_image;
-#define PNG_FILENAME "zigzag2_depth_00108.png"
-//#define PNG_FILENAME "zigzag_depth_00064.png"
-	bool image_read = imageio::png::read_GRAY16("test_data/" PNG_FILENAME, depth_image);
-	if (!image_read) {
-		//are we running from the project root dir, maybe?
-		image_read = imageio::png::read_GRAY16("tests/data/" PNG_FILENAME, depth_image);
-	}
-#undef PNG_FILENAME
+	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
 
 	eig::Vector3i offset;
-	//offset << -32, -32, 0; //zigzag-64
 	offset << -46, -8, 105; //zigzag2-108
 
 	eig::Vector3i field_size;
-	//field_size << 64, 64, 64; //zigzag-64
 	field_size << 16, 1, 16; //zigzag2-108
 
 	eig::Matrix3f camera_intrinsic_matrix;
@@ -124,6 +150,8 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 			0.004f, //voxel size
 			20 // narrow band width
 			);
+
+
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
@@ -136,14 +164,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
 
 	eig::MatrixXus depth_image;
 
-#define PNG_FILENAME "zigzag2_depth_00108.png"
-//#define PNG_FILENAME "zigzag_depth_00064.png"
-	bool image_read = imageio::png::read_GRAY16("test_data/" PNG_FILENAME, depth_image);
-	if (!image_read) {
-		//are we running from the project root dir, maybe?
-		image_read = imageio::png::read_GRAY16("tests/data/" PNG_FILENAME, depth_image);
-	}
-#undef PNG_FILENAME
+	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 
 	BOOST_REQUIRE(image_read);
 
@@ -205,11 +226,5 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
 			);
 #endif
 
-	//std::cout << field << std::endl;
-
-	eig::MatrixXuc image = tsdf::generate_3d_TSDF_field_from_depth_image_EWA_viz(
-			depth_image, 0.001f, field,
-			camera_intrinsic_matrix, eig::Matrix4f::Identity(),
-			offset, 0.004f);
 
 }
