@@ -39,10 +39,9 @@
 
 namespace eig = Eigen;
 
-
-static inline bool read_image_helper(eig::MatrixXus& depth_image, std::string filename){
+static inline bool read_image_helper(eig::MatrixXus& depth_image, std::string filename) {
 	std::string full_path = "test_data/" + filename;
-	bool image_read = imageio::png::read_GRAY16( full_path.c_str(), depth_image);
+	bool image_read = imageio::png::read_GRAY16(full_path.c_str(), depth_image);
 	if (!image_read) {
 		//are we running from the project root dir, maybe?
 		std::string full_path = "tests/data/" + filename;
@@ -50,7 +49,6 @@ static inline bool read_image_helper(eig::MatrixXus& depth_image, std::string fi
 	}
 	return image_read;
 }
-
 
 //TODO: move image testing to it's own test suite
 BOOST_AUTO_TEST_CASE(test_image_read01) {
@@ -99,6 +97,8 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 	eig::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
+	bool test_full_image = false;
+
 	eig::Matrix3f camera_intrinsic_matrix;
 	camera_intrinsic_matrix <<
 			700.0f, 0.0f, 320.0f,
@@ -106,24 +106,43 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 			0.0f, 0.0f, 1.0f;
 	eig::Vector3i offset;
 	offset << -256, -256, 0;
+	int chunk_x_start = 210, chunk_y_start = 103;
+	int chunk_size = 16;
+	eig::Vector3i offset_chunk_from_image;
+	offset_chunk_from_image << chunk_x_start, 0.0f, chunk_y_start;
+	eig::Vector3i offset_chunk = offset + offset_chunk_from_image;
 
-	eig::MatrixXf field = tsdf::generate_2d_TSDF_field_from_depth_image_EWA(
-			200, // y coord
-			depth_image,
-			0.001f, //depth unit ratio
-			camera_intrinsic_matrix,
-			eig::Matrix4f::Identity(), //camera pose
-			offset,
-			512, //field size
-			0.004f, //voxel size
-			20 // narrow band width
-			);
+	eig::MatrixXf field_chunk;
+	if (test_full_image) {
+		eig::MatrixXf field = tsdf::generate_2d_TSDF_field_from_depth_image_EWA(
+				200, // y coord
+				depth_image,
+				0.001f, //depth unit ratio
+				camera_intrinsic_matrix,
+				eig::Matrix4f::Identity(), //camera pose
+				offset,
+				512, //field size
+				0.004f, //voxel size
+				20 // narrow band width
+				);
 
-	eig::MatrixXf field_chunk = field.block(103,210,16,16);
+		field_chunk = field.block(103, 210, 16, 16);
+	}else{
+		field_chunk = tsdf::generate_2d_TSDF_field_from_depth_image_EWA(
+				200, // y coord
+				depth_image,
+				0.001f, //depth unit ratio
+				camera_intrinsic_matrix,
+				eig::Matrix4f::Identity(), //camera pose
+				offset_chunk,
+				chunk_size, //field size
+				0.004f, //voxel size
+				20 // narrow band width
+				);
+	}
 
 	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6));
 }
-
 
 BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 	eig::MatrixXus depth_image;
@@ -153,5 +172,5 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 			20 // narrow band width
 			);
 
-	BOOST_REQUIRE(math::tensor_almost_equal_verbose(field, test_data::TSDF_slice01 , 1e-6));
+	BOOST_REQUIRE(math::tensor_almost_equal_verbose(field, test_data::TSDF_slice01, 1e-6));
 }

@@ -19,10 +19,6 @@
 #include <atomic>
 #include <cfloat>
 
-//DEBUG
-#include <limits>
-#include <iostream>
-
 //libraries
 #include <unsupported/Eigen/CXX11/Tensor>
 
@@ -31,7 +27,6 @@
 #include "ewa.hpp"
 #include "ewa_common.hpp"
 #include "../math/conics.hpp"
-
 
 namespace tsdf {
 
@@ -116,7 +111,7 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		// Resampling filter combines the covariance matrices of the
 		// warped prefilter (remapped_covariance) and reconstruction filter (identity) of by adding them.
 		eig::Matrix2f final_covariance = image_space_scaling_matrix * remapped_covariance.block(0, 0, 2, 2)
-						* image_space_scaling_matrix.transpose() + eig::Matrix2f::Identity();
+				* image_space_scaling_matrix.transpose() + eig::Matrix2f::Identity();
 		eig::Matrix2f ellipse_matrix = final_covariance.inverse();
 
 		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
@@ -133,8 +128,6 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		}
 		float weights_sum = 0.0f;
 		float depth_sum = 0.0f;
-
-		int samples_counted = 0;
 
 		// collect sample readings
 		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
@@ -154,9 +147,9 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 				}
 				depth_sum += weight * surface_depth;
 				weights_sum += weight;
-				samples_counted++;
 			}
 		}
+
 		if (depth_sum <= 0.0) {
 			continue;
 		}
