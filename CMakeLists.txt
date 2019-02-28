@@ -240,7 +240,10 @@ add_library(${MODULE_NAME} SHARED
 			src/math/vector2.hpp
 			src/math/vector3.hpp
 			
-			src/tsdf/ewa.cpp
+			src/tsdf/ewa_2d.cpp
+			src/tsdf/ewa_3d.cpp
+			src/tsdf/ewa_3d_viz.cpp
+			src/tsdf/ewa_common.hpp
 			src/tsdf/ewa.hpp
 			
 			src/imageio/stb_image.h
