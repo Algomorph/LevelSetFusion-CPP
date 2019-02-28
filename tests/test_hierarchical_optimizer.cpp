@@ -29,7 +29,7 @@
 
 // test data
 
-#include "test_data_hierarchical_optimizer.hpp"
+#include "data/test_data_hierarchical_optimizer.hpp"
 
 // test targets
 #include "../src/math/tensors.hpp"
@@ -144,6 +144,6 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 	math::MatrixXv2f warp_field_out = optimizer.optimize(canonical_field, live_field);
 	eig::MatrixXf final_live_resampled = nropt::resample_field(live_field,warp_field_out);
 
-	BOOST_REQUIRE(math::almost_equal_verbose(warp_field_out,warp_field,10e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field_out,warp_field,10e-6));
 	BOOST_REQUIRE(final_live_resampled.isApprox(final_live_field));
 }

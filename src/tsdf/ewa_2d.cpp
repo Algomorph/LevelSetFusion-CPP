@@ -14,44 +14,21 @@
 //  limitations under the License.
 //  ================================================================
 
+//standard library
+#include <algorithm>
+#include <atomic>
+#include <cfloat>
+
+//libraries
+#include <unsupported/Eigen/CXX11/Tensor>
+
 //local
+#include <lsf_config.h>
 #include "ewa.hpp"
+#include "ewa_common.hpp"
 #include "../math/conics.hpp"
 
 namespace tsdf {
-
-/**
- * Generate a 3D TSDF field from the provided depth image using Elliptical Weighed Average resampling approach.
- * A 3D Gaussian (standard deviation of 1 voxel) around every voxel is projected onto the depth image, the resulting
- * projection is convolved with a 2D Gaussian (standard deviation of 1 pixel), the resulting gaussian is used
- * as a weighted-average filter to sample from the depth image.
- * For details on EWA methods, refer to [1] and [2].
- * [1] P. S. Heckbert, “Fundamentals of Texture Mapping and Image Warping,” Jun. 1989.
- * [2] M. Zwicker, H. Pfister, J. Van Baar, and M. Gross, “EWA volume splatting,” in Visualization, 2001.
- *     VIS’01. Proceedings, 2001, pp. 29–538.
- * @param depth_image a 2D field of unsigned shorts, where every entry represents surface distance along the camera optical axis
- * @param depth_unit_ratio factor needed to convert depth values to meters, i.e. 0.001 for depth values with 1mm increments
- * @param camera_intrinsic_matrix intrinsic matrix of the camera, sometimes denoted as K (see Wikipedia for more info)
- * @param camera_pose camera extrinsic matrix (relative to world origin) / pose as a 4x4 matrix, which includes both
- * rotation matrix and translational components
- * @param array_offset offset of the minimum corner of the resulting SDF field from the world origin
- * @param field_size field's side length, in voxels
- * @param voxel_size size of every (2D) voxel's (edge) in meters
- * @param narrow_band_width_voxels width of the narrow band containing values in (-1.,1.0), or non-truncated values
- * @return resulting 2D square TSDF field
- */
-//eig::MatrixXf generate_3d_TSDF_field_from_depth_image_EWA(
-//		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
-//		float depth_unit_ratio,
-//		const eig::Matrix3f& camera_intrinsic_matrix,
-//		const eig::Matrix4f& camera_pose = eig::Matrix4f::Identity(4,4),
-//		const eig::Vector3i& array_offset =
-//				[] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
-//		int field_size = 128,
-//		float voxel_size = 0.004,
-//		int narrow_band_width_voxels = 20){
-//
-//}
 
 /**
  * Generate a square 2D TSDF field from a single row of the provided depth image using Elliptical Weighed Average
@@ -86,20 +63,20 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		float voxel_size,
 		int narrow_band_width_voxels) {
 	eig::MatrixXf field(field_size, field_size);
+	std::fill_n(field.data(), field.size(), 1.0f);
 	float narrow_band_half_width = static_cast<float>(narrow_band_width_voxels / 2) * voxel_size;
 
 	float w_voxel = 1.0f;
 	float y_voxel = 0.0f;
 
-	eig::Matrix3f camera_rotation_matrix = camera_pose.block(0, 0, 3, 3);
-	eig::Matrix3f covariance_voxel_sphere_world_space = eig::Matrix3f::Identity() * voxel_size;
-	eig::Matrix3f covariance_camera_space =
-			camera_rotation_matrix * covariance_voxel_sphere_world_space * camera_rotation_matrix.transpose();
+	eig::Matrix3f covariance_camera_space = compute_covariance_camera_space(voxel_size, camera_pose);
 
-	float squared_radius_threshold = 4.0f;
+	float squared_radius_threshold = 4.0f * voxel_size; //4.0f * (voxel_size / 2);
 	int matrix_size = static_cast<int>(field.size());
 
-//#pragma omp parallel for
+	eig::Matrix2f image_space_scaling_matrix = camera_intrinsic_matrix.block(0, 0, 2, 2);
+
+#pragma omp parallel for
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		// Any MatrixXf in Eigen is column-major
 		// i_element = x * column_count + y
@@ -133,8 +110,9 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 
 		// Resampling filter combines the covariance matrices of the
 		// warped prefilter (remapped_covariance) and reconstruction filter (identity) of by adding them.
-		//TODO: why is the conic matrix not the inverse of the combined covariances?
-		eig::Matrix2f ellipse_matrix = remapped_covariance.block(0, 0, 2, 2) + eig::Matrix2f::Identity();
+		eig::Matrix2f final_covariance = image_space_scaling_matrix * remapped_covariance.block(0, 0, 2, 2)
+				* image_space_scaling_matrix.transpose() + eig::Matrix2f::Identity();
+		eig::Matrix2f ellipse_matrix = final_covariance.inverse();
 
 		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
 		voxel_image(1) = image_y_coordinate;
@@ -143,32 +121,17 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 				squared_radius_threshold);
 
 		// compute sampling bounds
-		int x_sample_start = static_cast<int>(voxel_image(0) - bounds_max(0) + 0.5);
-		int x_sample_end = static_cast<int>(voxel_image(0) + bounds_max(0) + 1.5);
-		int y_sample_start = static_cast<int>(voxel_image(1) - bounds_max(1) + 0.5);
-		int y_sample_end = static_cast<int>(voxel_image(1) + bounds_max(1) + 1.5);
-
-		// check that at least some samples within sampling range fall within the depth image
-		if (x_sample_start > depth_image.cols() || x_sample_end <= 0
-				|| y_sample_start > depth_image.rows() || y_sample_end <= 0) {
+		int x_sample_start, x_sample_end, y_sample_start, y_sample_end;
+		if (!compute_sampling_bounds(x_sample_start, x_sample_end, y_sample_start, y_sample_end,
+				bounds_max, voxel_image, depth_image)) {
 			continue;
 		}
-
-		// limit sampling bounds to image bounds
-		x_sample_start = std::max(0, x_sample_start);
-		x_sample_end = std::min(static_cast<int>(depth_image.cols()), x_sample_end);
-		y_sample_start = std::max(0, y_sample_start);
-		y_sample_end = std::min(static_cast<int>(depth_image.rows()), y_sample_end);
-
 		float weights_sum = 0.0f;
 		float depth_sum = 0.0f;
 
-		int samples_counted = 0;
-
 		// collect sample readings
-		//TODO: change loop order back
-		for (int y_sample = y_sample_start; y_sample < y_sample_end; y_sample++) {
-			for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
+		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
+			for (int y_sample = y_sample_start; y_sample < y_sample_end; y_sample++) {
 				eig::Vector2f sample_centered;
 				sample_centered <<
 						static_cast<float>(x_sample) - voxel_image(0),
@@ -184,9 +147,9 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 				}
 				depth_sum += weight * surface_depth;
 				weights_sum += weight;
-				samples_counted++;
 			}
 		}
+
 		if (depth_sum <= 0.0) {
 			continue;
 		}

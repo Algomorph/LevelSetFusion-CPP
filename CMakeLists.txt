@@ -161,8 +161,12 @@ if(NOT Boost_FOUND)
 endif()
 
 # *** Everything else
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 3.3.4 REQUIRED)
 find_package(OpenMP REQUIRED)
+#=================== DEBUG & VERBOSITY OPTIONS =========================================================================
+
+option(SDF_GENERATION_CONSOLE_PROGRESS_REPORTS "SDF generation will print completion to stdout at fixed progress intervals." OFF)
+
 #=================== HEADER CONFIGURATION ==============================================================================
 
 configure_file(include/lsf_config.h.in include/lsf_config.h @ONLY)
@@ -236,9 +240,21 @@ add_library(${MODULE_NAME} SHARED
 			src/math/vector2.hpp
 			src/math/vector3.hpp
 			
+			src/tsdf/ewa_2d.cpp
+			src/tsdf/ewa_3d.cpp
+			src/tsdf/ewa_3d_viz.cpp
+			src/tsdf/ewa_common.hpp
+			src/tsdf/ewa.hpp
 			
-			src/tsdf/ewa.cpp
-			src/tsdf/ewa.hpp)
+			src/imageio/stb_image.h
+			src/imageio/stb_image_write.h
+			src/imageio/imageio_stb_image.hpp
+			src/imageio/imageio_stb_image.cpp
+			src/imageio/png_eigen.hpp
+			src/imageio/png_eigen.cpp
+			
+			src/console/progress_bar.cpp
+			src/console/progress_bar.hpp)
 
 target_link_libraries(${MODULE_NAME}
         PUBLIC
@@ -307,19 +323,19 @@ enable_testing()
 
 add_executable(test_tsdf 
 	tests/test_tsdf.cpp 
-	tests/test_data_tsdf.hpp
+	tests/data/test_data_tsdf.hpp
 )
 add_executable(test_math 
 	tests/test_math.cpp 
-	tests/test_data_math.hpp
+	tests/data/test_data_math.hpp
 )
 add_executable(test_slavcheva_optimizer 
 	tests/test_slavcheva_optimizer.cpp 
-	tests/test_data_slavcheva_optimizer.hpp
+	tests/data/test_data_slavcheva_optimizer.hpp
 )
 add_executable(test_hierarchical_optimizer 
 	tests/test_hierarchical_optimizer.cpp
-	tests/test_data_hierarchical_optimizer.hpp
+	tests/data/test_data_hierarchical_optimizer.hpp
 )
 
 target_link_libraries(test_tsdf ${MODULE_NAME} ${Boost_LIBRARIES})
@@ -335,3 +351,15 @@ add_test(NAME tsdf COMMAND test_tsdf)
 add_test(NAME math COMMAND test_math)
 add_test(NAME slavcheva_optimizer COMMAND test_slavcheva_optimizer)
 add_test(NAME hierarchical_optimizer COMMAND test_hierarchical_optimizer)
+
+# copy test data
+file(GLOB PNG_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/*.png") 
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_data")
+foreach(PNG_DATA_FILE ${PNG_DATA_FILES})
+	get_filename_component(FILENAME ${PNG_DATA_FILE} NAME)
+	configure_file(
+		${PNG_DATA_FILE} 
+		"${CMAKE_CURRENT_BINARY_DIR}/test_data/${FILENAME}" 
+		COPYONLY
+	)
+endforeach(PNG_DATA_FILE) 

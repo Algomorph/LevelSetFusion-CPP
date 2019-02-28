@@ -22,6 +22,8 @@
 //standard library
 #include <cmath>
 #include <cfloat>
+//DEBUG
+#include <iostream>
 
 //local
 #include "conics.hpp"
@@ -53,12 +55,96 @@ eig::Vector2f compute_centered_ellipse_bound_points(const eig::Matrix2f& ellipse
 		bounds_max << std::sqrt(F / A), std::sqrt(F / C);
 	} else {
 		float B_squared = B * B;
-		float C_squared = C * C;
 		bounds_max <<
-				std::sqrt(F / ((4 * A * C_squared) / B_squared - C)),
+				std::sqrt(F / (C - B_squared / (4 * A))),
 				std::sqrt(F / (A - B_squared / (4 * C)));
 	}
 	return bounds_max;
+}
+
+
+
+
+void draw_ellipse(eig::MatrixXuc& image, eig::Vector2f ellipse_center,
+		const eig::Matrix2f& ellipse_matrix, float ellipse_scale, bool verbose){
+	eig::Vector2f bounds_max = compute_centered_ellipse_bound_points(ellipse_matrix, ellipse_scale);
+
+	//DEBUG
+	if(verbose){
+		std::cout << "bounds: " << bounds_max << std::endl;
+	}
+	// compute bounds
+	int x_start = static_cast<int>(ellipse_center(0) - bounds_max(0) + 0.5);
+	int x_end = static_cast<int>(ellipse_center(0) + bounds_max(0) + 1.5);
+	int y_start = static_cast<int>(ellipse_center(1) - bounds_max(1) + 0.5);
+	int y_end = static_cast<int>(ellipse_center(1) + bounds_max(1) + 1.5);
+
+	// check that at least some samples within sampling range fall within the depth image
+	if (x_start > image.cols() || x_end <= 0
+			|| y_start > image.rows() || y_end <= 0) {
+		return;
+	}
+
+	// limit sampling bounds to image bounds
+	x_start = std::max(0, x_start);
+	x_end = std::min(static_cast<int>(image.cols()), x_end);
+	y_start = std::max(0, y_start);
+	y_end = std::min(static_cast<int>(image.rows()), y_end);
+
+	float A = ellipse_matrix(0, 0);
+	float B = ellipse_matrix(0, 1) * 2;
+	float C = ellipse_matrix(1, 1);
+	float F = ellipse_scale;
+	for (int x = x_start; x < x_end; x++){
+		float x_ellipse_space = static_cast<float>(x) - ellipse_center[0];
+		float a = C;
+		float b = B * x_ellipse_space;
+		float c = A * x_ellipse_space*x_ellipse_space - F;
+		float under_root = b*b - 4*a*c;
+		if(under_root < 0.0f) continue;
+		float addand = std::sqrt(under_root);
+		float numerator = -b - addand;
+		//if(std::abs(numerator) > 10e-6){
+			float y_0_ellipse_space =  numerator / (2 * a);
+			int y_0 = int(y_0_ellipse_space + ellipse_center[1] + 0.5);
+			if(y_0 >= 0 && y_0 < image.rows()){
+				image(y_0,x) = 0;
+			}
+		//}
+		numerator = -b + addand;
+		//if(std::abs(numerator) > 10e-6){
+			float y_1_ellipse_space =  numerator / (2 * a);
+			int y_1 = int(y_1_ellipse_space + ellipse_center[1] + 0.5);
+			if(y_1 >= 0 && y_1 < image.rows()){
+				image(y_1,x) = 0;
+			}
+		//}
+	}
+	for (int y = y_start; y < y_end; y++){
+		float y_ellipse_space = static_cast<float>(y) - ellipse_center[1];
+		float a = A;
+		float b = B * y_ellipse_space;
+		float c = C * y_ellipse_space*y_ellipse_space - F;
+		float under_root = b*b - 4*a*c;
+		if(under_root < 0.0f) continue;
+		float addand = std::sqrt(under_root);
+		float numerator = -b - addand;
+		//if(std::abs(numerator) > 10e-6){
+			float x_0_ellipse_space =  numerator / (2 * a);
+			int x_0 = int(x_0_ellipse_space + ellipse_center[0] + 0.5);
+			if(x_0 >= 0 && x_0 < image.cols()){
+				image(y,x_0) = 0;
+			}
+		//}
+		numerator = -b + addand;
+		//if(std::abs(numerator) > 10e-6){
+			float x_1_ellipse_space =  numerator / (2 * a);
+			int x_1 = int(x_1_ellipse_space + ellipse_center[0] + 0.5);
+			if(x_1 >= 0 && x_1 < image.cols()){
+				image(y,x_1) = 0;
+			}
+		//}
+	}
 }
 
 } //namespace math

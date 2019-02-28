@@ -63,7 +63,7 @@ resample_aux(math::MatrixXv2f& warp_field,
 		float live_tsdf_value = warped_live_field(i_element);
 		if (band_union_only) {
 			float canonical_tsdf_value = canonical_field(i_element);
-			if (is_outside_narrow_band(live_tsdf_value, canonical_tsdf_value)) {
+			if (are_both_SDF_values_truncated(live_tsdf_value, canonical_tsdf_value)) {
 				new_live_field(i_element) = live_tsdf_value;
 				continue;
 			}

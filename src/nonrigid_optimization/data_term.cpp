@@ -72,7 +72,7 @@ struct DataTermGradientAndEnergyFunctor {
 	                                 const float& canonical_tsdf_value,
 	                                 const math::Vector2f& local_live_gradient) {
 		if (TSkipTruncated) {
-			if (is_outside_narrow_band(live_tsdf_value, canonical_tsdf_value)) {
+			if (are_both_SDF_values_truncated(live_tsdf_value, canonical_tsdf_value)) {
 				return math::Vector2f(0.0f);
 			}
 		}

@@ -43,7 +43,7 @@ float ratio_of_vector_lengths_above_threshold_band_union(const math::MatrixXv2f&
 	long total_count = 0;
 
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
-		if (is_outside_narrow_band(warped_live_field(i_element), canonical_field(i_element)))
+		if (are_both_SDF_values_truncated(warped_live_field(i_element), canonical_field(i_element)))
 			continue;
 		float squared_length = math::squared_sum(vector_field(i_element));
 		if (squared_length > threshold_squared) {
@@ -63,7 +63,7 @@ void mean_and_std_vector_length_band_union(float& mean, float& standard_deviatio
 	double total_length = 0.0;
 
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
-		if (is_outside_narrow_band(warped_live_field(i_element), canonical_field(i_element)))
+		if (are_both_SDF_values_truncated(warped_live_field(i_element), canonical_field(i_element)))
 			continue;
 		float length = math::length(vector_field(i_element));
 		total_length += static_cast<double>(length);
@@ -73,7 +73,7 @@ void mean_and_std_vector_length_band_union(float& mean, float& standard_deviatio
 	mean = static_cast<float>(total_length / static_cast<double>(total_count));
 	double total_squared_deviation = 0.0;
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
-		if (is_outside_narrow_band(warped_live_field(i_element), canonical_field(i_element)))
+		if (are_both_SDF_values_truncated(warped_live_field(i_element), canonical_field(i_element)))
 			continue;
 		float length = math::length(vector_field(i_element));
 		float local_deviation = length - mean;

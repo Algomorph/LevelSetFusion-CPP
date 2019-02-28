@@ -1,7 +1,7 @@
 /*
- * conics.hpp
+ * progress_bar.hpp
  *
- *  Created on: Jan 31, 2019
+ *  Created on: Feb 12, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -19,25 +19,28 @@
  */
 
 #pragma once
+#include <string>
 
-/**
- * Various representations and routines for conic sections
- */
+namespace console{
 
-//libraries
-#include <Eigen/Eigen>
+class ProgressBar {
 
-//local
-#include "typedefs.hpp"
+public:
+	ProgressBar();
+	ProgressBar(int filler_count_cap);
 
-namespace eig = Eigen;
+    void update(double progress_increment);
+    void print();
+    std::string opener = "[", //beginning and end 'bracket' characters of the progress bar
+        closer = "]",
+        filler = "=",
+        bar_end_characters = "/-\\|"; //will be cycled through
+private:
+    int filler_count = 0,
+        filler_count_cap = 50,
+        bar_end_character_index = 0;
+    double current_progress = 0,
+        needed_progress = 1.0;
+};
 
-namespace math{
-
-eig::Vector2f compute_centered_ellipse_bound_points(const eig::Matrix2f& ellipse_matrix, float ellipse_scale);
-void draw_ellipse(eig::MatrixXuc& image, eig::Vector2f center,
-		//DEBUG -- verbose
-		const eig::Matrix2f& ellipse_matrix, float ellipse_scale, bool verbose = false);
-}//namespace math
-
-
+}//namespace console

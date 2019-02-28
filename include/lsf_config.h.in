@@ -21,6 +21,7 @@
 #pragma once
 
 #cmakedefine MODULE_NAME @MODULE_NAME@
+#cmakedefine SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
 
 
 
