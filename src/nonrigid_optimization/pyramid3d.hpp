@@ -1,9 +1,9 @@
 /*
- * pyramid2d.h
+ * pyramid3d.hpp
  *
- *  Created on: Dec 18, 2018
+ *  Created on: Mar 1, 2019
  *      Author: Gregory Kramida
- *   Copyright: 2018 Gregory Kramida
+ *   Copyright: 2019 Gregory Kramida
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,37 +17,36 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-//A pyramid representation of a contiguous 2d scalar field
+
+#pragma once
+
 
 //Standard library
 #include <vector>
 
 //Libraries
 #include <Eigen/Eigen>
+#include <unsupported/Eigen/CXX11/Tensor>
 
-#pragma once
-
-namespace eig = Eigen;
 
 namespace nonrigid_optimization {
-namespace hierarchical{
-inline static
-bool is_power_of_two(int number){
-	return !(number == 0) && !(number & (number - 1));
-}
+
 
 /**
- * A pyramid representation of a continuous 2d scalar field
+ * A pyramid representation of a continuous 3d scalar field
  */
-class Pyramid2d {
+class Pyramid3d {
 public:
-	Pyramid2d(eig::MatrixXf field, int maximum_chunk_size=8);
-	virtual ~Pyramid2d();
-	const eig::MatrixXf& get_level(int i_level) const;
-	size_t get_level_count() const;
+	Pyramid3d(Eigen::Tensor<float,3> field, int maximum_chunk_size=8);
+	virtual ~Pyramid3d();
+	const Eigen::Tensor<float,3>& level(int i_level) const;
+	size_t level_count() const;
 private:
-	std::vector<eig::MatrixXf> levels;
+	std::vector<Eigen::Tensor<float,3>> levels;
 
 };
-} /* namespace hierarchical */
-} /* namespace nonrigid_optimization */
+
+
+}//namespace nonrigid_optimization
+
+

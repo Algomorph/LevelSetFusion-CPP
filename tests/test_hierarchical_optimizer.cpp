@@ -26,6 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/python.hpp>
 #include <Eigen/Eigen>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 // test data
 
@@ -33,13 +34,15 @@
 
 // test targets
 #include "../src/math/tensors.hpp"
-#include "../src/math/assessment.hpp"
+
+//#include "../src/math/collection_comparison.hpp"
+#include "../src/math/assessment.hpp" #TODO: refactor to collection_comparison.hpp
 #include "../src/nonrigid_optimization/hierarchical/pyramid2d.hpp"
 #include "../src/nonrigid_optimization/hierarchical/optimizer2d.hpp"
 #include "../src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp"
 #include "../src/telemetry/optimization_iteration_data.hpp"
 #include "../src/nonrigid_optimization/field_warping.hpp"
-
+#include "../src/nonrigid_optimization/pyramid3d.hpp"
 
 namespace eig = Eigen;
 
@@ -54,7 +57,7 @@ BOOST_AUTO_TEST_CASE(power_of_two_test01){
 	BOOST_REQUIRE(!nro_h::is_power_of_two(38));
 }
 
-BOOST_AUTO_TEST_CASE(pyramid_test01) {
+BOOST_AUTO_TEST_CASE(pyramid2d_test01) {
 	// corresponds to test_contstruct_scalar_pyramid for Python
 
 	eig::MatrixXf tile(8, 8);
@@ -116,8 +119,24 @@ BOOST_AUTO_TEST_CASE(pyramid_test01) {
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(1)(0, 1), l1_01);
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(1)(1, 1), l1_11);
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(0)(0, 0), 5.0f/4.0f);
+}
 
-	BOOST_REQUIRE(true);
+BOOST_AUTO_TEST_CASE(pyramid3d_test01) {
+	eig::Tensor<float,3> field = test_data::pyramid3d_argument_field;
+	int field_dim0 = test_data::pyramid3d_argument_field.dimension(0);
+	int field_dim1 = test_data::pyramid3d_argument_field.dimension(1);
+	int field_dim2 = test_data::pyramid3d_argument_field.dimension(2);
+	nropt::Pyramid3d pyramid(field, 8);
+	BOOST_REQUIRE_EQUAL(pyramid.level_count(), (unsigned)4);
+	BOOST_REQUIRE_EQUAL(pyramid.level(0).dimension(0),1);
+	BOOST_REQUIRE_EQUAL(pyramid.level(0).dimension(1),1);
+	BOOST_REQUIRE_EQUAL(pyramid.level(0).dimension(2),1);
+	BOOST_REQUIRE_EQUAL(pyramid.level(0)(0),255.5f);
+	BOOST_REQUIRE_EQUAL(pyramid.level(2).dimension(0),field_dim0/2);
+	BOOST_REQUIRE_EQUAL(pyramid.level(2).dimension(1),field_dim1/2);
+	BOOST_REQUIRE_EQUAL(pyramid.level(2).dimension(2),field_dim2/2);
+	BOOST_REQUIRE_EQUAL(pyramid.level(2)(0),36.5);
+	BOOST_REQUIRE_EQUAL(pyramid.level(2)(pyramid.level(2).size()-1),474.5);
 }
 
 BOOST_AUTO_TEST_CASE(resample_field_test01){

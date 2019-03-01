@@ -34,7 +34,7 @@
 //test targets
 #include "../src/tsdf/ewa.hpp"
 #include "../src/math/typedefs.hpp"
-#include "../src/math/assessment.hpp"
+#include "../src/math/collection_comparison.hpp"
 #include "../src/imageio/png_eigen.hpp"
 
 namespace eig = Eigen;
