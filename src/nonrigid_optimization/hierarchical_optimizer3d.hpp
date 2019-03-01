@@ -1,9 +1,9 @@
 /*
- * pyramid2d.h
+ * hierarchical_optimizer3d.hpp
  *
- *  Created on: Dec 18, 2018
+ *  Created on: Mar 1, 2019
  *      Author: Gregory Kramida
- *   Copyright: 2018 Gregory Kramida
+ *   Copyright: 2019 Gregory Kramida
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,32 +17,9 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-//A pyramid representation of a contiguous 2d scalar field
-
-//Standard library
-#include <vector>
-
-//Libraries
-#include <Eigen/Eigen>
 
 #pragma once
 
-namespace eig = Eigen;
 
-namespace nonrigid_optimization {
 
-/**
- * A pyramid representation of a continuous 2d scalar field
- */
-class Pyramid2d {
-public:
-	Pyramid2d(eig::MatrixXf field, int maximum_chunk_size=8);
-	virtual ~Pyramid2d();
-	const eig::MatrixXf& get_level(int i_level) const;
-	size_t get_level_count() const;
-private:
-	std::vector<eig::MatrixXf> levels;
 
-};
-
-} /* namespace nonrigid_optimization */

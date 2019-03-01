@@ -24,23 +24,28 @@
 #include <algorithm>
 //Local
 #include "pyramid2d.hpp"
+#include "../math/checks.hpp"
 
 namespace nonrigid_optimization {
 
 
 //TODO: Pyramid2d templated on the Scalar type to allow alternative element types
+/**
+ * @param field -- scalar field
+ * @param maximum_chunk_size -- size of the chunk of the original field represented by a single element at the coarsest level
+ */
 Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
 		levels() {
-	eigen_assert((is_power_of_two(field.rows()) && is_power_of_two(field.cols())) // @suppress("Invalid arguments")
+	eigen_assert((math::is_power_of_two(field.rows()) && math::is_power_of_two(field.cols())) // @suppress("Invalid arguments")
 			&& "The argument 'field' must have a power of two for each dimension.");
-	eigen_assert(is_power_of_two(maximum_chunk_size) && // @suppress("Invalid arguments")
+	eigen_assert(math::is_power_of_two(maximum_chunk_size) && // @suppress("Invalid arguments")
 			"The argument 'maximum_chunk_size' must be an integer power of 2, i.e. 4, 8, 16, etc.");
 	int power_of_two_largest_chunk = static_cast<int>(std::log2(maximum_chunk_size));
 
 #ifndef NDEBUG
 	//check that we can get a level with the maximum chunk size
 	int max_level_count = static_cast<int>(std::min(std::log2(field.rows()), std::log2(field.cols())));
-	eigen_assert(max_level_count > power_of_two_largest_chunk && "Maximum chunk size too large for the field size."); // @suppress("Invalid arguments")
+	eigen_assert(max_level_count < power_of_two_largest_chunk && "Maximum chunk size too large for the field size."); // @suppress("Invalid arguments")
 #endif
 
 	int level_count = power_of_two_largest_chunk + 1;

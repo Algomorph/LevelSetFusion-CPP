@@ -214,12 +214,17 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/filtered_statistics.hpp
 			src/nonrigid_optimization/hierarchical_optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical_optimizer2d.hpp
+			src/nonrigid_optimization/hierarchical_optimizer3d.cpp
+			src/nonrigid_optimization/hierarchical_optimizer3d.hpp
 			src/nonrigid_optimization/pyramid2d.cpp
 			src/nonrigid_optimization/pyramid2d.hpp
+			src/nonrigid_optimization/pyramid3d.cpp
+			src/nonrigid_optimization/pyramid3d.hpp
 
 			src/traversal/field_traversal_cpu.hpp
 
-			src/math/assessment.hpp
+			src/math/checks.hpp
+			src/math/collection_comparison.hpp
 			src/math/conics.cpp
 			src/math/conics.hpp
 			src/math/convolution.hpp
