@@ -51,7 +51,3 @@ bp::tuple py_data_term_at_location(eig::MatrixXf warped_live_field, eig::MatrixX
                                    eig::MatrixXf live_gradient_x, eig::MatrixXf live_gradient_y);
 } //namespace slavcheva
 }//namespace nonrigid_optimization
-
-
-
-

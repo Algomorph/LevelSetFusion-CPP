@@ -21,7 +21,7 @@
 #include <boost/python.hpp>
 
 //local
-#include "../math/tensors.hpp"
+#include "../math/typedefs.hpp"
 
 namespace bp = boost::python;
 namespace eig = Eigen;

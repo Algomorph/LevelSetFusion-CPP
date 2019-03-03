@@ -35,8 +35,6 @@ template<typename SCALAR>
 	struct NumpyEquivalentType {
 };
 
-
-
 template<>
 struct NumpyEquivalentType<double> {
 	enum {

@@ -14,7 +14,8 @@
 //  limitations under the License.
 //  ================================================================
 
-#include "tensors.hpp"
+#include "tensor_operations.hpp"
+
 #include "typedefs.hpp"
 
 namespace math {

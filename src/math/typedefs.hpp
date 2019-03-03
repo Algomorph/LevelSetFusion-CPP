@@ -22,6 +22,7 @@
 #include "vector2.hpp"
 #include "vector3.hpp"
 #include "matrix2.hpp"
+#include "nestable_type_metainfo.hpp"
 
 namespace math{
 typedef unsigned char uchar;
@@ -42,6 +43,11 @@ typedef class math::Vector3<uchar> Vector3u;
 typedef class math::Vector3<float> Vector3f;
 typedef class math::Matrix2<float> Matrix2f;
 
+typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic> MatrixXv2f;
+typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> MatrixXv2f_rm;
+typedef Eigen::Matrix<math::Matrix2<float>, Eigen::Dynamic, Eigen::Dynamic> MatrixXm2f;
+
+
 }//namespace math
 
 namespace Eigen{
@@ -52,7 +58,6 @@ typedef class Eigen::Matrix<unsigned short, 1, Eigen::Dynamic> Matrix1Xus;
 typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,Eigen::Dynamic> MatrixXuc;
 typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,1> MatrixX1uc;
 typedef class Eigen::Matrix<unsigned char, 1, Eigen::Dynamic> Matrix1Xuc;
-
 typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,Eigen::Dynamic> MatrixXuc;
 
 }//namespace Eigen

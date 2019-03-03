@@ -22,6 +22,7 @@
 #include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
 #include "field_warping.hpp"
+#include "../math/tensor_operations.hpp"
 
 namespace nonrigid_optimization {
 

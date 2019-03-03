@@ -16,8 +16,9 @@
 #pragma once
 
 #include <Eigen/Eigen>
+
+#include "../../src/math/tensor_operations.hpp"
 #include "../src/math/typedefs.hpp"
-#include "../src/math/tensors.hpp"
 
 namespace test_data {
 namespace eig = Eigen;

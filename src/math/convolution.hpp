@@ -19,7 +19,7 @@
 #include <Eigen/Eigen>
 
 //local
-#include "tensors.hpp"
+#include "tensor_operations.hpp"
 
 namespace eig = Eigen;
 

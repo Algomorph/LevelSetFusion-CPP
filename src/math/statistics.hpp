@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "tensors.hpp"
+#include "tensor_operations.hpp"
 #include "typedefs.hpp"
 
 namespace math{

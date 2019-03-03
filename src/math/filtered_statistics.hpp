@@ -21,7 +21,6 @@
 #include <Eigen/Eigen>
 
 //local
-#include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
 
 #pragma once

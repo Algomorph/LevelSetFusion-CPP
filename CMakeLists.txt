@@ -264,15 +264,17 @@ add_library(${MODULE_NAME} SHARED
 			src/math/math_utils.hpp
 			src/math/matrix_base.hpp
 			src/math/matrix2.hpp
+			src/math/nestable_type_metainfo.hpp
 			src/math/platform_independence.hpp
 			src/math/statistics.cpp
 			src/math/statistics.hpp
-			src/math/tensors.hpp
-			src/math/tensors.cpp
+			src/math/tensor_operations.hpp
+			src/math/tensor_operations.cpp
 			src/math/typedefs.hpp
 			src/math/vector_base.hpp
 			src/math/vector_operations.hpp
 			src/math/vector2.hpp
+			src/math/vector2_uv.hpp
 			src/math/vector3.hpp
 
 			src/tsdf/ewa_2d.cpp

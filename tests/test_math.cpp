@@ -27,20 +27,17 @@
 #include "../src/math/checks.hpp"
 #include "../src/math/gradients.hpp"
 #include "../src/math/collection_comparison.hpp"
-#include "../src/math/tensors.hpp"
 #include "../src/math/typedefs.hpp"
 #include "../src/math/convolution.hpp"
 #include "../src/math/statistics.hpp"
 
-
-BOOST_AUTO_TEST_CASE(power_of_two_test01){
+BOOST_AUTO_TEST_CASE(power_of_two_test01) {
 	BOOST_REQUIRE(math::is_power_of_two(128));
 	BOOST_REQUIRE(math::is_power_of_two(2));
 	BOOST_REQUIRE(math::is_power_of_two(16));
 	BOOST_REQUIRE(!math::is_power_of_two(17));
 	BOOST_REQUIRE(!math::is_power_of_two(38));
 }
-
 
 BOOST_AUTO_TEST_CASE(gradient_test01) {
 	namespace eig = Eigen;
@@ -374,7 +371,6 @@ BOOST_AUTO_TEST_CASE(max_norm_test01) {
 	BOOST_REQUIRE_EQUAL(coordinates.x, 1);
 	BOOST_REQUIRE_EQUAL(coordinates.y, 2);
 }
-
 
 BOOST_AUTO_TEST_CASE(mean_and_std_test01) {
 	float mean, std;
