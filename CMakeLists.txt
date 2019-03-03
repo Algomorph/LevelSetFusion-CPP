@@ -219,9 +219,11 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/pyramid2d.cpp
 			src/nonrigid_optimization/pyramid2d.hpp
 			src/nonrigid_optimization/pyramid3d.cpp
+			src/nonrigid_optimization/pyramid3d.tpp
 			src/nonrigid_optimization/pyramid3d.hpp
-
+			
 			src/traversal/field_traversal_cpu.hpp
+			src/traversal/index_raveling.hpp
 
 			src/math/checks.hpp
 			src/math/collection_comparison.hpp

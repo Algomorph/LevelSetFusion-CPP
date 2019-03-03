@@ -25,6 +25,8 @@ namespace eig = Eigen;
 
 namespace traversal {
 
+// TODO: rewrite to accept std::function instead of functors
+
 template<typename TFunctorFieldToField, typename TInField>
 inline void
 traverse_2d_field_singlethreaded(const TInField& in_field,
