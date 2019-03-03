@@ -15,7 +15,7 @@
 //  ================================================================
 #pragma once
 
-#include "tensors.hpp"
+#include "tensor_operations.hpp"
 
 namespace math{
 

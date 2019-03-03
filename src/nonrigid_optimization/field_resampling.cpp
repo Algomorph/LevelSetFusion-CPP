@@ -19,9 +19,9 @@
 
 //local
 #include "boolean_operations.hpp"
-#include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
 #include "field_resampling.hpp"
+#include "../math/tensor_operations.hpp"
 
 namespace nonrigid_optimization {
 

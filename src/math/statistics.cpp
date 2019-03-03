@@ -23,9 +23,9 @@
 
 //local
 #include "statistics.hpp"
-#include "tensors.hpp"
 #include "vector_operations.hpp"
 #include "../traversal/field_traversal_cpu.hpp"
+#include "tensor_operations.hpp"
 
 namespace math{
 

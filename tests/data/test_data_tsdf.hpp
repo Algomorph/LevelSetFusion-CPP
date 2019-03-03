@@ -22,7 +22,8 @@
 
 #include <unsupported/Eigen/CXX11/Tensor>
 #include <Eigen/Eigen>
-#include "../src/math/tensors.hpp"
+
+#include "../../src/math/tensor_operations.hpp"
 #include "../src/math/typedefs.hpp"
 
 namespace eig = Eigen;

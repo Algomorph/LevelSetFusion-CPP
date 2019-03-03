@@ -12,7 +12,6 @@
 //local
 
 #include "numpy_conversions_shared.hpp"
-#include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
 
 // These macros were renamed in NumPy 1.7.1.

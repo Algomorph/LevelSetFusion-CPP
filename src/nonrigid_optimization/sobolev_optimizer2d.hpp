@@ -22,9 +22,9 @@
 #include <Eigen/Eigen>
 #include <boost/property_tree/ptree.hpp>
 
+#include "../math/tensor_operations.hpp"
 //local
 #include "optimizer2d.hpp"
-#include "../math/tensors.hpp"
 #include "logging.hpp"
 
 namespace pt = boost::property_tree;

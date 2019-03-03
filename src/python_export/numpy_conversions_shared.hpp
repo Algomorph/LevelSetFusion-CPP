@@ -29,7 +29,7 @@ template<typename SCALAR>
 	struct NumpyEquivalentType {
 };
 
-#include "../math/tensors.hpp"
+#include "../math/tensor_operations.hpp"
 #include "../math/typedefs.hpp"
 
 template<>

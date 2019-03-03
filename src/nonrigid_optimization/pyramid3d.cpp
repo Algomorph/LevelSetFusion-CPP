@@ -28,6 +28,8 @@ namespace nonrigid_optimization {
 
 Pyramid3d::Pyramid3d(eig::Tensor<float, 3> field, int maximum_chunk_size) :
 		levels() {
+
+#ifndef NDEBUG
 	eigen_assert((math::is_power_of_two(field.dimension(0))
 			&& math::is_power_of_two(field.dimension(1))
 			&& math::is_power_of_two(field.dimension(1)))
@@ -35,14 +37,10 @@ Pyramid3d::Pyramid3d(eig::Tensor<float, 3> field, int maximum_chunk_size) :
 
 	eigen_assert(math::is_power_of_two(maximum_chunk_size) && // @suppress("Invalid arguments")
 			"The argument 'maximum_chunk_size' must be an integer power of 2, i.e. 4, 8, 16, etc.");
+#endif
 	int power_of_two_largest_chunk = static_cast<int>(std::log2(maximum_chunk_size));
-
 #ifndef NDEBUG
 	//check that we can get a level with the maximum chunk size
-	//TODO: remove dead code if the next line works in C++11
-
-//	int max_level_count = static_cast<int>(
-//			std::min(std::min(std::log2(field.dimension(0)), std::log2(field.dimension(1))), std::log2(field.dimension(2))));
 	int max_level_count = static_cast<int>(
 			std::min( { std::log2(field.dimension(0)), std::log2(field.dimension(1)), std::log2(field.dimension(2)) }));
 	eigen_assert(max_level_count < power_of_two_largest_chunk && "Maximum chunk size too large for the field size."); // @suppress("Invalid arguments")

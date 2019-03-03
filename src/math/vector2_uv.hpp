@@ -1,9 +1,9 @@
 /*
- * warp_statistics.hpp
+ * vector2f_uv.hpp
  *
- *  Created on: Nov 14, 2018
+ *  Created on: Mar 3, 2019
  *      Author: Gregory Kramida
- *   Copyright: 2018 Gregory Kramida
+ *   Copyright: 2019 Gregory Kramida
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -20,14 +20,12 @@
 
 #pragma once
 
-#include "tensor_operations.hpp"
-#include "typedefs.hpp"
+//libraries
+#include <Eigen/Dense>
 
-namespace math{
-	void locate_max_norm(float& max_norm, Vector2i& coordinate, const MatrixXv2f& vector_field);
-	void locate_max_norm2(float& max_norm, Vector2i& coordinate, const MatrixXv2f& vector_field);
-	float ratio_of_vector_lengths_above_threshold(const MatrixXv2f& vector_field, float threshold);
-	float mean_vector_length(const MatrixXv2f& vector_field);
-	void mean_and_std_vector_length(float& mean, float& standard_deviation, const MatrixXv2f& vector_field);
+template<typename Scalar>
+class Vector2_uv : public Eigen::Matrix<Scalar,2, 1>{
+
 }
+
 
