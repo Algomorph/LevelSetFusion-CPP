@@ -50,10 +50,10 @@ Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
 
 	int level_count = power_of_two_largest_chunk + 1;
 	levels.push_back(field);
-	eig::MatrixXf& previous_level = field;
+	eig::MatrixXf* previous_level = &field;
 
 	for (int i_level = 1; i_level < level_count; i_level++) {
-		eig::MatrixXf current_level(previous_level.rows() / 2, previous_level.cols() / 2);
+		eig::MatrixXf current_level(previous_level->rows() / 2, previous_level->cols() / 2);
 		//average each square of 4 cells into one
 		for (eig::Index i_current_level_col = 0, i_previous_level_col = 0;
 				i_current_level_col < current_level.cols();
@@ -62,15 +62,15 @@ Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
 					i_current_level_row < current_level.rows();
 					i_current_level_row++, i_previous_level_row += 2) {
 				current_level(i_current_level_row, i_current_level_col) = (
-						previous_level(i_previous_level_row, i_previous_level_col) +
-								previous_level(i_previous_level_row, i_previous_level_col + 1) +
-								previous_level(i_previous_level_row + 1, i_previous_level_col) +
-								previous_level(i_previous_level_row + 1, i_previous_level_col + 1)
+						(*previous_level)(i_previous_level_row, i_previous_level_col) +
+						(*previous_level)(i_previous_level_row, i_previous_level_col + 1) +
+						(*previous_level)(i_previous_level_row + 1, i_previous_level_col) +
+						(*previous_level)(i_previous_level_row + 1, i_previous_level_col + 1)
 						) / 4.0f;
 			}
 		}
 		levels.push_back(current_level);
-		previous_level = current_level;
+		previous_level = &current_level;
 	}
 
 	//levels should be ordered from coarsest to finest, reverse the order

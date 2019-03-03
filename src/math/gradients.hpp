@@ -15,19 +15,20 @@
 //  ================================================================
 #pragma once
 
+#include "typedefs.hpp"
 #include "tensor_operations.hpp"
 
-namespace math{
+namespace math {
 
 //TODO: refactor function arguments -- outputs should come before inputs
-
 void vector_field_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian);
 void vector_field_negative_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian);
 void vector_field_gradient(const math::MatrixXv2f& field, math::MatrixXm2f& gradient);
-void scalar_field_gradient(const eig::MatrixXf& field,eig::MatrixXf& live_gradient_x, eig::MatrixXf& live_gradient_y);
-void scalar_field_gradient(const eig::MatrixXf& field,math::MatrixXv2f& live_gradient_field);
-
+void scalar_field_gradient(const eig::MatrixXf& field, eig::MatrixXf& gradient_x, eig::MatrixXf& gradient_y);
+void scalar_field_gradient(const eig::MatrixXf& field, math::MatrixXv2f& gradient);
+// ^ end task above (the rest are fine already)
+void field_gradient(math::Tensor3v3f& gradient, const eig::Tensor3f field);
+void field_gradient2(math::Tensor3v3f& gradient, const eig::Tensor3f field);
 
 }
-
 

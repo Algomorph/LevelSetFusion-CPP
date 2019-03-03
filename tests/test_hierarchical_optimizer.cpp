@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(pyramid3d_test01) {
 	int field_dim0 = test_data::pyramid3d_argument_field.dimension(0);
 	int field_dim1 = test_data::pyramid3d_argument_field.dimension(1);
 	int field_dim2 = test_data::pyramid3d_argument_field.dimension(2);
-	nropt::Pyramid3d pyramid(field, 8);
+	nropt::Pyramid3d<float> pyramid(field, 8);
 	BOOST_REQUIRE_EQUAL(pyramid.level_count(), (unsigned)4);
 	BOOST_REQUIRE_EQUAL(pyramid.level(0).dimension(0),1);
 	BOOST_REQUIRE_EQUAL(pyramid.level(0).dimension(1),1);

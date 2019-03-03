@@ -1,7 +1,7 @@
 /*
- * pyramid3d.hpp
+ * index_raveling.hpp
  *
- *  Created on: Mar 1, 2019
+ *  Created on: Mar 3, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -19,34 +19,15 @@
  */
 
 #pragma once
+#include <Eigen/Dense>
 
+inline static void unravel_3d_index(int& x, int& y, int& z, Eigen::Index i_element,
+		const int& y_stride, const int& z_stride){
+	int z_field = i_element / z_stride;
+	int remainder = i_element % z_stride;
+	int y_field = remainder / y_stride;
+	int x_field = remainder % y_stride;
+}
 
-//Standard library
-#include <vector>
-
-//Libraries
-#include <Eigen/Eigen>
-#include <unsupported/Eigen/CXX11/Tensor>
-
-
-namespace nonrigid_optimization {
-
-/**
- * A pyramid representation of a continuous 3d field
- */
-template<typename ElementType>
-class Pyramid3d {
-public:
-	Pyramid3d(Eigen::Tensor<ElementType,3> field, int maximum_chunk_size=8);
-	virtual ~Pyramid3d() = default;
-	const Eigen::Tensor<ElementType,3>& level(int i_level) const;
-	size_t level_count() const;
-private:
-	std::vector<Eigen::Tensor<ElementType,3>> levels;
-
-};
-
-
-}//namespace nonrigid_optimization
 
 

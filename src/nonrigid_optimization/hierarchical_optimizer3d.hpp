@@ -18,76 +18,76 @@
  *   limitations under the License.
  */
 
+#pragma once
+
 //libraries
 #include <Eigen/Dense>
 #include <unsupported/Eigen/CXX11/Tensor>
 
-#pragma once
-
+//local
+#include "../math/typedefs.hpp"
 
 namespace eig = Eigen;
 
-//namespace nonrigid_optimization {
-//
-////not thread-safe
-//class HierarchicalOptimizer3d {
-//
-//public:
-//	struct VerbosityParameters {
-//		VerbosityParameters(bool print_max_warp_update = false,
-//				bool print_iteration_data_energy = false,
-//				bool print_iteration_tikhonov_energy = false);
-//		//per-iteration parameters
-//		const bool print_iteration_max_warp_update = false;
-//		const bool print_iteration_data_energy = false;
-//		const bool print_iteration_tikhonov_energy = false;
-//		const bool print_per_iteration_info = false;
-//		const bool print_per_level_info = true;
-//	};
-//	HierarchicalOptimizer3d(
-//			bool tikhonov_term_enabled = true,
-//			bool gradient_kernel_enabled = true,
-//			int maximum_chunk_size = 8,
-//			float rate = 0.1f,
-//			int maximum_iteration_count = 100,
-//			float maximum_warp_update_threshold = 0.001f,
-//			float data_term_amplifier = 1.0f,
-//			float tikhonov_strength = 0.2f,
-//			eig::VectorXf kernel = eig::VectorXf(0),
-//			VerbosityParameters verbosity_parameters = VerbosityParameters()
-//	);
-//	virtual ~HierarchicalOptimizer3d();
-//
-//	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
-//
-//private:
-//
+namespace nonrigid_optimization {
+
+//not thread-safe
+class HierarchicalOptimizer3d {
+
+public:
+	struct VerbosityParameters {
+		VerbosityParameters(bool print_max_warp_update = false,
+				bool print_iteration_data_energy = false,
+				bool print_iteration_tikhonov_energy = false);
+		//per-iteration parameters
+		const bool print_iteration_max_warp_update = false;
+		const bool print_iteration_data_energy = false;
+		const bool print_iteration_tikhonov_energy = false;
+		const bool print_per_iteration_info = false;
+		const bool print_per_level_info = true;
+	};
+	HierarchicalOptimizer3d(
+			bool tikhonov_term_enabled = true,
+			bool gradient_kernel_enabled = true,
+			int maximum_chunk_size = 8,
+			float rate = 0.1f,
+			int maximum_iteration_count = 100,
+			float maximum_warp_update_threshold = 0.001f,
+			float data_term_amplifier = 1.0f,
+			float tikhonov_strength = 0.2f,
+			eig::VectorXf kernel = eig::VectorXf(0),
+			VerbosityParameters verbosity_parameters = VerbosityParameters()
+	);
+	virtual ~HierarchicalOptimizer3d() = default;
+
+//	math::Tensor3v3f optimize(eig::Tensor3f canonical_field, eig::Tensor3f live_field);
+
+private:
+
 //	void optimize_level(
-//			math::MatrixXv2f& warp_field,
-//			const eig::MatrixXf& canonical_pyramid_level,
-//			const eig::MatrixXf& live_pyramid_level,
-//			const eig::MatrixXf& live_gradient_x_level,
-//			const eig::MatrixXf& live_gradient_y_level
+//			math::Tensor3v3f& warp_field,
+//			const eig::Tensor3f& canonical_pyramid_of_level,
+//			const eig::Tensor3f& live_pyramid_of_level,
+//			const math::Tensor3v3f& live_gradient_of_level,
 //			);
-//
-//	bool termination_conditions_reached(float maximum_warp_update_length, int completed_iteration_count);
-//
-//	//VerbosityParameters verbosity_parameters = VerbosityParameters()
-//	//parameters
-//	const bool tikhonov_term_enabled = true;
-//	const bool gradient_kernel_enabled = true;
-//	const int maximum_chunk_size = 8;
-//	const float rate = 0.1f;
-//	const int maximum_iteration_count = 100;
-//	const float maximum_warp_update_threshold = 0.001f;
-//	const float data_term_amplifier = 1.0f;
-//	const float tikhonov_strength = 0.2f;
-//	const eig::VectorXf kernel_1d = eig::VectorXf(0);
-//	VerbosityParameters verbosity_parameters;
-//
-//	//optimization state variables
-//	int current_hierarchy_level = 0;
-//
-//};
 
+	bool termination_conditions_reached(float maximum_warp_update_length, int completed_iteration_count);
 
+	//parameters
+	const bool tikhonov_term_enabled = true;
+	const bool gradient_kernel_enabled = true;
+	const int maximum_chunk_size = 8;
+	const float rate = 0.1f;
+	const int maximum_iteration_count = 100;
+	const float maximum_warp_update_threshold = 0.001f;
+	const float data_term_amplifier = 1.0f;
+	const float tikhonov_strength = 0.2f;
+	const eig::VectorXf kernel_1d = eig::VectorXf(0);
+	VerbosityParameters verbosity_parameters;
+
+	//optimization state variables
+	int current_hierarchy_level = 0;
+
+};
+
+}//namespace nonrigid_optimization
