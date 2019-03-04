@@ -101,6 +101,77 @@ void vector_field_negative_laplacian(const math::MatrixXv2f& field, math::Matrix
 	vector_field_laplacian_aux<NegativeLaplaceOperatorFunctor>(field, laplacian);
 }
 
+template<typename LaplacelikeOperatorFunctor>
+inline void vector_field_laplacian_aux(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field) {
+	int x_size = field.dimension(0);
+	int y_size = field.dimension(1);
+	int z_size = field.dimension(2);
+
+	laplacian = math::Tensor3v3f(x_size, y_size, z_size);
+
+#pragma omp parallel for
+	for (int z = 0; z < z_size; z++) {
+		for (int y = 0; y < y_size; y++) {
+			math::Vector3f prev_row_val = field(0, y, z);
+			math::Vector3f row_val = field(1, y, z);
+
+			laplacian(0, y, z) = LaplacelikeOperatorFunctor::apply_border_operator(row_val, prev_row_val);
+			int x;
+			for (x = 1; x < x_size - 1; x++) {
+				math::Vector3f next_row_val = field(x + 1, y, z);
+				//previous/next column values will be used later
+				laplacian(x, y, z) = LaplacelikeOperatorFunctor::apply_row_operator(next_row_val, row_val,
+						prev_row_val);
+				prev_row_val = row_val;
+				row_val = next_row_val;
+			}
+			laplacian(x, y, z) = LaplacelikeOperatorFunctor::apply_border_operator(prev_row_val, row_val);
+		}
+	}
+#pragma omp parallel for
+	for (int z = 0; z < z_size; z++) {
+		for (int x = 0; x < x_size; x++) {
+			math::Vector3f prev_row_val = field(x, 0, z);
+			math::Vector3f row_val = field(x, 1, z);
+
+			laplacian(x, 0, z) = LaplacelikeOperatorFunctor::apply_border_operator(row_val, prev_row_val);
+			int y;
+			for (y = 1; y < y_size - 1; y++) {
+				math::Vector3f next_row_val = field(x, y + 1, z);
+				//previous/next column values will be used later
+				laplacian(x, y, z) = LaplacelikeOperatorFunctor::apply_row_operator(next_row_val, row_val,
+						prev_row_val);
+				prev_row_val = row_val;
+				row_val = next_row_val;
+			}
+			laplacian(x, y, z) = LaplacelikeOperatorFunctor::apply_border_operator(prev_row_val, row_val);
+		}
+	}
+#pragma omp parallel for
+	for (int y = 0; y < y_size; y++) {
+		for (int x = 0; x < x_size; x++) {
+			math::Vector3f prev_row_val = field(x, y, 0);
+			math::Vector3f row_val = field(x, y, 1);
+
+			laplacian(x, y, 0) = LaplacelikeOperatorFunctor::apply_border_operator(row_val, prev_row_val);
+			int z;
+			for (z = 1; z < z_size - 1; z++) {
+				math::Vector3f next_row_val = field(x, y, z + 1);
+				//previous/next column values will be used later
+				laplacian(x, y, z) = LaplacelikeOperatorFunctor::apply_row_operator(next_row_val, row_val,
+						prev_row_val);
+				prev_row_val = row_val;
+				row_val = next_row_val;
+			}
+			laplacian(x, y, z) = LaplacelikeOperatorFunctor::apply_border_operator(prev_row_val, row_val);
+		}
+	}
+}
+
+void vector_field_laplacian(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field) {
+	vector_field_laplacian_aux<LaplaceOperatorFunctor>(laplacian, field);
+}
+
 /**
  * Compute numerical gradient of given matrix. Uses forward and backward differences at the boundary matrix entries,
  * central difference formula for all other entries.
@@ -242,9 +313,8 @@ void vector_field_gradient(const math::MatrixXv2f& field, math::MatrixXm2f& grad
 	}
 }
 
-
 //TODO: test which gradient method is faster
-void field_gradient2(math::Tensor3v3f& gradient,const eig::Tensor3f field) {
+void field_gradient2(math::Tensor3v3f& gradient, const eig::Tensor3f field) {
 	gradient = math::Tensor3v3f(field.dimensions());
 	int y_stride = field.dimension(0);
 	int z_stride = y_stride * field.dimension(1);

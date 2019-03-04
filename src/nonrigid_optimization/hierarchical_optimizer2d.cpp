@@ -27,7 +27,7 @@
 #include "../math/statistics.hpp"
 #include "hierarchical_optimizer2d.hpp"
 #include "pyramid2d.hpp"
-#include "field_resampling.hpp"
+#include "warping.hpp"
 
 namespace nonrigid_optimization {
 
@@ -125,14 +125,13 @@ void HierarchicalOptimizer2d::optimize_level(
 	float maximum_warp_update_length = std::numeric_limits<float>::max();
 	int iteration_count = 0;
 
-	eig::MatrixXf gradient = eig::MatrixXf::Zero(warp_field.rows(), warp_field.cols());
-	//float normalized_tikhonov_energy = 0;
+	math::MatrixXv2f gradient = math::MatrixXv2f::Zero(warp_field.rows(), warp_field.cols());
 
 	while (not this->termination_conditions_reached(maximum_warp_update_length, iteration_count)) {
 		// resample the live field & its gradients using current warps
-		eig::MatrixXf resampled_live = resample_field(live_pyramid_level, warp_field);
-		eig::MatrixXf resampled_live_gradient_x = resample_field_replacement(live_gradient_x_level, warp_field, 0.0f);
-		eig::MatrixXf resampled_live_gradient_y = resample_field_replacement(live_gradient_y_level, warp_field, 0.0f);
+		eig::MatrixXf resampled_live = warp(live_pyramid_level, warp_field);
+		eig::MatrixXf resampled_live_gradient_x = warp_with_replacement(live_gradient_x_level, warp_field, 0.0f);
+		eig::MatrixXf resampled_live_gradient_y = warp_with_replacement(live_gradient_y_level, warp_field, 0.0f);
 
 		// see how badly our sampled values correspond to the canonical values at the same locations
 		// data_gradient = (warped_live - canonical) * warped_gradient(live)
@@ -142,7 +141,6 @@ void HierarchicalOptimizer2d::optimize_level(
 
 		// this results in the data term gradient
 		math::MatrixXv2f data_gradient = math::stack_as_xv2f(data_gradient_x, data_gradient_y);
-		math::MatrixXv2f gradient;
 
 		if (this->tikhonov_term_enabled) {
 			math::MatrixXv2f tikhonov_gradient;

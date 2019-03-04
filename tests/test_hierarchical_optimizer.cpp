@@ -37,7 +37,7 @@
 #include "../src/math/collection_comparison.hpp"
 #include "../src/nonrigid_optimization/pyramid2d.hpp"
 #include "../src/nonrigid_optimization/pyramid3d.hpp"
-#include "../src/nonrigid_optimization/field_resampling.hpp"
+#include "../src/nonrigid_optimization/warping.hpp"
 #include "../src/nonrigid_optimization/hierarchical_optimizer2d.hpp"
 
 namespace eig = Eigen;
@@ -128,13 +128,13 @@ BOOST_AUTO_TEST_CASE(pyramid3d_test01) {
 
 BOOST_AUTO_TEST_CASE(resample_field_test01){
 	//corresponds to test_resample_field01 in python code
-	eig::MatrixXf resampled_field = nropt::resample_field(test_data::field_A_16x16,test_data::warp_field_A_16x16);
+	eig::MatrixXf resampled_field = nropt::warp(test_data::field_A_16x16,test_data::warp_field_A_16x16);
 	BOOST_REQUIRE(resampled_field.isApprox(test_data::fA_resampled_with_wfA));
 }
 
 BOOST_AUTO_TEST_CASE(resample_field_test02){
 	//corresponds to test_resample_field_replacement01 in python code
-	eig::MatrixXf resampled_field = nropt::resample_field_replacement(test_data::field_B_16x16,test_data::warp_field_B_16x16,0);
+	eig::MatrixXf resampled_field = nropt::warp_with_replacement(test_data::field_B_16x16,test_data::warp_field_B_16x16,0);
 	BOOST_REQUIRE(resampled_field.isApprox(test_data::fB_resampled_with_wfB_replacement));
 }
 
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 			nropt::HierarchicalOptimizer2d::VerbosityParameters()
 			);
 	math::MatrixXv2f warp_field_out = optimizer.optimize(test_data::canonical_field, test_data::live_field);
-	eig::MatrixXf final_live_resampled = nropt::resample_field(test_data::live_field,warp_field_out);
+	eig::MatrixXf final_live_resampled = nropt::warp(test_data::live_field,warp_field_out);
 
 	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field_out,test_data::warp_field,10e-6));
 	BOOST_REQUIRE(final_live_resampled.isApprox(test_data::final_live_field));

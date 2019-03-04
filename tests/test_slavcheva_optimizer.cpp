@@ -34,7 +34,7 @@
 //test targets
 #include "../src/nonrigid_optimization/data_term.hpp"
 #include "../src/nonrigid_optimization/smoothing_term.hpp"
-#include "../src/nonrigid_optimization/field_resampling.hpp"
+#include "../src/nonrigid_optimization/warping.hpp"
 #include "../src/nonrigid_optimization/sobolev_optimizer2d.hpp"
 
 namespace tt = boost::test_tools;
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(resampling_test01) {
 			1.0F, -1.0F;
 	//@formatter:on
 	math::MatrixXv2f warp_field = math::stack_as_xv2f(u_vectors, v_vectors);
-	Matrix2f warped_live_field_out = nonrigid_optimization::resample(warp_field, warped_live_field, canonical_field);
+	Matrix2f warped_live_field_out = nonrigid_optimization::warp(warp_field, warped_live_field, canonical_field);
 	Matrix2f expected_live_out;
 	expected_live_out << 0.0F, 0.0F, 0.0F, 0.0F;
 
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(resampling_test02) {
 
 	expected_warp_field = math::stack_as_xv2f(expected_u_vectors, expected_v_vectors);
 
-	Matrix3f warped_live_field_out = nonrigid_optimization::resample(warp_field, warped_live_field, canonical_field,
+	Matrix3f warped_live_field_out = nonrigid_optimization::warp(warp_field, warped_live_field, canonical_field,
 			true, false, true);
 	BOOST_REQUIRE(warped_live_field_out.isApprox(expected_live_out));
 	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field,expected_warp_field, 1e-6));
@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE(resampling_test03) {
 			1.0000000e+00, 7.5000443e-02, 4.4107438e-07, -9.9999562e-02;
 	//@formatter:on
 	math::MatrixXv2f warp_field = math::stack_as_xv2f(u_vectors, v_vectors);
-	MatrixXf warped_live_field_out = nonrigid_optimization::resample(warp_field, warped_live_field, canonical_field,
+	MatrixXf warped_live_field_out = nonrigid_optimization::warp(warp_field, warped_live_field, canonical_field,
 			false, false, false);
 
 	MatrixXf expected_live_out(4, 4);
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(resampling_test03) {
 BOOST_AUTO_TEST_CASE(resampling_test04) {
 	using namespace Eigen;
 
-	MatrixXf warped_live_field_out = nonrigid_optimization::resample(
+	MatrixXf warped_live_field_out = nonrigid_optimization::warp(
 			test_data::warp_field, test_data::warped_live_field, test_data::canonical_field, false, false, false);
 
 	MatrixXf expected_live_out(4, 4);

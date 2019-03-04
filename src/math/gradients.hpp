@@ -22,6 +22,7 @@ namespace math {
 
 //TODO: refactor function arguments -- outputs should come before inputs
 void vector_field_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian);
+void vector_field_laplacian(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field);
 void vector_field_negative_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian);
 void vector_field_gradient(const math::MatrixXv2f& field, math::MatrixXm2f& gradient);
 void scalar_field_gradient(const eig::MatrixXf& field, eig::MatrixXf& gradient_x, eig::MatrixXf& gradient_y);

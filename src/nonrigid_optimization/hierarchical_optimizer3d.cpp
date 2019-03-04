@@ -29,7 +29,7 @@
 #include "../math/statistics.hpp"
 #include "hierarchical_optimizer3d.hpp"
 #include "pyramid3d.hpp"
-#include "field_resampling.hpp"
+#include "warping.hpp"
 
 namespace nonrigid_optimization {
 
@@ -116,45 +116,39 @@ void HierarchicalOptimizer3d::optimize_level(
 	float maximum_warp_update_length = std::numeric_limits<float>::max();
 	int iteration_count = 0;
 
-	//TODO:wtf?
-	//math::Tensor3v3f gradient(warp_field.dimensions());
-	//std::fill_n(gradient.data(), gradient.size(), math::Vector3(1.0f));
-	//float normalized_tikhonov_energy = 0;
+	math::Tensor3v3f gradient(warp_field.dimensions());
+	std::fill_n(gradient.data(), gradient.size(), math::Vector3f(0.0f));
 
 	while (not this->termination_conditions_reached(maximum_warp_update_length, iteration_count)) {
 		// resample the live field & its gradients using current warps
 		eig::Tensor3f resampled_live = warp(live_pyramid_level, warp_field);
-		//TODO
-//		eig::MatrixXf resampled_live_gradient = resample_field_replacement(live_gradient_x_level, warp_field, 0.0f);
-//
-//
-//		// see how badly our sampled values correspond to the canonical values at the same locations
-//		// data_gradient = (warped_live - canonical) * warped_gradient(live)
-//		eig::MatrixXf diff = resampled_live - canonical_pyramid_level;
-//		eig::MatrixXf data_gradient_x = diff.cwiseProduct(resampled_live_gradient_x);
-//		eig::MatrixXf data_gradient_y = diff.cwiseProduct(resampled_live_gradient_y);
-//
-//		// this results in the data term gradient
-//		math::Tensor3v2f data_gradient = math::stack_as_xv2f(data_gradient_x, data_gradient_y);
-//
-//		if (this->tikhonov_term_enabled) {
-//			math::Tensor3v2f tikhonov_gradient;
-//			math::vector_field_laplacian(gradient, tikhonov_gradient);
-//			gradient = this->data_term_amplifier * data_gradient - this->tikhonov_strength * tikhonov_gradient;
-//		} else {
-//			gradient = this->data_term_amplifier * data_gradient;
-//		}
-//
-//		if (this->gradient_kernel_enabled) {
-//			math::convolve_with_kernel(gradient, this->kernel_1d);
-//		}
-//
-//		// apply gradient-based update to existing warps
-//		warp_field -= this->rate * gradient;
-//
-//		// perform termination condition updates
-//		math::Vector2i longest_vector_location;
-//		math::locate_max_norm2(maximum_warp_update_length, longest_vector_location, gradient);
+
+		//math::Tensor3v3f resampled_live_gradient = warp_with_replacement(live_gradient_level, warp_field, 0.0f);
+
+
+		// see how badly our sampled values correspond to the canonical values at the same locations
+		// data_gradient = (warped_live - canonical) * warped_gradient(live)
+		eig::Tensor3f diff = resampled_live - canonical_pyramid_level;
+		//math::Tensor3v3f data_gradient = diff * resampled_live_gradient;
+
+		if (this->tikhonov_term_enabled) {
+			math::Tensor3v2f tikhonov_gradient;
+			math::vector_field_laplacian(tikhonov_gradient, gradient);
+			//gradient = this->data_term_amplifier * data_gradient - this->tikhonov_strength * tikhonov_gradient;
+		} else {
+			//gradient = this->data_term_amplifier * data_gradient;
+		}
+
+		if (this->gradient_kernel_enabled) {
+			math::convolve_with_kernel(gradient, this->kernel_1d);
+		}
+
+		// apply gradient-based update to existing warps
+		//warp_field -= this->rate * gradient;
+
+		// perform termination condition updates
+		math::Vector2i longest_vector_location;
+		math::locate_max_norm2(maximum_warp_update_length, longest_vector_location, gradient);
 
 		iteration_count++;
 	}
