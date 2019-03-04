@@ -44,8 +44,8 @@ find_python_interpreter(${LSFusion_PYTHON3_VERSION} 3.4 PYTHON3_LIBRARY PYTHON3_
 
 include("HunterGate")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.93.tar.gz"
-    SHA1 "0977005fb76c1380a7d9e41929090376cfd45023"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.125.tar.gz"
+    SHA1 "458d4ffb3e62c86322943baf5b94a3a21a6b9397"
     LOCAL
 )
 
