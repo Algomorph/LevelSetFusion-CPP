@@ -62,15 +62,17 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 		const eig::Vector3i& array_offset,
 		float voxel_size,
 		int scale,
-		float tsdf_threshold) {
+		float tsdf_threshold,
+		float gaussian_covariance_scale) {
 
 	eig::MatrixXuc output_image = eig::MatrixXuc::Constant(depth_image.rows() * scale, depth_image.cols() * scale, 255);
 
 	float w_voxel = 1.0f;
 
-	eig::Matrix3f covariance_camera_space = compute_covariance_camera_space(voxel_size, camera_pose);
+	eig::Matrix3f covariance_camera_space =
+			compute_covariance_camera_space(voxel_size, camera_pose, gaussian_covariance_scale);
 
-	float squared_radius_threshold = 2.0f * voxel_size; //4.0f * (voxel_size / 2);
+	float squared_radius_threshold = 4.0f * voxel_size * gaussian_covariance_scale;
 	int field_size = static_cast<int>(field.size());
 
 	int y_stride = field.dimension(0);
@@ -124,7 +126,7 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 
 		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
 		math::draw_ellipse(output_image, voxel_image * scale, ellipse_matrix,
-				squared_radius_threshold * scale * scale /* ellipse_size*/);
+				squared_radius_threshold * scale * scale);
 
 	}
 
