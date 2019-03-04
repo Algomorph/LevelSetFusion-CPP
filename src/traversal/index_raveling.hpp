@@ -21,13 +21,13 @@
 #pragma once
 #include <Eigen/Dense>
 
+namespace traversal {
 inline static void unravel_3d_index(int& x, int& y, int& z, Eigen::Index i_element,
-		const int& y_stride, const int& z_stride){
-	int z_field = i_element / z_stride;
+		const int& y_stride, const int& z_stride) {
+	z = i_element / z_stride;
 	int remainder = i_element % z_stride;
-	int y_field = remainder / y_stride;
-	int x_field = remainder % y_stride;
+	y = remainder / y_stride;
+	x = remainder % y_stride;
 }
-
-
+} //namespace traversal
 

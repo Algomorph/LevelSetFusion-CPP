@@ -64,12 +64,12 @@ public:
 
 private:
 
-//	void optimize_level(
-//			math::Tensor3v3f& warp_field,
-//			const eig::Tensor3f& canonical_pyramid_of_level,
-//			const eig::Tensor3f& live_pyramid_of_level,
-//			const math::Tensor3v3f& live_gradient_of_level,
-//			);
+	void optimize_level(
+			math::Tensor3v3f& warp_field,
+			const eig::Tensor3f& canonical_pyramid_level,
+			const eig::Tensor3f& live_pyramid_level,
+			const math::Tensor3v3f& live_gradient_level
+			);
 
 	bool termination_conditions_reached(float maximum_warp_update_length, int completed_iteration_count);
 

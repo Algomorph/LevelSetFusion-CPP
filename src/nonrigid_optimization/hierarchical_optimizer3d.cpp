@@ -29,7 +29,7 @@
 #include "../math/statistics.hpp"
 #include "hierarchical_optimizer3d.hpp"
 #include "pyramid3d.hpp"
-//#include "field_resampling.hpp"
+#include "field_resampling.hpp"
 
 namespace nonrigid_optimization {
 
@@ -107,24 +107,26 @@ HierarchicalOptimizer3d::VerbosityParameters::VerbosityParameters(
 //	return warp_field;
 //}
 //
-//void HierarchicalOptimizer3d::optimize_level(
-//		math::Tensor3v3f& warp_field,
-//		const eig::Tensor3f& canonical_pyramid_of_level,
-//		const eig::Tensor3f& live_pyramid_of_level,
-//		const math::Tensor3v3f& live_gradient_of_level,
-//		) {
-//	float maximum_warp_update_length = std::numeric_limits<float>::max();
-//	int iteration_count = 0;
+void HierarchicalOptimizer3d::optimize_level(
+		math::Tensor3v3f& warp_field,
+		const eig::Tensor3f& canonical_pyramid_level,
+		const eig::Tensor3f& live_pyramid_level,
+		const math::Tensor3v3f& live_gradient_level
+		) {
+	float maximum_warp_update_length = std::numeric_limits<float>::max();
+	int iteration_count = 0;
+
+	//TODO:wtf?
+	//math::Tensor3v3f gradient(warp_field.dimensions());
+	//std::fill_n(gradient.data(), gradient.size(), math::Vector3(1.0f));
+	//float normalized_tikhonov_energy = 0;
+
+	while (not this->termination_conditions_reached(maximum_warp_update_length, iteration_count)) {
+		// resample the live field & its gradients using current warps
+		eig::Tensor3f resampled_live = warp(live_pyramid_level, warp_field);
+		//TODO
+//		eig::MatrixXf resampled_live_gradient = resample_field_replacement(live_gradient_x_level, warp_field, 0.0f);
 //
-//	math::Tensor3v2f gradient(warp_field.dimensions());
-//	std::fill_n(gradient.data(), gradient.size(), 1.0f);
-//	//float normalized_tikhonov_energy = 0;
-//
-//	while (not this->termination_conditions_reached(maximum_warp_update_length, iteration_count)) {
-//		// resample the live field & its gradients using current warps
-//		eig::MatrixXf resampled_live = resample_field(live_pyramid_level, warp_field);
-//		eig::MatrixXf resampled_live_gradient_x = resample_field_replacement(live_gradient_x_level, warp_field, 0.0f);
-//		eig::MatrixXf resampled_live_gradient_y = resample_field_replacement(live_gradient_y_level, warp_field, 0.0f);
 //
 //		// see how badly our sampled values correspond to the canonical values at the same locations
 //		// data_gradient = (warped_live - canonical) * warped_gradient(live)
@@ -153,10 +155,10 @@ HierarchicalOptimizer3d::VerbosityParameters::VerbosityParameters(
 //		// perform termination condition updates
 //		math::Vector2i longest_vector_location;
 //		math::locate_max_norm2(maximum_warp_update_length, longest_vector_location, gradient);
-//
-//		iteration_count++;
-//	}
-//}
+
+		iteration_count++;
+	}
+}
 
 bool HierarchicalOptimizer3d::termination_conditions_reached(float maximum_warp_update_length,
 		int completed_iteration_count) {
