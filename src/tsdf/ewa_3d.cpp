@@ -96,7 +96,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 #endif
 
 
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int i_element = 0; i_element < voxel_count; i_element++) {
 
 		div_t z_stride_division_result = std::div(i_element, z_stride);
@@ -156,6 +156,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		float weights_sum = 0.0f;
 		float depth_sum = 0.0f;
 
+
 		// collect sample readings
 		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
 			for (int y_sample = y_sample_start; y_sample < y_sample_end; y_sample++) {
@@ -175,7 +176,6 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 				}
 				depth_sum += weight * surface_depth;
 				weights_sum += weight;
-				//samples_counted++;
 			}
 		}
 		if (depth_sum <= 0.0) {
