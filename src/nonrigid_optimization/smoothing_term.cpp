@@ -49,7 +49,7 @@ void compute_tikhonov_regularization_gradient_aux(math::MatrixXv2f& gradient, fl
 			gradient(0, i_col) =  math::Vector2f(0.0f);
 		}else{
 			math::Vector2f local_gradient_y = row_vector - prev_row_vector; //row-wise local gradient
-			energy += math::squared_sum(local_gradient_y);
+			energy += math::squared_norm(local_gradient_y);
 			//same as replicating the prev_row_vector to the border and doing -(row_vector - 2*prev_row_vector + prev_row_vector)
 			gradient(0, i_col) =  -row_vector + prev_row_vector;
 		}
@@ -61,7 +61,7 @@ void compute_tikhonov_regularization_gradient_aux(math::MatrixXv2f& gradient, fl
 				gradient(i_row, i_col) = math::Vector2f(0.0f);
 			}else{
 				math::Vector2f local_gradient_y = 0.5 * (next_row_vector - prev_row_vector);  //row-wise local gradient
-				energy += math::squared_sum(local_gradient_y);
+				energy += math::squared_norm(local_gradient_y);
 				//previous/next column values will be used in next loop
 				gradient(i_row, i_col) = -next_row_vector + 2 * row_vector - prev_row_vector;
 			}
@@ -73,7 +73,7 @@ void compute_tikhonov_regularization_gradient_aux(math::MatrixXv2f& gradient, fl
 			gradient(i_row, i_col) = math::Vector2f(0.0f);
 		}else{
 			math::Vector2f local_gradient_y = row_vector - prev_row_vector; //row-wise local gradient
-			energy += math::squared_sum(local_gradient_y);
+			energy += math::squared_norm(local_gradient_y);
 			//same as replicating the row_vector to the border and doing -(row_vector - 2*row_vector + prev_row_vector)
 			gradient(i_row, i_col) = -prev_row_vector + row_vector;
 		}
@@ -85,7 +85,7 @@ void compute_tikhonov_regularization_gradient_aux(math::MatrixXv2f& gradient, fl
 
 		if(!is_truncated(i_row, 0)){
 			math::Vector2f local_gradient_x = col_vector - prev_col_vector; //column-wise local gradient
-			energy += math::squared_sum(local_gradient_x);
+			energy += math::squared_norm(local_gradient_x);
 			//same as replicating the prev_col_vector to the border and doing -(col_vector - 2*prev_col_vector + prev_col_vector)
 			gradient(i_row, 0) += -col_vector + prev_col_vector;
 		}
@@ -94,7 +94,7 @@ void compute_tikhonov_regularization_gradient_aux(math::MatrixXv2f& gradient, fl
 			math::Vector2f next_col_vector = warp_field(i_row, i_col + 1);
 			if(!is_truncated(i_row, i_col)){
 				math::Vector2f local_gradient_x = 0.5 * (next_col_vector - prev_col_vector); //column-wise local gradient
-				energy += math::squared_sum(local_gradient_x);
+				energy += math::squared_norm(local_gradient_x);
 				gradient(i_row, i_col) += -next_col_vector + 2 * col_vector - prev_col_vector;
 			}
 			prev_col_vector = col_vector;
@@ -102,7 +102,7 @@ void compute_tikhonov_regularization_gradient_aux(math::MatrixXv2f& gradient, fl
 		}
 		if(!is_truncated(i_row,i_col)) {
 			math::Vector2f local_gradient_x = col_vector - prev_col_vector; //column-wise local gradient
-			energy += math::squared_sum(local_gradient_x);
+			energy += math::squared_norm(local_gradient_x);
 			//same as replicating the col_vector to the border and doing -(prev_col_vector - 2*col_vector + col_vector)
 			gradient(i_row, i_col) += -prev_col_vector + col_vector;
 		}

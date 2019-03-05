@@ -163,6 +163,9 @@ endif()
 # *** Everything else
 find_package(Eigen3 3.3.4 REQUIRED)
 find_package(OpenMP REQUIRED)
+if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
+	find_package(GCCAtomic REQUIRED)
+endif()
 #=================== DEBUG & VERBOSITY OPTIONS =========================================================================
 
 option(SDF_GENERATION_CONSOLE_PROGRESS_REPORTS "SDF generation will print completion to stdout at fixed progress intervals." OFF)
@@ -269,6 +272,7 @@ target_link_libraries(${MODULE_NAME}
         PUBLIC
         ${Boost_LIBRARIES}
         ${PYTHON3_LIBRARIES}
+        ${GCCLIBATOMIC_LIBRARY}
 )
 
 target_link_libraries(${MODULE_NAME}
