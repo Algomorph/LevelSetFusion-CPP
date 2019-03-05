@@ -154,8 +154,8 @@ void HierarchicalOptimizer3d::optimize_level(
 		//warp_field -= this->rate * gradient;
 
 		// perform termination condition updates
-		math::Vector2i longest_vector_location;
-		math::locate_max_norm2(maximum_warp_update_length, longest_vector_location, gradient);
+		math::Vector3i longest_vector_location;
+		math::locate_max_norm_3d(maximum_warp_update_length, longest_vector_location, gradient);
 
 		iteration_count++;
 	}

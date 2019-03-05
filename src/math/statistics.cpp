@@ -49,7 +49,7 @@ void locate_max_norm(float& max_norm, Vector2i& coordinate, const MatrixXv2f& ve
 	int column_count = static_cast<int>(vector_field.cols());
 
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
-		float squared_length = math::squared_sum(vector_field(i_element));
+		float squared_length = math::squared_norm(vector_field(i_element));
 		if (squared_length > max_squared_norm) {
 			max_squared_norm = squared_length;
 			div_t division_result = div(static_cast<int>(i_element), column_count);
@@ -73,7 +73,7 @@ void locate_max_norm2(float& max_norm, Vector2i& coordinate, const MatrixXv2f& v
 	int column_count = static_cast<int>(vector_field.cols());
 
 	auto max_norm_functor = [&] (math::Vector2f element, eig::Index i_element) {
-		float squared_length = math::squared_sum(element);
+		float squared_length = math::squared_norm(element);
 		if(squared_length > max_squared_norm) {
 			max_squared_norm = squared_length;
 			div_t division_result = div(static_cast<int>(i_element), column_count);
@@ -141,15 +141,37 @@ float min_norm(const MatrixXv2f& vector_field) {
 * @param[out] coordinate the location of the longest vector
 * @param[in] vector_field the field to look at
 */
-void locate_max_norm_3d(float& max_norm, Vector3i& coordinate, const eig::Tensor3f& vector_field) {
+void locate_max_norm_3d(float& max_norm, math::Vector3i& coordinates, const math::Tensor3v3f& vector_field)  {
 	int matrix_size = static_cast<int>(vector_field.size());
 	int y_stride = vector_field.dimension(0);
 	int z_stride = y_stride * vector_field.dimension(1);
+
+	struct NormAndCoordinate {
+		NormAndCoordinate() = default;
+		NormAndCoordinate(float squared_norm, math::Vector3i coordinate):
+			squared_norm(squared_norm),coordinates(coordinate){}
+		float squared_norm = 0.0f;
+		math::Vector3i coordinates = math::Vector3i(0);
+	};
+
+	std::atomic<NormAndCoordinate> max_norm_and_coordinate{{0.0f,math::Vector3i(0)}};
+
+#pragma omp parallel for
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		int x, y, z;
 		traversal::unravel_3d_index(x, y, z, i_element, y_stride, z_stride);
-
-}
+		NormAndCoordinate last_max_norm = max_norm_and_coordinate.load();
+		NormAndCoordinate new_norm;
+		do{
+			new_norm = last_max_norm;
+			new_norm.squared_norm = math::squared_norm(vector_field(i_element));
+			new_norm.coordinates = math::Vector3i(x,y,z);
+		} while (new_norm.squared_norm > last_max_norm.squared_norm &&
+				!max_norm_and_coordinate.compare_exchange_strong(last_max_norm, new_norm));
+	}
+	NormAndCoordinate last_max_norm = max_norm_and_coordinate.load();
+	max_norm = std::sqrt(last_max_norm.squared_norm);
+	coordinates = last_max_norm.coordinates;
 }
 
 /**
@@ -164,7 +186,7 @@ float ratio_of_vector_lengths_above_threshold(const MatrixXv2f& vector_field, fl
 	long total_count = vector_field.size();
 
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
-		float squared_length = math::squared_sum(vector_field(i_element));
+		float squared_length = math::squared_norm(vector_field(i_element));
 		if (squared_length > threshold_squared) {
 			count_above++;
 		}

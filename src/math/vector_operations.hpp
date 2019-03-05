@@ -47,7 +47,7 @@ template<typename T> _CPU_AND_GPU_CODE_ inline typename T::value_type sum(const 
 }
 
 // return the sum of the squares of the provided vector's components, (L2 norm)^2
-template<typename T> _CPU_AND_GPU_CODE_ inline typename T::value_type squared_sum(const T &vec) {
+template<typename T> _CPU_AND_GPU_CODE_ inline typename T::value_type squared_norm(const T &vec) {
 	typename T::value_type r = 0;
 	for (int i = 0; i < T::size; i++)
 		r += vec[i]*vec[i];
