@@ -58,11 +58,6 @@ HierarchicalOptimizer2d::HierarchicalOptimizer2d(
 
 }
 
-HierarchicalOptimizer2d::~HierarchicalOptimizer2d()
-{
-	// TODO Auto-generated destructor stub
-}
-
 HierarchicalOptimizer2d::VerbosityParameters::VerbosityParameters(
 		bool print_iteration_max_warp_update,
 		bool print_iteration_data_energy,

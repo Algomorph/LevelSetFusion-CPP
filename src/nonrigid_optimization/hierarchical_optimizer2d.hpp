@@ -56,7 +56,7 @@ public:
 			eig::VectorXf kernel = eig::VectorXf(0),
 			VerbosityParameters verbosity_parameters = VerbosityParameters()
 	);
-	virtual ~HierarchicalOptimizer2d();
+	virtual ~HierarchicalOptimizer2d() = default;
 
 	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
 
