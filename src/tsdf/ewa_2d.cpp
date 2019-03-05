@@ -52,7 +52,7 @@ namespace tsdf {
  * @param narrow_band_width_voxels width of the narrow band containing values in (-1.,1.0), or non-truncated values
  * @return resulting 2D square TSDF field
  */
-eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
+eig::MatrixXf generate_TSDF_2D_EWA_image(
 		int image_y_coordinate,
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
 		float depth_unit_ratio,

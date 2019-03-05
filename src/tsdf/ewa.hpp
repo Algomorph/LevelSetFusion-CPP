@@ -28,7 +28,7 @@ namespace eig = Eigen;
 
 namespace tsdf {
 
-eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
+eig::Tensor<float, 3> generate_TSDF_3D_EWA_image(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
 		float depth_unit_ratio,
 		const eig::Matrix3f& camera_intrinsic_matrix,
@@ -41,7 +41,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		int narrow_band_width_voxels = 20,
 		float gaussian_covariance_scale = 1.0f);
 
-eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
+eig::MatrixXf generate_TSDF_2D_EWA_image(
 		int image_y_coordinate,
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
 		float depth_unit_ratio,
@@ -54,7 +54,7 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		int narrow_band_width_voxels = 20,
 		float gaussian_covariance_scale = 1.0f);
 
-eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
+eig::MatrixXuc generate_TSDF_3D_EWA_image_visualization(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
 		float depth_unit_ratio,
 		const eig::Tensor<float, 3>& field,

@@ -32,7 +32,7 @@ namespace python_export {
 
 void export_ewa() {
 
-	bp::def("generate_3d_tsdf_field_from_depth_image_ewa", &tsdf::generate_3d_TSDF_field_from_depth_image_EWA,
+	bp::def("generate_tsdf_3d_ewa_image", &tsdf::generate_TSDF_3D_EWA_image,
 			"Generate a 3D TSDF field from the provided depth image using Elliptical Weighed Average resampling approach. "
 					"A 3D Gaussian (standard deviation of 1 voxel) around every voxel is projected onto the depth image, the resulting "
 					"projection is convolved with a 2D Gaussian (standard deviation of 1 pixel), the resulting gaussian is used "
@@ -51,7 +51,7 @@ void export_ewa() {
 					"narrow_band_width_voxels",
 					"gaussian_covariance_scale"));
 
-	bp::def("generate_2d_tsdf_field_from_depth_image_ewa", &tsdf::generate_2d_TSDF_field_from_depth_image_EWA,
+	bp::def("generate_tsdf_2d_ewa_image", &tsdf::generate_TSDF_2D_EWA_image,
 			"Generate 2D TSDF field from depth image using Elliptical Weighed Average resampling approach. "
 					"A 3D Gaussian (standard deviation of 1 voxel) around every voxel is projected onto the depth image, the resulting "
 					"projection is convolved with a 2D Gaussian (standard deviation of 1 pixel), the resulting gaussian is used "
@@ -71,7 +71,7 @@ void export_ewa() {
 					"narrow_band_width_voxels",
 					"gaussian_covariance_scale"));
 
-	bp::def("generate_3d_tsdf_field_from_depth_image_ewa_viz", &tsdf::generate_3d_TSDF_field_from_depth_image_EWA_viz,
+	bp::def("generate_tsdf_3d_ewa_image_visualization", &tsdf::generate_TSDF_3D_EWA_image_visualization,
 			"Draw a visualization of voxel sampling over image space using Elliptical Weighed Average resampling approach."
 			"To limit the density, only ellipses corresponding to voxels with abs(TSDF value) below the given truncation "
 			"threshold will be drawn."

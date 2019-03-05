@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 	eig::Vector3i offset;
 	offset << 94, -256, 804;
 
-	eig::MatrixXf field = tsdf::generate_2d_TSDF_field_from_depth_image_EWA(
+	eig::MatrixXf field = tsdf::generate_TSDF_2D_EWA_image(
 			1, // y coord
 			depth_image,
 			0.001f, //depth unit ratio
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 
 	eig::MatrixXf field_chunk;
 	if (test_full_image) {
-		eig::MatrixXf field = tsdf::generate_2d_TSDF_field_from_depth_image_EWA(
+		eig::MatrixXf field = tsdf::generate_TSDF_2D_EWA_image(
 				200, // y coord
 				depth_image,
 				0.001f, //depth unit ratio
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 
 		field_chunk = field.block(103, 210, 16, 16);
 	}else{
-		field_chunk = tsdf::generate_2d_TSDF_field_from_depth_image_EWA(
+		field_chunk = tsdf::generate_TSDF_2D_EWA_image(
 				200, // y coord
 				depth_image,
 				0.001f, //depth unit ratio
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 			0.0f, 700.0f, 240.0f,
 			0.0f, 0.0f, 1.0f;
 
-	eig::Tensor<float, 3> field = tsdf::generate_3d_TSDF_field_from_depth_image_EWA(
+	eig::Tensor<float, 3> field = tsdf::generate_TSDF_3D_EWA_image(
 			depth_image,
 			0.001f, //depth unit ratio
 			camera_intrinsic_matrix,
@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
 			0.0f, 700.0f, 240.0f,
 			0.0f, 0.0f, 1.0f;
 
-	eig::Tensor<float, 3> field = tsdf::generate_3d_TSDF_field_from_depth_image_EWA(
+	eig::Tensor<float, 3> field = tsdf::generate_TSDF_3D_EWA_image(
 			depth_image,
 			0.001f, //depth unit ratio
 			camera_intrinsic_matrix,
