@@ -61,7 +61,8 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		const eig::Vector3i& array_offset,
 		int field_size,
 		float voxel_size,
-		int narrow_band_width_voxels) {
+		int narrow_band_width_voxels,
+		float gaussian_covariance_scale) {
 	eig::MatrixXf field(field_size, field_size);
 	std::fill_n(field.data(), field.size(), 1.0f);
 	float narrow_band_half_width = static_cast<float>(narrow_band_width_voxels / 2) * voxel_size;
@@ -69,9 +70,10 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 	float w_voxel = 1.0f;
 	float y_voxel = 0.0f;
 
-	eig::Matrix3f covariance_camera_space = compute_covariance_camera_space(voxel_size, camera_pose);
+	eig::Matrix3f covariance_camera_space =
+			compute_covariance_camera_space(voxel_size, camera_pose, gaussian_covariance_scale);
 
-	float squared_radius_threshold = 4.0f * voxel_size; //4.0f * (voxel_size / 2);
+	float squared_radius_threshold = 4.0f * voxel_size * gaussian_covariance_scale;
 	int matrix_size = static_cast<int>(field.size());
 
 	eig::Matrix2f image_space_scaling_matrix = camera_intrinsic_matrix.block(0, 0, 2, 2);

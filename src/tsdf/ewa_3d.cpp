@@ -68,7 +68,8 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		const eig::Vector3i& array_offset,
 		const eig::Vector3i& field_shape,
 		float voxel_size,
-		int narrow_band_width_voxels) {
+		int narrow_band_width_voxels,
+		float gaussian_covariance_scale) {
 
 	eig::Tensor<float, 3> field(field_shape[0], field_shape[1], field_shape[2]);
 	std::fill_n(field.data(), field.size(), 1.0f);
@@ -76,11 +77,12 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 
 	float w_voxel = 1.0f;
 
-	eig::Matrix3f covariance_camera_space = compute_covariance_camera_space(voxel_size, camera_pose);
+	eig::Matrix3f covariance_camera_space =
+			compute_covariance_camera_space(voxel_size, camera_pose, gaussian_covariance_scale);
 
 	eig::Matrix2f image_space_scaling_matrix = camera_intrinsic_matrix.block(0, 0, 2, 2);
 
-	float squared_radius_threshold = 4.0f * voxel_size; //4.0f * (voxel_size / 2);
+	float squared_radius_threshold = 4.0f * voxel_size * gaussian_covariance_scale;
 	int voxel_count = static_cast<int>(field.size());
 
 	int y_stride = field.dimension(0);
@@ -96,8 +98,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 
 #pragma omp parallel for
 	for (int i_element = 0; i_element < voxel_count; i_element++) {
-		// Any MatrixXf in Eigen is column-major
-		// i_element = x * column_count + y
+
 		div_t z_stride_division_result = std::div(i_element, z_stride);
 		int z_field = z_stride_division_result.quot;
 		div_t y_stride_division_result = std::div(z_stride_division_result.rem, y_stride);
@@ -134,7 +135,6 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 
 		// Resampling filter combines the covariance matrices of the
 		// warped prefilter (remapped_covariance) and reconstruction filter (identity) of by adding them.
-		//TODO: This something around here is fishy
 		eig::Matrix2f final_covariance =
 				image_space_scaling_matrix * remapped_covariance.block(0, 0, 2, 2)
 						* image_space_scaling_matrix.transpose()
@@ -156,6 +156,7 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		float weights_sum = 0.0f;
 		float depth_sum = 0.0f;
 
+
 		// collect sample readings
 		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
 			for (int y_sample = y_sample_start; y_sample < y_sample_end; y_sample++) {
@@ -175,7 +176,6 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 				}
 				depth_sum += weight * surface_depth;
 				weights_sum += weight;
-				//samples_counted++;
 			}
 		}
 		if (depth_sum <= 0.0) {

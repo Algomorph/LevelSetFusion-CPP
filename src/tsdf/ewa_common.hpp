@@ -28,9 +28,9 @@ namespace eig = Eigen;
 
 namespace tsdf{
 
-inline eig::Matrix3f compute_covariance_camera_space(float voxel_size, const eig::Matrix4f& camera_pose) {
+inline eig::Matrix3f compute_covariance_camera_space(float voxel_size, const eig::Matrix4f& camera_pose, float gaussian_covariance_scale = 1.0f) {
 	eig::Matrix3f camera_rotation_matrix = camera_pose.block(0, 0, 3, 3);
-	eig::Matrix3f covariance_voxel_sphere_world_space = eig::Matrix3f::Identity() * voxel_size; // / 2;
+	eig::Matrix3f covariance_voxel_sphere_world_space = eig::Matrix3f::Identity() * (voxel_size * gaussian_covariance_scale);
 	eig::Matrix3f covariance_camera_space =
 			camera_rotation_matrix * covariance_voxel_sphere_world_space * camera_rotation_matrix.transpose();
 	return covariance_camera_space;

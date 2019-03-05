@@ -38,7 +38,8 @@ eig::Tensor<float, 3> generate_3d_TSDF_field_from_depth_image_EWA(
 		const eig::Vector3i& field_size =
 				[] {eig::Vector3i default_offset; default_offset << 128, 128, 128; return default_offset;}(),
 		float voxel_size = 0.004,
-		int narrow_band_width_voxels = 20);
+		int narrow_band_width_voxels = 20,
+		float gaussian_covariance_scale = 1.0f);
 
 eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 		int image_y_coordinate,
@@ -50,7 +51,8 @@ eig::MatrixXf generate_2d_TSDF_field_from_depth_image_EWA(
 				[] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
 		int field_size = 128,
 		float voxel_size = 0.004,
-		int narrow_band_width_voxels = 20);
+		int narrow_band_width_voxels = 20,
+		float gaussian_covariance_scale = 1.0f);
 
 eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
@@ -62,6 +64,7 @@ eig::MatrixXuc generate_3d_TSDF_field_from_depth_image_EWA_viz(
 				[] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
 		float voxel_size = 0.004,
 		int scale=20,
-		float tsdf_threshold = 0.1f);
+		float tsdf_threshold = 0.1f,
+		float gaussian_covariance_scale = 1.0f);
 
 } // namespace tsdf

@@ -48,7 +48,8 @@ void export_ewa() {
 					"array_offset",
 					"field_shape",
 					"voxel_size",
-					"narrow_band_width_voxels"));
+					"narrow_band_width_voxels",
+					"gaussian_covariance_scale"));
 
 	bp::def("generate_2d_tsdf_field_from_depth_image_ewa", &tsdf::generate_2d_TSDF_field_from_depth_image_EWA,
 			"Generate 2D TSDF field from depth image using Elliptical Weighed Average resampling approach. "
@@ -67,7 +68,8 @@ void export_ewa() {
 					"array_offset",
 					"field_size",
 					"voxel_size",
-					"narrow_band_width_voxels"));
+					"narrow_band_width_voxels",
+					"gaussian_covariance_scale"));
 
 	bp::def("generate_3d_tsdf_field_from_depth_image_ewa_viz", &tsdf::generate_3d_TSDF_field_from_depth_image_EWA_viz,
 			"Draw a visualization of voxel sampling over image space using Elliptical Weighed Average resampling approach."
@@ -83,7 +85,8 @@ void export_ewa() {
 					"array_offset",
 					"voxel_size",
 					"scale",
-					"tsdf_threshold"));
+					"tsdf_threshold",
+					"gaussian_covariance_scale"));
 }
 
 } //namespace python_export
