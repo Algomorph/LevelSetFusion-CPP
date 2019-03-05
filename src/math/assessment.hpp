@@ -55,9 +55,8 @@ bool matrix_almost_equal_verbose(TMatrix matrix_a, TMatrix matrix_b, double tole
 	}
 	for (Eigen::Index index = 0; index < matrix_a.size(); index++) {
 		if (!matrix_a(index).is_close(matrix_b(index), tolerance)) {
-			ldiv_t division_result = div(index, matrix_a.cols());
-			long x = division_result.quot;
-			long y = division_result.rem;
+			long x = index / matrix_a.cols();
+			long y = index % matrix_a.cols();
 			std::cout << "Matrix entries are not within tolerance threshold of each other. First mismatch at row " << y
 					<< ", column " << x << ". " << "Values: " << matrix_a(index) << " vs. " << matrix_b(index)
 					<< ", difference: " << matrix_a(index) - matrix_b(index) << std::endl;
@@ -78,9 +77,8 @@ bool matrix_almost_equal_verbose<Eigen::MatrixXf>(Eigen::MatrixXf matrix_a, Eige
 	}
 	for (Eigen::Index index = 0; index < matrix_a.size(); index++) {
 		if (!(std::abs(matrix_a(index) - (matrix_b(index)) < tolerance))) {
-			ldiv_t division_result = div(index, matrix_a.cols());
-			long x = division_result.quot;
-			long y = division_result.rem;
+			long x = index / matrix_a.cols();
+			long y = index % matrix_a.cols();
 			std::cout << "Matrix entries are not within tolerance threshold of each other. First mismatch at row " << y
 					<< ", column " << x << ". " << "Values: " << matrix_a(index) << " vs. " << matrix_b(index)
 					<< ", difference: " << matrix_a(index) - matrix_b(index) << std::endl;
