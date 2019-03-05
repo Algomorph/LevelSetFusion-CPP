@@ -120,6 +120,11 @@ void HierarchicalOptimizer3d::optimize_level(
 	gradient.setZero();
 
 	//TODO uncomment commented code & fix/implement missing things
+	//TODO unit tests for:
+	// (1) warp_3d & warp_3d_with_replacement
+	// (2) vector_field_laplacian_3d
+	// (3) convolve_with_kernel (3d version)
+	// (4) locate_max_norm (3d version)
 
 	while (not this->termination_conditions_reached(maximum_warp_update_length, iteration_count)) {
 		// resample the live field & its gradients using current warps
@@ -150,7 +155,7 @@ void HierarchicalOptimizer3d::optimize_level(
 
 		// perform termination condition updates
 		math::Vector2i longest_vector_location;
-		//math::locate_max_norm2(maximum_warp_update_length, longest_vector_location, gradient);
+		math::locate_max_norm2(maximum_warp_update_length, longest_vector_location, gradient);
 
 		iteration_count++;
 	}

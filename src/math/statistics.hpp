@@ -26,6 +26,7 @@
 namespace math{
 	void locate_max_norm(float& max_norm, Vector2i& coordinate, const MatrixXv2f& vector_field);
 	void locate_max_norm2(float& max_norm, Vector2i& coordinate, const MatrixXv2f& vector_field);
+	void locate_max_norm_3d(float& max_norm, Vector3i& coordinate, const eig::Tensor3f& vector_field);
 	float ratio_of_vector_lengths_above_threshold(const MatrixXv2f& vector_field, float threshold);
 	float mean_vector_length(const MatrixXv2f& vector_field);
 	void mean_and_std_vector_length(float& mean, float& standard_deviation, const MatrixXv2f& vector_field);
