@@ -26,6 +26,7 @@
 #include "statistics.hpp"
 #include "vector_operations.hpp"
 #include "../traversal/field_traversal_cpu.hpp"
+#include "../traversal/index_raveling.hpp"
 #include "tensor_operations.hpp"
 
 namespace math {
@@ -64,7 +65,7 @@ void locate_max_norm(float& max_norm, Vector2i& coordinate, const MatrixXv2f& ve
  * Identical to @see locate_max_norm with the exception that this version is using a generic traversal function.
  * @param[out] max_norm length of the longest vector
  * @param[out] coordinate the location of the longest vector
- * @param vector_field the field to look at
+ * @param[in] vector_field the field to look at
  */
 void locate_max_norm2(float& max_norm, Vector2i& coordinate, const MatrixXv2f& vector_field) {
 	float max_squared_norm = 0;
@@ -133,6 +134,22 @@ float min_norm(const MatrixXv2f& vector_field) {
 		while (squared_length < min_squared_norm && min_norm_container.compare_exchange_weak(min_squared_norm, squared_length));
 	}
 	return std::sqrt(min_norm_container.load());
+
+* Locates the maximum L2 norm (Euclidean length) of the vector in the given 3d field.
+* Identical to @see locate_max_norm with the exception that this version is using a generic traversal function.
+* @param[out] max_norm length of the longest vector
+* @param[out] coordinate the location of the longest vector
+* @param[in] vector_field the field to look at
+*/
+void locate_max_norm_3d(float& max_norm, Vector3i& coordinate, const eig::Tensor3f& vector_field) {
+	int matrix_size = static_cast<int>(vector_field.size());
+	int y_stride = vector_field.dimension(0);
+	int z_stride = y_stride * vector_field.dimension(1);
+	for (int i_element = 0; i_element < matrix_size; i_element++) {
+		int x, y, z;
+		traversal::unravel_3d_index(x, y, z, i_element, y_stride, z_stride);
+
+}
 }
 
 /**
