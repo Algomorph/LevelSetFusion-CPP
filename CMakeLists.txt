@@ -276,7 +276,6 @@ add_library(${MODULE_NAME} SHARED
 			src/math/vector_base.hpp
 			src/math/vector_operations.hpp
 			src/math/vector2.hpp
-			src/math/vector2_uv.hpp
 			src/math/vector3.hpp
 
 			src/tsdf/ewa_2d.cpp

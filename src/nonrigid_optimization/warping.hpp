@@ -41,12 +41,15 @@ eig::MatrixXf warp_preserveing_vectors(math::MatrixXv2f& warp_field,
 		bool substitute_original = false, float truncation_float_threshold = 1e-6);
 
 eig::MatrixXf warp(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field);
-eig::Tensor3f warp(const eig::Tensor3f& scalar_field, math::Tensor3v3f& warp_field);
-
 eig::MatrixXf warp_with_replacement(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
 		float replacement_value);
-eig::Tensor3f warp_with_replacement(const eig::Tensor3f& scalar_field, math::Tensor3v3f& warp_field,
-		float replacement_value);
+
+template<typename ElementType>
+eig::Tensor<ElementType,3> warp_3d(const eig::Tensor<ElementType,3>& scalar_field, math::Tensor3v3f& warp_field);
+
+template<typename ElementType>
+eig::Tensor<ElementType,3> warp_3d_with_replacement(const eig::Tensor<ElementType,3>& scalar_field, math::Tensor3v3f& warp_field,
+		ElementType replacement_value);
 
 bp::object py_resample(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,

@@ -117,14 +117,16 @@ void HierarchicalOptimizer3d::optimize_level(
 	int iteration_count = 0;
 
 	math::Tensor3v3f gradient(warp_field.dimensions());
-	std::fill_n(gradient.data(), gradient.size(), math::Vector3f(0.0f));
+	gradient.setZero();
+
+	//TODO uncomment commented code & fix/implement missing things
 
 	while (not this->termination_conditions_reached(maximum_warp_update_length, iteration_count)) {
 		// resample the live field & its gradients using current warps
-		eig::Tensor3f resampled_live = warp(live_pyramid_level, warp_field);
+		eig::Tensor3f resampled_live = warp_3d(live_pyramid_level, warp_field);
 
-		//math::Tensor3v3f resampled_live_gradient = warp_with_replacement(live_gradient_level, warp_field, 0.0f);
-
+		math::Tensor3v3f resampled_live_gradient =
+				warp_3d_with_replacement(live_gradient_level, warp_field, math::Vector3f(0.0f));
 
 		// see how badly our sampled values correspond to the canonical values at the same locations
 		// data_gradient = (warped_live - canonical) * warped_gradient(live)
@@ -132,8 +134,8 @@ void HierarchicalOptimizer3d::optimize_level(
 		//math::Tensor3v3f data_gradient = diff * resampled_live_gradient;
 
 		if (this->tikhonov_term_enabled) {
-			math::Tensor3v2f tikhonov_gradient;
-			math::vector_field_laplacian(tikhonov_gradient, gradient);
+			math::Tensor3v3f tikhonov_gradient;
+			math::vector_field_laplacian_3d(tikhonov_gradient, gradient);
 			//gradient = this->data_term_amplifier * data_gradient - this->tikhonov_strength * tikhonov_gradient;
 		} else {
 			//gradient = this->data_term_amplifier * data_gradient;
@@ -148,7 +150,7 @@ void HierarchicalOptimizer3d::optimize_level(
 
 		// perform termination condition updates
 		math::Vector2i longest_vector_location;
-		math::locate_max_norm2(maximum_warp_update_length, longest_vector_location, gradient);
+		//math::locate_max_norm2(maximum_warp_update_length, longest_vector_location, gradient);
 
 		iteration_count++;
 	}

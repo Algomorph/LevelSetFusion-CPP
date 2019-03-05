@@ -35,12 +35,14 @@ public:
 		this->x = t;
 		this->y = t;
 		this->z = t;
-	} // Scalar constructor
-	_CPU_AND_GPU_CODE_ explicit Vector3(const T* tp) {
-		this->x = tp[0];
-		this->y = tp[1];
-		this->z = tp[2];
-	} // Construct from array
+	}
+	// Scalar constructor
+	//TODO: ambiguity with above on calls like Vector2(0), provide meaningful alternative
+//	_CPU_AND_GPU_CODE_ explicit Vector3(const T* tp) {
+//		this->x = tp[0];
+//		this->y = tp[1];
+//		this->z = tp[2];
+//	} // Construct from array
 	_CPU_AND_GPU_CODE_ Vector3(const T v0, const T v1, const T v2) {
 		this->x = v0;
 		this->y = v1;

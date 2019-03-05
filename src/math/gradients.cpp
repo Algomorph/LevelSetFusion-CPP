@@ -19,36 +19,38 @@
 
 namespace math {
 
+template<typename ElementType>
 struct LaplaceOperatorFunctor {
 	//same as replicating the prev_row_val to the border and doing (nonborder_value - 2*border_value + border_value)
-	inline static math::Vector2f apply_border_operator(math::Vector2f nonborder_value, math::Vector2f border_value) {
+	inline static ElementType apply_border_operator(ElementType nonborder_value, ElementType border_value) {
 		return nonborder_value - border_value;
 	}
 
-	inline static math::Vector2f
-	apply_row_operator(math::Vector2f next_row_val, math::Vector2f row_val, math::Vector2f prev_row_val) {
+	inline static ElementType
+	apply_row_operator(ElementType next_row_val, ElementType row_val, ElementType prev_row_val) {
 		return next_row_val - 2 * row_val + prev_row_val;
 	}
 
-	inline static math::Vector2f
-	apply_column_operator(math::Vector2f next_col_val, math::Vector2f col_val, math::Vector2f prev_col_val) {
+	inline static ElementType
+	apply_column_operator(ElementType next_col_val, ElementType col_val, ElementType prev_col_val) {
 		return next_col_val + prev_col_val;
 	}
 };
 
+template<typename ElementType>
 struct NegativeLaplaceOperatorFunctor {
 	//same as replicating the prev_row_val to the border and doing (nonborder_value + 2*border_value - border_value)
-	inline static math::Vector2f apply_border_operator(math::Vector2f nonborder_value, math::Vector2f border_value) {
+	inline static ElementType apply_border_operator(ElementType nonborder_value, ElementType border_value) {
 		return -nonborder_value + border_value;
 	}
 
-	inline static math::Vector2f
-	apply_row_operator(math::Vector2f next_row_val, math::Vector2f row_val, math::Vector2f prev_row_val) {
+	inline static ElementType
+	apply_row_operator(ElementType next_row_val, ElementType row_val, ElementType prev_row_val) {
 		return -next_row_val + 2 * row_val - prev_row_val;
 	}
 
-	inline static math::Vector2f
-	apply_column_operator(math::Vector2f next_col_val, math::Vector2f col_val, math::Vector2f prev_col_val) {
+	inline static ElementType
+	apply_column_operator(ElementType next_col_val, ElementType col_val, ElementType prev_col_val) {
 		return -next_col_val - prev_col_val;
 	}
 };
@@ -93,16 +95,16 @@ inline void vector_field_laplacian_aux(const math::MatrixXv2f& field, math::Matr
 	}
 }
 
-void vector_field_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian) {
-	vector_field_laplacian_aux<LaplaceOperatorFunctor>(field, laplacian);
+void vector_field_laplacian_2d(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian) {
+	vector_field_laplacian_aux<LaplaceOperatorFunctor<math::Vector2f>>(field, laplacian);
 }
 
 void vector_field_negative_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian) {
-	vector_field_laplacian_aux<NegativeLaplaceOperatorFunctor>(field, laplacian);
+	vector_field_laplacian_aux<NegativeLaplaceOperatorFunctor<math::Vector2f>>(field, laplacian);
 }
 
 template<typename LaplacelikeOperatorFunctor>
-inline void vector_field_laplacian_aux(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field) {
+inline void vector_field_laplacian_3d_aux(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field) {
 	int x_size = field.dimension(0);
 	int y_size = field.dimension(1);
 	int z_size = field.dimension(2);
@@ -168,8 +170,8 @@ inline void vector_field_laplacian_aux(math::Tensor3v3f& laplacian, const math::
 	}
 }
 
-void vector_field_laplacian(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field) {
-	vector_field_laplacian_aux<LaplaceOperatorFunctor>(laplacian, field);
+void vector_field_laplacian_3d(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field) {
+	vector_field_laplacian_3d_aux<LaplaceOperatorFunctor<math::Vector3f>>(laplacian, field);
 }
 
 /**
