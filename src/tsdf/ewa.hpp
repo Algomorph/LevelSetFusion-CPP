@@ -54,6 +54,32 @@ eig::MatrixXf generate_TSDF_2D_EWA_image(
 		int narrow_band_width_voxels = 20,
 		float gaussian_covariance_scale = 1.0f);
 
+eig::MatrixXf generate_TSDF_2D_EWA_TSDF(
+		int image_y_coordinate,
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
+		float depth_unit_ratio,
+		const eig::Matrix3f& camera_intrinsic_matrix,
+		const eig::Matrix4f& camera_pose = eig::Matrix4f::Identity(4, 4),
+		const eig::Vector3i& array_offset =
+				[] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
+		int field_size = 128,
+		float voxel_size = 0.004,
+		int narrow_band_width_voxels = 20,
+		float gaussian_covariance_scale = 1.0f);
+
+eig::MatrixXf generate_TSDF_2D_EWA_TSDF_inclusive(
+		int image_y_coordinate,
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
+		float depth_unit_ratio,
+		const eig::Matrix3f& camera_intrinsic_matrix,
+		const eig::Matrix4f& camera_pose = eig::Matrix4f::Identity(4, 4),
+		const eig::Vector3i& array_offset =
+				[] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
+		int field_size = 128,
+		float voxel_size = 0.004,
+		int narrow_band_width_voxels = 20,
+		float gaussian_covariance_scale = 1.0f);
+
 eig::MatrixXuc generate_TSDF_3D_EWA_image_visualization(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
 		float depth_unit_ratio,

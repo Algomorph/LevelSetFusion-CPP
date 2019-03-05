@@ -188,17 +188,7 @@ eig::Tensor<float, 3> generate_TSDF_3D_EWA_image(
 		// TODO: try with "along ray" and compare. Newcombe et al. in KinectFusion claim there won't be a difference...
 		float signed_distance = final_depth - voxel_camera[2];
 
-		if (signed_distance < -narrow_band_half_width) {
-			field(x_field, y_field, z_field) = -1.0;
-		} else if (signed_distance > narrow_band_half_width) {
-			field(x_field, y_field, z_field) = 1.0;
-		} else {
-			float tsdf_value = signed_distance / narrow_band_half_width;
-			field(x_field, y_field, z_field) = tsdf_value;
-
-
-		}
-
+		field(x_field, y_field, z_field) = compute_TSDF_value(signed_distance, narrow_band_half_width);
 
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
 		++processed_voxel_count;
