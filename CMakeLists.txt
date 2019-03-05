@@ -198,6 +198,7 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/data_term.hpp
 			src/nonrigid_optimization/data_term.cpp
 			src/nonrigid_optimization/warping.hpp
+			src/nonrigid_optimization/warping.tpp
 			src/nonrigid_optimization/warping.cpp
 			src/nonrigid_optimization/boolean_operations.hpp
 			src/nonrigid_optimization/full_gradient.cpp
@@ -246,7 +247,6 @@ add_library(${MODULE_NAME} SHARED
 			src/math/vector_base.hpp
 			src/math/vector_operations.hpp
 			src/math/vector2.hpp
-			src/math/vector2_uv.hpp
 			src/math/vector3.hpp
 			
 			src/tsdf/ewa_2d.cpp
