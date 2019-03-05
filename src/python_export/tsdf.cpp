@@ -32,7 +32,7 @@ namespace python_export {
 
 void export_ewa() {
 
-	bp::def("generate_3d_tsdf_field_from_depth_image_ewa", &tsdf::generate_3d_TSDF_field_from_depth_image_EWA,
+	bp::def("generate_tsdf_3d_ewa_image", &tsdf::generate_TSDF_3D_EWA_image,
 			"Generate a 3D TSDF field from the provided depth image using Elliptical Weighed Average resampling approach. "
 					"A 3D Gaussian (standard deviation of 1 voxel) around every voxel is projected onto the depth image, the resulting "
 					"projection is convolved with a 2D Gaussian (standard deviation of 1 pixel), the resulting gaussian is used "
@@ -51,8 +51,8 @@ void export_ewa() {
 					"narrow_band_width_voxels",
 					"gaussian_covariance_scale"));
 
-	bp::def("generate_2d_tsdf_field_from_depth_image_ewa", &tsdf::generate_2d_TSDF_field_from_depth_image_EWA,
-			"Generate 2D TSDF field from depth image using Elliptical Weighed Average resampling approach. "
+	bp::def("generate_tsdf_2d_ewa_image", &tsdf::generate_TSDF_2D_EWA_image,
+			"Generate 2D TSDF field from depth image using Elliptical Weighed Average resampling approach on depth values of the image. "
 					"A 3D Gaussian (standard deviation of 1 voxel) around every voxel is projected onto the depth image, the resulting "
 					"projection is convolved with a 2D Gaussian (standard deviation of 1 pixel), the resulting gaussian is used "
 					"as a weighted-average filter to sample from the depth image."
@@ -71,12 +71,55 @@ void export_ewa() {
 					"narrow_band_width_voxels",
 					"gaussian_covariance_scale"));
 
-	bp::def("generate_3d_tsdf_field_from_depth_image_ewa_viz", &tsdf::generate_3d_TSDF_field_from_depth_image_EWA_viz,
+	bp::def("generate_tsdf_2d_ewa_tsdf", &tsdf::generate_TSDF_2D_EWA_TSDF,
+			"Generate 2D TSDF field from depth image using Elliptical Weighed Average resampling approach on TSDF "
+					"values resulting from image depth values. "
+					"A 3D Gaussian (standard deviation of 1 voxel) around every voxel is projected onto the depth image, the resulting "
+					"projection is convolved with a 2D Gaussian (standard deviation of 1 pixel), the resulting gaussian is used "
+					"as a weighted-average filter to sample from the depth image."
+					"For details on EWA methods, refer to [1] and [2].\n"
+					"[1] P. S. Heckbert, “Fundamentals of Texture Mapping and Image Warping,” Jun. 1989."
+					"[2] M. Zwicker, H. Pfister, J. Van Baar, and M. Gross, “EWA volume splatting,” in Visualization, 2001."
+					"    VIS’01. Proceedings, 2001, pp. 29–538.",
+			bp::args("image_y_coordinate",
+					"depth_image",
+					"depth_unit_ratio",
+					"camera_intrinsic_matrix",
+					"camera_pose",
+					"array_offset",
+					"field_size",
+					"voxel_size",
+					"narrow_band_width_voxels",
+					"gaussian_covariance_scale"));
+
+	bp::def("generate_tsdf_2d_ewa_tsdf_inclusive", &tsdf::generate_TSDF_2D_EWA_TSDF_inclusive,
+			"Generate 2D TSDF field from depth image using Elliptical Weighed Average resampling approach "
+					"on TSDF values resulting from image depth values. When the sampling range for a particular voxel "
+					"partially falls outside the image, tsdf value of 1.0 is used during averaging for points that are outside. "
+					"A 3D Gaussian (standard deviation of 1 voxel) around every voxel is projected onto the depth image, the resulting "
+					"projection is convolved with a 2D Gaussian (standard deviation of 1 pixel), the resulting gaussian is used "
+					"as a weighted-average filter to sample from the depth image."
+					"For details on EWA methods, refer to [1] and [2].\n"
+					"[1] P. S. Heckbert, “Fundamentals of Texture Mapping and Image Warping,” Jun. 1989."
+					"[2] M. Zwicker, H. Pfister, J. Van Baar, and M. Gross, “EWA volume splatting,” in Visualization, 2001."
+					"    VIS’01. Proceedings, 2001, pp. 29–538.",
+			bp::args("image_y_coordinate",
+					"depth_image",
+					"depth_unit_ratio",
+					"camera_intrinsic_matrix",
+					"camera_pose",
+					"array_offset",
+					"field_size",
+					"voxel_size",
+					"narrow_band_width_voxels",
+					"gaussian_covariance_scale"));
+
+	bp::def("generate_tsdf_3d_ewa_image_visualization", &tsdf::generate_TSDF_3D_EWA_image_visualization,
 			"Draw a visualization of voxel sampling over image space using Elliptical Weighed Average resampling approach."
-			"To limit the density, only ellipses corresponding to voxels with abs(TSDF value) below the given truncation "
-			"threshold will be drawn."
-			"See generate_3d_TSDF_field_from_depth_image_EWA() for method description. "
-			"Draws the projected ellipses corresponding to 1 standard deviation away from each voxel sampling center.",
+					"To limit the density, only ellipses corresponding to voxels with abs(TSDF value) below the given truncation "
+					"threshold will be drawn."
+					"See generate_3d_TSDF_field_from_depth_image_EWA() for method description. "
+					"Draws the projected ellipses corresponding to 1 standard deviation away from each voxel sampling center.",
 			bp::args("depth_image",
 					"depth_unit_ratio",
 					"field",
