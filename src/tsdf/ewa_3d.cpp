@@ -113,7 +113,13 @@ eig::Tensor<float, 3> generate_TSDF_3D_EWA_image(
 		voxel_world << x_voxel, y_voxel, z_voxel, w_voxel;
 
 		eig::Vector3f voxel_camera = (camera_pose * voxel_world).topRows(3);
-		if (voxel_camera(2) <= 0.0f) {
+		if (voxel_camera(2) <= near_clipping_distance) {
+			continue;
+		}
+
+		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
+
+		if(is_voxel_out_of_bounds(voxel_image,depth_image)){
 			continue;
 		}
 
@@ -140,8 +146,6 @@ eig::Tensor<float, 3> generate_TSDF_3D_EWA_image(
 						* image_space_scaling_matrix.transpose()
 						+ eig::Matrix2f::Identity();
 		eig::Matrix2f ellipse_matrix = final_covariance.inverse();
-
-		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
 
 		eig::Vector2f bounds_max = math::compute_centered_ellipse_bound_points(ellipse_matrix,
 				squared_radius_threshold);

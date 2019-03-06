@@ -28,6 +28,8 @@ namespace eig = Eigen;
 
 namespace tsdf {
 
+constexpr float near_clipping_distance = 0.05; //m
+
 eig::Tensor<float, 3> generate_TSDF_3D_EWA_image(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
 		float depth_unit_ratio,
@@ -92,5 +94,16 @@ eig::MatrixXuc generate_TSDF_3D_EWA_image_visualization(
 		int scale=20,
 		float tsdf_threshold = 0.1f,
 		float gaussian_covariance_scale = 1.0f);
+
+eig::MatrixXf sampling_area_heatmap_2D_EWA_image(int image_y_coordinate,
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
+		float depth_unit_ratio,
+		const eig::Matrix3f& camera_intrinsic_matrix,
+		const eig::Matrix4f& camera_pose,
+		const eig::Vector3i& array_offset,
+		int field_size,
+		float voxel_size,
+		int narrow_band_width_voxels,
+		float gaussian_covariance_scale);
 
 } // namespace tsdf

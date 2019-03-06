@@ -130,6 +130,20 @@ void export_ewa() {
 					"scale",
 					"tsdf_threshold",
 					"gaussian_covariance_scale"));
+
+	//DEBUG
+	bp::def("sampling_area_heatmap_2d_ewa_image", &tsdf::sampling_area_heatmap_2D_EWA_image,
+			"DEBUGGING PURPOSE ONLY -- compute matrix of 2D EWA sampling areas for each pixel (~2d voxel) in resulting TSDF",
+			bp::args("image_y_coordinate",
+					"depth_image",
+					"depth_unit_ratio",
+					"camera_intrinsic_matrix",
+					"camera_pose",
+					"array_offset",
+					"field_size",
+					"voxel_size",
+					"narrow_band_width_voxels",
+					"gaussian_covariance_scale"));
 }
 
 } //namespace python_export

@@ -102,6 +102,16 @@ eig::MatrixXuc generate_TSDF_3D_EWA_image_visualization(
 
 		eig::Vector3f voxel_camera = (camera_pose * voxel_world).topRows(3);
 
+		if (voxel_camera(2) <= near_clipping_distance) {
+			continue;
+		}
+
+		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
+
+		if(is_voxel_out_of_bounds(voxel_image,depth_image)){
+			continue;
+		}
+
 		// ray distance from camera to voxel center
 		float ray_distance = voxel_camera.norm();
 		// squared distance along optical axis from camera to voxel
@@ -124,7 +134,6 @@ eig::MatrixXuc generate_TSDF_3D_EWA_image_visualization(
 				image_space_scaling_matrix.transpose() + eig::Matrix2f::Identity();
 		eig::Matrix2f ellipse_matrix = final_covariance.inverse();
 
-		eig::Vector2f voxel_image = ((camera_intrinsic_matrix * voxel_camera) / voxel_camera[2]).topRows(2);
 		math::draw_ellipse(output_image, voxel_image * scale, ellipse_matrix,
 				squared_radius_threshold * scale * scale);
 

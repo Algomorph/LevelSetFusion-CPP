@@ -74,6 +74,16 @@ inline bool compute_sampling_bounds(
 	return true;
 }
 
+inline bool is_voxel_out_of_bounds(const eig::Vector2f& voxel_image,
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
+		int margin = 3){
+	if (voxel_image(0) < -margin || voxel_image(0) >= depth_image.cols() + margin ||
+			voxel_image(1) < -margin || voxel_image(1) >= depth_image.rows() + margin){
+		return true;
+	}
+	return false;
+}
+
 inline bool compute_sampling_bounds_inclusive(
 		int& x_sample_start,
 		int& x_sample_end,
@@ -88,12 +98,22 @@ inline bool compute_sampling_bounds_inclusive(
 	y_sample_start = static_cast<int>(voxel_image(1) - bounds_max(1));
 	y_sample_end = static_cast<int>(std::ceil(voxel_image(1) + bounds_max(1) + 1.0f));
 
+	//TODO: potential speedup -- remove check here and make function void -- we're already checking for "out-of-bounds" voxels
 	// check that at least some samples within sampling range fall within the depth image
 	if (x_sample_start >= depth_image.cols() || x_sample_end <= 0
 			|| y_sample_start >= depth_image.rows() || y_sample_end <= 0) {
 		return false;
 	}
 	return true;
+}
+
+//currently only for debugging purposes
+inline int compute_sampling_area(
+		const int& x_sample_start,
+		const int& x_sample_end,
+		const int& y_sample_start,
+		const int& y_sample_end){
+	return (y_sample_end - y_sample_start) * (x_sample_end - x_sample_start);
 }
 
 }//namespace tsdf

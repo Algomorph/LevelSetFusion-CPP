@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 	eig::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
-	bool test_full_image = false;
+	bool test_full_image = true;
 
 	eig::Matrix3f camera_intrinsic_matrix;
 	camera_intrinsic_matrix <<
@@ -126,8 +126,8 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 				20 // narrow band width
 				);
 
-		field_chunk = field.block(103, 210, 16, 16);
-	}else{
+		field_chunk = field.block(chunk_y_start, chunk_x_start, chunk_size, chunk_size);
+	} else {
 		field_chunk = tsdf::generate_TSDF_2D_EWA_image(
 				200, // y coord
 				depth_image,
@@ -142,6 +142,108 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 	}
 
 	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_EWA_2D_generation05) {
+	eig::MatrixXus depth_image;
+	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
+	BOOST_REQUIRE(image_read);
+	bool test_full_image = true;
+
+	eig::Matrix3f camera_intrinsic_matrix;
+	camera_intrinsic_matrix <<
+			700.0f, 0.0f, 320.0f,
+			0.0f, 700.0f, 240.0f,
+			0.0f, 0.0f, 1.0f;
+	eig::Vector3i offset;
+	offset << -256, -256, 0;
+	int chunk_x_start = 210, chunk_y_start = 103;
+	int chunk_size = 16;
+	eig::Vector3i offset_chunk_from_image;
+	offset_chunk_from_image << chunk_x_start, 0.0f, chunk_y_start;
+	eig::Vector3i offset_chunk = offset + offset_chunk_from_image;
+
+	eig::MatrixXf field_chunk;
+	if (test_full_image) {
+		eig::MatrixXf field = tsdf::generate_TSDF_2D_EWA_TSDF_inclusive(
+				200, // y coord
+				depth_image,
+				0.001f, //depth unit ratio
+				camera_intrinsic_matrix,
+				eig::Matrix4f::Identity(), //camera pose
+				offset,
+				512, //field size
+				0.004f, //voxel size
+				20 // narrow band width
+				);
+
+		field_chunk = field.block(chunk_y_start, chunk_x_start, chunk_size, chunk_size);
+	} else {
+		field_chunk = tsdf::generate_TSDF_2D_EWA_TSDF_inclusive(
+				200, // y coord
+				depth_image,
+				0.001f, //depth unit ratio
+				camera_intrinsic_matrix,
+				eig::Matrix4f::Identity(), //camera pose
+				offset_chunk,
+				chunk_size, //field size
+				0.004f, //voxel size
+				20 // narrow band width
+				);
+	}
+	//TODO: add data for this test
+	//BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_EWA_2D_generation06) {
+	eig::MatrixXus depth_image;
+	bool image_read = read_image_helper(depth_image, "zigzag_depth_00064.png");
+	BOOST_REQUIRE(image_read);
+	bool test_full_image = false;
+
+	eig::Matrix3f camera_intrinsic_matrix;
+	camera_intrinsic_matrix <<
+			700.0f, 0.0f, 320.0f,
+			0.0f, 700.0f, 240.0f,
+			0.0f, 0.0f, 1.0f;
+	eig::Vector3i offset;
+	offset << -256, -256, 480;
+	int chunk_x_start = 24, chunk_y_start = 10;
+	int chunk_size = 16;
+	eig::Vector3i offset_chunk_from_image;
+	offset_chunk_from_image << chunk_x_start, 0.0f, chunk_y_start;
+	eig::Vector3i offset_chunk = offset + offset_chunk_from_image;
+
+	eig::MatrixXf field_chunk;
+	if (test_full_image) {
+
+		eig::MatrixXf field = tsdf::generate_TSDF_2D_EWA_TSDF_inclusive(
+				200, // y coord
+				depth_image,
+				0.001f, //depth unit ratio
+				camera_intrinsic_matrix,
+				eig::Matrix4f::Identity(), //camera pose
+				offset,
+				512, //field size
+				0.004f, //voxel size
+				20 // narrow band width
+				);
+		field_chunk = field.block(chunk_y_start, chunk_x_start, chunk_size, chunk_size);
+	} else {
+		field_chunk = tsdf::generate_TSDF_2D_EWA_TSDF_inclusive(
+				200, // y coord
+				depth_image,
+				0.001f, //depth unit ratio
+				camera_intrinsic_matrix,
+				eig::Matrix4f::Identity(), //camera pose
+				offset_chunk,
+				chunk_size, //field size
+				0.004f, //voxel size
+				20 // narrow band width
+				);
+	}
+	//TODO test against data
+	//BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
