@@ -61,8 +61,8 @@ inline bool compute_sampling_bounds(
 	y_sample_end = static_cast<int>(std::ceil(voxel_image(1) + bounds_max(1) + 1.0f));
 
 	// check that at least some samples within sampling range fall within the depth image
-	if (x_sample_start > depth_image.cols() || x_sample_end <= 0
-			|| y_sample_start > depth_image.rows() || y_sample_end <= 0) {
+	if (x_sample_start >= depth_image.cols() || x_sample_end <= 0
+			|| y_sample_start >= depth_image.rows() || y_sample_end <= 0) {
 		return false;
 	}
 
@@ -89,8 +89,8 @@ inline bool compute_sampling_bounds_inclusive(
 	y_sample_end = static_cast<int>(std::ceil(voxel_image(1) + bounds_max(1) + 1.0f));
 
 	// check that at least some samples within sampling range fall within the depth image
-	if (x_sample_start > depth_image.cols() || x_sample_end <= 0
-			|| y_sample_start > depth_image.rows() || y_sample_end <= 0) {
+	if (x_sample_start >= depth_image.cols() || x_sample_end <= 0
+			|| y_sample_start >= depth_image.rows() || y_sample_end <= 0) {
 		return false;
 	}
 	return true;
