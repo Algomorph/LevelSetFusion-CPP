@@ -27,7 +27,6 @@
 namespace bp = boost::python;
 namespace nro = nonrigid_optimization;
 
-
 namespace python_export {
 namespace hierarchical_optimizer {
 void export_algorithms() {
@@ -37,7 +36,7 @@ void export_algorithms() {
 						bp::init<bp::optional<bool, bool,
 								int, float, int, float, float, float, eig::VectorXf,
 								nro::HierarchicalOptimizer2d::VerbosityParameters> >(
-								bp::args("self", "tikhonov_term_enabled", "gradient_kernel_enabled",
+								bp::args("tikhonov_term_enabled", "gradient_kernel_enabled",
 										"maximum_chunk_size",
 										"rate", "maximum_iteration_count", "maximum_warp_update_threshold",
 										"data_term_amplifier", "tikhonov_strength", "kernel",
@@ -47,7 +46,27 @@ void export_algorithms() {
 						bp::args("canonical_field", "live_field"))
 								;
 		bp::class_<nro::HierarchicalOptimizer2d::VerbosityParameters>("VerbosityParameters",
-				bp::init<bp::optional<bool, bool, bool>>());
+				bp::init<bp::optional<bool, bool, bool>>(
+						bp::args(/*"self",*/
+								"print_max_warp_update",
+								"print_iteration_data_energy",
+								"print_iteration_tikhonov_energy")))
+										.add_property("print_iteration_max_warp_update",
+												&nro::HierarchicalOptimizer2d::VerbosityParameters
+												::print_iteration_max_warp_update)
+										.add_property("print_iteration_data_energy",
+												&nro::HierarchicalOptimizer2d::VerbosityParameters
+												::print_iteration_data_energy)
+										.add_property("print_iteration_tikhonov_energy",
+												&nro::HierarchicalOptimizer2d::VerbosityParameters
+												::print_iteration_tikhonov_energy)
+										.add_property("print_per_iteration_info",
+												&nro::HierarchicalOptimizer2d::VerbosityParameters
+												::print_per_iteration_info)
+										.add_property("print_per_level_info",
+												&nro::HierarchicalOptimizer2d::VerbosityParameters
+												::print_per_level_info)
+										;
 
 	}
 }
