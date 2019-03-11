@@ -34,8 +34,10 @@ void export_algorithms() {
 	{
 		bp::scope outer =
 				bp::class_<nro::HierarchicalOptimizer2d>("HierarchicalOptimizer",
-						bp::init<bp::optional<bool, bool,
-								int, float, int, float, float, float, eig::VectorXf,
+						bp::init<bp::optional<
+								bool, bool,
+								int, float, int, float,
+								float, float, eig::VectorXf,
 								nro::HierarchicalOptimizer2d::VerbosityParameters> >(
 								bp::args("tikhonov_term_enabled",
 										"gradient_kernel_enabled",
@@ -51,31 +53,43 @@ void export_algorithms() {
 										"verbosity_parameters")))
 						.def("optimize", &nro::HierarchicalOptimizer2d::optimize,
 						"Find optimal warp to map given live SDF to given canonical SDF",
-						bp::args("canonical_field", "live_field"))
-								;
+						bp::args("canonical_field", "live_field"));
 		bp::class_<nro::HierarchicalOptimizer2d::VerbosityParameters>("VerbosityParameters",
-				bp::init<bp::optional<bool, bool, bool>>(
+				bp::init<bp::optional<bool, bool, bool, bool, bool>>(
 						bp::args(/*"self",*/
-								"print_max_warp_update",
+						"print_max_warp_update",
+								"print_iteration_mean_tsdf_difference",
+								"print_iteration_std_tsdf_difference",
 								"print_iteration_data_energy",
 								"print_iteration_tikhonov_energy")))
-										.add_property("print_iteration_max_warp_update",
-												&nro::HierarchicalOptimizer2d::VerbosityParameters
-												::print_iteration_max_warp_update)
-										.add_property("print_iteration_data_energy",
-												&nro::HierarchicalOptimizer2d::VerbosityParameters
-												::print_iteration_data_energy)
-										.add_property("print_iteration_tikhonov_energy",
-												&nro::HierarchicalOptimizer2d::VerbosityParameters
-												::print_iteration_tikhonov_energy)
-										.add_property("print_per_iteration_info",
-												&nro::HierarchicalOptimizer2d::VerbosityParameters
-												::print_per_iteration_info)
-										.add_property("print_per_level_info",
-												&nro::HierarchicalOptimizer2d::VerbosityParameters
-												::print_per_level_info)
-										;
-
+				.add_property("print_iteration_max_warp_update",
+				&nro::HierarchicalOptimizer2d::VerbosityParameters
+				::print_iteration_max_warp_update)
+				.add_property("print_iteration_mean_tsdf_difference",
+				&nro::HierarchicalOptimizer2d::VerbosityParameters
+				::print_iteration_mean_tsdf_difference)
+				.add_property("print_iteration_std_tsdf_difference",
+				&nro::HierarchicalOptimizer2d::VerbosityParameters
+				::print_iteration_std_tsdf_difference)
+				.add_property("print_iteration_data_energy",
+				&nro::HierarchicalOptimizer2d::VerbosityParameters
+				::print_iteration_data_energy)
+				.add_property("print_iteration_tikhonov_energy",
+				&nro::HierarchicalOptimizer2d::VerbosityParameters
+				::print_iteration_tikhonov_energy)
+				 //============================================
+				 .add_property("print_per_iteration_info",
+				&nro::HierarchicalOptimizer2d::VerbosityParameters
+				::print_per_iteration_info)
+				 .add_property("print_per_level_info",
+				&nro::HierarchicalOptimizer2d::VerbosityParameters
+				::print_per_level_info)
+				;
+		bp::class_<nro::HierarchicalOptimizer2d::LoggingParameters>("LoggingParameters",
+				bp::init<bp::optional<bool>>(bp::args("collect_per_level_convergence_statistics")))
+				.add_property("collect_per_level_convergence_statistics",
+				&nro::HierarchicalOptimizer2d::LoggingParameters::collect_per_level_convergence_statistics)
+				;
 	}
 }
 } // namespace hierarchical_optimizer

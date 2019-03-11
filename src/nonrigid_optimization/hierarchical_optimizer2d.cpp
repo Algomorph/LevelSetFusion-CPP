@@ -19,6 +19,10 @@
  */
 //stdlib
 #include <limits>
+#include <cmath>
+
+//libraries
+#include <unsupported/Eigen/MatrixFunctions>
 
 //local
 #include "../math/convolution.hpp"
@@ -31,7 +35,6 @@
 
 namespace nonrigid_optimization {
 
-
 HierarchicalOptimizer2d::HierarchicalOptimizer2d(
 		bool tikhonov_term_enabled,
 		bool gradient_kernel_enabled,
@@ -42,9 +45,10 @@ HierarchicalOptimizer2d::HierarchicalOptimizer2d(
 		float data_term_amplifier,
 		float tikhonov_strength,
 		eig::VectorXf kernel,
-		VerbosityParameters verbosity_parameters
+		VerbosityParameters verbosity_parameters,
+		LoggingParameters logging_parameters
 		) :
-				tikhonov_term_enabled(tikhonov_term_enabled && tikhonov_strength > 0.0f),
+		tikhonov_term_enabled(tikhonov_term_enabled && tikhonov_strength > 0.0f),
 				gradient_kernel_enabled(gradient_kernel_enabled && kernel.size() > 0),
 				maximum_chunk_size(maximum_chunk_size),
 				rate(rate),
@@ -53,7 +57,8 @@ HierarchicalOptimizer2d::HierarchicalOptimizer2d(
 				data_term_amplifier(data_term_amplifier),
 				tikhonov_strength(tikhonov_strength),
 				kernel_1d(kernel),
-				verbosity_parameters(verbosity_parameters)
+				verbosity_parameters(verbosity_parameters),
+				logging_parameters(logging_parameters)
 {
 
 }
@@ -65,17 +70,28 @@ HierarchicalOptimizer2d::~HierarchicalOptimizer2d()
 
 HierarchicalOptimizer2d::VerbosityParameters::VerbosityParameters(
 		bool print_iteration_max_warp_update,
+		bool print_iteration_mean_tsdf_difference,
+		bool print_iteration_std_tsdf_difference,
 		bool print_iteration_data_energy,
 		bool print_iteration_tikhonov_energy) :
-		print_iteration_max_warp_update(print_iteration_max_warp_update),
+				print_iteration_max_warp_update(print_iteration_max_warp_update),
+				print_iteration_mean_tsdf_difference(print_iteration_mean_tsdf_difference),
+				print_iteration_std_tsdf_difference(print_iteration_std_tsdf_difference),
 				print_iteration_data_energy(print_iteration_data_energy),
 				print_iteration_tikhonov_energy(print_iteration_tikhonov_energy),
+
 				print_per_iteration_info(
 						print_iteration_max_warp_update ||
 								print_iteration_data_energy ||
 								print_iteration_tikhonov_energy
-								)
+								),
+
+				print_per_level_info(print_per_iteration_info)
 {
+}
+
+HierarchicalOptimizer2d::LoggingParameters::LoggingParameters(bool collect_per_level_convergence_statistics) :
+		collect_per_level_convergence_statistics(collect_per_level_convergence_statistics) {
 }
 
 math::MatrixXv2f HierarchicalOptimizer2d::optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field) {
@@ -109,7 +125,12 @@ math::MatrixXv2f HierarchicalOptimizer2d::optimize(eig::MatrixXf canonical_field
 		if (current_hierarchy_level != level_count - 1) {
 			warp_field = math::upsampleX2(warp_field);
 		}
-
+#ifndef NO_LOG
+		if (this->verbosity_parameters.print_per_level_info) {
+			std::cout << "[LEVEL " << current_hierarchy_level << " COMPLETED]";
+			std::cout << std::endl;
+		}
+#endif
 	}
 
 	return warp_field;
@@ -125,7 +146,7 @@ void HierarchicalOptimizer2d::optimize_level(
 	float maximum_warp_update_length = std::numeric_limits<float>::max();
 	int iteration_count = 0;
 
-	eig::MatrixXf gradient = eig::MatrixXf::Zero(warp_field.rows(), warp_field.cols());
+	math::MatrixXv2f gradient = math::MatrixXv2f::Zero(warp_field.rows(), warp_field.cols());
 	//float normalized_tikhonov_energy = 0;
 
 	while (not this->termination_conditions_reached(maximum_warp_update_length, iteration_count)) {
@@ -142,26 +163,69 @@ void HierarchicalOptimizer2d::optimize_level(
 
 		// this results in the data term gradient
 		math::MatrixXv2f data_gradient = math::stack_as_xv2f(data_gradient_x, data_gradient_y);
-		math::MatrixXv2f gradient;
+#ifndef NO_LOG
+		const float energy_factor = 1000000.0f;
+		float normalized_tikhonov_energy;
+#endif
 
 		if (this->tikhonov_term_enabled) {
 			math::MatrixXv2f tikhonov_gradient;
 			math::vector_field_laplacian(gradient, tikhonov_gradient);
+#ifndef NO_LOG
+			if (this->verbosity_parameters.print_iteration_tikhonov_energy) {
+				eig::MatrixXf gradient_u_component, gradient_v_component;
+				math::unstack_xv2f(gradient_u_component, gradient_v_component, gradient);
+				eig::MatrixXf u_x, u_y, v_x, v_y;
+				float gradient_aggregate_mean;
+				math::scalar_field_gradient(gradient_u_component, u_x, u_y);
+				math::scalar_field_gradient(gradient_v_component, v_x, v_y);
+				gradient_aggregate_mean = (u_x.array().square() + u_y.array().square()
+						+ v_x.array().square() + v_y.array().square()).mean();
+				normalized_tikhonov_energy = energy_factor * 0.5 * gradient_aggregate_mean;
+			}
+#endif
 			gradient = this->data_term_amplifier * data_gradient - this->tikhonov_strength * tikhonov_gradient;
 		} else {
 			gradient = this->data_term_amplifier * data_gradient;
 		}
 
-		if (this->gradient_kernel_enabled){
+		if (this->gradient_kernel_enabled) {
 			math::convolve_with_kernel(gradient, this->kernel_1d);
 		}
 
-		// apply gradient-based update to existing warps
+		// apply gradient-based update to existing warps (we use negative gradient to move in direction of objective
+		// function's minimum)
 		warp_field -= this->rate * gradient;
 
 		// perform termination condition updates
 		math::Vector2i longest_vector_location;
-		math::locate_max_norm2(maximum_warp_update_length,longest_vector_location,gradient);
+		math::locate_max_norm2(maximum_warp_update_length, longest_vector_location, gradient);
+
+#ifndef NO_LOG
+		if (this->verbosity_parameters.print_per_iteration_info) {
+			std::cout << "[ITERATION " << iteration_count << " COMPLETED]";
+			if (this->verbosity_parameters.print_iteration_max_warp_update) {
+				std::cout << " [max upd. l.: " << maximum_warp_update_length << "]";
+			}
+			if (this->verbosity_parameters.print_iteration_mean_tsdf_difference) {
+				std::cout << " [mean diff.: " << diff.mean() << "]";
+			}
+			if (this->verbosity_parameters.print_iteration_std_tsdf_difference) {
+				float mean = diff.mean();
+				float count = static_cast<float>(diff.size());
+				float std_dev = std::sqrt((diff.array() - mean).square().sum() / count);
+				std::cout << " [std diff.: " << std_dev << "]";
+			}
+			if (this->verbosity_parameters.print_iteration_data_energy) {
+				float normalized_data_energy = energy_factor * diff.array().square().mean();
+				std::cout << " [norm. data energy: " << normalized_data_energy << "]";
+			}
+			if (this->verbosity_parameters.print_iteration_tikhonov_energy && this->tikhonov_term_enabled) {
+				std::cout << " [norm. tikhonov energy: " << normalized_tikhonov_energy << "]";
+			}
+			std::cout << std::endl;
+		}
+#endif
 
 		iteration_count++;
 	}

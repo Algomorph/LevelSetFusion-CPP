@@ -192,7 +192,6 @@ add_library(${MODULE_NAME} SHARED
 			src/python_export/numpy_conversions_shared.cpp
 			src/python_export/slavcheva_optimizer.hpp
 			src/python_export/slavcheva_optimizer.cpp
-			src/python_export/test_code.hpp
 			src/python_export/tsdf.hpp
 			src/python_export/tsdf.cpp
 

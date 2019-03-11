@@ -34,16 +34,28 @@ class HierarchicalOptimizer2d {
 
 public:
 	struct VerbosityParameters {
-		VerbosityParameters(bool print_max_warp_update = false,
+		VerbosityParameters(
+				bool print_max_warp_update = false,
+				bool print_iteration_mean_tsdf_difference = false,
+				bool print_iteration_std_tsdf_difference = false,
 				bool print_iteration_data_energy = false,
 				bool print_iteration_tikhonov_energy = false);
 		//per-iteration parameters
 		const bool print_iteration_max_warp_update = false;
+		const bool print_iteration_mean_tsdf_difference = false;
+		const bool print_iteration_std_tsdf_difference = false;
 		const bool print_iteration_data_energy = false;
 		const bool print_iteration_tikhonov_energy = false;
+
 		const bool print_per_iteration_info = false;
-		const bool print_per_level_info = true;
+		const bool print_per_level_info = false;
 	};
+
+	struct LoggingParameters {
+		LoggingParameters(bool collect_per_level_convergence_statistics = false);
+		const bool collect_per_level_convergence_statistics = false;
+	};
+
 	HierarchicalOptimizer2d(
 			bool tikhonov_term_enabled = true,
 			bool gradient_kernel_enabled = true,
@@ -56,8 +68,9 @@ public:
 			float data_term_amplifier = 1.0f,
 			float tikhonov_strength = 0.2f,
 			eig::VectorXf kernel = eig::VectorXf(0),
-			VerbosityParameters verbosity_parameters = VerbosityParameters()
-	);
+			VerbosityParameters verbosity_parameters = VerbosityParameters(),
+			LoggingParameters logging_parameters = LoggingParameters()
+					);
 	virtual ~HierarchicalOptimizer2d();
 
 	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
@@ -86,6 +99,7 @@ private:
 	const float tikhonov_strength = 0.2f;
 	const eig::VectorXf kernel_1d = eig::VectorXf(0);
 	VerbosityParameters verbosity_parameters;
+	LoggingParameters logging_parameters;
 
 	//optimization state variables
 	int current_hierarchy_level = 0;
