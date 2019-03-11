@@ -23,6 +23,7 @@
 #include <boost/shared_ptr.hpp>
 //local
 #include "../nonrigid_optimization/hierarchical_optimizer2d.hpp"
+#include "eigen_numpy.hpp"
 
 namespace bp = boost::python;
 namespace nro = nonrigid_optimization;
@@ -36,10 +37,17 @@ void export_algorithms() {
 						bp::init<bp::optional<bool, bool,
 								int, float, int, float, float, float, eig::VectorXf,
 								nro::HierarchicalOptimizer2d::VerbosityParameters> >(
-								bp::args("tikhonov_term_enabled", "gradient_kernel_enabled",
+								bp::args("tikhonov_term_enabled",
+										"gradient_kernel_enabled",
+
 										"maximum_chunk_size",
-										"rate", "maximum_iteration_count", "maximum_warp_update_threshold",
-										"data_term_amplifier", "tikhonov_strength", "kernel",
+										"rate",
+										"maximum_iteration_count",
+										"maximum_warp_update_threshold",
+
+										"data_term_amplifier",
+										"tikhonov_strength",
+										"kernel",
 										"verbosity_parameters")))
 						.def("optimize", &nro::HierarchicalOptimizer2d::optimize,
 						"Find optimal warp to map given live SDF to given canonical SDF",

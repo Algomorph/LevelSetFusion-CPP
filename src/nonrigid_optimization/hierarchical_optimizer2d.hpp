@@ -47,10 +47,12 @@ public:
 	HierarchicalOptimizer2d(
 			bool tikhonov_term_enabled = true,
 			bool gradient_kernel_enabled = true,
+
 			int maximum_chunk_size = 8,
 			float rate = 0.1f,
 			int maximum_iteration_count = 100,
 			float maximum_warp_update_threshold = 0.001f,
+
 			float data_term_amplifier = 1.0f,
 			float tikhonov_strength = 0.2f,
 			eig::VectorXf kernel = eig::VectorXf(0),
