@@ -1,7 +1,7 @@
 /*
- * slavcheva_optimizer.hpp
+ * logging.hpp
  *
- *  Created on: Jan 11, 2019
+ *  Created on: Mar 12, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -21,10 +21,7 @@
 #pragma once
 
 namespace python_export {
-namespace slavcheva {
-void export_auxiliary_functions();
-void export_setting_singletons();
-void export_algorithms();
-}//namespace slavcheva
-} // namespace python_export
 
+void export_logging_utilities();
+
+} //namespace python_export

@@ -24,6 +24,8 @@
 
 namespace nonrigid_optimization {
 
+
+
 static inline void check_dimensions(const math::MatrixXv2f& vector_field,
 		const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field) {
 	eigen_assert( vector_field.rows() == warped_live_field.rows() &&

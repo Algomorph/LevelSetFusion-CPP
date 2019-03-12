@@ -163,6 +163,9 @@ endif()
 # *** Everything else
 find_package(Eigen3 3.3.4 REQUIRED)
 find_package(OpenMP REQUIRED)
+if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
+	find_package(GCCAtomic REQUIRED)
+endif()
 #=================== DEBUG & VERBOSITY OPTIONS =========================================================================
 
 option(SDF_GENERATION_CONSOLE_PROGRESS_REPORTS "SDF generation will print completion to stdout at fixed progress intervals." OFF)
@@ -186,6 +189,8 @@ add_library(${MODULE_NAME} SHARED
 			src/python_export/eigen_numpy_tensor.cpp
 			src/python_export/hierarchical_optimizer.hpp
 			src/python_export/hierarchical_optimizer.cpp
+			src/python_export/logging.hpp
+			src/python_export/logging.cpp
 			src/python_export/math.hpp
 			src/python_export/math.cpp
 			src/python_export/numpy_conversions_shared.hpp
@@ -208,8 +213,7 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/optimizer2d.hpp
 			src/nonrigid_optimization/sobolev_optimizer2d.cpp
 			src/nonrigid_optimization/sobolev_optimizer2d.hpp
-			src/nonrigid_optimization/logging.cpp
-			src/nonrigid_optimization/logging.hpp
+			
 			src/nonrigid_optimization/filtered_statistics.cpp
 			src/nonrigid_optimization/filtered_statistics.hpp
 			src/nonrigid_optimization/hierarchical_optimizer2d.cpp
@@ -219,6 +223,10 @@ add_library(${MODULE_NAME} SHARED
 
 			src/traversal/field_traversal_cpu.hpp
 
+			src/logging/serializable.hpp
+			src/logging/logging.cpp
+			src/logging/logging.hpp
+			
 			src/math/assessment.hpp
 			src/math/conics.cpp
 			src/math/conics.hpp
@@ -260,6 +268,7 @@ target_link_libraries(${MODULE_NAME}
         PUBLIC
         ${Boost_LIBRARIES}
         ${PYTHON3_LIBRARIES}
+        ${GCCLIBATOMIC_LIBRARY}
 )
 
 target_link_libraries(${MODULE_NAME}

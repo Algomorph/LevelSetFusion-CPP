@@ -26,10 +26,10 @@
 #include <boost/shared_ptr.hpp>
 
 //local
+#include "../logging/logging.hpp"
 #include "../nonrigid_optimization/data_term.hpp"
 #include "../nonrigid_optimization/field_resampling.hpp"
 #include "../nonrigid_optimization/sobolev_optimizer2d.hpp"
-#include "../nonrigid_optimization/logging.hpp"
 #include "eigen_numpy.hpp"
 
 namespace bp = boost::python;
@@ -112,8 +112,8 @@ void export_setting_singletons() {
 
 	//logging
 	.def_readwrite("enable_focus_spot_analytics", &SharedParameters::enable_focus_spot_analytics)
-			.def_readwrite("enable_convergence_status_logging",
-			&SharedParameters::enable_convergence_status_logging)
+			.def_readwrite("enable_convergence_reporting",
+			&SharedParameters::enable_convergence_reporting)
 			.def_readwrite("enable_live_sdf_progression_logging",
 			&SharedParameters::enable_live_sdf_progression_logging)
 			.def_readwrite("enable_gradient_logging", &SharedParameters::enable_gradient_logging)
@@ -124,35 +124,11 @@ void export_setting_singletons() {
 	//TODO: math::Vector<X> C++-->numpy converter is needed for this
 	.def_readwrite("focus_spot", &SharedParameters::focus_spot);
 }
-void export_logging_utilities() {
-	bp::class_<nro::ConvergenceStatus>("ConvergenceStatus", bp::init<>())
-			.def(bp::init<int, float, math::Vector2i, bool, bool, bool>())
-			.def_readwrite("iteration_count", &nro::ConvergenceStatus::iteration_count)
-			.def_readwrite("max_warp_length", &nro::ConvergenceStatus::max_warp_length)
-			.def_readwrite("max_warp_location", &nro::ConvergenceStatus::max_warp_location)
-			.def_readwrite("iteration_limit_reached", &nro::ConvergenceStatus::iteration_limit_reached)
-			.def_readwrite("largest_warp_below_minimum_threshold",
-			&nro::ConvergenceStatus::largest_warp_below_minimum_threshold)
-			.def_readwrite("largest_warp_above_maximum_threshold",
-			&nro::ConvergenceStatus::largest_warp_above_maximum_threshold)
-			;
 
-	bp::class_<nro::IterationWarpStatistics>("WarpStatistics", bp::init<>())
-			.def(bp::init<float, float, float, float, math::Vector2i>())
-			.def_readwrite("ratio_of_warps_above_minimum_threshold",
-			&nro::IterationWarpStatistics::ratio_of_warps_above_minimum_threshold)
-			.def_readwrite("max_warp_length", &nro::IterationWarpStatistics::max_warp_length)
-			.def_readwrite("average_warp_length", &nro::IterationWarpStatistics::mean_warp_length)
-			.def_readwrite("standard_deviation_of_warp_length",
-			&nro::IterationWarpStatistics::standard_deviation_of_warp_length)
-			.def_readwrite("max_warp_location", &nro::IterationWarpStatistics::max_warp_location)
-			.def("to_array", &nro::IterationWarpStatistics::to_array)
-			;
-}
 void export_algorithms() {
 	bp::class_<nro::SobolevOptimizer2d>("SobolevOptimizer2d", bp::init<>())
 			.def("optimize", &nro::SobolevOptimizer2d::optimize)
-			.def("get_convergence_status", &nro::SobolevOptimizer2d::get_convergence_status)
+			.def("get_convergence_report", &nro::SobolevOptimizer2d::get_convergence_report)
 			.def("get_warp_statistics_as_matrix", &nro::SobolevOptimizer2d::get_warp_statistics_as_matrix)
 			;
 

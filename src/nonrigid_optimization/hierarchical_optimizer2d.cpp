@@ -229,6 +229,11 @@ void HierarchicalOptimizer2d::optimize_level(
 
 		iteration_count++;
 	}
+#ifndef NO_LOG
+	if(this->logging_parameters.collect_per_level_convergence_statistics){
+
+	}
+#endif
 }
 
 bool HierarchicalOptimizer2d::termination_conditions_reached(float maximum_warp_update_length,
