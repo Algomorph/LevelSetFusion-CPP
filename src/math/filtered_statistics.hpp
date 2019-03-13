@@ -28,11 +28,16 @@
 
 namespace eig = Eigen;
 
-namespace nonrigid_optimization {
+/**
+ * Routines for computing the statistics of fields operating on filtered field regions, e.g. gather statistics only
+ * over the span of live & canonical TSDF union or intersection
+ */
+
+namespace math {
 float ratio_of_vector_lengths_above_threshold_band_union(const math::MatrixXv2f& vector_field, float threshold,
 		const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field);
 void mean_and_std_vector_length_band_union(float& mean, float& standard_deviation,
 		const math::MatrixXv2f& vector_field, const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field);
 
-} //namespace nonrigid_optimization
+} //namespace math

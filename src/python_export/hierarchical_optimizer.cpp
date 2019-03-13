@@ -53,7 +53,10 @@ void export_algorithms() {
 										"verbosity_parameters")))
 						.def("optimize", &nro::HierarchicalOptimizer2d::optimize,
 						"Find optimal warp to map given live SDF to given canonical SDF",
-						bp::args("canonical_field", "live_field"));
+						bp::args("canonical_field", "live_field"))
+						.def("get_per_level_convergence_reports",
+						&nro::HierarchicalOptimizer2d::get_per_level_convergence_reports)
+						;
 		bp::class_<nro::HierarchicalOptimizer2d::VerbosityParameters>("VerbosityParameters",
 				bp::init<bp::optional<bool, bool, bool, bool, bool>>(
 						bp::args(/*"self",*/
@@ -77,18 +80,18 @@ void export_algorithms() {
 				.add_property("print_iteration_tikhonov_energy",
 				&nro::HierarchicalOptimizer2d::VerbosityParameters
 				::print_iteration_tikhonov_energy)
-				 //============================================
-				 .add_property("print_per_iteration_info",
+				//============================================
+				.add_property("print_per_iteration_info",
 				&nro::HierarchicalOptimizer2d::VerbosityParameters
 				::print_per_iteration_info)
-				 .add_property("print_per_level_info",
+				.add_property("print_per_level_info",
 				&nro::HierarchicalOptimizer2d::VerbosityParameters
 				::print_per_level_info)
 				;
 		bp::class_<nro::HierarchicalOptimizer2d::LoggingParameters>("LoggingParameters",
-				bp::init<bp::optional<bool>>(bp::args("collect_per_level_convergence_statistics")))
-				.add_property("collect_per_level_convergence_statistics",
-				&nro::HierarchicalOptimizer2d::LoggingParameters::collect_per_level_convergence_statistics)
+				bp::init<bp::optional<bool>>(bp::args("collect_per_level_convergence_reports")))
+				.add_property("collect_per_level_convergence_reports",
+				&nro::HierarchicalOptimizer2d::LoggingParameters::collect_per_level_convergence_reports)
 				;
 	}
 }

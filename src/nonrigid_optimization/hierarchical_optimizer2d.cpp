@@ -25,13 +25,14 @@
 #include <unsupported/Eigen/MatrixFunctions>
 
 //local
+#include "hierarchical_optimizer2d.hpp"
+#include "pyramid2d.hpp"
+#include "field_warping.hpp"
 #include "../math/convolution.hpp"
 #include "../math/gradients.hpp"
 #include "../math/typedefs.hpp"
 #include "../math/statistics.hpp"
-#include "hierarchical_optimizer2d.hpp"
-#include "pyramid2d.hpp"
-#include "field_resampling.hpp"
+#include "../logging/logging.hpp"
 
 namespace nonrigid_optimization {
 
@@ -90,11 +91,15 @@ HierarchicalOptimizer2d::VerbosityParameters::VerbosityParameters(
 {
 }
 
-HierarchicalOptimizer2d::LoggingParameters::LoggingParameters(bool collect_per_level_convergence_statistics) :
-		collect_per_level_convergence_statistics(collect_per_level_convergence_statistics) {
+HierarchicalOptimizer2d::LoggingParameters::LoggingParameters(bool collect_per_level_convergence_reports) :
+		collect_per_level_convergence_reports(collect_per_level_convergence_reports) {
 }
 
 math::MatrixXv2f HierarchicalOptimizer2d::optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field) {
+
+#ifndef NO_LOG
+	this->clear_logs();
+#endif
 
 	eig::MatrixXf live_gradient_x, live_gradient_y;
 	math::scalar_field_gradient(live_field, live_gradient_x, live_gradient_y);
@@ -230,8 +235,19 @@ void HierarchicalOptimizer2d::optimize_level(
 		iteration_count++;
 	}
 #ifndef NO_LOG
-	if(this->logging_parameters.collect_per_level_convergence_statistics){
-
+	if(this->logging_parameters.collect_per_level_convergence_reports){
+		logging::WarpDeltaStatistics current_warp_statistics(warp_field,
+						canonical_pyramid_level,
+						live_pyramid_level,
+						this->maximum_warp_update_threshold,
+						FLT_MAX);
+		logging::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
+		this->per_level_convergence_reports.push_back({
+			iteration_count,
+			iteration_count >= this->maximum_iteration_count,
+			current_warp_statistics,
+			tsdf_difference_statistics
+		});
 	}
 #endif
 }
@@ -241,5 +257,14 @@ bool HierarchicalOptimizer2d::termination_conditions_reached(float maximum_warp_
 	return maximum_warp_update_length < this->maximum_warp_update_threshold ||
 			completed_iteration_count >= this->maximum_iteration_count;
 }
+
+#ifndef NO_LOG
+void HierarchicalOptimizer2d::clear_logs(){
+	this->per_level_convergence_reports.clear();
+}
+std::vector<logging::ConvergenceReport> HierarchicalOptimizer2d::get_per_level_convergence_reports(){
+	return this->per_level_convergence_reports;
+}
+#endif
 
 } /* namespace nonrigid_optimization */

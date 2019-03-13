@@ -28,7 +28,7 @@
 //local
 #include "../logging/logging.hpp"
 #include "../nonrigid_optimization/data_term.hpp"
-#include "../nonrigid_optimization/field_resampling.hpp"
+#include "../nonrigid_optimization/field_warping.hpp"
 #include "../nonrigid_optimization/sobolev_optimizer2d.hpp"
 #include "eigen_numpy.hpp"
 

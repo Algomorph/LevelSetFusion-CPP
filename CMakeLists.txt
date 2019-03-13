@@ -202,9 +202,9 @@ add_library(${MODULE_NAME} SHARED
 
 			src/nonrigid_optimization/data_term.hpp
 			src/nonrigid_optimization/data_term.cpp
-			src/nonrigid_optimization/field_resampling.hpp
-			src/nonrigid_optimization/field_resampling.cpp
-			src/nonrigid_optimization/boolean_operations.hpp
+			src/nonrigid_optimization/field_warping.hpp
+			src/nonrigid_optimization/field_warping.cpp
+			
 			src/nonrigid_optimization/full_gradient.cpp
 			src/nonrigid_optimization/full_gradient.hpp
 			src/nonrigid_optimization/smoothing_term.cpp
@@ -214,8 +214,6 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/sobolev_optimizer2d.cpp
 			src/nonrigid_optimization/sobolev_optimizer2d.hpp
 			
-			src/nonrigid_optimization/filtered_statistics.cpp
-			src/nonrigid_optimization/filtered_statistics.hpp
 			src/nonrigid_optimization/hierarchical_optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical_optimizer2d.hpp
 			src/nonrigid_optimization/pyramid2d.cpp
@@ -223,15 +221,18 @@ add_library(${MODULE_NAME} SHARED
 
 			src/traversal/field_traversal_cpu.hpp
 
-			src/logging/serializable.hpp
 			src/logging/logging.cpp
 			src/logging/logging.hpp
+			src/logging/serializable.hpp
 			
 			src/math/assessment.hpp
+			src/math/boolean_operations.hpp
 			src/math/conics.cpp
 			src/math/conics.hpp
 			src/math/convolution.hpp
 			src/math/convolution.cpp
+			src/math/filtered_statistics.cpp
+			src/math/filtered_statistics.hpp
 			src/math/gradients.cpp
 			src/math/gradients.hpp
 			src/math/math_utils.hpp

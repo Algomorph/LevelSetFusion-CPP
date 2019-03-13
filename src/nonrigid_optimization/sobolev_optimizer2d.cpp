@@ -25,12 +25,14 @@
 //local
 #include "data_term.hpp"
 #include "smoothing_term.hpp"
-#include "filtered_statistics.hpp"
+#include "field_warping.hpp"
+#include "../math/filtered_statistics.hpp"
 #include "../math/statistics.hpp"
 #include "../math/gradients.hpp"
 #include "../math/convolution.hpp"
 #include "../math/tensors.hpp"
-#include "field_resampling.hpp"
+#include "../logging/logging.hpp"
+
 
 namespace nonrigid_optimization {
 
@@ -82,44 +84,27 @@ eig::MatrixXf SobolevOptimizer2d::optimize(const eig::MatrixXf& live_field, cons
 
 		//log end-of-iteration results if requested
 		if (SobolevOptimizer2d::shared_parameters().enable_warp_statistics_logging) {
-			float mean, standard_deviation, ratio_of_lengths_above_threshold;
-			mean_and_std_vector_length_band_union(mean, standard_deviation, warp_field, warped_live_field,
-					canonical_field);
-			ratio_of_lengths_above_threshold =
-					ratio_of_vector_lengths_above_threshold_band_union(warp_field,
-							shared_parameters().maximum_warp_length_lower_threshold, warped_live_field,
-							canonical_field);
-
-			float length_min = math::min_norm(warp_field);
-			warp_statistics.push_back(
-					{ ratio_of_lengths_above_threshold,
-							length_min,
-							maximum_warp_length,
-							mean,
-							standard_deviation,
-							maximum_warp_location,
-							maximum_warp_length < shared_parameters().maximum_warp_length_lower_threshold,
-							maximum_warp_length > shared_parameters().maximum_warp_length_upper_threshold
-					});
+			logging::WarpDeltaStatistics current_warp_statistics(warp_field,
+					canonical_field,
+					warped_live_field,
+					SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold,
+					SobolevOptimizer2d::shared_parameters().maximum_warp_length_upper_threshold);
+			warp_statistics.push_back(current_warp_statistics);
 		}
 	}
 
 	//log end-of-optimization results if requested
 	if (SobolevOptimizer2d::shared_parameters().enable_convergence_reporting) {
-		eig::ArrayXf diff = (live_field - canonical_field).array().abs();
-		float diff_mean = diff.mean();
-		float diff_min = diff.minCoeff();
-		eig::ArrayXf::Index max_row, max_col;
-		float diff_max = diff.maxCoeff(&max_row, &max_col);
-		math::Vector2i diff_max_loc(max_col, max_row);
-		float diff_std = std::sqrt((diff - diff_mean).square().sum() / (static_cast<float>(diff.size()) - 1.0f));
-		logging::TsdfDifferenceStatistics tsdf_difference_statistics(diff_min, diff_max, diff_mean, diff_std,
-				diff_max_loc);
-
+		logging::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_field, warped_live_field);
+		logging::WarpDeltaStatistics current_warp_statistics(warp_field,
+				canonical_field,
+				warped_live_field,
+				SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold,
+				SobolevOptimizer2d::shared_parameters().maximum_warp_length_upper_threshold);
 		this->convergence_report = logging::ConvergenceReport(
 				completed_iteration_count,
 				completed_iteration_count >= shared_parameters().maximum_iteration_count,
-				warp_statistics[warp_statistics.size() - 1],
+				current_warp_statistics,
 				tsdf_difference_statistics
 				);
 	}

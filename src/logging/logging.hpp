@@ -19,22 +19,29 @@
  */
 #pragma once
 
+//stdlib
+#include <iostream>
+
 //libraries
 #include <Eigen/Eigen>
 
 //local
 #include "../math/typedefs.hpp"
+#include "../math/tensors.hpp"
 #include "serializable.hpp"
 
 namespace eig = Eigen;
 
 namespace logging {
 
+//TODO: split up into 3 files, 1 file per struct
+
 /**
  * A structure for logging statistics pertaining to warps at the end of an optimization iteration
  * (in warp- or warp-update-threshold-based optimizations)
  */
 struct WarpDeltaStatistics {
+
 	float ratio_above_min_threshold = 0.0;
 	float length_min = 0.0f;
 	float length_max = 0.0f;
@@ -55,9 +62,19 @@ struct WarpDeltaStatistics {
 			bool is_largest_below_min_threshold,
 			bool is_largest_above_max_threshold
 			);
+	WarpDeltaStatistics(const math::MatrixXv2f& warp_field,
+			const eig::MatrixXf& canonical_field,
+			const eig::MatrixXf& live_field,
+			float min_threshold, float max_threshold);
 
 	eig::VectorXf to_array();
+
+	bool operator==(const WarpDeltaStatistics& rhs);
+	bool operator!=(const WarpDeltaStatistics& rhs);
 };
+
+std::ostream &operator<<(std::ostream &ostr, const WarpDeltaStatistics &ts);
+
 
 /**
  * A structure for logging statistics pertaining to numerical differences between corresponding locations in the
@@ -78,9 +95,18 @@ struct TsdfDifferenceStatistics {
 			float difference_standard_deviation,
 			math::Vector2i biggest_difference_location
 			);
+	TsdfDifferenceStatistics(
+			const eig::MatrixXf& canonical_field,
+			const eig::MatrixXf& live_field
+			);
 
 	eig::VectorXf to_array();
+
+	bool operator==(const TsdfDifferenceStatistics& rhs);
+	bool operator!=(const TsdfDifferenceStatistics& rhs);
 };
+
+std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics &ts);
 
 /**
  * A structure for logging characteristics of convergence (warp-threshold-based optimization) after a full optimization run
@@ -99,6 +125,18 @@ struct ConvergenceReport {
 			TsdfDifferenceStatistics tsdf_difference_statistics
 			);
 
+	bool operator==(const ConvergenceReport& rhs) {
+		return this->iteration_count == rhs.iteration_count &&
+				this->iteration_limit_reached == rhs.iteration_limit_reached &&
+				this->warp_delta_statistics == rhs.warp_delta_statistics &&
+				this->tsdf_difference_statistics == rhs.tsdf_difference_statistics;
+	}
+	bool operator!=(const ConvergenceReport& rhs) {
+		return !(*this == rhs);
+	}
+
 };
+
+std::ostream &operator<<(std::ostream &ostr, const ConvergenceReport &ts);
 
 } //namespace logging

@@ -17,21 +17,29 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+//stdlib
+#include <vector>
+
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 
 //libraries
 #include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 //local
 #include "logging.hpp"
 #include "../logging/logging.hpp"
 #include "../math/typedefs.hpp"
+#include "../math/tensors.hpp"
 
 namespace bp = boost::python;
 
 namespace python_export {
 
 void export_logging_utilities() {
-	bp::class_<logging::WarpDeltaStatistics>("WarpStatistics", bp::init<>())
+	bp::class_<logging::WarpDeltaStatistics>("WarpDeltaStatistics", bp::init<>())
 			.def(bp::init<float, float, float, float, float, math::Vector2i, bool, bool>(
 			bp::args("ratio_above_min_threshold",
 					"length_min",
@@ -42,6 +50,14 @@ void export_logging_utilities() {
 					"is_largest_below_min_threshold",
 					"is_largest_above_max_threshold")
 					))
+			.def(bp::init<math::MatrixXv2f, eig::MatrixXf, eig::MatrixXf, float, float>(
+			bp::args(
+					"warp_field",
+					"canonical_field",
+					"live_field",
+					"min_threshold",
+					"max_threshold"
+					)))
 			.def_readwrite("ratio_above_min_threshold",
 			&logging::WarpDeltaStatistics::ratio_above_min_threshold)
 			.def_readwrite("length_min",
@@ -59,6 +75,9 @@ void export_logging_utilities() {
 			.def_readwrite("is_largest_above_max_threshold",
 			&logging::WarpDeltaStatistics::is_largest_above_max_threshold)
 			.def("to_array", &logging::WarpDeltaStatistics::to_array)
+			.def("__eq__", &logging::WarpDeltaStatistics::operator==)
+			.def("__ne__", &logging::WarpDeltaStatistics::operator!=)
+			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
 	bp::class_<logging::TsdfDifferenceStatistics>("TsdfDifferenceStatistics", bp::init<>())
@@ -68,6 +87,7 @@ void export_logging_utilities() {
 					"difference_mean",
 					"difference_standard_deviation",
 					"biggest_difference_location")))
+			.def(bp::init<eig::MatrixXf, eig::MatrixXf>(bp::args("canonical_field", "live_field")))
 			.def_readwrite("difference_min",
 			&logging::TsdfDifferenceStatistics::difference_min)
 			.def_readwrite("difference_max",
@@ -79,10 +99,18 @@ void export_logging_utilities() {
 			.def_readwrite("biggest_difference_location",
 			&logging::TsdfDifferenceStatistics::biggest_difference_location)
 			.def("to_array",
-			&logging::TsdfDifferenceStatistics::to_array);
+			&logging::TsdfDifferenceStatistics::to_array)
+			.def("__eq__", &logging::TsdfDifferenceStatistics::operator==)
+			.def("__ne__", &logging::TsdfDifferenceStatistics::operator!=)
+			.def(bp::self_ns::str(bp::self_ns::self))
+			;
 
 	bp::class_<logging::ConvergenceReport>("ConvergenceReport", bp::init<>())
-			.def(bp::init<int, bool, logging::WarpDeltaStatistics, logging::TsdfDifferenceStatistics>())
+			.def(bp::init<int, bool, logging::WarpDeltaStatistics, logging::TsdfDifferenceStatistics>(
+			bp::args("iteration_count",
+					"iteration_limit_reached",
+					"warp_delta_statistics",
+					"tsdf_difference_statistics")))
 			.def_readwrite("iteration_count",
 			&logging::ConvergenceReport::iteration_count)
 			.def_readwrite("iteration_limit_reached",
@@ -91,7 +119,14 @@ void export_logging_utilities() {
 			&logging::ConvergenceReport::warp_delta_statistics)
 			.def_readwrite("tsdf_difference_statistics",
 			&logging::ConvergenceReport::tsdf_difference_statistics)
+			.def("__eq__", &logging::ConvergenceReport::operator==)
+			.def("__ne__", &logging::ConvergenceReport::operator!=)
+			.def(bp::self_ns::str(bp::self_ns::self))
 			;
+
+	bp::class_<std::vector<logging::ConvergenceReport>>("ConvergenceReportVector")
+			.def(bp::vector_indexing_suite<std::vector<logging::ConvergenceReport>>());
+
 }
 } //namespace python_export
 

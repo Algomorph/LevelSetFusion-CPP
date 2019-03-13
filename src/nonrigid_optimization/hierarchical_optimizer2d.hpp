@@ -19,11 +19,15 @@
  */
 #pragma once
 
+//stdlib
+#include <vector>
+
 //libraries
 #include <Eigen/Eigen>
 
 //local
 #include "../math/tensors.hpp"
+#include "../logging/logging.hpp"
 
 namespace eig = Eigen;
 
@@ -52,8 +56,8 @@ public:
 	};
 
 	struct LoggingParameters {
-		LoggingParameters(bool collect_per_level_convergence_statistics = false);
-		const bool collect_per_level_convergence_statistics = false;
+		LoggingParameters(bool collect_per_level_convergence_reports = false);
+		const bool collect_per_level_convergence_reports = false;
 	};
 
 	HierarchicalOptimizer2d(
@@ -74,7 +78,9 @@ public:
 	virtual ~HierarchicalOptimizer2d();
 
 	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
-
+#ifndef NO_LOG
+	std::vector<logging::ConvergenceReport> get_per_level_convergence_reports();
+#endif
 private:
 
 	void optimize_level(
@@ -87,7 +93,6 @@ private:
 
 	bool termination_conditions_reached(float maximum_warp_update_length, int completed_iteration_count);
 
-	//VerbosityParameters verbosity_parameters = VerbosityParameters()
 	//parameters
 	const bool tikhonov_term_enabled = true;
 	const bool gradient_kernel_enabled = true;
@@ -103,7 +108,11 @@ private:
 
 	//optimization state variables
 	int current_hierarchy_level = 0;
+#ifndef NO_LOG
+	std::vector<logging::ConvergenceReport> per_level_convergence_reports;
 
+	void clear_logs();
+#endif
 };
 
 } /* namespace nonrigid_optimization */

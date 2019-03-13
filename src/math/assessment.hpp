@@ -24,14 +24,35 @@
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <cfloat>
 
 //libraries
 #include <Eigen/Dense>
-
-//DEBUG
 #include <unsupported/Eigen/CXX11/Tensor>
 
 namespace math {
+
+//TODO: split into .hpp/.tpp/.cpp pattern with explicit instantiations
+
+inline bool almost_equal(float a, float b, float epsilon=3e-6) {
+	const float absA = std::abs(a);
+	const float absB = std::abs(b);
+	const float diff = std::abs(a - b);
+
+	//TODO: use FLT_TRUE_MIN instead of FLT_MIN after switching to C++17 or C++20 standard
+
+	if (a == b) { // shortcut, handles infinities
+		return true;
+	} else if (a == 0 || b == 0 || diff < FLT_MIN) {
+		// a or b is zero or both are extremely close to it
+		// relative error is less meaningful here
+		return diff < (epsilon * FLT_MIN);
+	} else { // use relative error
+		return diff / std::min((absA + absB), FLT_MAX) < epsilon;
+	}
+}
+//TODO: template almost_equal and propagate its use throughout this file
+
 template<typename TMatrix>
 bool matrix_almost_equal(TMatrix matrix_a, TMatrix matrix_b, double tolerance = 1e-10) {
 	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.rows()) {

@@ -16,9 +16,10 @@
 
 //local
 #include "smoothing_term.hpp"
+#include "../math/tensors.hpp"
 #include "../math/vector_operations.hpp"
 #include "../math/typedefs.hpp"
-#include "boolean_operations.hpp"
+#include "../math/boolean_operations.hpp"
 
 
 namespace nonrigid_optimization {
@@ -37,7 +38,7 @@ void compute_tikhonov_regularization_gradient_aux(math::MatrixXv2f& gradient, fl
 	math::Vector2<float> some_vector(1.0f,3.0f);
 
 	auto is_truncated = [&](eig::Index i_row, eig::Index i_col) {
-		return TSkipTruncated && are_both_SDF_values_truncated((*live_field)(i_row, i_col), (*canonical_field)(i_row, i_col));
+		return TSkipTruncated && math::are_both_SDF_values_truncated((*live_field)(i_row, i_col), (*canonical_field)(i_row, i_col));
 	};
 
 #pragma omp parallel for reduction(+:energy)
