@@ -38,7 +38,8 @@ void export_algorithms() {
 								bool, bool,
 								int, float, int, float,
 								float, float, eig::VectorXf,
-								nro::HierarchicalOptimizer2d::VerbosityParameters> >(
+								nro::HierarchicalOptimizer2d::VerbosityParameters,
+								nro::HierarchicalOptimizer2d::LoggingParameters> >(
 								bp::args("tikhonov_term_enabled",
 										"gradient_kernel_enabled",
 
@@ -50,7 +51,9 @@ void export_algorithms() {
 										"data_term_amplifier",
 										"tikhonov_strength",
 										"kernel",
-										"verbosity_parameters")))
+
+										"verbosity_parameters",
+										"logging_parameters")))
 						.def("optimize", &nro::HierarchicalOptimizer2d::optimize,
 						"Find optimal warp to map given live SDF to given canonical SDF",
 						bp::args("canonical_field", "live_field"))

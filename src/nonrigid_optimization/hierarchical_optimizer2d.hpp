@@ -73,8 +73,7 @@ public:
 			float tikhonov_strength = 0.2f,
 			eig::VectorXf kernel = eig::VectorXf(0),
 			VerbosityParameters verbosity_parameters = VerbosityParameters(),
-			LoggingParameters logging_parameters = LoggingParameters()
-					);
+			LoggingParameters logging_parameters = LoggingParameters());
 	virtual ~HierarchicalOptimizer2d();
 
 	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
