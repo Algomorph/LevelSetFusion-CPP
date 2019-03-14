@@ -15,19 +15,24 @@
 //  ================================================================
 
 //stdlib
+#include "sobolev_optimizer2d.hpp"
+
 #include <vector>
 #include <cfloat>
 #include <cassert>
+#include <cmath>
 
 //local
-#include "sobolev_optimizer2d.hpp"
 #include "data_term.hpp"
 #include "smoothing_term.hpp"
-#include "filtered_statistics.hpp"
+#include "field_warping.hpp"
+#include "../math/filtered_statistics.hpp"
 #include "../math/statistics.hpp"
 #include "../math/gradients.hpp"
 #include "../math/convolution.hpp"
-#include "field_resampling.hpp"
+#include "../math/tensors.hpp"
+#include "../logging/logging.hpp"
+
 
 namespace nonrigid_optimization {
 
@@ -79,29 +84,29 @@ eig::MatrixXf SobolevOptimizer2d::optimize(const eig::MatrixXf& live_field, cons
 
 		//log end-of-iteration results if requested
 		if (SobolevOptimizer2d::shared_parameters().enable_warp_statistics_logging) {
-			float mean, standard_deviation, ratio_of_lengths_above_threshold;
-			mean_and_std_vector_length_band_union(mean, standard_deviation, warp_field, warped_live_field,
-					canonical_field);
-			ratio_of_lengths_above_threshold =
-					ratio_of_vector_lengths_above_threshold_band_union(warp_field,
-							shared_parameters().maximum_warp_length_lower_threshold, warped_live_field,
-							canonical_field);
-			warp_statistics.push_back(
-					{ ratio_of_lengths_above_threshold, maximum_warp_length, mean, standard_deviation,
-							maximum_warp_location });
+			logging::WarpDeltaStatistics current_warp_statistics(warp_field,
+					canonical_field,
+					warped_live_field,
+					SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold,
+					SobolevOptimizer2d::shared_parameters().maximum_warp_length_upper_threshold);
+			warp_statistics.push_back(current_warp_statistics);
 		}
 	}
 
 	//log end-of-optimization results if requested
-	if (SobolevOptimizer2d::shared_parameters().enable_convergence_status_logging) {
-		this->convergence_status = {
-			completed_iteration_count,
-			maximum_warp_length,
-			maximum_warp_location,
-			completed_iteration_count >= shared_parameters().maximum_iteration_count,
-			maximum_warp_length < shared_parameters().maximum_warp_length_lower_threshold,
-			maximum_warp_length > shared_parameters().maximum_warp_length_upper_threshold
-		};
+	if (SobolevOptimizer2d::shared_parameters().enable_convergence_reporting) {
+		logging::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_field, warped_live_field);
+		logging::WarpDeltaStatistics current_warp_statistics(warp_field,
+				canonical_field,
+				warped_live_field,
+				SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold,
+				SobolevOptimizer2d::shared_parameters().maximum_warp_length_upper_threshold);
+		this->convergence_report = logging::ConvergenceReport(
+				completed_iteration_count,
+				completed_iteration_count >= shared_parameters().maximum_iteration_count,
+				current_warp_statistics,
+				tsdf_difference_statistics
+				);
 	}
 	return warped_live_field;
 }
@@ -125,8 +130,8 @@ float SobolevOptimizer2d::perform_optimization_iteration_and_return_max_warp(eig
 	return maximum_warp_length;
 }
 
-ConvergenceStatus SobolevOptimizer2d::get_convergence_status() {
-	return this->convergence_status;
+logging::ConvergenceReport SobolevOptimizer2d::get_convergence_report() {
+	return this->convergence_report;
 }
 
 eig::MatrixXf SobolevOptimizer2d::get_warp_statistics_as_matrix() {
@@ -137,7 +142,7 @@ eig::MatrixXf SobolevOptimizer2d::get_warp_statistics_as_matrix() {
 
 	eig::MatrixXf warp_statistics_matrix(this->warp_statistics.size(), 6);
 	eig::Index i_row = 0;
-	for (IterationWarpStatistics& iteration_warp_statistics : this->warp_statistics) {
+	for (logging::WarpDeltaStatistics& iteration_warp_statistics : this->warp_statistics) {
 		warp_statistics_matrix.row(i_row) = iteration_warp_statistics.to_array();
 		i_row++;
 	}
@@ -145,7 +150,7 @@ eig::MatrixXf SobolevOptimizer2d::get_warp_statistics_as_matrix() {
 }
 
 void SobolevOptimizer2d::clean_out_logs() {
-	this->convergence_status = ConvergenceStatus();
+	this->convergence_report = logging::ConvergenceReport();
 	this->warp_statistics.clear();
 }
 

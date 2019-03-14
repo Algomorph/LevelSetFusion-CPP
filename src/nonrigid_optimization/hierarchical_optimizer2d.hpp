@@ -19,11 +19,15 @@
  */
 #pragma once
 
+//stdlib
+#include <vector>
+
 //libraries
 #include <Eigen/Eigen>
 
 //local
 #include "../math/tensors.hpp"
+#include "../logging/logging.hpp"
 
 namespace eig = Eigen;
 
@@ -34,32 +38,49 @@ class HierarchicalOptimizer2d {
 
 public:
 	struct VerbosityParameters {
-		VerbosityParameters(bool print_max_warp_update = false,
+		VerbosityParameters(
+				bool print_max_warp_update = false,
+				bool print_iteration_mean_tsdf_difference = false,
+				bool print_iteration_std_tsdf_difference = false,
 				bool print_iteration_data_energy = false,
 				bool print_iteration_tikhonov_energy = false);
 		//per-iteration parameters
 		const bool print_iteration_max_warp_update = false;
+		const bool print_iteration_mean_tsdf_difference = false;
+		const bool print_iteration_std_tsdf_difference = false;
 		const bool print_iteration_data_energy = false;
 		const bool print_iteration_tikhonov_energy = false;
+
 		const bool print_per_iteration_info = false;
-		const bool print_per_level_info = true;
+		const bool print_per_level_info = false;
 	};
+
+	struct LoggingParameters {
+		LoggingParameters(bool collect_per_level_convergence_reports = false);
+		const bool collect_per_level_convergence_reports = false;
+	};
+
 	HierarchicalOptimizer2d(
 			bool tikhonov_term_enabled = true,
 			bool gradient_kernel_enabled = true,
+
 			int maximum_chunk_size = 8,
 			float rate = 0.1f,
 			int maximum_iteration_count = 100,
 			float maximum_warp_update_threshold = 0.001f,
+
 			float data_term_amplifier = 1.0f,
 			float tikhonov_strength = 0.2f,
 			eig::VectorXf kernel = eig::VectorXf(0),
-			VerbosityParameters verbosity_parameters = VerbosityParameters()
-	);
+			VerbosityParameters verbosity_parameters = VerbosityParameters(),
+			LoggingParameters logging_parameters = LoggingParameters()
+					);
 	virtual ~HierarchicalOptimizer2d();
 
 	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
-
+#ifndef NO_LOG
+	std::vector<logging::ConvergenceReport> get_per_level_convergence_reports();
+#endif
 private:
 
 	void optimize_level(
@@ -72,7 +93,6 @@ private:
 
 	bool termination_conditions_reached(float maximum_warp_update_length, int completed_iteration_count);
 
-	//VerbosityParameters verbosity_parameters = VerbosityParameters()
 	//parameters
 	const bool tikhonov_term_enabled = true;
 	const bool gradient_kernel_enabled = true;
@@ -84,10 +104,15 @@ private:
 	const float tikhonov_strength = 0.2f;
 	const eig::VectorXf kernel_1d = eig::VectorXf(0);
 	VerbosityParameters verbosity_parameters;
+	LoggingParameters logging_parameters;
 
 	//optimization state variables
 	int current_hierarchy_level = 0;
+#ifndef NO_LOG
+	std::vector<logging::ConvergenceReport> per_level_convergence_reports;
 
+	void clear_logs();
+#endif
 };
 
 } /* namespace nonrigid_optimization */

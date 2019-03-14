@@ -18,10 +18,10 @@
 #include <iostream>
 
 //local
-#include "boolean_operations.hpp"
+#include "../math/boolean_operations.hpp"
 #include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
-#include "field_resampling.hpp"
+#include "field_warping.hpp"
 
 namespace nonrigid_optimization {
 
@@ -63,7 +63,7 @@ resample_aux(math::MatrixXv2f& warp_field,
 		float live_tsdf_value = warped_live_field(i_element);
 		if (band_union_only) {
 			float canonical_tsdf_value = canonical_field(i_element);
-			if (are_both_SDF_values_truncated(live_tsdf_value, canonical_tsdf_value)) {
+			if (math::are_both_SDF_values_truncated(live_tsdf_value, canonical_tsdf_value)) {
 				new_live_field(i_element) = live_tsdf_value;
 				continue;
 			}

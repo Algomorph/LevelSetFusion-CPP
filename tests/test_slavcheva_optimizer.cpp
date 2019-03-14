@@ -34,7 +34,7 @@
 //test targets
 #include "../src/nonrigid_optimization/data_term.hpp"
 #include "../src/nonrigid_optimization/smoothing_term.hpp"
-#include "../src/nonrigid_optimization/field_resampling.hpp"
+#include "../src/nonrigid_optimization/field_warping.hpp"
 #include "../src/nonrigid_optimization/sobolev_optimizer2d.hpp"
 
 namespace tt = boost::test_tools;
@@ -344,6 +344,7 @@ BOOST_AUTO_TEST_CASE(test_sobolev_optimizer02) {
 	no::SobolevOptimizer2d::shared_parameters().maximum_iteration_count = 2;
 	no::SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold = 0.05f;
 	no::SobolevOptimizer2d::sobolev_parameters().sobolev_kernel = sobolev_kernel;
+	no::SobolevOptimizer2d::shared_parameters().enable_convergence_reporting = true;
 	no::SobolevOptimizer2d optimizer; // @suppress("Abstract class cannot be instantiated")
 	eig::MatrixXf live_field(4, 4), canonical_field(4, 4);
 	live_field << 1.f, 1.f, 0.49999955f, 0.42499956f,
@@ -363,8 +364,19 @@ BOOST_AUTO_TEST_CASE(test_sobolev_optimizer02) {
 			1.0f, 0.33020678f, 0.24566807f, 0.22797936f,
 			1.0f, 0.2261582f, 0.17907946f, 0.14683424f;
 	//@formatter: on
-
 	eig::MatrixXf warped_live_field = optimizer.optimize(live_field, canonical_field);
-
 	BOOST_REQUIRE(warped_live_field.isApprox(expected_warped_live_field_out));
+
+	logging::ConvergenceReport report = optimizer.get_convergence_report();
+
+	logging::WarpDeltaStatistics expected_warp_stats =
+			logging::WarpDeltaStatistics(0.272727, 0.0, 0.0684823, 0.0364445,
+	                                           0.0167321, math::Vector2i(1, 2), false, false);
+    logging::TsdfDifferenceStatistics expected_diff_stats =
+    		logging::TsdfDifferenceStatistics(0, 0.246834, 0.111843, 0.0838871, math::Vector2i(3, 3));
+
+    logging::ConvergenceReport expected_report(2, true, expected_warp_stats, expected_diff_stats);
+
+    BOOST_REQUIRE(report == expected_report);
+
 }

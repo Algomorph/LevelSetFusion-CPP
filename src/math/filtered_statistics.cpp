@@ -18,11 +18,13 @@
  *   limitations under the License.
  */
 
+
+
 #include "filtered_statistics.hpp"
 #include "boolean_operations.hpp"
-#include "../math/vector_operations.hpp"
+#include "vector_operations.hpp"
 
-namespace nonrigid_optimization {
+namespace math {
 
 static inline void check_dimensions(const math::MatrixXv2f& vector_field,
 		const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field) {
@@ -82,4 +84,4 @@ void mean_and_std_vector_length_band_union(float& mean, float& standard_deviatio
 	standard_deviation = static_cast<float>(sqrt(total_squared_deviation / static_cast<double>(total_count)));
 }
 
-} //namespace nonrigid_optimization
+} //namespace math

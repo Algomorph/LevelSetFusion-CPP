@@ -63,7 +63,7 @@ public:
 
 		// logging
 		// optimization-wide
-		bool enable_convergence_status_logging = false;
+		bool enable_convergence_reporting = false;
 		//interiteration
 		bool enable_focus_spot_analytics = false;
 		bool enable_gradient_component_logging = false;

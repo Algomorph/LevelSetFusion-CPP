@@ -19,6 +19,7 @@
 
 namespace math {
 
+//TODO: make more generic
 MatrixXv2f stack_as_xv2f(const Eigen::MatrixXf& matrix_a, const Eigen::MatrixXf& matrix_b) {
 	eigen_assert((matrix_a.rows() == matrix_b.rows() && matrix_a.cols() == matrix_b.cols()) && // @suppress("Invalid arguments")
 	             "Argument matrices do not have the same dimensions.");

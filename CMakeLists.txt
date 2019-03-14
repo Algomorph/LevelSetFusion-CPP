@@ -163,6 +163,9 @@ endif()
 # *** Everything else
 find_package(Eigen3 3.3.4 REQUIRED)
 find_package(OpenMP REQUIRED)
+if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
+	find_package(GCCAtomic REQUIRED)
+endif()
 #=================== DEBUG & VERBOSITY OPTIONS =========================================================================
 
 option(SDF_GENERATION_CONSOLE_PROGRESS_REPORTS "SDF generation will print completion to stdout at fixed progress intervals." OFF)
@@ -186,6 +189,8 @@ add_library(${MODULE_NAME} SHARED
 			src/python_export/eigen_numpy_tensor.cpp
 			src/python_export/hierarchical_optimizer.hpp
 			src/python_export/hierarchical_optimizer.cpp
+			src/python_export/logging.hpp
+			src/python_export/logging.cpp
 			src/python_export/math.hpp
 			src/python_export/math.cpp
 			src/python_export/numpy_conversions_shared.hpp
@@ -197,9 +202,9 @@ add_library(${MODULE_NAME} SHARED
 
 			src/nonrigid_optimization/data_term.hpp
 			src/nonrigid_optimization/data_term.cpp
-			src/nonrigid_optimization/field_resampling.hpp
-			src/nonrigid_optimization/field_resampling.cpp
-			src/nonrigid_optimization/boolean_operations.hpp
+			src/nonrigid_optimization/field_warping.hpp
+			src/nonrigid_optimization/field_warping.cpp
+			
 			src/nonrigid_optimization/full_gradient.cpp
 			src/nonrigid_optimization/full_gradient.hpp
 			src/nonrigid_optimization/smoothing_term.cpp
@@ -208,10 +213,7 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/optimizer2d.hpp
 			src/nonrigid_optimization/sobolev_optimizer2d.cpp
 			src/nonrigid_optimization/sobolev_optimizer2d.hpp
-			src/nonrigid_optimization/logging.cpp
-			src/nonrigid_optimization/logging.hpp
-			src/nonrigid_optimization/filtered_statistics.cpp
-			src/nonrigid_optimization/filtered_statistics.hpp
+			
 			src/nonrigid_optimization/hierarchical_optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical_optimizer2d.hpp
 			src/nonrigid_optimization/pyramid2d.cpp
@@ -219,11 +221,18 @@ add_library(${MODULE_NAME} SHARED
 
 			src/traversal/field_traversal_cpu.hpp
 
+			src/logging/logging.cpp
+			src/logging/logging.hpp
+			src/logging/serializable.hpp
+			
 			src/math/assessment.hpp
+			src/math/boolean_operations.hpp
 			src/math/conics.cpp
 			src/math/conics.hpp
 			src/math/convolution.hpp
 			src/math/convolution.cpp
+			src/math/filtered_statistics.cpp
+			src/math/filtered_statistics.hpp
 			src/math/gradients.cpp
 			src/math/gradients.hpp
 			src/math/math_utils.hpp
@@ -260,6 +269,7 @@ target_link_libraries(${MODULE_NAME}
         PUBLIC
         ${Boost_LIBRARIES}
         ${PYTHON3_LIBRARIES}
+        ${GCCLIBATOMIC_LIBRARY}
 )
 
 target_link_libraries(${MODULE_NAME}

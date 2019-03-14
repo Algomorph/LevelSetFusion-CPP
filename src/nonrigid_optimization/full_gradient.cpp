@@ -17,7 +17,7 @@
 //local
 #include "data_term.hpp"
 #include "full_gradient.hpp"
-#include "boolean_operations.hpp"
+#include "../math/boolean_operations.hpp"
 #include "../math/gradients.hpp"
 
 namespace nonrigid_optimization {
@@ -65,7 +65,7 @@ void compute_energy_gradient(const eig::MatrixXf& warped_live_field, const eig::
 	for (int i_element = 0; i_element < entry_count; i_element++) {
 		float live_tsdf_value = warped_live_field(i_element);
 		float canonical_tsdf_value = canonical_field(i_element);
-		if (band_union_only && are_both_SDF_values_truncated_tolerance(live_tsdf_value, canonical_tsdf_value)){
+		if (band_union_only && math::are_both_SDF_values_truncated_tolerance(live_tsdf_value, canonical_tsdf_value)){
 			continue;
 		}
 

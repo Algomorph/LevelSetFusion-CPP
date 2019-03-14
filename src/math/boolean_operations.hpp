@@ -19,7 +19,7 @@
 
 namespace eig = Eigen;
 
-namespace nonrigid_optimization{
+namespace math{
 
 	/**
 	 * @param tsdf_value_a
@@ -38,4 +38,4 @@ namespace nonrigid_optimization{
     inline bool are_both_SDF_values_truncated(float tsdf_value_a, float tsdf_value_b){
     	return std::abs(tsdf_value_a) == 1.0 && std::abs(tsdf_value_b) == 1.0;
     }
-}// namespace boolean_ops
+}// namespace math

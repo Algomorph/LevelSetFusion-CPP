@@ -23,9 +23,9 @@
 #include <boost/property_tree/ptree.hpp>
 
 //local
-#include "optimizer2d.hpp"
 #include "../math/tensors.hpp"
-#include "logging.hpp"
+#include "../logging/logging.hpp"
+#include "optimizer2d.hpp"
 
 namespace pt = boost::property_tree;
 namespace eig = Eigen;
@@ -72,15 +72,15 @@ public:
 	static SharedParameters& shared_parameters();
 
 	virtual eig::MatrixXf optimize(const eig::MatrixXf& live_field, const eig::MatrixXf& canonical_field) override;
-	ConvergenceStatus get_convergence_status();
+	logging::ConvergenceReport get_convergence_report();
 	eig::MatrixXf get_warp_statistics_as_matrix();
 
 private:
 	float perform_optimization_iteration_and_return_max_warp(eig::MatrixXf& warped_live_field,
 			math::Vector2i& max_warp_location, const eig::MatrixXf& canonical_field, math::MatrixXv2f& warp_field);
 	// *** Logging ***
-	ConvergenceStatus convergence_status;
-	std::vector<IterationWarpStatistics> warp_statistics;
+	logging::ConvergenceReport convergence_report;
+	std::vector<logging::WarpDeltaStatistics> warp_statistics;
 
 	void clean_out_logs();
 };

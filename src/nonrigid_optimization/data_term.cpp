@@ -13,9 +13,11 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //  ================================================================
+
 //local
 #include "data_term.hpp"
-#include "boolean_operations.hpp"
+#include "../math/tensors.hpp"
+#include "../math/boolean_operations.hpp"
 #include "../math/typedefs.hpp"
 #include "../traversal/field_traversal_cpu.hpp"
 
@@ -72,7 +74,7 @@ struct DataTermGradientAndEnergyFunctor {
 	                                 const float& canonical_tsdf_value,
 	                                 const math::Vector2f& local_live_gradient) {
 		if (TSkipTruncated) {
-			if (are_both_SDF_values_truncated(live_tsdf_value, canonical_tsdf_value)) {
+			if (math::are_both_SDF_values_truncated(live_tsdf_value, canonical_tsdf_value)) {
 				return math::Vector2f(0.0f);
 			}
 		}
