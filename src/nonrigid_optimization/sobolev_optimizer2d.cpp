@@ -31,7 +31,8 @@
 #include "../math/gradients.hpp"
 #include "../math/convolution.hpp"
 #include "../math/tensors.hpp"
-#include "../logging/logging.hpp"
+#include "../logging/warp_delta_statistics.hpp"
+#include "../logging/convergence_report.hpp"
 
 
 namespace nonrigid_optimization {

@@ -24,7 +24,7 @@
 
 //local
 #include "../math/tensors.hpp"
-#include "../logging/logging.hpp"
+#include "../logging/convergence_report.hpp"
 #include "optimizer2d.hpp"
 
 namespace pt = boost::property_tree;

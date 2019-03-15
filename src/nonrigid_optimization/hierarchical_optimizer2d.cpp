@@ -32,7 +32,6 @@
 #include "../math/gradients.hpp"
 #include "../math/typedefs.hpp"
 #include "../math/statistics.hpp"
-#include "../logging/logging.hpp"
 
 namespace nonrigid_optimization {
 

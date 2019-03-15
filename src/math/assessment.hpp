@@ -89,25 +89,7 @@ bool matrix_almost_equal_verbose(TMatrix matrix_a, TMatrix matrix_b, double tole
 
 template<>
 bool matrix_almost_equal_verbose<Eigen::MatrixXf>(Eigen::MatrixXf matrix_a, Eigen::MatrixXf matrix_b,
-		double tolerance) {
-	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.rows()) {
-		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.cols() << " columns by " << matrix_a.rows()
-				<< " rows, Matrix b: " << matrix_b.cols() << " columns by " << matrix_b.rows() << " rows."
-				<< std::endl;
-		return false;
-	}
-	for (Eigen::Index index = 0; index < matrix_a.size(); index++) {
-		if (!(std::abs(matrix_a(index) - (matrix_b(index)) < tolerance))) {
-			long x = index / matrix_a.cols();
-			long y = index % matrix_a.cols();
-			std::cout << "Matrix entries are not within tolerance threshold of each other. First mismatch at row " << y
-					<< ", column " << x << ". " << "Values: " << matrix_a(index) << " vs. " << matrix_b(index)
-					<< ", difference: " << matrix_a(index) - matrix_b(index) << std::endl;
-			return false;
-		}
-	}
-	return true;
-}
+		double tolerance);
 
 template<typename TEigenContainer, typename LambdaCompareDimensions, typename LambdaCompareElements,
 		typename LambdaPrintLocalError>

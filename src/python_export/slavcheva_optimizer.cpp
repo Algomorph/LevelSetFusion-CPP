@@ -26,7 +26,8 @@
 #include <boost/shared_ptr.hpp>
 
 //local
-#include "../logging/logging.hpp"
+#include "../logging/warp_delta_statistics.hpp"
+#include "../logging/convergence_report.hpp"
 #include "../nonrigid_optimization/data_term.hpp"
 #include "../nonrigid_optimization/field_warping.hpp"
 #include "../nonrigid_optimization/sobolev_optimizer2d.hpp"

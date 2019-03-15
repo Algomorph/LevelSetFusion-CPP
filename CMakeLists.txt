@@ -204,7 +204,6 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/data_term.cpp
 			src/nonrigid_optimization/field_warping.hpp
 			src/nonrigid_optimization/field_warping.cpp
-			
 			src/nonrigid_optimization/full_gradient.cpp
 			src/nonrigid_optimization/full_gradient.hpp
 			src/nonrigid_optimization/smoothing_term.cpp
@@ -221,11 +220,16 @@ add_library(${MODULE_NAME} SHARED
 
 			src/traversal/field_traversal_cpu.hpp
 
-			src/logging/logging.cpp
-			src/logging/logging.hpp
+			src/logging/warp_delta_statistics.hpp
+			src/logging/warp_delta_statistics.cpp
+			src/logging/tsdf_difference_statistics.hpp
+			src/logging/tsdf_difference_statistics.cpp
+			src/logging/convergence_report.hpp
+			src/logging/convergence_report.cpp
 			src/logging/serializable.hpp
 			
 			src/math/assessment.hpp
+			src/math/assessment.cpp
 			src/math/boolean_operations.hpp
 			src/math/conics.cpp
 			src/math/conics.hpp
