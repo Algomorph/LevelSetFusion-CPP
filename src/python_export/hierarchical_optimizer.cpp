@@ -33,7 +33,7 @@ namespace hierarchical_optimizer {
 void export_algorithms() {
 	{
 		bp::scope outer =
-				bp::class_<nro::HierarchicalOptimizer2d>("HierarchicalOptimizer",
+				bp::class_<nro::HierarchicalOptimizer2d>("HierarchicalOptimizer2d",
 						bp::init<bp::optional<
 								bool, bool,
 								int, float, int, float,
@@ -61,6 +61,8 @@ void export_algorithms() {
 						&nro::HierarchicalOptimizer2d::get_per_level_convergence_reports)
 						;
 		bp::class_<nro::HierarchicalOptimizer2d::VerbosityParameters>("VerbosityParameters",
+				"Parameters that control verbosity to stdout. "
+				"Assumes being used in an \"immutable\" manner, i.e. just a structure that holds values",
 				bp::init<bp::optional<bool, bool, bool, bool, bool>>(
 						bp::args(/*"self",*/
 						"print_max_warp_update",
