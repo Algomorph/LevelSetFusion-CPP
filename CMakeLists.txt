@@ -219,7 +219,9 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/pyramid2d.hpp
 
 			src/traversal/field_traversal_cpu.hpp
-
+			
+			src/logging/ho_2d_result_store.hpp
+			src/logging/ho_2d_result_store.cpp
 			src/logging/warp_delta_statistics.hpp
 			src/logging/warp_delta_statistics.cpp
 			src/logging/tsdf_difference_statistics.hpp
