@@ -25,12 +25,12 @@
 namespace eig = Eigen;
 
 namespace nonrigid_optimization {
-
+namespace slavcheva{
 
 void compute_energy_gradient(const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field,
                              const eig::MatrixXf& warp_field_x, const eig::MatrixXf& warp_field_y,
                              eig::MatrixXf& gradient_field_x, eig::MatrixXf& gradient_field_y,
                              bool band_union_only = true);
 
-
+} //namespace slavcheva
 }//namespace nonrigid_optimization

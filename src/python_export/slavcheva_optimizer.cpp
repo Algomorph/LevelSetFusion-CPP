@@ -34,6 +34,7 @@
 #include "../logging/convergence_report.hpp"
 
 namespace bp = boost::python;
+namespace nro_s = nonrigid_optimization::slavcheva;
 namespace nro = nonrigid_optimization;
 
 struct NullDeleter {
@@ -41,8 +42,8 @@ struct NullDeleter {
 	}
 };
 
-typedef nro::SobolevOptimizer2d::SobolevParameters SobolevParameters;
-typedef nro::Optimizer2d::SharedParameters SharedParameters;
+typedef nro_s::SobolevOptimizer2d::SobolevParameters SobolevParameters;
+typedef nro_s::Optimizer2d::SharedParameters SharedParameters;
 
 boost::shared_ptr<SobolevParameters> get_shared_sobolev_parameters() {
 	return boost::shared_ptr<SobolevParameters>(
@@ -61,7 +62,7 @@ namespace python_export {
 
 namespace slavcheva {
 void export_auxiliary_functions() {
-	bp::def("data_term_at_location", nro::py_data_term_at_location);
+	bp::def("data_term_at_location", nro_s::py_data_term_at_location);
 
 	bp::def("resample", nro::py_resample,
 			resample_overloads(
@@ -127,10 +128,10 @@ void export_setting_singletons() {
 }
 
 void export_algorithms() {
-	bp::class_<nro::SobolevOptimizer2d>("SobolevOptimizer2d", bp::init<>())
-			.def("optimize", &nro::SobolevOptimizer2d::optimize)
-			.def("get_convergence_report", &nro::SobolevOptimizer2d::get_convergence_report)
-			.def("get_warp_statistics_as_matrix", &nro::SobolevOptimizer2d::get_warp_statistics_as_matrix)
+	bp::class_<nro_s::SobolevOptimizer2d>("SobolevOptimizer2d", bp::init<>())
+			.def("optimize", &nro_s::SobolevOptimizer2d::optimize)
+			.def("get_convergence_report", &nro_s::SobolevOptimizer2d::get_convergence_report)
+			.def("get_warp_statistics_as_matrix", &nro_s::SobolevOptimizer2d::get_warp_statistics_as_matrix)
 			;
 
 }

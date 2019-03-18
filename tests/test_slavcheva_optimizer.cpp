@@ -40,7 +40,7 @@
 namespace tt = boost::test_tools;
 namespace bp = boost::python;
 namespace eig = Eigen;
-namespace no = nonrigid_optimization;
+namespace nro_s = nonrigid_optimization::slavcheva;
 
 BOOST_AUTO_TEST_CASE(test_test) {
 
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(data_term_test) {
 	float out_data_grad_x, out_data_grad_y, out_energy_contribution;
 	x = 0;
 	y = 0;
-	nonrigid_optimization::compute_local_data_term_gradient(warped_live_field, canonical_field, x, y,
+	nro_s::compute_local_data_term_gradient(warped_live_field, canonical_field, x, y,
 			live_gradient_x_field, live_gradient_y_field,
 			out_data_grad_x,
 			out_data_grad_y,
@@ -162,14 +162,14 @@ BOOST_AUTO_TEST_CASE(resampling_test02) {
 			-1.0f, 0.0f, 0.0f,
 			0.0f, 0.0f, 0.5f,
 			0.0f, 0.5f, -0.5f;
-	math::MatrixXv2f expected_warp_field(3,3);
+	math::MatrixXv2f expected_warp_field(3, 3);
 
 	expected_warp_field = math::stack_as_xv2f(expected_u_vectors, expected_v_vectors);
 
 	Matrix3f warped_live_field_out = nonrigid_optimization::resample(warp_field, warped_live_field, canonical_field,
 			true, false, true);
 	BOOST_REQUIRE(warped_live_field_out.isApprox(expected_live_out));
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field,expected_warp_field, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field, expected_warp_field, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(resampling_test03) {
@@ -233,12 +233,12 @@ BOOST_AUTO_TEST_CASE(test_data_term_gradient01) {
 	math::scalar_field_gradient(test_data::warped_live_field, warped_live_field_gradient);
 	float expected_energy_out = 4.142916451210006f;
 	float expected_energy_out_band_union_only = 0.14291645121000718f;
-	nonrigid_optimization::compute_data_term_gradient(data_term_gradient, data_term_energy,
+	nro_s::compute_data_term_gradient(data_term_gradient, data_term_energy,
 			test_data::warped_live_field, test_data::canonical_field,
 			warped_live_field_gradient);
 	BOOST_REQUIRE(math::matrix_almost_equal(data_term_gradient, test_data::data_term_gradient, 1e-6));
 	BOOST_REQUIRE_CLOSE(data_term_energy, expected_energy_out, 1e-6);
-	nonrigid_optimization::compute_data_term_gradient_within_band_union(data_term_gradient_band_union_only,
+	nro_s::compute_data_term_gradient_within_band_union(data_term_gradient_band_union_only,
 			data_term_energy, test_data::warped_live_field,
 			test_data::canonical_field,
 			warped_live_field_gradient);
@@ -276,7 +276,7 @@ BOOST_AUTO_TEST_CASE(test_tikhonov_regularization_gradient01) {
 			math::Vector2f(-1.f, -1.f), math::Vector2f(0.0f, 0.0f);
 	//@formatter:on
 
-	nonrigid_optimization::compute_tikhonov_regularization_gradient_within_band_union(
+	nro_s::compute_tikhonov_regularization_gradient_within_band_union(
 			tikhonov_gradient_band_union_only, tikhonov_energy_band_union_only,
 			warp_field, live_field, canonical_field);
 
@@ -290,18 +290,19 @@ BOOST_AUTO_TEST_CASE(test_tikhonov_regularization_gradient02) {
 
 	math::MatrixXv2f warp_field = test_data::data_term_gradient_band_union_only * 0.1;
 
-	nonrigid_optimization::compute_tikhonov_regularization_gradient(
+	nro_s::compute_tikhonov_regularization_gradient(
 			tikhonov_gradient, tikhonov_energy, warp_field);
 
 	BOOST_REQUIRE(math::matrix_almost_equal_verbose(tikhonov_gradient, test_data::tikhonov_gradient, 1e-6));
 	BOOST_REQUIRE_CLOSE(tikhonov_energy, test_data::tikhonov_energy, 1e-4);
 
-	nonrigid_optimization::compute_tikhonov_regularization_gradient_within_band_union(
+	nro_s::compute_tikhonov_regularization_gradient_within_band_union(
 			tikhonov_gradient_band_union_only, tikhonov_energy, warp_field, test_data::warped_live_field2,
 			test_data::canonical_field);
 
 	BOOST_REQUIRE(
-			math::matrix_almost_equal_verbose(tikhonov_gradient_band_union_only, test_data::tikhonov_gradient_band_union_only,
+			math::matrix_almost_equal_verbose(tikhonov_gradient_band_union_only,
+					test_data::tikhonov_gradient_band_union_only,
 					1e-6));
 	BOOST_REQUIRE_CLOSE(tikhonov_energy, test_data::tikhonov_energy_band_union_only, 1e-4);
 }
@@ -310,9 +311,9 @@ BOOST_AUTO_TEST_CASE(test_sobolev_optimizer01) {
 	//corresponds to Python test_nonrigid_optimization01 in test_nonrigid_optimization.py
 	eig::Vector3f sobolev_kernel;
 	sobolev_kernel << 0.06742075f, 0.99544406f, 0.06742075f;
-	no::SobolevOptimizer2d::shared_parameters().maximum_iteration_count = 1;
-	no::SobolevOptimizer2d::sobolev_parameters().sobolev_kernel = sobolev_kernel;
-	no::SobolevOptimizer2d optimizer; // @suppress("Abstract class cannot be instantiated")
+	nro_s::SobolevOptimizer2d::shared_parameters().maximum_iteration_count = 1;
+	nro_s::SobolevOptimizer2d::sobolev_parameters().sobolev_kernel = sobolev_kernel;
+	nro_s::SobolevOptimizer2d optimizer; // @suppress("Abstract class cannot be instantiated")
 	eig::MatrixXf live_field(4, 4), canonical_field(4, 4);
 	live_field << 1.f, 1.f, 0.49999955f, 0.42499956f,
 			1.f, 0.44999936f, 0.34999937f, 0.32499936f,
@@ -341,11 +342,11 @@ BOOST_AUTO_TEST_CASE(test_sobolev_optimizer02) {
 	//corresponds to Python test_nonrigid_optimization02 in test_nonrigid_optimization.py
 	eig::Vector3f sobolev_kernel;
 	sobolev_kernel << 0.06742075f, 0.99544406f, 0.06742075f;
-	no::SobolevOptimizer2d::shared_parameters().maximum_iteration_count = 2;
-	no::SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold = 0.05f;
-	no::SobolevOptimizer2d::sobolev_parameters().sobolev_kernel = sobolev_kernel;
-	no::SobolevOptimizer2d::shared_parameters().enable_convergence_reporting = true;
-	no::SobolevOptimizer2d optimizer; // @suppress("Abstract class cannot be instantiated")
+	nro_s::SobolevOptimizer2d::shared_parameters().maximum_iteration_count = 2;
+	nro_s::SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold = 0.05f;
+	nro_s::SobolevOptimizer2d::sobolev_parameters().sobolev_kernel = sobolev_kernel;
+	nro_s::SobolevOptimizer2d::shared_parameters().enable_convergence_reporting = true;
+	nro_s::SobolevOptimizer2d optimizer; // @suppress("Abstract class cannot be instantiated")
 	eig::MatrixXf live_field(4, 4), canonical_field(4, 4);
 	live_field << 1.f, 1.f, 0.49999955f, 0.42499956f,
 			1.f, 0.44999936f, 0.34999937f, 0.32499936f,
@@ -371,12 +372,11 @@ BOOST_AUTO_TEST_CASE(test_sobolev_optimizer02) {
 
 	logging::WarpDeltaStatistics expected_warp_stats =
 			logging::WarpDeltaStatistics(0.272727, 0.0, 0.0684823, 0.0364445,
-	                                           0.0167321, math::Vector2i(1, 2), false, false);
-    logging::TsdfDifferenceStatistics expected_diff_stats =
-    		logging::TsdfDifferenceStatistics(0, 0.246834, 0.111843, 0.0838871, math::Vector2i(3, 3));
+					0.0167321, math::Vector2i(1, 2), false, false);
+	logging::TsdfDifferenceStatistics expected_diff_stats =
+			logging::TsdfDifferenceStatistics(0, 0.246834, 0.111843, 0.0838871, math::Vector2i(3, 3));
 
-    logging::ConvergenceReport expected_report(2, true, expected_warp_stats, expected_diff_stats);
+	logging::ConvergenceReport expected_report(2, true, expected_warp_stats, expected_diff_stats);
 
-    BOOST_REQUIRE(report == expected_report);
-
+	BOOST_REQUIRE(report == expected_report);
 }

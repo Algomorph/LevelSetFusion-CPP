@@ -22,7 +22,7 @@
 #include "../../traversal/field_traversal_cpu.hpp"
 
 namespace nonrigid_optimization {
-
+namespace slavcheva{
 
 /***
  * \brief Computes the local gradient of the data energy term for KillingFusion/SobolevFusion-based optimization on a
@@ -147,5 +147,5 @@ bp::tuple py_data_term_at_location(eig::MatrixXf warped_live_field, eig::MatrixX
 	return bp::make_tuple(data_gradient_out, local_energy_contribution);
 }
 
-
+} //namespace slavcheva
 }//namespace nonrigid_optimization

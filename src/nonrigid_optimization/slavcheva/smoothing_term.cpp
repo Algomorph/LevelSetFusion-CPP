@@ -23,7 +23,7 @@
 
 
 namespace nonrigid_optimization {
-
+namespace slavcheva{
 
 template<bool TSkipTruncated>
 void compute_tikhonov_regularization_gradient_aux(math::MatrixXv2f& gradient, float& energy,
@@ -125,5 +125,5 @@ compute_tikhonov_regularization_gradient_within_band_union(math::MatrixXv2f& gra
 	return compute_tikhonov_regularization_gradient_aux<true>(gradient, energy, warp_field, &live_field,
 	                                                           &canonical_field);
 }
-
+} //namespace slavcheva
 }//nonrigid_optimization

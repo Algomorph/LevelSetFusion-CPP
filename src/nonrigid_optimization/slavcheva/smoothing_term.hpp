@@ -24,6 +24,7 @@
 namespace eig = Eigen;
 
 namespace nonrigid_optimization {
+namespace slavcheva{
 
 void
 compute_tikhonov_regularization_gradient(math::MatrixXv2f& gradient, float& energy, const math::MatrixXv2f& warp_field);
@@ -33,5 +34,5 @@ compute_tikhonov_regularization_gradient_within_band_union(math::MatrixXv2f& gra
                                                            const math::MatrixXv2f& warp_field,
                                                            const eig::MatrixXf& live_field,
                                                            const eig::MatrixXf& canonical_field);
-
+} //namespace slavcheva
 }//nonrigid_optimization

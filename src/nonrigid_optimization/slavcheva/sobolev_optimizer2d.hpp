@@ -31,6 +31,7 @@ namespace pt = boost::property_tree;
 namespace eig = Eigen;
 
 namespace nonrigid_optimization {
+namespace slavcheva{
 class SobolevOptimizer2d:
 		public Optimizer2d {
 public:
@@ -84,5 +85,5 @@ private:
 
 	void clean_out_logs();
 };
-
+} //namespace slavcheva
 } //namespace nonrigid_optimization

@@ -25,7 +25,7 @@
 namespace pt = boost::property_tree;
 
 namespace nonrigid_optimization {
-
+namespace slavcheva{
 class Optimizer2d {
 public:
 	class SharedParameters {
@@ -98,6 +98,6 @@ protected:
 	static bool are_termination_conditions_reached(int completed_iteration_count, float largest_warp_vector);
 
 };
-
+} //namespace slavcheva
 }		//namespace nonrigid_optimization
 
