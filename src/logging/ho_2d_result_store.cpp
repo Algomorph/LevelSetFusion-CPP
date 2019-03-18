@@ -23,21 +23,8 @@
 
 namespace logging {
 
-HierarchicalOptimization2dResultStore::Parameters::Parameters(
-		bool save_live_progression,
-		bool save_warp_field_progression,
-		bool save_data_gradients,
-		bool save_tikhonov_gradients,
-		bool save_final_warp_updates) :
-		save_live_progression(save_live_progression),
-				save_warp_fields(save_warp_field_progression),
-				save_data_gradients(save_data_gradients),
-				save_tikhonov_gradients(save_tikhonov_gradients),
-				save_final_warp_updates(save_final_warp_updates){
-}
-
-HierarchicalOptimization2dResultStore::HierarchicalOptimization2dResultStore(
-		HierarchicalOptimization2dResultStore::Parameters parameters) : parameters(parameters) {
+HierarchicalOptimization2dResultStore::HierarchicalOptimization2dResultStore(std::time_t optimization_start_time)
+: optimization_start_time(optimization_start_time) {
 
 }
 

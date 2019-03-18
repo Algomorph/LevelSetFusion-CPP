@@ -26,8 +26,8 @@
 #include <Eigen/Eigen>
 
 //local
-#include "../math/tensors.hpp"
-#include "../logging/convergence_report.hpp"
+#include "../../math/tensors.hpp"
+#include "../../logging/convergence_report.hpp"
 
 namespace eig = Eigen;
 

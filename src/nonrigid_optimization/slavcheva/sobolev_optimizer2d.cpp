@@ -25,14 +25,14 @@
 //local
 #include "data_term.hpp"
 #include "smoothing_term.hpp"
-#include "field_warping.hpp"
-#include "../math/filtered_statistics.hpp"
-#include "../math/statistics.hpp"
-#include "../math/gradients.hpp"
-#include "../math/convolution.hpp"
-#include "../math/tensors.hpp"
-#include "../logging/warp_delta_statistics.hpp"
-#include "../logging/convergence_report.hpp"
+#include "../field_warping.hpp"
+#include "../../math/filtered_statistics.hpp"
+#include "../../math/statistics.hpp"
+#include "../../math/gradients.hpp"
+#include "../../math/convolution.hpp"
+#include "../../math/tensors.hpp"
+#include "../../logging/warp_delta_statistics.hpp"
+#include "../../logging/convergence_report.hpp"
 
 
 namespace nonrigid_optimization {

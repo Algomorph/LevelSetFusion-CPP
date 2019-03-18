@@ -32,10 +32,10 @@
 #include "data/test_data_slavcheva_optimizer.hpp"
 
 //test targets
-#include "../src/nonrigid_optimization/data_term.hpp"
-#include "../src/nonrigid_optimization/smoothing_term.hpp"
+#include "../src/nonrigid_optimization/slavcheva/data_term.hpp"
+#include "../src/nonrigid_optimization/slavcheva/smoothing_term.hpp"
+#include "../src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp"
 #include "../src/nonrigid_optimization/field_warping.hpp"
-#include "../src/nonrigid_optimization/sobolev_optimizer2d.hpp"
 
 namespace tt = boost::test_tools;
 namespace bp = boost::python;

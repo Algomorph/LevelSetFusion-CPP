@@ -200,23 +200,25 @@ add_library(${MODULE_NAME} SHARED
 			src/python_export/tsdf.hpp
 			src/python_export/tsdf.cpp
 
-			src/nonrigid_optimization/data_term.hpp
-			src/nonrigid_optimization/data_term.cpp
+			
 			src/nonrigid_optimization/field_warping.hpp
 			src/nonrigid_optimization/field_warping.cpp
-			src/nonrigid_optimization/full_gradient.cpp
-			src/nonrigid_optimization/full_gradient.hpp
-			src/nonrigid_optimization/smoothing_term.cpp
-			src/nonrigid_optimization/smoothing_term.hpp
-			src/nonrigid_optimization/optimizer2d.cpp
-			src/nonrigid_optimization/optimizer2d.hpp
-			src/nonrigid_optimization/sobolev_optimizer2d.cpp
-			src/nonrigid_optimization/sobolev_optimizer2d.hpp
 			
-			src/nonrigid_optimization/hierarchical_optimizer2d.cpp
-			src/nonrigid_optimization/hierarchical_optimizer2d.hpp
-			src/nonrigid_optimization/pyramid2d.cpp
-			src/nonrigid_optimization/pyramid2d.hpp
+			src/nonrigid_optimization/slavcheva/data_term.hpp
+			src/nonrigid_optimization/slavcheva/data_term.cpp
+			src/nonrigid_optimization/slavcheva/full_gradient.cpp
+			src/nonrigid_optimization/slavcheva/full_gradient.hpp
+			src/nonrigid_optimization/slavcheva/smoothing_term.cpp
+			src/nonrigid_optimization/slavcheva/smoothing_term.hpp
+			src/nonrigid_optimization/slavcheva/optimizer2d.cpp
+			src/nonrigid_optimization/slavcheva/optimizer2d.hpp
+			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
+			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp
+			
+			src/nonrigid_optimization/hierarchical/hierarchical_optimizer2d.cpp
+			src/nonrigid_optimization/hierarchical/hierarchical_optimizer2d.hpp
+			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
+			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
 
 			src/traversal/field_traversal_cpu.hpp
 			
@@ -228,7 +230,6 @@ add_library(${MODULE_NAME} SHARED
 			src/logging/tsdf_difference_statistics.cpp
 			src/logging/convergence_report.hpp
 			src/logging/convergence_report.cpp
-			src/logging/serializable.hpp
 			
 			src/math/assessment.hpp
 			src/math/assessment.cpp

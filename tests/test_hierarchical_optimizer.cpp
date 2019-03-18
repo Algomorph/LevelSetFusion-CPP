@@ -34,9 +34,10 @@
 // test targets
 #include "../src/math/tensors.hpp"
 #include "../src/math/assessment.hpp"
-#include "../src/nonrigid_optimization/pyramid2d.hpp"
+#include "../src/nonrigid_optimization/hierarchical/pyramid2d.hpp"
+#include "../src/nonrigid_optimization/hierarchical/hierarchical_optimizer2d.hpp"
 #include "../src/nonrigid_optimization/field_warping.hpp"
-#include "../src/nonrigid_optimization/hierarchical_optimizer2d.hpp"
+
 
 namespace eig = Eigen;
 

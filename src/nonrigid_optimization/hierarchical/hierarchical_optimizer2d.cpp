@@ -27,11 +27,11 @@
 //local
 #include "hierarchical_optimizer2d.hpp"
 #include "pyramid2d.hpp"
-#include "field_warping.hpp"
-#include "../math/convolution.hpp"
-#include "../math/gradients.hpp"
-#include "../math/typedefs.hpp"
-#include "../math/statistics.hpp"
+#include "../field_warping.hpp"
+#include "../../math/convolution.hpp"
+#include "../../math/gradients.hpp"
+#include "../../math/typedefs.hpp"
+#include "../../math/statistics.hpp"
 
 namespace nonrigid_optimization {
 

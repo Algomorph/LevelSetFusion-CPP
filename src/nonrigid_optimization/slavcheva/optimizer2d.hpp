@@ -15,8 +15,11 @@
 //  ================================================================
 #pragma once
 
+//libboost
 #include <boost/property_tree/ptree.hpp>
-#include "../math/typedefs.hpp"
+
+//local
+#include "../../math/typedefs.hpp"
 
 // Short alias for this namespace
 namespace pt = boost::property_tree;

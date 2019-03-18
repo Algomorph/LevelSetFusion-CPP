@@ -22,6 +22,7 @@
 
 //stdlib
 #include <vector>
+#include <ctime>
 
 //libraries
 #include <Eigen/Dense>
@@ -37,34 +38,27 @@
  */
 namespace logging {
 class HierarchicalOptimization2dResultStore {
-public:
-	struct Parameters {
-		//need trivial constructor for ease-of-use in Python
-		Parameters(bool save_live_progression,
-				bool save_warp_field_progression,
-				bool save_data_gradients,
-				bool save_tikhonov_gradients,
-				bool save_final_warp_updates);
+	HierarchicalOptimization2dResultStore(std::time_t optimization_start_time = std::time(nullptr));
 
-		const bool save_live_progression = false;
-		const bool save_warp_fields = false;
-		const bool save_data_gradients = false;
-		const bool save_tikhonov_gradients = false;
-		const bool save_final_warp_updates = false;
-	};
-
-	HierarchicalOptimization2dResultStore(Parameters parameters);
-
-	//void store_per_iteration_data(eig)
+	//void store_per_iteration_data(eig::)
 
 private:
-
+	class PerIterationResultStore{
+		std::vector<Eigen::MatrixXf> live_fields;
+		std::vector<math::MatrixXv2f> warp_fields;
+		std::vector<math::MatrixXv2f> data_term_gradients;
+		std::vector<math::MatrixXv2f> tikhonov_term_gradients;
+		std::vector<math::MatrixXv2f> final_warp_updates;
+	};
 	class PerLevelResultStore{
 	public:
 		PerLevelResultStore() = default;
 
 		void add_iteration_result(Eigen::MatrixXf live_field,
-				math::MatrixXv2f warp_field = math::MatrixXv2f(), )
+				math::MatrixXv2f warp_field = math::MatrixXv2f(),
+				math::MatrixXv2f data_term_gradients = math::MatrixXv2f(),
+				math::MatrixXv2f tikhonov_term_gradients = math::MatrixXv2f(),
+				math::MatrixXv2f final_warp_updates = math::MatrixXv2f());
 
 		const std::vector<Eigen::MatrixXf> get_live_fields() const;
 		const std::vector<math::MatrixXv2f> get_warp_fields() const;
@@ -79,7 +73,7 @@ private:
 		std::vector<math::MatrixXv2f> final_warp_updates;
 	};
 
-	Parameters parameters;
+	std::time_t optimization_start_time;
 	Eigen::MatrixXf initial_canonical_field;
 	Eigen::MatrixXf initial_live_field;
 

@@ -16,10 +16,10 @@
 
 //local
 #include "smoothing_term.hpp"
-#include "../math/tensors.hpp"
-#include "../math/vector_operations.hpp"
-#include "../math/typedefs.hpp"
-#include "../math/boolean_operations.hpp"
+#include "../../math/tensors.hpp"
+#include "../../math/vector_operations.hpp"
+#include "../../math/typedefs.hpp"
+#include "../../math/boolean_operations.hpp"
 
 
 namespace nonrigid_optimization {

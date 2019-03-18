@@ -26,12 +26,12 @@
 #include <boost/shared_ptr.hpp>
 
 //local
+#include "eigen_numpy.hpp"
+#include "../nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp"
+#include "../nonrigid_optimization/field_warping.hpp"
+#include "../nonrigid_optimization/slavcheva/data_term.hpp"
 #include "../logging/warp_delta_statistics.hpp"
 #include "../logging/convergence_report.hpp"
-#include "../nonrigid_optimization/data_term.hpp"
-#include "../nonrigid_optimization/field_warping.hpp"
-#include "../nonrigid_optimization/sobolev_optimizer2d.hpp"
-#include "eigen_numpy.hpp"
 
 namespace bp = boost::python;
 namespace nro = nonrigid_optimization;

@@ -23,8 +23,8 @@
 #include <boost/property_tree/ptree.hpp>
 
 //local
-#include "../math/tensors.hpp"
-#include "../logging/convergence_report.hpp"
+#include "../../math/tensors.hpp"
+#include "../../logging/convergence_report.hpp"
 #include "optimizer2d.hpp"
 
 namespace pt = boost::property_tree;

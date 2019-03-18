@@ -17,8 +17,8 @@
 //local
 #include "data_term.hpp"
 #include "full_gradient.hpp"
-#include "../math/boolean_operations.hpp"
-#include "../math/gradients.hpp"
+#include "../../math/boolean_operations.hpp"
+#include "../../math/gradients.hpp"
 
 namespace nonrigid_optimization {
 /**

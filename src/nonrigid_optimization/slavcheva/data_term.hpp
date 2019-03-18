@@ -22,7 +22,7 @@
 #include <unsupported/Eigen/NumericalDiff>
 
 //local
-#include "../math/tensors.hpp"
+#include "../../math/tensors.hpp"
 
 namespace bp = boost::python;
 namespace eig = Eigen;
