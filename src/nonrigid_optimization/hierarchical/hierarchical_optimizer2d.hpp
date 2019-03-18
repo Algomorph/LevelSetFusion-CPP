@@ -32,6 +32,7 @@
 namespace eig = Eigen;
 
 namespace nonrigid_optimization {
+namespace hierarchical{
 
 //not thread-safe
 class HierarchicalOptimizer2d {
@@ -113,5 +114,5 @@ private:
 	void clear_logs();
 #endif
 };
-
+} /* namespace hierarchical */
 } /* namespace nonrigid_optimization */

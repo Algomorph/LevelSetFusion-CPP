@@ -30,7 +30,7 @@
 namespace eig = Eigen;
 
 namespace nonrigid_optimization {
-
+namespace hierarchical{
 inline static
 bool is_power_of_two(int number){
 	return !(number == 0) && !(number & (number - 1));
@@ -49,5 +49,5 @@ private:
 	std::vector<eig::MatrixXf> levels;
 
 };
-
+} /* namespace hierarchical */
 } /* namespace nonrigid_optimization */

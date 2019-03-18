@@ -34,6 +34,7 @@
 #include "../../math/statistics.hpp"
 
 namespace nonrigid_optimization {
+namespace hierarchical{
 
 HierarchicalOptimizer2d::HierarchicalOptimizer2d(
 		bool tikhonov_term_enabled,
@@ -265,5 +266,5 @@ std::vector<logging::ConvergenceReport> HierarchicalOptimizer2d::get_per_level_c
 	return this->per_level_convergence_reports;
 }
 #endif
-
+} /* namespace hierarchical */
 } /* namespace nonrigid_optimization */
