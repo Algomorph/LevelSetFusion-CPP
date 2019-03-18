@@ -28,6 +28,7 @@
 //local
 #include "../../math/tensors.hpp"
 #include "../../logging/convergence_report.hpp"
+#include "optimizer2d_log.hpp"
 
 namespace eig = Eigen;
 
@@ -35,9 +36,11 @@ namespace nonrigid_optimization {
 namespace hierarchical{
 
 //not thread-safe
-class HierarchicalOptimizer2d {
+template<bool TOptimized>
+class Optimizer2d {
 
 public:
+
 	struct VerbosityParameters {
 		VerbosityParameters(
 				bool print_max_warp_update = false,
@@ -61,7 +64,7 @@ public:
 		const bool collect_per_level_convergence_reports = false;
 	};
 
-	HierarchicalOptimizer2d(
+	Optimizer2d(
 			bool tikhonov_term_enabled = true,
 			bool gradient_kernel_enabled = true,
 
@@ -75,7 +78,7 @@ public:
 			eig::VectorXf kernel = eig::VectorXf(0),
 			VerbosityParameters verbosity_parameters = VerbosityParameters(),
 			LoggingParameters logging_parameters = LoggingParameters());
-	virtual ~HierarchicalOptimizer2d();
+	virtual ~Optimizer2d();
 
 	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
 #ifndef NO_LOG
@@ -108,11 +111,14 @@ private:
 
 	//optimization state variables
 	int current_hierarchy_level = 0;
+
+	Optimizer2d_log<TOptimized> log;
+
 #ifndef NO_LOG
 	std::vector<logging::ConvergenceReport> per_level_convergence_reports;
-
 	void clear_logs();
 #endif
+
 };
 } /* namespace hierarchical */
 } /* namespace nonrigid_optimization */

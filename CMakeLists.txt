@@ -215,8 +215,11 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp
 			
-			src/nonrigid_optimization/hierarchical/hierarchical_optimizer2d.cpp
-			src/nonrigid_optimization/hierarchical/hierarchical_optimizer2d.hpp
+			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
+			src/nonrigid_optimization/hierarchical/optimizer2d.tpp
+			src/nonrigid_optimization/hierarchical/optimizer2d.hpp
+			src/nonrigid_optimization/hierarchical/optimizer2d_log.hpp
+			src/nonrigid_optimization/hierarchical/optimizer2d_log.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
 

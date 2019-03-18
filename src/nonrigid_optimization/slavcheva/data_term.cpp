@@ -148,4 +148,4 @@ bp::tuple py_data_term_at_location(eig::MatrixXf warped_live_field, eig::MatrixX
 }
 
 } //namespace slavcheva
-}//namespace nonrigid_optimization
+} //namespace nonrigid_optimization

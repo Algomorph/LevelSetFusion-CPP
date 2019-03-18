@@ -18,6 +18,8 @@
  *   limitations under the License.
  */
 //stdlib
+#include "optimizer2d.hpp"
+
 #include <limits>
 #include <cmath>
 
@@ -25,7 +27,6 @@
 #include <unsupported/Eigen/MatrixFunctions>
 
 //local
-#include "hierarchical_optimizer2d.hpp"
 #include "pyramid2d.hpp"
 #include "../field_warping.hpp"
 #include "../../math/convolution.hpp"
@@ -36,7 +37,9 @@
 namespace nonrigid_optimization {
 namespace hierarchical{
 
-HierarchicalOptimizer2d::HierarchicalOptimizer2d(
+
+template<bool TOptimized>
+Optimizer2d<TOptimized>::Optimizer2d(
 		bool tikhonov_term_enabled,
 		bool gradient_kernel_enabled,
 		int maximum_chunk_size,
@@ -64,12 +67,14 @@ HierarchicalOptimizer2d::HierarchicalOptimizer2d(
 
 }
 
-HierarchicalOptimizer2d::~HierarchicalOptimizer2d()
+template<bool TOptimized>
+Optimizer2d<TOptimized>::~Optimizer2d()
 {
 	// TODO Auto-generated destructor stub
 }
 
-HierarchicalOptimizer2d::VerbosityParameters::VerbosityParameters(
+template<bool TOptimized>
+Optimizer2d<TOptimized>::VerbosityParameters::VerbosityParameters(
 		bool print_iteration_max_warp_update,
 		bool print_iteration_mean_tsdf_difference,
 		bool print_iteration_std_tsdf_difference,
@@ -91,11 +96,13 @@ HierarchicalOptimizer2d::VerbosityParameters::VerbosityParameters(
 {
 }
 
-HierarchicalOptimizer2d::LoggingParameters::LoggingParameters(bool collect_per_level_convergence_reports) :
+template<bool TOptimized>
+Optimizer2d<TOptimized>::LoggingParameters::LoggingParameters(bool collect_per_level_convergence_reports) :
 		collect_per_level_convergence_reports(collect_per_level_convergence_reports) {
 }
 
-math::MatrixXv2f HierarchicalOptimizer2d::optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field) {
+template<bool TOptimized>
+math::MatrixXv2f Optimizer2d<TOptimized>::optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field) {
 
 #ifndef NO_LOG
 	this->clear_logs();
@@ -130,18 +137,14 @@ math::MatrixXv2f HierarchicalOptimizer2d::optimize(eig::MatrixXf canonical_field
 		if (current_hierarchy_level != level_count - 1) {
 			warp_field = math::upsampleX2(warp_field);
 		}
-#ifndef NO_LOG
-		if (this->verbosity_parameters.print_per_level_info) {
-			std::cout << "[LEVEL " << current_hierarchy_level << " COMPLETED]";
-			std::cout << std::endl;
-		}
-#endif
+
 	}
 
 	return warp_field;
 }
 
-void HierarchicalOptimizer2d::optimize_level(
+template<bool TOptimized>
+void Optimizer2d<TOptimized>::optimize_level(
 		math::MatrixXv2f& warp_field,
 		const eig::MatrixXf& canonical_pyramid_level,
 		const eig::MatrixXf& live_pyramid_level,
@@ -235,6 +238,24 @@ void HierarchicalOptimizer2d::optimize_level(
 		iteration_count++;
 	}
 #ifndef NO_LOG
+	if (this->verbosity_parameters.print_per_level_info) {
+			std::cout << "[LEVEL " << current_hierarchy_level << " COMPLETED]";
+			std::cout << std::endl;
+		}
+	if(this->logging_parameters.collect_per_level_convergence_reports){
+		logging::WarpDeltaStatistics current_warp_statistics(warp_field,
+						canonical_pyramid_level,
+						live_pyramid_level,
+						this->maximum_warp_update_threshold,
+						FLT_MAX);
+		logging::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
+		this->per_level_convergence_reports.push_back({
+			iteration_count,
+			iteration_count >= this->maximum_iteration_count,
+			current_warp_statistics,
+			tsdf_difference_statistics
+		});
+	}
 	if(this->logging_parameters.collect_per_level_convergence_reports){
 		logging::WarpDeltaStatistics current_warp_statistics(warp_field,
 						canonical_pyramid_level,
@@ -252,17 +273,20 @@ void HierarchicalOptimizer2d::optimize_level(
 #endif
 }
 
-bool HierarchicalOptimizer2d::termination_conditions_reached(float maximum_warp_update_length,
+template<bool TOptimized>
+bool Optimizer2d<TOptimized>::termination_conditions_reached(float maximum_warp_update_length,
 		int completed_iteration_count) {
 	return maximum_warp_update_length < this->maximum_warp_update_threshold ||
 			completed_iteration_count >= this->maximum_iteration_count;
 }
 
 #ifndef NO_LOG
-void HierarchicalOptimizer2d::clear_logs(){
+template<bool TOptimized>
+void Optimizer2d<TOptimized>::clear_logs(){
 	this->per_level_convergence_reports.clear();
 }
-std::vector<logging::ConvergenceReport> HierarchicalOptimizer2d::get_per_level_convergence_reports(){
+template<bool TOptimized>
+std::vector<logging::ConvergenceReport> Optimizer2d<TOptimized>::get_per_level_convergence_reports(){
 	return this->per_level_convergence_reports;
 }
 #endif
