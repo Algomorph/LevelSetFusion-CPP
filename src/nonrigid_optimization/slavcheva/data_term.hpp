@@ -22,12 +22,13 @@
 #include <unsupported/Eigen/NumericalDiff>
 
 //local
-#include "../math/tensors.hpp"
+#include "../../math/tensors.hpp"
 
 namespace bp = boost::python;
 namespace eig = Eigen;
 
 namespace nonrigid_optimization {
+namespace slavcheva{
 
 void compute_data_term_gradient(
 		math::MatrixXv2f& data_term_gradient, float& data_term_energy,
@@ -48,7 +49,8 @@ void compute_local_data_term_gradient(const eig::MatrixXf& warped_live_field, co
                                       float& data_gradient_x, float& data_gradient_y, float& local_energy_contribution);
 bp::tuple py_data_term_at_location(eig::MatrixXf warped_live_field, eig::MatrixXf canonical_field, int i_col, int i_row,
                                    eig::MatrixXf live_gradient_x, eig::MatrixXf live_gradient_y);
-}//namespace data_term
+} //namespace slavcheva
+}//namespace nonrigid_optimization
 
 
 

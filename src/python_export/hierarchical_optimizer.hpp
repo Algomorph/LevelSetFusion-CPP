@@ -20,7 +20,6 @@
 
 #pragma once
 
-
 namespace python_export{
 namespace hierarchical_optimizer{
 	void export_algorithms();

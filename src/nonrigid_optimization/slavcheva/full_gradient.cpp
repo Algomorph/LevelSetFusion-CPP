@@ -17,10 +17,11 @@
 //local
 #include "data_term.hpp"
 #include "full_gradient.hpp"
-#include "../math/boolean_operations.hpp"
-#include "../math/gradients.hpp"
+#include "../../math/boolean_operations.hpp"
+#include "../../math/gradients.hpp"
 
 namespace nonrigid_optimization {
+namespace slavcheva{
 /**
  * \brief Computes energy gradient KillingFusion[1]/SobolevFusion[2]-based optimization on a 2D grid
  * \details
@@ -86,5 +87,5 @@ void compute_energy_gradient(const eig::MatrixXf& warped_live_field, const eig::
 		gradient_field_y(i_element) = local_data_gradient_y;
 	}
 }
-
+} //namespace slavcheva
 }// namespace energy_gradient;

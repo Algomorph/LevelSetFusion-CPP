@@ -26,7 +26,7 @@
 #include "pyramid2d.hpp"
 
 namespace nonrigid_optimization {
-
+namespace hierarchical{
 
 //TODO: Pyramid2d templated on the Scalar type to allow alternative element types
 Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
@@ -83,5 +83,5 @@ const eig::MatrixXf& Pyramid2d::get_level(int i_level) const {
 size_t Pyramid2d::get_level_count() const {
 	return this->levels.size();
 }
-
+} /* namespace hierarchical */
 } /* namespace nonrigid_optimization */

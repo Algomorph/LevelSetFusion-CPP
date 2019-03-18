@@ -29,6 +29,9 @@ namespace eig = Eigen;
 namespace nonrigid_optimization {
 
 //TODO: break this up into multiple functions (as necessary, judge by usage) instead of passing behavior flags
+//TODO: refactor->rename all functions, "resample" should be replaced with "warp", fix function names that are hard to understand
+// motivation: resampling means something completely different usually, the more common term in literature
+// for this operation is to "warp a field"
 eig::MatrixXf resample(math::MatrixXv2f& warp_field,
 		const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field,
 		bool band_union_only = false, bool known_values_only = false,

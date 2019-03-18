@@ -16,6 +16,7 @@
 #include "optimizer2d.hpp"
 
 namespace nonrigid_optimization {
+namespace slavcheva{
 void Optimizer2d::SharedParameters::set_from_json(pt::ptree root) {
 	this->gradient_descent_rate = root.get<float>("gradient_descent_rate", 0.1f);
 
@@ -76,5 +77,5 @@ bool Optimizer2d::are_termination_conditions_reached(int completed_iteration_cou
 	        largest_warp_vector < shared_parameters.maximum_warp_length_lower_threshold ||
 	        largest_warp_vector > shared_parameters.maximum_warp_length_upper_threshold);
 }
-
+} //namespace slavcheva
 }//namespace nonrigid_optimization

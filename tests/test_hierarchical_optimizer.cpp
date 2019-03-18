@@ -34,20 +34,22 @@
 // test targets
 #include "../src/math/tensors.hpp"
 #include "../src/math/assessment.hpp"
-#include "../src/nonrigid_optimization/pyramid2d.hpp"
+#include "../src/nonrigid_optimization/hierarchical/pyramid2d.hpp"
+#include "../src/nonrigid_optimization/hierarchical/hierarchical_optimizer2d.hpp"
 #include "../src/nonrigid_optimization/field_warping.hpp"
-#include "../src/nonrigid_optimization/hierarchical_optimizer2d.hpp"
+
 
 namespace eig = Eigen;
 
-namespace nropt = nonrigid_optimization;
+namespace nro_h = nonrigid_optimization::hierarchical;
+namespace nro = nonrigid_optimization;
 
 BOOST_AUTO_TEST_CASE(power_of_two_test01){
-	BOOST_REQUIRE(nropt::is_power_of_two(128));
-	BOOST_REQUIRE(nropt::is_power_of_two(2));
-	BOOST_REQUIRE(nropt::is_power_of_two(16));
-	BOOST_REQUIRE(!nropt::is_power_of_two(17));
-	BOOST_REQUIRE(!nropt::is_power_of_two(38));
+	BOOST_REQUIRE(nro_h::is_power_of_two(128));
+	BOOST_REQUIRE(nro_h::is_power_of_two(2));
+	BOOST_REQUIRE(nro_h::is_power_of_two(16));
+	BOOST_REQUIRE(!nro_h::is_power_of_two(17));
+	BOOST_REQUIRE(!nro_h::is_power_of_two(38));
 }
 
 BOOST_AUTO_TEST_CASE(pyramid_test01) {
@@ -67,7 +69,7 @@ BOOST_AUTO_TEST_CASE(pyramid_test01) {
 	// results in shape 128 x 128
 	eig::MatrixXf field = tile.replicate(16, 16);
 
-	nonrigid_optimization::Pyramid2d pyramid(field);
+	nro_h::Pyramid2d pyramid(field);
 	BOOST_REQUIRE_EQUAL(pyramid.get_level_count(), (unsigned)4);
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(0).rows(), 16);
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(0).cols(), 16);
@@ -118,19 +120,19 @@ BOOST_AUTO_TEST_CASE(pyramid_test01) {
 
 BOOST_AUTO_TEST_CASE(resample_field_test01){
 	//corresponds to test_resample_field01 in python code
-	eig::MatrixXf resampled_field = nropt::resample_field(field_A_16x16,warp_field_A_16x16);
+	eig::MatrixXf resampled_field = nro::resample_field(field_A_16x16,warp_field_A_16x16);
 	BOOST_REQUIRE(resampled_field.isApprox(fA_resampled_with_wfA));
 }
 
 BOOST_AUTO_TEST_CASE(resample_field_test02){
 	//corresponds to test_resample_field_replacement01 in python code
-	eig::MatrixXf resampled_field = nropt::resample_field_replacement(field_B_16x16,warp_field_B_16x16,0);
+	eig::MatrixXf resampled_field = nro::resample_field_replacement(field_B_16x16,warp_field_B_16x16,0);
 	BOOST_REQUIRE(resampled_field.isApprox(fB_resampled_with_wfB_replacement));
 }
 
 BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 	// corresponds to test_construction-and_operation in python code (test_hns_optimizer2d.py)
-	nropt::HierarchicalOptimizer2d optimizer(
+	nro_h::HierarchicalOptimizer2d optimizer(
 			false, false,
 			8,
 			0.2,
@@ -139,10 +141,10 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 			1.0,
 			0.2,
 			eig::VectorXf(0),
-			nropt::HierarchicalOptimizer2d::VerbosityParameters()
+			nro_h::HierarchicalOptimizer2d::VerbosityParameters()
 			);
 	math::MatrixXv2f warp_field_out = optimizer.optimize(canonical_field, live_field);
-	eig::MatrixXf final_live_resampled = nropt::resample_field(live_field,warp_field_out);
+	eig::MatrixXf final_live_resampled = nro::resample_field(live_field,warp_field_out);
 
 	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field_out,warp_field,10e-6));
 	BOOST_REQUIRE(final_live_resampled.isApprox(final_live_field));

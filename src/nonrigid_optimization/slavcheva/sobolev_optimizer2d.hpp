@@ -23,14 +23,15 @@
 #include <boost/property_tree/ptree.hpp>
 
 //local
-#include "../math/tensors.hpp"
-#include "../logging/logging.hpp"
+#include "../../math/tensors.hpp"
+#include "../../logging/convergence_report.hpp"
 #include "optimizer2d.hpp"
 
 namespace pt = boost::property_tree;
 namespace eig = Eigen;
 
 namespace nonrigid_optimization {
+namespace slavcheva{
 class SobolevOptimizer2d:
 		public Optimizer2d {
 public:
@@ -84,5 +85,5 @@ private:
 
 	void clean_out_logs();
 };
-
+} //namespace slavcheva
 } //namespace nonrigid_optimization

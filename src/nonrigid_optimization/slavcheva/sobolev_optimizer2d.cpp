@@ -25,17 +25,18 @@
 //local
 #include "data_term.hpp"
 #include "smoothing_term.hpp"
-#include "field_warping.hpp"
-#include "../math/filtered_statistics.hpp"
-#include "../math/statistics.hpp"
-#include "../math/gradients.hpp"
-#include "../math/convolution.hpp"
-#include "../math/tensors.hpp"
-#include "../logging/logging.hpp"
+#include "../field_warping.hpp"
+#include "../../math/filtered_statistics.hpp"
+#include "../../math/statistics.hpp"
+#include "../../math/gradients.hpp"
+#include "../../math/convolution.hpp"
+#include "../../math/tensors.hpp"
+#include "../../logging/warp_delta_statistics.hpp"
+#include "../../logging/convergence_report.hpp"
 
 
 namespace nonrigid_optimization {
-
+namespace slavcheva{
 void SobolevOptimizer2d::SobolevParameters::set_from_json(pt::ptree root) {
 	this->smoothing_term_weight = root.get<float>("smoothing_term_weight", 0.2);
 	std::vector<float> kernel_values;
@@ -153,5 +154,5 @@ void SobolevOptimizer2d::clean_out_logs() {
 	this->convergence_report = logging::ConvergenceReport();
 	this->warp_statistics.clear();
 }
-
-}	//namespace nonrigid_optimization
+} //namespace slavcheva
+} //namespace nonrigid_optimization

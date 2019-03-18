@@ -200,32 +200,39 @@ add_library(${MODULE_NAME} SHARED
 			src/python_export/tsdf.hpp
 			src/python_export/tsdf.cpp
 
-			src/nonrigid_optimization/data_term.hpp
-			src/nonrigid_optimization/data_term.cpp
+			
 			src/nonrigid_optimization/field_warping.hpp
 			src/nonrigid_optimization/field_warping.cpp
 			
-			src/nonrigid_optimization/full_gradient.cpp
-			src/nonrigid_optimization/full_gradient.hpp
-			src/nonrigid_optimization/smoothing_term.cpp
-			src/nonrigid_optimization/smoothing_term.hpp
-			src/nonrigid_optimization/optimizer2d.cpp
-			src/nonrigid_optimization/optimizer2d.hpp
-			src/nonrigid_optimization/sobolev_optimizer2d.cpp
-			src/nonrigid_optimization/sobolev_optimizer2d.hpp
+			src/nonrigid_optimization/slavcheva/data_term.hpp
+			src/nonrigid_optimization/slavcheva/data_term.cpp
+			src/nonrigid_optimization/slavcheva/full_gradient.cpp
+			src/nonrigid_optimization/slavcheva/full_gradient.hpp
+			src/nonrigid_optimization/slavcheva/smoothing_term.cpp
+			src/nonrigid_optimization/slavcheva/smoothing_term.hpp
+			src/nonrigid_optimization/slavcheva/optimizer2d.cpp
+			src/nonrigid_optimization/slavcheva/optimizer2d.hpp
+			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
+			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp
 			
-			src/nonrigid_optimization/hierarchical_optimizer2d.cpp
-			src/nonrigid_optimization/hierarchical_optimizer2d.hpp
-			src/nonrigid_optimization/pyramid2d.cpp
-			src/nonrigid_optimization/pyramid2d.hpp
+			src/nonrigid_optimization/hierarchical/hierarchical_optimizer2d.cpp
+			src/nonrigid_optimization/hierarchical/hierarchical_optimizer2d.hpp
+			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
+			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
 
 			src/traversal/field_traversal_cpu.hpp
-
-			src/logging/logging.cpp
-			src/logging/logging.hpp
-			src/logging/serializable.hpp
+			
+			src/logging/ho_2d_result_store.hpp
+			src/logging/ho_2d_result_store.cpp
+			src/logging/warp_delta_statistics.hpp
+			src/logging/warp_delta_statistics.cpp
+			src/logging/tsdf_difference_statistics.hpp
+			src/logging/tsdf_difference_statistics.cpp
+			src/logging/convergence_report.hpp
+			src/logging/convergence_report.cpp
 			
 			src/math/assessment.hpp
+			src/math/assessment.cpp
 			src/math/boolean_operations.hpp
 			src/math/conics.cpp
 			src/math/conics.hpp
