@@ -28,7 +28,6 @@
 //local
 #include "../../math/tensors.hpp"
 #include "../../telemetry/convergence_report.hpp"
-#include "telemetry.hpp"
 
 namespace eig = Eigen;
 

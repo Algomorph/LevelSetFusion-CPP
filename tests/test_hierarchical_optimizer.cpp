@@ -35,7 +35,7 @@
 #include "../src/math/tensors.hpp"
 #include "../src/math/assessment.hpp"
 #include "../src/nonrigid_optimization/hierarchical/pyramid2d.hpp"
-#include "../src/nonrigid_optimization/hierarchical/templated_optimizer2d.hpp"
+#include "../src/nonrigid_optimization/hierarchical/optimizer2d.hpp"
 #include "../src/nonrigid_optimization/field_warping.hpp"
 
 
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(resample_field_test02){
 
 BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 	// corresponds to test_construction-and_operation in python code (test_hns_optimizer2d.py)
-	nro_h::TemplatedOptimizer2d<true> optimizer(
+	nro_h::Optimizer2d optimizer(
 			false, false,
 			8,
 			0.2,
@@ -140,8 +140,7 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 			0.001, //max warp update threshold
 			1.0,
 			0.2,
-			eig::VectorXf(0),
-			nro_h::TemplatedOptimizer2d<true>::VerbosityParameters()
+			eig::VectorXf(0)
 			);
 	math::MatrixXv2f warp_field_out = optimizer.optimize(canonical_field, live_field);
 	eig::MatrixXf final_live_resampled = nro::resample_field(live_field,warp_field_out);
