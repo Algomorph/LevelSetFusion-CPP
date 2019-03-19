@@ -28,7 +28,7 @@
 //local
 #include "../../math/tensors.hpp"
 #include "../../telemetry/convergence_report.hpp"
-#include "optimizer2d_log.hpp"
+#include "telemetry.hpp"
 
 namespace eig = Eigen;
 
@@ -112,7 +112,7 @@ private:
 	//optimization state variables
 	int current_hierarchy_level = 0;
 
-	Optimizer2d_log<TOptimized> log;
+	Telemetry<TOptimized> log;
 
 #ifndef NO_LOG
 	std::vector<telementry::ConvergenceReport> per_level_convergence_reports;

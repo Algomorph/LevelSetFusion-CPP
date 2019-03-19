@@ -1,7 +1,7 @@
 /*
- * optimizer2d_log.hpp
+ * telemetry.tpp
  *
- *  Created on: Mar 18, 2019
+ *  Created on: Mar 19, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -19,11 +19,7 @@
  */
 
 #pragma once
-namespace nonrigid_optimization {
-namespace hierarchical{
 
-template<bool TOptimized>
-struct Optimizer2d_log{};
-} /* namespace hierarchical */
-} /* namespace nonrigid_optimization */
+
+
 

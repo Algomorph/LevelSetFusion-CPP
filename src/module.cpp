@@ -23,6 +23,7 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 {
 	setup_Eigen_matrix_converters();
 	setup_Eigen_tensor_converters();
+	setup_Eigen_list_converters();
 
 	pe::export_conversion_tests();
 

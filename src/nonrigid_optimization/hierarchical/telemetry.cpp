@@ -18,20 +18,15 @@
  *   limitations under the License.
  */
 
-#include "optimizer2d_log.hpp"
+#include "telemetry.hpp"
 
-#include "../../telemetry/convergence_report.hpp"
+
 namespace nonrigid_optimization {
 namespace hierarchical{
-template<>
-struct Optimizer2d_log<true>{
 
-};
 
-template<>
-struct Optimizer2d_log<false>{
-	std::vector<telementry::ConvergenceReport> per_level_convergence_reports;
-};
+
+
 
 } /* namespace hierarchical */
 } /* namespace nonrigid_optimization */

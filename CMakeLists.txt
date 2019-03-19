@@ -188,6 +188,7 @@ add_library(${MODULE_NAME} SHARED
 			src/python_export/eigen_numpy.hpp
 			src/python_export/eigen_numpy_matrix.cpp
 			src/python_export/eigen_numpy_tensor.cpp
+			src/python_export/eigen_numpy_list.cpp
 			src/python_export/hierarchical_optimizer.hpp
 			src/python_export/hierarchical_optimizer.cpp
 			src/python_export/telemetry.hpp
@@ -226,8 +227,9 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical/optimizer2d.tpp
 			src/nonrigid_optimization/hierarchical/optimizer2d.hpp
-			src/nonrigid_optimization/hierarchical/optimizer2d_log.hpp
-			src/nonrigid_optimization/hierarchical/optimizer2d_log.cpp
+			src/nonrigid_optimization/hierarchical/telemetry.hpp
+			src/nonrigid_optimization/hierarchical/telemetry.tpp
+			src/nonrigid_optimization/hierarchical/telemetry.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
 
@@ -235,8 +237,8 @@ add_library(${MODULE_NAME} SHARED
 			src/traversal/field_traversal_cpu.hpp
 			
 			### telemetry: namespace for logging progress and storing up intermediate results for later analysis #######
-			src/telemetry/ho_2d_result_store.hpp
-			src/telemetry/ho_2d_result_store.cpp
+			src/telemetry/optimization_iteration_data.hpp
+			src/telemetry/optimization_iteration_data.cpp
 			src/telemetry/warp_delta_statistics.hpp
 			src/telemetry/warp_delta_statistics.cpp
 			src/telemetry/tsdf_difference_statistics.hpp

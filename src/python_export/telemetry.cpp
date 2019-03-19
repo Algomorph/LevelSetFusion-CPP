@@ -29,6 +29,7 @@
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 //local
+#include "eigen_numpy.hpp"
 #include "telemetry.hpp"
 #include "../telemetry/warp_delta_statistics.hpp"
 #include "../telemetry/tsdf_difference_statistics.hpp"
@@ -128,7 +129,6 @@ void export_telemetry_utilities() {
 
 	bp::class_<std::vector<telementry::ConvergenceReport>>("ConvergenceReportVector")
 			.def(bp::vector_indexing_suite<std::vector<telementry::ConvergenceReport>>());
-
 }
 } //namespace python_export
 

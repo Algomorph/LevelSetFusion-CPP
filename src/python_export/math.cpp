@@ -21,6 +21,7 @@
 //libraries
 #include <Eigen/Eigen>
 #include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/shared_ptr.hpp>
 
 //local
@@ -50,6 +51,7 @@ void export_math_types() {
 			.def_readwrite("u", &math::Vector2f::u)
 			.def_readwrite("v", &math::Vector2f::v)
 			;
+
 }
 
 void export_math_functions(){
