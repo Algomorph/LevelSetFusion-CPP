@@ -32,6 +32,7 @@
 #include "../../math/typedefs.hpp"
 #include "../../math/statistics.hpp"
 #include "optimizer2d.hpp"
+#include "optimizer2d_common.hpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical {
@@ -117,10 +118,15 @@ void Optimizer2d::optimize_level(
 
 	math::MatrixXv2f gradient = math::MatrixXv2f::Zero(warp_field.rows(), warp_field.cols());
 	eig::MatrixXf diff;
+	math::MatrixXv2f data_gradient;
+	math::MatrixXv2f tikhonov_gradient;
 	current_iteration = 0;
 
 	while (not this->termination_conditions_reached(maximum_warp_update_length, current_iteration)) {
-		this->optimize_iteration(gradient, warp_field, diff, maximum_warp_update_length,
+
+		this->optimize_iteration(
+				gradient, warp_field, diff, data_gradient, tikhonov_gradient,
+				maximum_warp_update_length,
 				canonical_pyramid_level, live_pyramid_level,
 				live_gradient_x_level, live_gradient_y_level);
 		current_iteration++;
@@ -138,6 +144,8 @@ void Optimizer2d::optimize_iteration(
 		math::MatrixXv2f& gradient,
 		math::MatrixXv2f& warp_field,
 		eig::MatrixXf& diff,
+		math::MatrixXv2f& data_gradient,
+		math::MatrixXv2f& tikhonov_gradient,
 		float& maximum_warp_update_length,
 		const eig::MatrixXf& canonical_pyramid_level,
 		const eig::MatrixXf& live_pyramid_level,
@@ -156,12 +164,10 @@ void Optimizer2d::optimize_iteration(
 	eig::MatrixXf data_gradient_y = diff.cwiseProduct(resampled_live_gradient_y);
 
 	// this results in the data term gradient
-	math::MatrixXv2f data_gradient = math::stack_as_xv2f(data_gradient_x, data_gradient_y);
+	data_gradient = math::stack_as_xv2f(data_gradient_x, data_gradient_y);
 
 	if (this->tikhonov_term_enabled) {
-		math::MatrixXv2f tikhonov_gradient;
 		math::vector_field_laplacian(gradient, tikhonov_gradient);
-
 		gradient = this->data_term_amplifier * data_gradient - this->tikhonov_strength * tikhonov_gradient;
 	} else {
 		gradient = this->data_term_amplifier * data_gradient;

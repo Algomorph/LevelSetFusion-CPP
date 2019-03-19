@@ -22,16 +22,16 @@
 
 namespace telemetry{
 
-void OptimizationIterationData::add_iteration_result(Eigen::MatrixXf live_field,
+void OptimizationIterationData::add_iteration_result(
+		Eigen::MatrixXf live_field,
 		math::MatrixXv2f warp_field,
 		math::MatrixXv2f data_term_gradients,
-		math::MatrixXv2f tikhonov_term_gradients,
-		math::MatrixXv2f final_warp_updates){
+		math::MatrixXv2f tikhonov_term_gradients)
+	{
 	this->live_fields.push_back(live_field);
 	this->warp_fields.push_back(warp_field);
 	this->data_term_gradients.push_back(data_term_gradients);
 	this->tikhonov_term_gradients.push_back(tikhonov_term_gradients);
-	this->final_warp_updates.push_back(final_warp_updates);
 }
 
 const std::vector<Eigen::MatrixXf> OptimizationIterationData::get_live_fields() const {
@@ -45,9 +45,6 @@ const std::vector<math::MatrixXv2f> OptimizationIterationData::get_data_term_gra
 };
 const std::vector<math::MatrixXv2f> OptimizationIterationData::get_tikhonov_term_gradients() const {
 	return this->tikhonov_term_gradients;
-};
-const std::vector<math::MatrixXv2f> OptimizationIterationData::get_final_warp_updates() const {
-	return this->final_warp_updates;
 };
 
 } //namespace telemetry

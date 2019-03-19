@@ -135,7 +135,6 @@ void export_telemetry_utilities() {
 			.def("get_warp_fields", &telemetry::OptimizationIterationData::get_warp_fields)
 			.def("get_data_term_gradients", &telemetry::OptimizationIterationData::get_data_term_gradients)
 			.def("get_tikhonov_term_gradients", &telemetry::OptimizationIterationData::get_tikhonov_term_gradients)
-			.def("get_final_warp_updates", &telemetry::OptimizationIterationData::get_final_warp_updates)
 			;
 }
 } //namespace python_export

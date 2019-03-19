@@ -56,9 +56,10 @@ Optimizer2dTelemetry::Optimizer2dTelemetry(
 				tikhonov_strength,
 				kernel),
 
-				verbosity_parameters(verbosity_parameters),
+		verbosity_parameters(verbosity_parameters),
 				logging_parameters(logging_parameters)
-{}
+{
+}
 
 math::MatrixXv2f Optimizer2dTelemetry::optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field) {
 	this->clear_logs();
@@ -73,6 +74,17 @@ void Optimizer2dTelemetry::optimize_level(
 		const eig::MatrixXf& live_gradient_x_level,
 		const eig::MatrixXf& live_gradient_y_level
 		) {
+
+	if (this->logging_parameters.collect_per_level_iteration_data) {
+		int row_count = warp_field.rows(), column_count = warp_field.cols();
+		telemetry::OptimizationIterationData level_optimization_data;
+		level_optimization_data.add_iteration_result(
+				live_pyramid_level,
+				math::MatrixXv2f::Zero(row_count, column_count),
+				math::MatrixXv2f::Zero(row_count, column_count),
+				(this->tikhonov_term_enabled ? math::MatrixXv2f::Zero(row_count, column_count) : math::MatrixXv2f()));
+		this->per_level_iteration_data.push_back(level_optimization_data);
+	}
 	Optimizer2d::optimize_level(warp_field, canonical_pyramid_level, live_pyramid_level,
 			live_gradient_x_level, live_gradient_y_level);
 	if (this->verbosity_parameters.print_per_level_info) {
@@ -100,6 +112,8 @@ void Optimizer2dTelemetry::optimize_iteration(
 		math::MatrixXv2f& gradient,
 		math::MatrixXv2f& warp_field,
 		eig::MatrixXf& diff,
+		math::MatrixXv2f& data_gradient,
+		math::MatrixXv2f& tikhonov_gradient,
 		float& maximum_warp_update_length,
 		const eig::MatrixXf& canonical_pyramid_level,
 		const eig::MatrixXf& live_pyramid_level,
@@ -119,9 +133,18 @@ void Optimizer2dTelemetry::optimize_iteration(
 		normalized_tikhonov_energy = energy_factor * 0.5 * gradient_aggregate_mean;
 	}
 	Optimizer2d::optimize_iteration(
-			gradient, warp_field, diff, maximum_warp_update_length,
+			gradient, warp_field, diff, data_gradient, tikhonov_gradient,
+			maximum_warp_update_length,
 			canonical_pyramid_level, live_pyramid_level,
 			live_gradient_x_level, live_gradient_y_level);
+
+	if (this->logging_parameters.collect_per_level_iteration_data) {
+		this->per_level_iteration_data[this->per_level_iteration_data.size() - 1].add_iteration_result(
+				live_pyramid_level,
+				warp_field,
+				data_gradient,
+				tikhonov_gradient);
+	}
 
 	if (this->verbosity_parameters.print_per_iteration_info) {
 		std::cout << "[ITERATION " << this->get_current_iteration() << " COMPLETED]";
@@ -150,6 +173,7 @@ void Optimizer2dTelemetry::optimize_iteration(
 
 void Optimizer2dTelemetry::clear_logs() {
 	this->per_level_convergence_reports.clear();
+	this->per_level_iteration_data.clear();
 }
 
 std::vector<telemetry::ConvergenceReport> Optimizer2dTelemetry::get_per_level_convergence_reports() {
@@ -178,10 +202,13 @@ Optimizer2dTelemetry::VerbosityParameters::VerbosityParameters(
 {
 }
 
-Optimizer2dTelemetry::LoggingParameters::LoggingParameters(bool collect_per_level_convergence_reports) :
-		collect_per_level_convergence_reports(collect_per_level_convergence_reports) {
+Optimizer2dTelemetry::LoggingParameters::LoggingParameters(
+		bool collect_per_level_convergence_reports,
+		bool collect_per_level_iteration_data
+		) :
+		collect_per_level_convergence_reports(collect_per_level_convergence_reports),
+				collect_per_level_iteration_data(collect_per_level_iteration_data) {
 }
 
 } // namespace hierarchical
 } // namespace nonrigid_optimization
-

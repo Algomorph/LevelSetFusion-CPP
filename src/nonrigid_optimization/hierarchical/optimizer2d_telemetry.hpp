@@ -20,12 +20,19 @@
 
 #pragma once
 
+//stdlib
+#include <chrono>
+
 //local
 #include "optimizer2d.hpp"
 #include "../../math/tensors.hpp"
+#include "../../telemetry/convergence_report.hpp"
+#include "../../telemetry/optimization_iteration_data.hpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical {
+
+typedef std::chrono::time_point<std::chrono::high_resolution_clock> time_point;
 
 class Optimizer2dTelemetry:
 		public Optimizer2d {
@@ -48,8 +55,12 @@ public:
 	};
 
 	struct LoggingParameters {
-		LoggingParameters(bool collect_per_level_convergence_reports = false);
+		LoggingParameters(
+				bool collect_per_level_convergence_reports = false,
+				bool collect_per_level_iteration_data = false
+				);
 		const bool collect_per_level_convergence_reports = false;
+		const bool collect_per_level_iteration_data = false;
 	};
 
 	Optimizer2dTelemetry(
@@ -80,6 +91,8 @@ public:
 			math::MatrixXv2f& gradient,
 			math::MatrixXv2f& warp_field,
 			eig::MatrixXf& diff,
+			math::MatrixXv2f& data_gradient,
+			math::MatrixXv2f& tikhonov_gradient,
 			float& maximum_warp_update_length,
 			const eig::MatrixXf& canonical_pyramid_level,
 			const eig::MatrixXf& live_pyramid_level,
@@ -89,8 +102,13 @@ public:
 	std::vector<telemetry::ConvergenceReport> get_per_level_convergence_reports();
 
 private:
+	//TODO: set these and provide retrieval methods as appropriate
+	time_point optimization_start = std::chrono::high_resolution_clock::now();
+	double optimization_duration = 0.0;
+
 	const float energy_factor = 1000000.0f;
 	std::vector<telemetry::ConvergenceReport> per_level_convergence_reports;
+	std::vector<telemetry::OptimizationIterationData> per_level_iteration_data;
 	void clear_logs();
 
 	const VerbosityParameters verbosity_parameters;

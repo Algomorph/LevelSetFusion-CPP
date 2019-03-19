@@ -27,7 +27,6 @@
 
 //local
 #include "../../math/tensors.hpp"
-#include "../../telemetry/convergence_report.hpp"
 
 namespace eig = Eigen;
 
@@ -79,6 +78,8 @@ protected:
 			math::MatrixXv2f& gradient,
 			math::MatrixXv2f& warp_field,
 			eig::MatrixXf& diff,
+			math::MatrixXv2f& data_gradient,
+			math::MatrixXv2f& tikhonov_gradient,
 			float& maximum_warp_update_length,
 			const eig::MatrixXf& canonical_pyramid_level,
 			const eig::MatrixXf& live_pyramid_level,
@@ -94,5 +95,7 @@ private:
 	bool termination_conditions_reached(float maximum_warp_update_length, int completed_iteration_count);
 
 };
+
+
 } /* namespace hierarchical */
 } /* namespace nonrigid_optimization */
