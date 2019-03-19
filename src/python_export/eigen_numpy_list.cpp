@@ -18,7 +18,8 @@
  *   limitations under the License.
  */
 
-#include "eigen_numpy.hpp"
+//standard
+#include <vector>
 
 //libraries
 #include <boost/python.hpp>
@@ -30,6 +31,7 @@
 #include <numpy/arrayobject.h>
 
 //local
+#include "eigen_numpy.hpp"
 #include "numpy_conversions_shared.hpp"
 #include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
@@ -47,6 +49,34 @@ namespace bp = boost::python;
 
 using namespace Eigen;
 
+template<class MatType> // MatrixXf or MatrixXd
+struct EigenMatrixVectorToPython {
+	static PyObject* convert(const std::vector<MatType>& vec) {
+		PyObject* py_list = PyList_New(vec.size());
+		Py_ssize_t index =0;
+		for (MatType mat : vec) {
+			npy_intp shape[2] = { mat.rows(), mat.cols() };
+			PyArrayObject* python_array = (PyArrayObject*) PyArray_SimpleNew(
+					2, shape, NumpyEquivalentType<typename MatType::Scalar>::type_code);
+			copy_array(mat.data(),
+					(typename MatType::Scalar*) PyArray_DATA(python_array),
+					mat.rows(),
+					mat.cols(),
+					false,
+					true,
+					MatType::Flags & Eigen::RowMajorBit);
+			PyObject* py_mat = (PyObject*) python_array;
+			PyList_SET_ITEM(py_list, index, py_mat);
+			index += 1;
+		}
+		return py_list;
+	}
+};
+
+
+#define EIGEN_MATRIX_LIST_CONVERTER(Type) \
+  bp::to_python_converter<std::vector<Type>, EigenMatrixVectorToPython<Type> >();
+
 #if PY_VERSION_HEX >= 0x03000000
 void*
 #else
@@ -57,9 +87,10 @@ setup_Eigen_list_converters() {
 	if (is_setup)
 		return NUMPY_IMPORT_ARRAY_RETVAL;
 	is_setup = true;
-
 	import_array();
 
+	EIGEN_MATRIX_LIST_CONVERTER(Eigen::MatrixXf);
+	EIGEN_MATRIX_LIST_CONVERTER(math::MatrixXv2f);
 #if PY_VERSION_HEX >= 0x03000000
 	return 0;
 #endif

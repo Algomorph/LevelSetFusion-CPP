@@ -82,7 +82,7 @@ public:
 
 	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
 #ifndef NO_LOG
-	std::vector<telementry::ConvergenceReport> get_per_level_convergence_reports();
+	std::vector<telemetry::ConvergenceReport> get_per_level_convergence_reports();
 #endif
 private:
 
@@ -115,7 +115,7 @@ private:
 	Telemetry<TOptimized> log;
 
 #ifndef NO_LOG
-	std::vector<telementry::ConvergenceReport> per_level_convergence_reports;
+	std::vector<telemetry::ConvergenceReport> per_level_convergence_reports;
 	void clear_logs();
 #endif
 

@@ -29,20 +29,20 @@
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 //local
-#include "eigen_numpy.hpp"
 #include "telemetry.hpp"
+#include "../math/typedefs.hpp"
+#include "../math/tensors.hpp"
 #include "../telemetry/warp_delta_statistics.hpp"
 #include "../telemetry/tsdf_difference_statistics.hpp"
 #include "../telemetry/convergence_report.hpp"
-#include "../math/typedefs.hpp"
-#include "../math/tensors.hpp"
+#include "../telemetry/optimization_iteration_data.hpp"
 
 namespace bp = boost::python;
 
 namespace python_export {
 
 void export_telemetry_utilities() {
-	bp::class_<telementry::WarpDeltaStatistics>("WarpDeltaStatistics", bp::init<>())
+	bp::class_<telemetry::WarpDeltaStatistics>("WarpDeltaStatistics", bp::init<>())
 			.def(bp::init<float, float, float, float, float, math::Vector2i, bool, bool>(
 			bp::args("ratio_above_min_threshold",
 					"length_min",
@@ -62,28 +62,28 @@ void export_telemetry_utilities() {
 					"max_threshold"
 					)))
 			.def_readwrite("ratio_above_min_threshold",
-			&telementry::WarpDeltaStatistics::ratio_above_min_threshold)
+			&telemetry::WarpDeltaStatistics::ratio_above_min_threshold)
 			.def_readwrite("length_min",
-			&telementry::WarpDeltaStatistics::length_min)
+			&telemetry::WarpDeltaStatistics::length_min)
 			.def_readwrite("length_max",
-			&telementry::WarpDeltaStatistics::length_max)
+			&telemetry::WarpDeltaStatistics::length_max)
 			.def_readwrite("length_mean",
-			&telementry::WarpDeltaStatistics::length_mean)
+			&telemetry::WarpDeltaStatistics::length_mean)
 			.def_readwrite("length_standard_deviation",
-			&telementry::WarpDeltaStatistics::length_standard_deviation)
+			&telemetry::WarpDeltaStatistics::length_standard_deviation)
 			.def_readwrite("longest_warp_location",
-			&telementry::WarpDeltaStatistics::longest_warp_location)
+			&telemetry::WarpDeltaStatistics::longest_warp_location)
 			.def_readwrite("is_largest_below_min_threshold",
-			&telementry::WarpDeltaStatistics::is_largest_below_min_threshold)
+			&telemetry::WarpDeltaStatistics::is_largest_below_min_threshold)
 			.def_readwrite("is_largest_above_max_threshold",
-			&telementry::WarpDeltaStatistics::is_largest_above_max_threshold)
-			.def("to_array", &telementry::WarpDeltaStatistics::to_array)
-			.def("__eq__", &telementry::WarpDeltaStatistics::operator==)
-			.def("__ne__", &telementry::WarpDeltaStatistics::operator!=)
+			&telemetry::WarpDeltaStatistics::is_largest_above_max_threshold)
+			.def("to_array", &telemetry::WarpDeltaStatistics::to_array)
+			.def("__eq__", &telemetry::WarpDeltaStatistics::operator==)
+			.def("__ne__", &telemetry::WarpDeltaStatistics::operator!=)
 			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
-	bp::class_<telementry::TsdfDifferenceStatistics>("TsdfDifferenceStatistics", bp::init<>())
+	bp::class_<telemetry::TsdfDifferenceStatistics>("TsdfDifferenceStatistics", bp::init<>())
 			.def(bp::init<float, float, float, float, math::Vector2i>(
 			bp::args("difference_min",
 					"difference_max",
@@ -92,43 +92,51 @@ void export_telemetry_utilities() {
 					"biggest_difference_location")))
 			.def(bp::init<eig::MatrixXf, eig::MatrixXf>(bp::args("canonical_field", "live_field")))
 			.def_readwrite("difference_min",
-			&telementry::TsdfDifferenceStatistics::difference_min)
+			&telemetry::TsdfDifferenceStatistics::difference_min)
 			.def_readwrite("difference_max",
-			&telementry::TsdfDifferenceStatistics::difference_max)
+			&telemetry::TsdfDifferenceStatistics::difference_max)
 			.def_readwrite("difference_mean",
-			&telementry::TsdfDifferenceStatistics::difference_mean)
+			&telemetry::TsdfDifferenceStatistics::difference_mean)
 			.def_readwrite("difference_standard_deviation",
-			&telementry::TsdfDifferenceStatistics::difference_standard_deviation)
+			&telemetry::TsdfDifferenceStatistics::difference_standard_deviation)
 			.def_readwrite("biggest_difference_location",
-			&telementry::TsdfDifferenceStatistics::biggest_difference_location)
+			&telemetry::TsdfDifferenceStatistics::biggest_difference_location)
 			.def("to_array",
-			&telementry::TsdfDifferenceStatistics::to_array)
-			.def("__eq__", &telementry::TsdfDifferenceStatistics::operator==)
-			.def("__ne__", &telementry::TsdfDifferenceStatistics::operator!=)
+			&telemetry::TsdfDifferenceStatistics::to_array)
+			.def("__eq__", &telemetry::TsdfDifferenceStatistics::operator==)
+			.def("__ne__", &telemetry::TsdfDifferenceStatistics::operator!=)
 			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
-	bp::class_<telementry::ConvergenceReport>("ConvergenceReport", bp::init<>())
-			.def(bp::init<int, bool, telementry::WarpDeltaStatistics, telementry::TsdfDifferenceStatistics>(
+	bp::class_<telemetry::ConvergenceReport>("ConvergenceReport", bp::init<>())
+			.def(bp::init<int, bool, telemetry::WarpDeltaStatistics, telemetry::TsdfDifferenceStatistics>(
 			bp::args("iteration_count",
 					"iteration_limit_reached",
 					"warp_delta_statistics",
 					"tsdf_difference_statistics")))
 			.def_readwrite("iteration_count",
-			&telementry::ConvergenceReport::iteration_count)
+			&telemetry::ConvergenceReport::iteration_count)
 			.def_readwrite("iteration_limit_reached",
-			&telementry::ConvergenceReport::iteration_limit_reached)
+			&telemetry::ConvergenceReport::iteration_limit_reached)
 			.def_readwrite("warp_delta_statistics",
-			&telementry::ConvergenceReport::warp_delta_statistics)
+			&telemetry::ConvergenceReport::warp_delta_statistics)
 			.def_readwrite("tsdf_difference_statistics",
-			&telementry::ConvergenceReport::tsdf_difference_statistics)
-			.def("__eq__", &telementry::ConvergenceReport::operator==)
-			.def("__ne__", &telementry::ConvergenceReport::operator!=)
+			&telemetry::ConvergenceReport::tsdf_difference_statistics)
+			.def("__eq__", &telemetry::ConvergenceReport::operator==)
+			.def("__ne__", &telemetry::ConvergenceReport::operator!=)
 			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
-	bp::class_<std::vector<telementry::ConvergenceReport>>("ConvergenceReportVector")
-			.def(bp::vector_indexing_suite<std::vector<telementry::ConvergenceReport>>());
+	bp::class_<std::vector<telemetry::ConvergenceReport>>("ConvergenceReportVector")
+			.def(bp::vector_indexing_suite<std::vector<telemetry::ConvergenceReport>>());
+
+	bp::class_<telemetry::OptimizationIterationData>("OptimizationIterationData", bp::init<>())
+			.def("get_live_fields", &telemetry::OptimizationIterationData::get_live_fields)
+			.def("get_warp_fields", &telemetry::OptimizationIterationData::get_warp_fields)
+			.def("get_data_term_gradients", &telemetry::OptimizationIterationData::get_data_term_gradients)
+			.def("get_tikhonov_term_gradients", &telemetry::OptimizationIterationData::get_tikhonov_term_gradients)
+			.def("get_final_warp_updates", &telemetry::OptimizationIterationData::get_final_warp_updates)
+			;
 }
 } //namespace python_export
 

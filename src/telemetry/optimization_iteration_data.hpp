@@ -39,7 +39,7 @@ public:
 			math::MatrixXv2f tikhonov_term_gradients = math::MatrixXv2f(),
 			math::MatrixXv2f final_warp_updates = math::MatrixXv2f());
 
-	const std::vector<Eigen::MatrixXf> get_live_fields() const;
+	const std::vector<Eigen::MatrixXf>  get_live_fields() const;
 	const std::vector<math::MatrixXv2f> get_warp_fields() const;
 	const std::vector<math::MatrixXv2f> get_data_term_gradients() const;
 	const std::vector<math::MatrixXv2f> get_tikhonov_term_gradients() const;

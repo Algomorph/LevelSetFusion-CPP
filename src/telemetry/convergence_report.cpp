@@ -22,7 +22,7 @@
 #include "../telemetry/convergence_report.hpp"
 
 
-namespace telementry {
+namespace telemetry {
 ConvergenceReport::ConvergenceReport(int iteration_count,
 		bool iteration_limit_reached,
 		WarpDeltaStatistics warp_delta_statistics,

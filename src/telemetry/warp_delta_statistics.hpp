@@ -32,7 +32,7 @@
 
 namespace eig = Eigen;
 
-namespace telementry {
+namespace telemetry {
 
 /**
  * A structure for logging statistics pertaining to warps at the end of an optimization iteration

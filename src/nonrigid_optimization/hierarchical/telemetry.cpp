@@ -18,13 +18,12 @@
  *   limitations under the License.
  */
 
-#include "telemetry.hpp"
-
+#include "telemetry.tpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical{
 
-
+template class Telemetry<true>;
 
 
 

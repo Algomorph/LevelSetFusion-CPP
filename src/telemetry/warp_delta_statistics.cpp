@@ -26,7 +26,7 @@
 #include "../math/assessment.hpp"
 
 
-namespace telementry {
+namespace telemetry {
 WarpDeltaStatistics::WarpDeltaStatistics(
 		float ratio_above_min_threshold,
 		float length_min,

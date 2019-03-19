@@ -34,7 +34,7 @@
 
 namespace eig = Eigen;
 
-namespace telementry {
+namespace telemetry {
 /**
  * A structure for logging characteristics of convergence (warp-threshold-based optimization) after a full optimization run
  */

@@ -32,7 +32,7 @@
 
 namespace eig = Eigen;
 
-namespace telementry {
+namespace telemetry {
 /**
  * A structure for logging statistics pertaining to numerical differences between corresponding locations in the
  * canonical and the live (target and source) TSDF fields after optimization

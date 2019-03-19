@@ -85,7 +85,7 @@ eig::MatrixXf SobolevOptimizer2d::optimize(const eig::MatrixXf& live_field, cons
 
 		//log end-of-iteration results if requested
 		if (SobolevOptimizer2d::shared_parameters().enable_warp_statistics_logging) {
-			telementry::WarpDeltaStatistics current_warp_statistics(warp_field,
+			telemetry::WarpDeltaStatistics current_warp_statistics(warp_field,
 					canonical_field,
 					warped_live_field,
 					SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold,
@@ -96,13 +96,13 @@ eig::MatrixXf SobolevOptimizer2d::optimize(const eig::MatrixXf& live_field, cons
 
 	//log end-of-optimization results if requested
 	if (SobolevOptimizer2d::shared_parameters().enable_convergence_reporting) {
-		telementry::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_field, warped_live_field);
-		telementry::WarpDeltaStatistics current_warp_statistics(warp_field,
+		telemetry::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_field, warped_live_field);
+		telemetry::WarpDeltaStatistics current_warp_statistics(warp_field,
 				canonical_field,
 				warped_live_field,
 				SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold,
 				SobolevOptimizer2d::shared_parameters().maximum_warp_length_upper_threshold);
-		this->convergence_report = telementry::ConvergenceReport(
+		this->convergence_report = telemetry::ConvergenceReport(
 				completed_iteration_count,
 				completed_iteration_count >= shared_parameters().maximum_iteration_count,
 				current_warp_statistics,
@@ -131,7 +131,7 @@ float SobolevOptimizer2d::perform_optimization_iteration_and_return_max_warp(eig
 	return maximum_warp_length;
 }
 
-telementry::ConvergenceReport SobolevOptimizer2d::get_convergence_report() {
+telemetry::ConvergenceReport SobolevOptimizer2d::get_convergence_report() {
 	return this->convergence_report;
 }
 
@@ -143,7 +143,7 @@ eig::MatrixXf SobolevOptimizer2d::get_warp_statistics_as_matrix() {
 
 	eig::MatrixXf warp_statistics_matrix(this->warp_statistics.size(), 6);
 	eig::Index i_row = 0;
-	for (telementry::WarpDeltaStatistics& iteration_warp_statistics : this->warp_statistics) {
+	for (telemetry::WarpDeltaStatistics& iteration_warp_statistics : this->warp_statistics) {
 		warp_statistics_matrix.row(i_row) = iteration_warp_statistics.to_array();
 		i_row++;
 	}
@@ -151,7 +151,7 @@ eig::MatrixXf SobolevOptimizer2d::get_warp_statistics_as_matrix() {
 }
 
 void SobolevOptimizer2d::clean_out_logs() {
-	this->convergence_report = telementry::ConvergenceReport();
+	this->convergence_report = telemetry::ConvergenceReport();
 	this->warp_statistics.clear();
 }
 } //namespace slavcheva

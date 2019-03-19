@@ -26,7 +26,7 @@
 #include "../math/assessment.hpp"
 
 
-namespace telementry {
+namespace telemetry {
 TsdfDifferenceStatistics::TsdfDifferenceStatistics(
 		float difference_min,
 		float difference_max,

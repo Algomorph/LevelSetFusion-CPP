@@ -243,12 +243,12 @@ void Optimizer2d<TOptimized>::optimize_level(
 			std::cout << std::endl;
 		}
 	if(this->logging_parameters.collect_per_level_convergence_reports){
-		telementry::WarpDeltaStatistics current_warp_statistics(warp_field,
+		telemetry::WarpDeltaStatistics current_warp_statistics(warp_field,
 						canonical_pyramid_level,
 						live_pyramid_level,
 						this->maximum_warp_update_threshold,
 						FLT_MAX);
-		telementry::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
+		telemetry::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
 		this->per_level_convergence_reports.push_back({
 			iteration_count,
 			iteration_count >= this->maximum_iteration_count,
@@ -257,12 +257,12 @@ void Optimizer2d<TOptimized>::optimize_level(
 		});
 	}
 	if(this->logging_parameters.collect_per_level_convergence_reports){
-		telementry::WarpDeltaStatistics current_warp_statistics(warp_field,
+		telemetry::WarpDeltaStatistics current_warp_statistics(warp_field,
 						canonical_pyramid_level,
 						live_pyramid_level,
 						this->maximum_warp_update_threshold,
 						FLT_MAX);
-		telementry::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
+		telemetry::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
 		this->per_level_convergence_reports.push_back({
 			iteration_count,
 			iteration_count >= this->maximum_iteration_count,
@@ -286,7 +286,7 @@ void Optimizer2d<TOptimized>::clear_logs(){
 	this->per_level_convergence_reports.clear();
 }
 template<bool TOptimized>
-std::vector<telementry::ConvergenceReport> Optimizer2d<TOptimized>::get_per_level_convergence_reports(){
+std::vector<telemetry::ConvergenceReport> Optimizer2d<TOptimized>::get_per_level_convergence_reports(){
 	return this->per_level_convergence_reports;
 }
 #endif

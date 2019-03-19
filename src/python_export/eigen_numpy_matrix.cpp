@@ -29,41 +29,7 @@ namespace bp = boost::python;
 using namespace Eigen;
 
 
-template<typename SourceType, typename DestType>
-static void copy_array(const SourceType* source, DestType* dest,
-		const npy_int& nb_rows, const npy_int& nb_cols,
-		const bool& isSourceTypeNumpy = false, const bool& isDestRowMajor = true,
-		const bool& isSourceRowMajor = true,
-		const npy_int& numpy_row_stride = 1, const npy_int& numpy_col_stride = 1) {
-	// determine source strides
-	int row_stride = 1, col_stride = 1;
-	if (isSourceTypeNumpy) {
-		row_stride = numpy_row_stride;
-		col_stride = numpy_col_stride;
-	} else {
-		if (isSourceRowMajor) {
-			row_stride = nb_cols;
-		} else {
-			col_stride = nb_rows;
-		}
-	}
 
-	if (isDestRowMajor) {
-		for (int r = 0; r < nb_rows; r++) {
-			for (int c = 0; c < nb_cols; c++) {
-				*dest = source[r * row_stride + c * col_stride];
-				dest++;
-			}
-		}
-	} else {
-		for (int c = 0; c < nb_cols; c++) {
-			for (int r = 0; r < nb_rows; r++) {
-				*dest = source[r * row_stride + c * col_stride];
-				dest++;
-			}
-		}
-	}
-}
 
 template<class MatType> // MatrixXf or MatrixXd
 struct EigenMatrixToPython {

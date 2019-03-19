@@ -36,9 +36,7 @@ class Telemetry<true>{
 template<>
 struct Telemetry<false>{
 
-
-
-	std::vector<telementry::ConvergenceReport> per_level_convergence_reports;
+	std::vector<telemetry::ConvergenceReport> per_level_convergence_reports;
 
 
 	void add_level_iteration_result(int i_level, Eigen::MatrixXf live_field,
@@ -51,4 +49,3 @@ struct Telemetry<false>{
 
 } /* namespace hierarchical */
 } /* namespace nonrigid_optimization */
-
