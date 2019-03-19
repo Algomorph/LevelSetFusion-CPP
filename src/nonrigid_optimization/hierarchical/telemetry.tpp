@@ -21,3 +21,5 @@
 #pragma once
 namespace nonrigid_optimization {
 namespace hierarchical{
+} /* namespace hierarchical */
+} /* namespace nonrigid_optimization */

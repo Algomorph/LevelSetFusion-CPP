@@ -36,34 +36,10 @@ namespace nonrigid_optimization {
 namespace hierarchical{
 
 //not thread-safe
-template<bool TOptimized>
+
 class Optimizer2d {
 
 public:
-
-	struct VerbosityParameters {
-		VerbosityParameters(
-				bool print_max_warp_update = false,
-				bool print_iteration_mean_tsdf_difference = false,
-				bool print_iteration_std_tsdf_difference = false,
-				bool print_iteration_data_energy = false,
-				bool print_iteration_tikhonov_energy = false);
-		//per-iteration parameters
-		const bool print_iteration_max_warp_update = false;
-		const bool print_iteration_mean_tsdf_difference = false;
-		const bool print_iteration_std_tsdf_difference = false;
-		const bool print_iteration_data_energy = false;
-		const bool print_iteration_tikhonov_energy = false;
-
-		const bool print_per_iteration_info = false;
-		const bool print_per_level_info = false;
-	};
-
-	struct LoggingParameters {
-		LoggingParameters(bool collect_per_level_convergence_reports = false);
-		const bool collect_per_level_convergence_reports = false;
-	};
-
 	Optimizer2d(
 			bool tikhonov_term_enabled = true,
 			bool gradient_kernel_enabled = true,
@@ -75,27 +51,12 @@ public:
 
 			float data_term_amplifier = 1.0f,
 			float tikhonov_strength = 0.2f,
-			eig::VectorXf kernel = eig::VectorXf(0),
-			VerbosityParameters verbosity_parameters = VerbosityParameters(),
-			LoggingParameters logging_parameters = LoggingParameters());
+			eig::VectorXf kernel = eig::VectorXf(0));
 	virtual ~Optimizer2d();
 
-	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
-#ifndef NO_LOG
-	std::vector<telemetry::ConvergenceReport> get_per_level_convergence_reports();
-#endif
-private:
+	virtual math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
 
-	void optimize_level(
-			math::MatrixXv2f& warp_field,
-			const eig::MatrixXf& canonical_pyramid_level,
-			const eig::MatrixXf& live_pyramid_level,
-			const eig::MatrixXf& live_gradient_x_level,
-			const eig::MatrixXf& live_gradient_y_level
-			);
-
-	bool termination_conditions_reached(float maximum_warp_update_length, int completed_iteration_count);
-
+protected:
 	//parameters
 	const bool tikhonov_term_enabled = true;
 	const bool gradient_kernel_enabled = true;
@@ -106,18 +67,32 @@ private:
 	const float data_term_amplifier = 1.0f;
 	const float tikhonov_strength = 0.2f;
 	const eig::VectorXf kernel_1d = eig::VectorXf(0);
-	VerbosityParameters verbosity_parameters;
-	LoggingParameters logging_parameters;
 
+	virtual void optimize_level(
+			math::MatrixXv2f& warp_field,
+			const eig::MatrixXf& canonical_pyramid_level,
+			const eig::MatrixXf& live_pyramid_level,
+			const eig::MatrixXf& live_gradient_x_level,
+			const eig::MatrixXf& live_gradient_y_level
+			);
+
+	virtual void optimize_iteration(
+			math::MatrixXv2f& gradient,
+			math::MatrixXv2f& warp_field,
+			eig::MatrixXf& diff,
+			float& maximum_warp_update_length,
+			const eig::MatrixXf& canonical_pyramid_level,
+			const eig::MatrixXf& live_pyramid_level,
+			const eig::MatrixXf& live_gradient_x_level,
+			const eig::MatrixXf& live_gradient_y_level
+			);
+	inline int get_current_hierarchy_level() { return this->current_hierarchy_level; }
+	inline int get_current_iteration() { return this->current_iteration; }
+private:
 	//optimization state variables
 	int current_hierarchy_level = 0;
-
-	Telemetry<TOptimized> log;
-
-#ifndef NO_LOG
-	std::vector<telemetry::ConvergenceReport> per_level_convergence_reports;
-	void clear_logs();
-#endif
+	int current_iteration = 0;
+	bool termination_conditions_reached(float maximum_warp_update_length, int completed_iteration_count);
 
 };
 } /* namespace hierarchical */

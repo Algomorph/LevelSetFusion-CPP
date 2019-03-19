@@ -1,5 +1,5 @@
 /*
- * optimizer2d_log.cpp
+ * hierarchical_optimizer.cpp
  *
  *  Created on: Mar 18, 2019
  *      Author: Gregory Kramida
@@ -18,11 +18,11 @@
  *   limitations under the License.
  */
 
-#include "telemetry.tpp"
+#include "templated_optimizer2d.tpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical{
-
-
-} /* namespace hierarchical */
-} /* namespace nonrigid_optimization */
+template class TemplatedOptimizer2d<true>;
+template class TemplatedOptimizer2d<false>;
+} // namespace hierarchical
+} // namespace nonrigid_optimization

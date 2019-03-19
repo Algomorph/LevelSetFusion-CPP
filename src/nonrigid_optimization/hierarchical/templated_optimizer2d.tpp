@@ -18,8 +18,6 @@
  *   limitations under the License.
  */
 //stdlib
-#include "optimizer2d.hpp"
-
 #include <limits>
 #include <cmath>
 
@@ -33,13 +31,14 @@
 #include "../../math/gradients.hpp"
 #include "../../math/typedefs.hpp"
 #include "../../math/statistics.hpp"
+#include "templated_optimizer2d.hpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical{
 
 
 template<bool TOptimized>
-Optimizer2d<TOptimized>::Optimizer2d(
+TemplatedOptimizer2d<TOptimized>::TemplatedOptimizer2d(
 		bool tikhonov_term_enabled,
 		bool gradient_kernel_enabled,
 		int maximum_chunk_size,
@@ -68,13 +67,13 @@ Optimizer2d<TOptimized>::Optimizer2d(
 }
 
 template<bool TOptimized>
-Optimizer2d<TOptimized>::~Optimizer2d()
+TemplatedOptimizer2d<TOptimized>::~TemplatedOptimizer2d()
 {
 	// TODO Auto-generated destructor stub
 }
 
 template<bool TOptimized>
-Optimizer2d<TOptimized>::VerbosityParameters::VerbosityParameters(
+TemplatedOptimizer2d<TOptimized>::VerbosityParameters::VerbosityParameters(
 		bool print_iteration_max_warp_update,
 		bool print_iteration_mean_tsdf_difference,
 		bool print_iteration_std_tsdf_difference,
@@ -97,12 +96,12 @@ Optimizer2d<TOptimized>::VerbosityParameters::VerbosityParameters(
 }
 
 template<bool TOptimized>
-Optimizer2d<TOptimized>::LoggingParameters::LoggingParameters(bool collect_per_level_convergence_reports) :
+TemplatedOptimizer2d<TOptimized>::LoggingParameters::LoggingParameters(bool collect_per_level_convergence_reports) :
 		collect_per_level_convergence_reports(collect_per_level_convergence_reports) {
 }
 
 template<bool TOptimized>
-math::MatrixXv2f Optimizer2d<TOptimized>::optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field) {
+math::MatrixXv2f TemplatedOptimizer2d<TOptimized>::optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field) {
 
 #ifndef NO_LOG
 	this->clear_logs();
@@ -144,7 +143,7 @@ math::MatrixXv2f Optimizer2d<TOptimized>::optimize(eig::MatrixXf canonical_field
 }
 
 template<bool TOptimized>
-void Optimizer2d<TOptimized>::optimize_level(
+void TemplatedOptimizer2d<TOptimized>::optimize_level(
 		math::MatrixXv2f& warp_field,
 		const eig::MatrixXf& canonical_pyramid_level,
 		const eig::MatrixXf& live_pyramid_level,
@@ -274,7 +273,7 @@ void Optimizer2d<TOptimized>::optimize_level(
 }
 
 template<bool TOptimized>
-bool Optimizer2d<TOptimized>::termination_conditions_reached(float maximum_warp_update_length,
+bool TemplatedOptimizer2d<TOptimized>::termination_conditions_reached(float maximum_warp_update_length,
 		int completed_iteration_count) {
 	return maximum_warp_update_length < this->maximum_warp_update_threshold ||
 			completed_iteration_count >= this->maximum_iteration_count;
@@ -282,11 +281,11 @@ bool Optimizer2d<TOptimized>::termination_conditions_reached(float maximum_warp_
 
 #ifndef NO_LOG
 template<bool TOptimized>
-void Optimizer2d<TOptimized>::clear_logs(){
+void TemplatedOptimizer2d<TOptimized>::clear_logs(){
 	this->per_level_convergence_reports.clear();
 }
 template<bool TOptimized>
-std::vector<telemetry::ConvergenceReport> Optimizer2d<TOptimized>::get_per_level_convergence_reports(){
+std::vector<telemetry::ConvergenceReport> TemplatedOptimizer2d<TOptimized>::get_per_level_convergence_reports(){
 	return this->per_level_convergence_reports;
 }
 #endif
