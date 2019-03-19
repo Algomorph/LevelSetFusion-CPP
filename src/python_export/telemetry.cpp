@@ -29,7 +29,7 @@
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 //local
-#include "logging.hpp"
+#include "telemetry.hpp"
 #include "../telemetry/warp_delta_statistics.hpp"
 #include "../telemetry/tsdf_difference_statistics.hpp"
 #include "../telemetry/convergence_report.hpp"
@@ -40,7 +40,7 @@ namespace bp = boost::python;
 
 namespace python_export {
 
-void export_logging_utilities() {
+void export_telemetry_utilities() {
 	bp::class_<telementry::WarpDeltaStatistics>("WarpDeltaStatistics", bp::init<>())
 			.def(bp::init<float, float, float, float, float, math::Vector2i, bool, bool>(
 			bp::args("ratio_above_min_threshold",

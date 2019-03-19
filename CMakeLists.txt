@@ -182,6 +182,7 @@ add_library(${MODULE_NAME} SHARED
 			
 			src/module.cpp
 			
+			### python export: all code for porting everything from the other namespaces (as nescessary) to Python
 			src/python_export/conversion_tests.hpp
 			src/python_export/conversion_tests.cpp
 			src/python_export/eigen_numpy.hpp
@@ -189,8 +190,8 @@ add_library(${MODULE_NAME} SHARED
 			src/python_export/eigen_numpy_tensor.cpp
 			src/python_export/hierarchical_optimizer.hpp
 			src/python_export/hierarchical_optimizer.cpp
-			src/python_export/logging.hpp
-			src/python_export/logging.cpp
+			src/python_export/telemetry.hpp
+			src/python_export/telemetry.cpp
 			src/python_export/math.hpp
 			src/python_export/math.cpp
 			src/python_export/numpy_conversions_shared.hpp
