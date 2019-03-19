@@ -80,5 +80,3 @@ struct NumpyEquivalentType<std::complex<double> > {
 		type_code = NPY_CDOUBLE
 	};
 };
-
-
