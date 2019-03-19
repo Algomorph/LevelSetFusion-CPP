@@ -27,7 +27,7 @@
 
 //local
 #include "../../math/tensors.hpp"
-#include "../../logging/convergence_report.hpp"
+#include "../../telemetry/convergence_report.hpp"
 #include "optimizer2d_log.hpp"
 
 namespace eig = Eigen;

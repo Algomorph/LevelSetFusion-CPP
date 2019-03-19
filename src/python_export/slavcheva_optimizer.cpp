@@ -30,8 +30,8 @@
 #include "../nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp"
 #include "../nonrigid_optimization/field_warping.hpp"
 #include "../nonrigid_optimization/slavcheva/data_term.hpp"
-#include "../logging/warp_delta_statistics.hpp"
-#include "../logging/convergence_report.hpp"
+#include "../telemetry/warp_delta_statistics.hpp"
+#include "../telemetry/convergence_report.hpp"
 
 namespace bp = boost::python;
 namespace nro_s = nonrigid_optimization::slavcheva;

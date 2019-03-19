@@ -19,7 +19,7 @@
  */
 
 //local
-#include "convergence_report.hpp"
+#include "../telemetry/convergence_report.hpp"
 
 
 namespace logging {

@@ -19,7 +19,8 @@
  */
 
 #include "optimizer2d_log.hpp"
-#include "../../logging/convergence_report.hpp"
+
+#include "../../telemetry/convergence_report.hpp"
 namespace nonrigid_optimization {
 namespace hierarchical{
 template<>
@@ -34,5 +35,3 @@ struct Optimizer2d_log<false>{
 
 } /* namespace hierarchical */
 } /* namespace nonrigid_optimization */
-
-

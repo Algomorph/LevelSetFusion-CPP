@@ -19,7 +19,7 @@
  */
 
 //local
-#include "ho_2d_result_store.hpp"
+#include "../telemetry/ho_2d_result_store.hpp"
 
 namespace logging {
 

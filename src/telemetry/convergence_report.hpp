@@ -27,10 +27,10 @@
 #include <Eigen/Eigen>
 
 //local
-#include "warp_delta_statistics.hpp"
-#include "tsdf_difference_statistics.hpp"
 #include "../math/typedefs.hpp"
 #include "../math/tensors.hpp"
+#include "../telemetry/tsdf_difference_statistics.hpp"
+#include "../telemetry/warp_delta_statistics.hpp"
 
 namespace eig = Eigen;
 

@@ -200,10 +200,16 @@ add_library(${MODULE_NAME} SHARED
 			src/python_export/tsdf.hpp
 			src/python_export/tsdf.cpp
 
+			#### nonrigid_optimization: namespace for algorithms performing non-rigid optimization on TSDF grids #######
+			# TSDF: voxel grid containing truncated signed distances to nearest surface in the volume (F is "field")
+			# Level set == different name for "approximately" the same concept
+			# for more details, see KillingFusion & SobolevFusion publications by Slavcheva et al., 
+			# VolumeDeform by Innmann et al. and DynamicFusion by Newcombe et al. 
 			
 			src/nonrigid_optimization/field_warping.hpp
 			src/nonrigid_optimization/field_warping.cpp
 			
+			### nonrigid optimization, slavcheva: KillingFusion/Sobolev fusion
 			src/nonrigid_optimization/slavcheva/data_term.hpp
 			src/nonrigid_optimization/slavcheva/data_term.cpp
 			src/nonrigid_optimization/slavcheva/full_gradient.cpp
@@ -215,6 +221,7 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp
 			
+			### nonrigid optimization, hierarchical: hierarchical SLAM optimizer (active research & development)
 			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical/optimizer2d.tpp
 			src/nonrigid_optimization/hierarchical/optimizer2d.hpp
@@ -223,17 +230,20 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
 
+			### traversal: algorithms for traversal of data structures
 			src/traversal/field_traversal_cpu.hpp
 			
-			src/logging/ho_2d_result_store.hpp
-			src/logging/ho_2d_result_store.cpp
-			src/logging/warp_delta_statistics.hpp
-			src/logging/warp_delta_statistics.cpp
-			src/logging/tsdf_difference_statistics.hpp
-			src/logging/tsdf_difference_statistics.cpp
-			src/logging/convergence_report.hpp
-			src/logging/convergence_report.cpp
+			### telemetry: namespace for logging progress and storing up intermediate results for later analysis #######
+			src/telemetry/ho_2d_result_store.hpp
+			src/telemetry/ho_2d_result_store.cpp
+			src/telemetry/warp_delta_statistics.hpp
+			src/telemetry/warp_delta_statistics.cpp
+			src/telemetry/tsdf_difference_statistics.hpp
+			src/telemetry/tsdf_difference_statistics.cpp
+			src/telemetry/convergence_report.hpp
+			src/telemetry/convergence_report.cpp
 			
+			### math: mathematical utilities
 			src/math/assessment.hpp
 			src/math/assessment.cpp
 			src/math/boolean_operations.hpp

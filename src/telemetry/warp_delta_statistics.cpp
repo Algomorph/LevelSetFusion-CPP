@@ -19,7 +19,8 @@
  */
 
 //local
-#include "warp_delta_statistics.hpp"
+#include "../telemetry/warp_delta_statistics.hpp"
+
 #include "../math/filtered_statistics.hpp"
 #include "../math/statistics.hpp"
 #include "../math/assessment.hpp"

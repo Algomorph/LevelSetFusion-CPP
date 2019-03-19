@@ -19,7 +19,8 @@
  */
 
 //local
-#include "tsdf_difference_statistics.hpp"
+#include "../telemetry/tsdf_difference_statistics.hpp"
+
 #include "../math/filtered_statistics.hpp"
 #include "../math/statistics.hpp"
 #include "../math/assessment.hpp"
