@@ -41,7 +41,7 @@ namespace bp = boost::python;
 namespace python_export {
 
 void export_logging_utilities() {
-	bp::class_<logging::WarpDeltaStatistics>("WarpDeltaStatistics", bp::init<>())
+	bp::class_<telementry::WarpDeltaStatistics>("WarpDeltaStatistics", bp::init<>())
 			.def(bp::init<float, float, float, float, float, math::Vector2i, bool, bool>(
 			bp::args("ratio_above_min_threshold",
 					"length_min",
@@ -61,28 +61,28 @@ void export_logging_utilities() {
 					"max_threshold"
 					)))
 			.def_readwrite("ratio_above_min_threshold",
-			&logging::WarpDeltaStatistics::ratio_above_min_threshold)
+			&telementry::WarpDeltaStatistics::ratio_above_min_threshold)
 			.def_readwrite("length_min",
-			&logging::WarpDeltaStatistics::length_min)
+			&telementry::WarpDeltaStatistics::length_min)
 			.def_readwrite("length_max",
-			&logging::WarpDeltaStatistics::length_max)
+			&telementry::WarpDeltaStatistics::length_max)
 			.def_readwrite("length_mean",
-			&logging::WarpDeltaStatistics::length_mean)
+			&telementry::WarpDeltaStatistics::length_mean)
 			.def_readwrite("length_standard_deviation",
-			&logging::WarpDeltaStatistics::length_standard_deviation)
+			&telementry::WarpDeltaStatistics::length_standard_deviation)
 			.def_readwrite("longest_warp_location",
-			&logging::WarpDeltaStatistics::longest_warp_location)
+			&telementry::WarpDeltaStatistics::longest_warp_location)
 			.def_readwrite("is_largest_below_min_threshold",
-			&logging::WarpDeltaStatistics::is_largest_below_min_threshold)
+			&telementry::WarpDeltaStatistics::is_largest_below_min_threshold)
 			.def_readwrite("is_largest_above_max_threshold",
-			&logging::WarpDeltaStatistics::is_largest_above_max_threshold)
-			.def("to_array", &logging::WarpDeltaStatistics::to_array)
-			.def("__eq__", &logging::WarpDeltaStatistics::operator==)
-			.def("__ne__", &logging::WarpDeltaStatistics::operator!=)
+			&telementry::WarpDeltaStatistics::is_largest_above_max_threshold)
+			.def("to_array", &telementry::WarpDeltaStatistics::to_array)
+			.def("__eq__", &telementry::WarpDeltaStatistics::operator==)
+			.def("__ne__", &telementry::WarpDeltaStatistics::operator!=)
 			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
-	bp::class_<logging::TsdfDifferenceStatistics>("TsdfDifferenceStatistics", bp::init<>())
+	bp::class_<telementry::TsdfDifferenceStatistics>("TsdfDifferenceStatistics", bp::init<>())
 			.def(bp::init<float, float, float, float, math::Vector2i>(
 			bp::args("difference_min",
 					"difference_max",
@@ -91,43 +91,43 @@ void export_logging_utilities() {
 					"biggest_difference_location")))
 			.def(bp::init<eig::MatrixXf, eig::MatrixXf>(bp::args("canonical_field", "live_field")))
 			.def_readwrite("difference_min",
-			&logging::TsdfDifferenceStatistics::difference_min)
+			&telementry::TsdfDifferenceStatistics::difference_min)
 			.def_readwrite("difference_max",
-			&logging::TsdfDifferenceStatistics::difference_max)
+			&telementry::TsdfDifferenceStatistics::difference_max)
 			.def_readwrite("difference_mean",
-			&logging::TsdfDifferenceStatistics::difference_mean)
+			&telementry::TsdfDifferenceStatistics::difference_mean)
 			.def_readwrite("difference_standard_deviation",
-			&logging::TsdfDifferenceStatistics::difference_standard_deviation)
+			&telementry::TsdfDifferenceStatistics::difference_standard_deviation)
 			.def_readwrite("biggest_difference_location",
-			&logging::TsdfDifferenceStatistics::biggest_difference_location)
+			&telementry::TsdfDifferenceStatistics::biggest_difference_location)
 			.def("to_array",
-			&logging::TsdfDifferenceStatistics::to_array)
-			.def("__eq__", &logging::TsdfDifferenceStatistics::operator==)
-			.def("__ne__", &logging::TsdfDifferenceStatistics::operator!=)
+			&telementry::TsdfDifferenceStatistics::to_array)
+			.def("__eq__", &telementry::TsdfDifferenceStatistics::operator==)
+			.def("__ne__", &telementry::TsdfDifferenceStatistics::operator!=)
 			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
-	bp::class_<logging::ConvergenceReport>("ConvergenceReport", bp::init<>())
-			.def(bp::init<int, bool, logging::WarpDeltaStatistics, logging::TsdfDifferenceStatistics>(
+	bp::class_<telementry::ConvergenceReport>("ConvergenceReport", bp::init<>())
+			.def(bp::init<int, bool, telementry::WarpDeltaStatistics, telementry::TsdfDifferenceStatistics>(
 			bp::args("iteration_count",
 					"iteration_limit_reached",
 					"warp_delta_statistics",
 					"tsdf_difference_statistics")))
 			.def_readwrite("iteration_count",
-			&logging::ConvergenceReport::iteration_count)
+			&telementry::ConvergenceReport::iteration_count)
 			.def_readwrite("iteration_limit_reached",
-			&logging::ConvergenceReport::iteration_limit_reached)
+			&telementry::ConvergenceReport::iteration_limit_reached)
 			.def_readwrite("warp_delta_statistics",
-			&logging::ConvergenceReport::warp_delta_statistics)
+			&telementry::ConvergenceReport::warp_delta_statistics)
 			.def_readwrite("tsdf_difference_statistics",
-			&logging::ConvergenceReport::tsdf_difference_statistics)
-			.def("__eq__", &logging::ConvergenceReport::operator==)
-			.def("__ne__", &logging::ConvergenceReport::operator!=)
+			&telementry::ConvergenceReport::tsdf_difference_statistics)
+			.def("__eq__", &telementry::ConvergenceReport::operator==)
+			.def("__ne__", &telementry::ConvergenceReport::operator!=)
 			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
-	bp::class_<std::vector<logging::ConvergenceReport>>("ConvergenceReportVector")
-			.def(bp::vector_indexing_suite<std::vector<logging::ConvergenceReport>>());
+	bp::class_<std::vector<telementry::ConvergenceReport>>("ConvergenceReportVector")
+			.def(bp::vector_indexing_suite<std::vector<telementry::ConvergenceReport>>());
 
 }
 } //namespace python_export

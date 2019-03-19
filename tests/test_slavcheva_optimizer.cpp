@@ -368,15 +368,15 @@ BOOST_AUTO_TEST_CASE(test_sobolev_optimizer02) {
 	eig::MatrixXf warped_live_field = optimizer.optimize(live_field, canonical_field);
 	BOOST_REQUIRE(warped_live_field.isApprox(expected_warped_live_field_out));
 
-	logging::ConvergenceReport report = optimizer.get_convergence_report();
+	telementry::ConvergenceReport report = optimizer.get_convergence_report();
 
-	logging::WarpDeltaStatistics expected_warp_stats =
-			logging::WarpDeltaStatistics(0.272727, 0.0, 0.0684823, 0.0364445,
+	telementry::WarpDeltaStatistics expected_warp_stats =
+			telementry::WarpDeltaStatistics(0.272727, 0.0, 0.0684823, 0.0364445,
 					0.0167321, math::Vector2i(1, 2), false, false);
-	logging::TsdfDifferenceStatistics expected_diff_stats =
-			logging::TsdfDifferenceStatistics(0, 0.246834, 0.111843, 0.0838871, math::Vector2i(3, 3));
+	telementry::TsdfDifferenceStatistics expected_diff_stats =
+			telementry::TsdfDifferenceStatistics(0, 0.246834, 0.111843, 0.0838871, math::Vector2i(3, 3));
 
-	logging::ConvergenceReport expected_report(2, true, expected_warp_stats, expected_diff_stats);
+	telementry::ConvergenceReport expected_report(2, true, expected_warp_stats, expected_diff_stats);
 
 	BOOST_REQUIRE(report == expected_report);
 }

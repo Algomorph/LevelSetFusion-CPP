@@ -30,7 +30,7 @@ struct Optimizer2d_log<true>{
 
 template<>
 struct Optimizer2d_log<false>{
-	std::vector<logging::ConvergenceReport> per_level_convergence_reports;
+	std::vector<telementry::ConvergenceReport> per_level_convergence_reports;
 };
 
 } /* namespace hierarchical */

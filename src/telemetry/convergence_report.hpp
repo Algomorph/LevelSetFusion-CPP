@@ -34,7 +34,7 @@
 
 namespace eig = Eigen;
 
-namespace logging {
+namespace telementry {
 /**
  * A structure for logging characteristics of convergence (warp-threshold-based optimization) after a full optimization run
  */
@@ -65,4 +65,4 @@ struct ConvergenceReport {
 };
 
 std::ostream &operator<<(std::ostream &ostr, const ConvergenceReport &ts);
-} //namespace logging
+} //namespace telemetry

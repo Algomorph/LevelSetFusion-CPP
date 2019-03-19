@@ -22,7 +22,7 @@
 #include "../telemetry/convergence_report.hpp"
 
 
-namespace logging {
+namespace telementry {
 ConvergenceReport::ConvergenceReport(int iteration_count,
 		bool iteration_limit_reached,
 		WarpDeltaStatistics warp_delta_statistics,
@@ -46,6 +46,6 @@ std::ostream &operator<<(std::ostream &ostr, const ConvergenceReport &ts){
 			;
 	return ostr;
 }
-} //namespace logging
+} //namespace telemetry
 
 

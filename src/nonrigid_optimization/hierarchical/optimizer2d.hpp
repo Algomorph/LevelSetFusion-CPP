@@ -82,7 +82,7 @@ public:
 
 	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
 #ifndef NO_LOG
-	std::vector<logging::ConvergenceReport> get_per_level_convergence_reports();
+	std::vector<telementry::ConvergenceReport> get_per_level_convergence_reports();
 #endif
 private:
 
@@ -115,7 +115,7 @@ private:
 	Optimizer2d_log<TOptimized> log;
 
 #ifndef NO_LOG
-	std::vector<logging::ConvergenceReport> per_level_convergence_reports;
+	std::vector<telementry::ConvergenceReport> per_level_convergence_reports;
 	void clear_logs();
 #endif
 

@@ -21,7 +21,7 @@
 //local
 #include "../telemetry/ho_2d_result_store.hpp"
 
-namespace logging {
+namespace telementry {
 
 HierarchicalOptimization2dResultStore::HierarchicalOptimization2dResultStore(std::time_t optimization_start_time)
 : optimization_start_time(optimization_start_time) {
@@ -42,5 +42,5 @@ const std::vector<math::MatrixXv2f> HierarchicalOptimization2dResultStore::PerLe
 };
 
 
-} //namespace logging
+} //namespace telemetry
 

@@ -26,7 +26,7 @@
 #include "../math/assessment.hpp"
 
 
-namespace logging {
+namespace telementry {
 WarpDeltaStatistics::WarpDeltaStatistics(
 		float ratio_above_min_threshold,
 		float length_min,
@@ -122,4 +122,4 @@ std::ostream& operator<<(std::ostream &ostr, const WarpDeltaStatistics &ts)
 	return ostr;
 }
 
-} //namespace logging
+} //namespace telemetry

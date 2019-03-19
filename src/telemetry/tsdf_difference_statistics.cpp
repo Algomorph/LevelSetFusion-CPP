@@ -26,7 +26,7 @@
 #include "../math/assessment.hpp"
 
 
-namespace logging {
+namespace telementry {
 TsdfDifferenceStatistics::TsdfDifferenceStatistics(
 		float difference_min,
 		float difference_max,
@@ -95,4 +95,4 @@ std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics &ts)
 	return ostr;
 }
 
-} //namespace logging
+} //namespace telemetry

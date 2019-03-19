@@ -36,7 +36,7 @@
  * HierarchicalOptimizer2dVisualizer counterpart.
  * It only stores up the results for later visualization / video generation.
  */
-namespace logging {
+namespace telementry {
 class HierarchicalOptimization2dResultStore {
 	HierarchicalOptimization2dResultStore(std::time_t optimization_start_time = std::time(nullptr));
 
@@ -80,4 +80,4 @@ private:
 	std::vector<PerLevelResultStore> per_level_results;
 
 };
-} //namespace logging
+} //namespace telemetry

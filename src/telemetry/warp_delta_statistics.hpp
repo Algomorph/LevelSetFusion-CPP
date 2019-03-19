@@ -32,7 +32,7 @@
 
 namespace eig = Eigen;
 
-namespace logging {
+namespace telementry {
 
 /**
  * A structure for logging statistics pertaining to warps at the end of an optimization iteration
@@ -73,4 +73,4 @@ struct WarpDeltaStatistics {
 
 std::ostream &operator<<(std::ostream &ostr, const WarpDeltaStatistics &ts);
 
-} //namespace logging
+} //namespace telemetry
