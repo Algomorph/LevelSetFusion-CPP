@@ -17,6 +17,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+
 //libraries
 #include <Eigen/Eigen>
 #include <boost/python.hpp>
@@ -64,7 +65,7 @@ void export_algorithms() {
 						;
 		bp::class_<HierarchicalOptimizer2d::VerbosityParameters>("VerbosityParameters",
 				"Parameters that control verbosity to stdout. "
-				"Assumes being used in an \"immutable\" manner, i.e. just a structure that holds values",
+						"Assumes being used in an \"immutable\" manner, i.e. just a structure that holds values",
 				bp::init<bp::optional<bool, bool, bool, bool, bool>>(
 						bp::args(/*"self",*/
 						"print_max_warp_update",
@@ -95,16 +96,18 @@ void export_algorithms() {
 				&HierarchicalOptimizer2d::VerbosityParameters
 				::print_per_level_info)
 				;
+
 		bp::class_<HierarchicalOptimizer2d::LoggingParameters>("LoggingParameters",
-				bp::init<bp::optional<bool,bool>>(
+				"Parameters that control what intermediate results are gathered during run",
+				bp::init<bp::optional<bool, bool>>(
 						bp::args(
-								"collect_per_level_convergence_reports"
-								"collect_per_level_iteration_data"
+								"collect_per_level_convergence_reports",
+										"collect_per_level_iteration_data"
 								)))
 				.add_property("collect_per_level_convergence_reports",
 				&HierarchicalOptimizer2d::LoggingParameters::collect_per_level_convergence_reports)
 				.add_property("collect_per_level_iteration_data",
-								&HierarchicalOptimizer2d::LoggingParameters::collect_per_level_iteration_data)
+				&HierarchicalOptimizer2d::LoggingParameters::collect_per_level_iteration_data)
 				;
 	}
 }
