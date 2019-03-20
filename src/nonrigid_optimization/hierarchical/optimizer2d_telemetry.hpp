@@ -100,6 +100,7 @@ public:
 			const eig::MatrixXf& live_gradient_y_level
 			) override;
 	std::vector<telemetry::ConvergenceReport> get_per_level_convergence_reports();
+	std::vector<telemetry::OptimizationIterationData> get_per_level_iteration_data();
 
 private:
 	//TODO: set these and provide retrieval methods as appropriate

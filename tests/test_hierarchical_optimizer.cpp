@@ -36,6 +36,8 @@
 #include "../src/math/assessment.hpp"
 #include "../src/nonrigid_optimization/hierarchical/pyramid2d.hpp"
 #include "../src/nonrigid_optimization/hierarchical/optimizer2d.hpp"
+#include "../src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp"
+#include "../src/telemetry/optimization_iteration_data.hpp"
 #include "../src/nonrigid_optimization/field_warping.hpp"
 
 
@@ -120,14 +122,14 @@ BOOST_AUTO_TEST_CASE(pyramid_test01) {
 
 BOOST_AUTO_TEST_CASE(resample_field_test01){
 	//corresponds to test_resample_field01 in python code
-	eig::MatrixXf resampled_field = nro::resample_field(field_A_16x16,warp_field_A_16x16);
-	BOOST_REQUIRE(resampled_field.isApprox(fA_resampled_with_wfA));
+	eig::MatrixXf resampled_field = nro::resample_field(test_data::field_A_16x16,test_data::warp_field_A_16x16);
+	BOOST_REQUIRE(resampled_field.isApprox(test_data::fA_resampled_with_wfA));
 }
 
 BOOST_AUTO_TEST_CASE(resample_field_test02){
 	//corresponds to test_resample_field_replacement01 in python code
-	eig::MatrixXf resampled_field = nro::resample_field_replacement(field_B_16x16,warp_field_B_16x16,0);
-	BOOST_REQUIRE(resampled_field.isApprox(fB_resampled_with_wfB_replacement));
+	eig::MatrixXf resampled_field = nro::resample_field_replacement(test_data::field_B_16x16,test_data::warp_field_B_16x16,0);
+	BOOST_REQUIRE(resampled_field.isApprox(test_data::fB_resampled_with_wfB_replacement));
 }
 
 BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
@@ -142,9 +144,34 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 			0.2,
 			eig::VectorXf(0)
 			);
-	math::MatrixXv2f warp_field_out = optimizer.optimize(canonical_field, live_field);
-	eig::MatrixXf final_live_resampled = nro::resample_field(live_field,warp_field_out);
+	math::MatrixXv2f warp_field_out = optimizer.optimize(test_data::canonical_field, test_data::live_field);
+	eig::MatrixXf final_live_resampled = nro::resample_field(test_data::live_field,warp_field_out);
 
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field_out,warp_field,10e-6));
-	BOOST_REQUIRE(final_live_resampled.isApprox(final_live_field));
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field_out,test_data::warp_field,10e-6));
+	BOOST_REQUIRE(final_live_resampled.isApprox(test_data::final_live_field));
+}
+
+BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer02){
+	nro_h::Optimizer2dTelemetry optimizer(
+			false, false,
+			8,
+			0.2,
+			100, //max iteration count
+			0.001, //max warp update threshold
+			1.0,
+			0.2,
+			eig::VectorXf(0),
+			nro_h::Optimizer2dTelemetry::VerbosityParameters(),
+			nro_h::Optimizer2dTelemetry::LoggingParameters(true,true)
+			);
+	math::MatrixXv2f warp_field_out = optimizer.optimize(test_data::canonical_field, test_data::live_field);
+	eig::MatrixXf final_live_resampled = nro::resample_field(test_data::live_field,warp_field_out);
+
+	std::vector<telemetry::OptimizationIterationData> data = optimizer.get_per_level_iteration_data();
+
+	const std::vector<math::MatrixXv2f> vec = data[3].get_warp_fields();
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(vec[50],test_data::iteration50_warp_field,10e-6));
+
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field_out,test_data::warp_field,10e-6));
+	BOOST_REQUIRE(final_live_resampled.isApprox(test_data::final_live_field));
 }

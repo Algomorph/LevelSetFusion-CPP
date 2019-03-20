@@ -180,6 +180,10 @@ std::vector<telemetry::ConvergenceReport> Optimizer2dTelemetry::get_per_level_co
 	return this->per_level_convergence_reports;
 }
 
+std::vector<telemetry::OptimizationIterationData> Optimizer2dTelemetry::get_per_level_iteration_data() {
+	return this->per_level_iteration_data;
+}
+
 Optimizer2dTelemetry::VerbosityParameters::VerbosityParameters(
 		bool print_iteration_max_warp_update,
 		bool print_iteration_mean_tsdf_difference,

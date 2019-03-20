@@ -72,26 +72,26 @@ void export_algorithms() {
 								"print_iteration_std_tsdf_difference",
 								"print_iteration_data_energy",
 								"print_iteration_tikhonov_energy")))
-				.def_readonly("print_iteration_max_warp_update",
+				.add_property("print_iteration_max_warp_update",
 				&HierarchicalOptimizer2d::VerbosityParameters
 				::print_iteration_max_warp_update)
-				.def_readonly("print_iteration_mean_tsdf_difference",
+				.add_property("print_iteration_mean_tsdf_difference",
 				&HierarchicalOptimizer2d::VerbosityParameters
 				::print_iteration_mean_tsdf_difference)
-				.def_readonly("print_iteration_std_tsdf_difference",
+				.add_property("print_iteration_std_tsdf_difference",
 				&HierarchicalOptimizer2d::VerbosityParameters
 				::print_iteration_std_tsdf_difference)
-				.def_readonly("print_iteration_data_energy",
+				.add_property("print_iteration_data_energy",
 				&HierarchicalOptimizer2d::VerbosityParameters
 				::print_iteration_data_energy)
-				.def_readonly("print_iteration_tikhonov_energy",
+				.add_property("print_iteration_tikhonov_energy",
 				&HierarchicalOptimizer2d::VerbosityParameters
 				::print_iteration_tikhonov_energy)
 				//============================================
-				.def_readonly("print_per_iteration_info",
+				.add_property("print_per_iteration_info",
 				&HierarchicalOptimizer2d::VerbosityParameters
 				::print_per_iteration_info)
-				.def_readonly("print_per_level_info",
+				.add_property("print_per_level_info",
 				&HierarchicalOptimizer2d::VerbosityParameters
 				::print_per_level_info)
 				;
@@ -101,9 +101,9 @@ void export_algorithms() {
 								"collect_per_level_convergence_reports"
 								"collect_per_level_iteration_data"
 								)))
-				.def_readonly("collect_per_level_convergence_reports",
+				.add_property("collect_per_level_convergence_reports",
 				&HierarchicalOptimizer2d::LoggingParameters::collect_per_level_convergence_reports)
-				.def_readonly("collect_per_level_iteration_data",
+				.add_property("collect_per_level_iteration_data",
 								&HierarchicalOptimizer2d::LoggingParameters::collect_per_level_iteration_data)
 				;
 	}
