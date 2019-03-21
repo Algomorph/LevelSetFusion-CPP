@@ -23,7 +23,6 @@
 
 //libraries
 #include <boost/python.hpp>
-#include <boost/python/numpy.hpp>
 #include <Eigen/Eigen>
 #include <Python.h>
 
@@ -47,7 +46,6 @@
 #endif
 
 namespace bp = boost::python;
-namespace np = boost::python::numpy;
 
 using namespace Eigen;
 
@@ -98,23 +96,6 @@ struct EigenMatrixVectorToPython<math::MatrixXv2f> {
 		return py_list;
 	}
 };
-
-//template<class MatType> // MatrixXf or MatrixXd
-//struct EigenMatrixVectorToPython2 {
-//	static PyObject* convert(const std::vector<MatType>& mat) {
-//		bp::tuple shape = bp::make_tuple(mat.rows(), mat.cols());
-//		np::dtype dtype = np::dtype::get_builtin<float>();
-//		np::ndarray numpy_ndarray = np::zeros(shape, dtype);
-//		copy_array(mat.data(),
-//				(typename MatType::Scalar*) numpy_ndarray.get_data(),
-//				mat.rows(),
-//				mat.cols(),
-//				false,
-//				true,
-//				MatType::Flags & Eigen::RowMajorBit);
-//		return numpy_ndarray.ptr();
-//	}
-//};
 
 #define EIGEN_MATRIX_LIST_CONVERTER(Type) \
   bp::to_python_converter<std::vector<Type>, EigenMatrixVectorToPython<Type> >();
