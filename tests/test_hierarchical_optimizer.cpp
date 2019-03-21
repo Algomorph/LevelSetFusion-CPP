@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(resample_field_test02){
 }
 
 BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
-	// corresponds to test_construction-and_operation in python code (test_hns_optimizer2d.py)
+	// corresponds to test_construction_and_operation in python code (test_hns_optimizer2d.py)
 	nro_h::Optimizer2d optimizer(
 			false, false,
 			8,
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 	BOOST_REQUIRE(final_live_resampled.isApprox(test_data::final_live_field));
 }
 
-BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer02){
+BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer_iteration_data){
 	nro_h::Optimizer2dTelemetry optimizer(
 			false, false,
 			8,

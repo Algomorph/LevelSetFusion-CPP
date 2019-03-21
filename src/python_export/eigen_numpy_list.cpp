@@ -23,6 +23,7 @@
 
 //libraries
 #include <boost/python.hpp>
+#include <boost/python/numpy.hpp>
 #include <Eigen/Eigen>
 #include <Python.h>
 
@@ -46,6 +47,7 @@
 #endif
 
 namespace bp = boost::python;
+namespace np = boost::python::numpy;
 
 using namespace Eigen;
 
@@ -53,7 +55,7 @@ template<class MatType> // MatrixXf or MatrixXd
 struct EigenMatrixVectorToPython {
 	static PyObject* convert(const std::vector<MatType>& vec) {
 		PyObject* py_list = PyList_New(vec.size());
-		Py_ssize_t index =0;
+		Py_ssize_t index = 0;
 		for (MatType mat : vec) {
 			npy_intp shape[2] = { mat.rows(), mat.cols() };
 			PyArrayObject* python_array = (PyArrayObject*) PyArray_SimpleNew(
@@ -73,6 +75,46 @@ struct EigenMatrixVectorToPython {
 	}
 };
 
+template<> // MatrixXf or MatrixXd
+struct EigenMatrixVectorToPython<math::MatrixXv2f> {
+	static PyObject* convert(const std::vector<math::MatrixXv2f>& vec) {
+		PyObject* py_list = PyList_New(vec.size());
+		Py_ssize_t index = 0;
+		for (math::MatrixXv2f mat : vec) {
+			npy_intp shape[3] = { mat.rows(), mat.cols(), 2 };
+			PyArrayObject* python_array = (PyArrayObject*) PyArray_SimpleNew(
+					3, shape, NumpyEquivalentType<math::MatrixXv2f::Scalar>::type_code);
+			copy_array(mat.data(),
+					(math::MatrixXv2f::Scalar*) PyArray_DATA(python_array),
+					mat.rows(),
+					mat.cols(),
+					false,
+					true,
+					math::MatrixXv2f::Flags & Eigen::RowMajorBit);
+			PyObject* py_mat = (PyObject*) python_array;
+			PyList_SET_ITEM(py_list, index, py_mat);
+			index += 1;
+		}
+		return py_list;
+	}
+};
+
+//template<class MatType> // MatrixXf or MatrixXd
+//struct EigenMatrixVectorToPython2 {
+//	static PyObject* convert(const std::vector<MatType>& mat) {
+//		bp::tuple shape = bp::make_tuple(mat.rows(), mat.cols());
+//		np::dtype dtype = np::dtype::get_builtin<float>();
+//		np::ndarray numpy_ndarray = np::zeros(shape, dtype);
+//		copy_array(mat.data(),
+//				(typename MatType::Scalar*) numpy_ndarray.get_data(),
+//				mat.rows(),
+//				mat.cols(),
+//				false,
+//				true,
+//				MatType::Flags & Eigen::RowMajorBit);
+//		return numpy_ndarray.ptr();
+//	}
+//};
 
 #define EIGEN_MATRIX_LIST_CONVERTER(Type) \
   bp::to_python_converter<std::vector<Type>, EigenMatrixVectorToPython<Type> >();

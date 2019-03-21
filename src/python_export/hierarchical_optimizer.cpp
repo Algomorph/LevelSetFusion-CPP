@@ -62,6 +62,8 @@ void export_algorithms() {
 						bp::args("canonical_field", "live_field"))
 						.def("get_per_level_convergence_reports",
 						&HierarchicalOptimizer2d::get_per_level_convergence_reports)
+						.def("get_per_level_iteration_data",
+						&HierarchicalOptimizer2d::get_per_level_iteration_data)
 						;
 		bp::class_<HierarchicalOptimizer2d::VerbosityParameters>("VerbosityParameters",
 				"Parameters that control verbosity to stdout. "
@@ -102,7 +104,7 @@ void export_algorithms() {
 				bp::init<bp::optional<bool, bool>>(
 						bp::args(
 								"collect_per_level_convergence_reports",
-										"collect_per_level_iteration_data"
+								"collect_per_level_iteration_data"
 								)))
 				.add_property("collect_per_level_convergence_reports",
 				&HierarchicalOptimizer2d::LoggingParameters::collect_per_level_convergence_reports)

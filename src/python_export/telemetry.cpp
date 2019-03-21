@@ -136,6 +136,9 @@ void export_telemetry_utilities() {
 			.def("get_data_term_gradients", &telemetry::OptimizationIterationData::get_data_term_gradients)
 			.def("get_tikhonov_term_gradients", &telemetry::OptimizationIterationData::get_tikhonov_term_gradients)
 			;
+
+	bp::class_<std::vector<telemetry::OptimizationIterationData>>("OptimizationIterationDataVector")
+				.def(bp::vector_indexing_suite<std::vector<telemetry::OptimizationIterationData>>());
 }
 } //namespace python_export
 

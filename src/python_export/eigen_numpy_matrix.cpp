@@ -53,7 +53,7 @@ template<>
 struct EigenMatrixToPython<math::MatrixXv2f>{
 	static PyObject* convert(const math::MatrixXv2f& mat) {
 		npy_intp shape[3] = { mat.rows(), mat.cols(), 2 };
-		PyArrayObject* python_array = (PyArrayObject*) PyArray_SimpleNew( // @suppress("Symbol is not resolved")
+		PyArrayObject* python_array = (PyArrayObject*) PyArray_SimpleNew(
 				3, shape, NumpyEquivalentType<math::MatrixXv2f::Scalar>::type_code);
 		copy_array(mat.data(),
 				(math::MatrixXv2f::Scalar*) PyArray_DATA(python_array),
@@ -190,7 +190,7 @@ struct EigenMatrixFromPython<math::MatrixXv2f> {
 	typedef math::MatrixXv2f::Scalar T;
 
 	EigenMatrixFromPython() {
-		bp::converter::registry::push_back(&convertible,
+		bp::converter::registry::push_back(&convertible, // @suppress("Invalid arguments")
 				&construct,
 				bp::type_id<math::MatrixXv2f>());
 	}
@@ -339,10 +339,10 @@ void
 setup_Eigen_matrix_converters() {
 	static bool is_setup = false;
 	if (is_setup)
-		return NUMPY_IMPORT_ARRAY_RETVAL;
+		return NUMPY_IMPORT_ARRAY_RETVAL; // @suppress("No return value")
 	is_setup = true;
 
-	import_array();
+	import_array(); // @suppress("No return value")
 
 	EIGEN_MATRIX_CONVERTER(Matrix2f);
 	EIGEN_MATRIX_CONVERTER(Matrix2d);

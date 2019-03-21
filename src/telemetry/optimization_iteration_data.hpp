@@ -42,6 +42,15 @@ public:
 	const std::vector<math::MatrixXv2f> get_warp_fields() const;
 	const std::vector<math::MatrixXv2f> get_data_term_gradients() const;
 	const std::vector<math::MatrixXv2f> get_tikhonov_term_gradients() const;
+
+	bool operator==(const OptimizationIterationData& rhs){
+		return this->live_fields == rhs.live_fields &&
+				this->warp_fields == rhs.warp_fields &&
+				this->data_term_gradients == rhs.data_term_gradients &&
+				this->tikhonov_term_gradients == rhs.tikhonov_term_gradients
+				;
+	}
+
 private:
 	std::vector<Eigen::MatrixXf> live_fields;
 	std::vector<math::MatrixXv2f> warp_fields;
