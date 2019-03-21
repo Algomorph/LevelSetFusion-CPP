@@ -1,0 +1,16 @@
+//
+// Created by fshan on 3/21/19.
+//
+
+#ifndef LEVELSETFUSIONOPTIMIZATION_SDF_2_SDF_OPTIMIZER_H
+#define LEVELSETFUSIONOPTIMIZATION_SDF_2_SDF_OPTIMIZER_H
+
+
+
+class sdf_2_sdf_optimizer {
+
+};
+
+
+
+#endif //LEVELSETFUSIONOPTIMIZATION_SDF_2_SDF_OPTIMIZER_H
