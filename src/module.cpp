@@ -14,7 +14,7 @@
 #include "python_export/hierarchical_optimizer.hpp"
 #include "python_export/tsdf.hpp"
 #include "python_export/conversion_tests.hpp"
-#include "python_export/logging.hpp"
+#include "python_export/telemetry.hpp"
 
 namespace bp = boost::python;
 namespace pe = python_export;
@@ -23,6 +23,7 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 {
 	setup_Eigen_matrix_converters();
 	setup_Eigen_tensor_converters();
+	setup_Eigen_list_converters();
 
 	pe::export_conversion_tests();
 
@@ -31,7 +32,7 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 
 	pe::export_ewa();
 
-	pe::export_logging_utilities();
+	pe::export_telemetry_utilities();
 
 	pe::slavcheva::export_auxiliary_functions();
 	pe::slavcheva::export_setting_singletons();

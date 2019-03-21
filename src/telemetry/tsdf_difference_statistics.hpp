@@ -32,7 +32,7 @@
 
 namespace eig = Eigen;
 
-namespace logging {
+namespace telemetry {
 /**
  * A structure for logging statistics pertaining to numerical differences between corresponding locations in the
  * canonical and the live (target and source) TSDF fields after optimization
@@ -64,4 +64,4 @@ struct TsdfDifferenceStatistics {
 };
 
 std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics &ts);
-} //namespace logging
+} //namespace telemetry

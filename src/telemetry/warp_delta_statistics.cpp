@@ -19,13 +19,14 @@
  */
 
 //local
-#include "warp_delta_statistics.hpp"
+#include "../telemetry/warp_delta_statistics.hpp"
+
 #include "../math/filtered_statistics.hpp"
 #include "../math/statistics.hpp"
 #include "../math/assessment.hpp"
 
 
-namespace logging {
+namespace telemetry {
 WarpDeltaStatistics::WarpDeltaStatistics(
 		float ratio_above_min_threshold,
 		float length_min,
@@ -121,4 +122,4 @@ std::ostream& operator<<(std::ostream &ostr, const WarpDeltaStatistics &ts)
 	return ostr;
 }
 
-} //namespace logging
+} //namespace telemetry

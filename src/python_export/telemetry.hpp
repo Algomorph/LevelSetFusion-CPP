@@ -22,6 +22,6 @@
 
 namespace python_export {
 
-void export_logging_utilities();
+void export_telemetry_utilities();
 
 } //namespace python_export

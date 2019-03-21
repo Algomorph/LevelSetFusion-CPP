@@ -27,14 +27,14 @@
 #include <Eigen/Eigen>
 
 //local
-#include "warp_delta_statistics.hpp"
-#include "tsdf_difference_statistics.hpp"
 #include "../math/typedefs.hpp"
 #include "../math/tensors.hpp"
+#include "../telemetry/tsdf_difference_statistics.hpp"
+#include "../telemetry/warp_delta_statistics.hpp"
 
 namespace eig = Eigen;
 
-namespace logging {
+namespace telemetry {
 /**
  * A structure for logging characteristics of convergence (warp-threshold-based optimization) after a full optimization run
  */
@@ -65,4 +65,4 @@ struct ConvergenceReport {
 };
 
 std::ostream &operator<<(std::ostream &ostr, const ConvergenceReport &ts);
-} //namespace logging
+} //namespace telemetry

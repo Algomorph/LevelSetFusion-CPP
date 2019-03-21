@@ -24,7 +24,7 @@
 
 //local
 #include "../../math/tensors.hpp"
-#include "../../logging/convergence_report.hpp"
+#include "../../telemetry/convergence_report.hpp"
 #include "optimizer2d.hpp"
 
 namespace pt = boost::property_tree;
@@ -73,15 +73,15 @@ public:
 	static SharedParameters& shared_parameters();
 
 	virtual eig::MatrixXf optimize(const eig::MatrixXf& live_field, const eig::MatrixXf& canonical_field) override;
-	logging::ConvergenceReport get_convergence_report();
+	telemetry::ConvergenceReport get_convergence_report();
 	eig::MatrixXf get_warp_statistics_as_matrix();
 
 private:
 	float perform_optimization_iteration_and_return_max_warp(eig::MatrixXf& warped_live_field,
 			math::Vector2i& max_warp_location, const eig::MatrixXf& canonical_field, math::MatrixXv2f& warp_field);
 	// *** Logging ***
-	logging::ConvergenceReport convergence_report;
-	std::vector<logging::WarpDeltaStatistics> warp_statistics;
+	telemetry::ConvergenceReport convergence_report;
+	std::vector<telemetry::WarpDeltaStatistics> warp_statistics;
 
 	void clean_out_logs();
 };

@@ -19,13 +19,14 @@
  */
 
 //local
-#include "tsdf_difference_statistics.hpp"
+#include "../telemetry/tsdf_difference_statistics.hpp"
+
 #include "../math/filtered_statistics.hpp"
 #include "../math/statistics.hpp"
 #include "../math/assessment.hpp"
 
 
-namespace logging {
+namespace telemetry {
 TsdfDifferenceStatistics::TsdfDifferenceStatistics(
 		float difference_min,
 		float difference_max,
@@ -94,4 +95,4 @@ std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics &ts)
 	return ostr;
 }
 
-} //namespace logging
+} //namespace telemetry
