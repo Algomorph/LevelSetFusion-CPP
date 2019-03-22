@@ -43,6 +43,8 @@ public:
 	const std::vector<math::MatrixXv2f> get_data_term_gradients() const;
 	const std::vector<math::MatrixXv2f> get_tikhonov_term_gradients() const;
 
+	int get_frame_count() const;
+
 	bool operator==(const OptimizationIterationData& rhs){
 		return this->live_fields == rhs.live_fields &&
 				this->warp_fields == rhs.warp_fields &&

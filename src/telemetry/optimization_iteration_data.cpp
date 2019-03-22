@@ -47,6 +47,10 @@ const std::vector<math::MatrixXv2f> OptimizationIterationData::get_tikhonov_term
 	return this->tikhonov_term_gradients;
 };
 
+int OptimizationIterationData::get_frame_count() const{
+	return this->live_fields.size();
+}
+
 } //namespace telemetry
 
 
