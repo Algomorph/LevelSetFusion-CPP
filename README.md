@@ -6,4 +6,4 @@ SobolevFusion / KillingFusion / Hierarchical Level-Set Non-Rigid SLAM Simulation
 
 ### Looking for the issue tracker / project pages? 
 
-See [https://github.com/Algomorph/LevelSetFusion-Python](Algomorph/LevelSetFusion-Python)
+See [Algomorph/LevelSetFusion-Python](https://github.com/Algomorph/LevelSetFusion-Python)
