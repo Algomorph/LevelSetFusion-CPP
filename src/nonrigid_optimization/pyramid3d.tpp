@@ -45,8 +45,9 @@ Pyramid3d<ElementType>::Pyramid3d(eig::Tensor<ElementType, 3> field, int maximum
 #ifndef NDEBUG
 	//check that we can get a level with the maximum chunk size
 	int max_level_count = static_cast<int>(
-			std::min( { std::log2(field.dimension(0)), std::log2(field.dimension(1)), std::log2(field.dimension(2)) }));
-	eigen_assert(max_level_count < power_of_two_largest_chunk && "Maximum chunk size too large for the field size."); // @suppress("Invalid arguments")
+			std::min( { std::log2(field.dimension(0)), std::log2(field.dimension(1)), std::log2(field.dimension(2)) }))
+			+ 1;
+	eigen_assert(max_level_count > power_of_two_largest_chunk && "Maximum chunk size too large for the field size."); // @suppress("Invalid arguments")
 #endif
 
 	int level_count = power_of_two_largest_chunk + 1;
@@ -82,12 +83,12 @@ Pyramid3d<ElementType>::Pyramid3d(eig::Tensor<ElementType, 3> field, int maximum
 									(*previous_level)(i_previous_level_x + 1, i_previous_level_y + 1,
 											i_previous_level_z + 1)
 							) / 8.0f;
-					/* @formatter:on */
+										/* @formatter:on */
 				}
 			}
 		}
 		levels.push_back(current_level);
-		previous_level = &current_level;
+		previous_level = &levels[levels.size() - 1];
 	}
 
 	//levels should be ordered from coarsest to finest, reverse the order
@@ -100,7 +101,7 @@ const eig::Tensor<ElementType, 3>& Pyramid3d<ElementType>::level(int i_level) co
 }
 
 template<typename ElementType>
-size_t Pyramid3d<ElementType>::level_count() const{
+size_t Pyramid3d<ElementType>::level_count() const {
 	return this->levels.size();
 }
 

@@ -103,7 +103,7 @@ void locate_min_norm(float& min_norm, Vector2i& coordinate, const MatrixXv2f& ve
 
 #pragma omp parallel for
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
-		float squared_length = math::squared_sum(vector_field(i_element));
+		float squared_length = math::squared_norm(vector_field(i_element));
 		NormLoc last_best = min_norm_container.load();
 		NormLoc new_best;
 		float min_squared_norm = last_best.norm;
@@ -129,12 +129,12 @@ float min_norm(const MatrixXv2f& vector_field) {
 	std::atomic<float> min_norm_container(0.0f);
 #pragma omp parallel for
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
-		float squared_length = math::squared_sum(vector_field(i_element));
+		float squared_length = math::squared_norm(vector_field(i_element));
 		float min_squared_norm = min_norm_container.load();
 		while (squared_length < min_squared_norm && min_norm_container.compare_exchange_weak(min_squared_norm, squared_length));
 	}
 	return std::sqrt(min_norm_container.load());
-
+}
 /**
 * Locates the maximum L2 norm (Euclidean length) of the vector in the given 3d field.
 * Identical to @see locate_max_norm with the exception that this version is using a generic traversal function.

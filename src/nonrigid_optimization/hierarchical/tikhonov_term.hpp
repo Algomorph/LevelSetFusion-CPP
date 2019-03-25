@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "../../math/tensors.hpp"
+#include "../../math/typedefs.hpp"
 #include "../../math/gradients.hpp"
 
 namespace nonrigid_optimization {

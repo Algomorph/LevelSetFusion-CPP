@@ -29,7 +29,7 @@
 #include "../math/statistics.hpp"
 #include "hierarchical_optimizer3d.hpp"
 #include "pyramid3d.hpp"
-#include "warping.hpp"
+#include "field_warping.hpp"
 
 namespace nonrigid_optimization {
 

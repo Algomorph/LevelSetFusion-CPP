@@ -28,7 +28,6 @@
 
 //local
 #include "../math/typedefs.hpp"
-#include "../math/tensors.hpp"
 
 namespace eig = Eigen;
 

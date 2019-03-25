@@ -22,12 +22,11 @@
 #include <Eigen/Eigen>
 #include <boost/property_tree/ptree.hpp>
 
-#include "../math/tensor_operations.hpp"
 //local
-#include "../../math/tensors.hpp"
+#include "../../math/tensor_operations.hpp"
+#include "../../math/typedefs.hpp"
 #include "../../telemetry/convergence_report.hpp"
 #include "optimizer2d.hpp"
-#include "logging.hpp"
 
 namespace pt = boost::property_tree;
 namespace eig = Eigen;

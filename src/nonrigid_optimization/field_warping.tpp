@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "warping.hpp"
+#include "field_warping.hpp"
 #include "../traversal/index_raveling.hpp"
 
 namespace nonrigid_optimization{

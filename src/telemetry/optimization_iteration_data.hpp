@@ -22,7 +22,7 @@
 #include <Eigen/Dense>
 
 //local
-#include "../math/tensors.hpp"
+#include "../math/typedefs.hpp"
 
 #pragma once
 namespace telemetry {

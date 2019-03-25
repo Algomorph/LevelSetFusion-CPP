@@ -28,7 +28,6 @@
 #include <numpy/ndarraytypes.h>
 
 //local
-#include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
 
 template<typename SCALAR>

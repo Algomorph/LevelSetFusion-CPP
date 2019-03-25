@@ -57,9 +57,9 @@ inline void optimize_iteration(
 		const eig::MatrixXf& live_gradient_y_level){
 
 	// resample the live field & its gradients using current warps
-	eig::MatrixXf resampled_live = resample_field(live_pyramid_level, warp_field);
-	eig::MatrixXf resampled_live_gradient_x = resample_field_replacement(live_gradient_x_level, warp_field, 0.0f);
-	eig::MatrixXf resampled_live_gradient_y = resample_field_replacement(live_gradient_y_level, warp_field, 0.0f);
+	eig::MatrixXf resampled_live = warp_2d(live_pyramid_level, warp_field);
+	eig::MatrixXf resampled_live_gradient_x = warp_2d_replacement(live_gradient_x_level, warp_field, 0.0f);
+	eig::MatrixXf resampled_live_gradient_y = warp_2d_replacement(live_gradient_y_level, warp_field, 0.0f);
 
 	// see how badly our sampled values correspond to the canonical values at the same locations
 	// data_gradient = (warped_live - canonical) * warped_gradient(live)
@@ -71,7 +71,7 @@ inline void optimize_iteration(
 	data_gradient = math::stack_as_xv2f(data_gradient_x, data_gradient_y);
 
 	if (tikhonov_term_enabled) {
-		math::vector_field_laplacian(gradient, tikhonov_gradient);
+		math::vector_field_laplacian_2d(gradient, tikhonov_gradient);
 		gradient = data_term_amplifier * data_gradient - tikhonov_strength * tikhonov_gradient;
 	} else {
 		gradient = data_term_amplifier * data_gradient;

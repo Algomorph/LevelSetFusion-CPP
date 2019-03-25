@@ -27,13 +27,11 @@
 #include <Python.h>
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-
 #include <numpy/arrayobject.h>
 
 //local
 #include "eigen_numpy.hpp"
 #include "numpy_conversions_shared.hpp"
-#include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
 
 // These macros were renamed in NumPy 1.7.1.

@@ -209,6 +209,7 @@ add_library(${MODULE_NAME} SHARED
 			# VolumeDeform by Innmann et al. and DynamicFusion by Newcombe et al.
 
 			src/nonrigid_optimization/field_warping.hpp
+			src/nonrigid_optimization/field_warping.tpp
 			src/nonrigid_optimization/field_warping.cpp
 
 			### nonrigid optimization, slavcheva: KillingFusion/Sobolev fusion
@@ -230,12 +231,12 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
-      #TODO: move to hierarchical
-      src/nonrigid_optimization/hierarchical_optimizer3d.cpp
-      src/nonrigid_optimization/hierarchical_optimizer3d.hpp
-      src/nonrigid_optimization/pyramid3d.cpp
-      src/nonrigid_optimization/pyramid3d.tpp
-      src/nonrigid_optimization/pyramid3d.hpp
+		    #TODO: move to hierarchical
+		    src/nonrigid_optimization/hierarchical_optimizer3d.cpp
+		  	src/nonrigid_optimization/hierarchical_optimizer3d.hpp
+		  	src/nonrigid_optimization/pyramid3d.cpp
+		  	src/nonrigid_optimization/pyramid3d.tpp
+		  	src/nonrigid_optimization/pyramid3d.hpp
 
 			### traversal: algorithms for traversal of data structures
 			src/traversal/field_traversal_cpu.hpp
@@ -252,10 +253,9 @@ add_library(${MODULE_NAME} SHARED
 			src/telemetry/convergence_report.cpp
 
 			### math: mathematical utilities
-			src/math/assessment.hpp
-			src/math/assessment.cpp
-      src/math/checks.hpp
-      src/math/collection_comparison.hpp
+      		src/math/checks.hpp
+      		src/math/collection_comparison.hpp
+      		src/math/collection_comparison.cpp
 			src/math/boolean_operations.hpp
 			src/math/conics.cpp
 			src/math/conics.hpp

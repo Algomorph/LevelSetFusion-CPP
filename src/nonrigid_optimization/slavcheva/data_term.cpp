@@ -16,7 +16,6 @@
 
 //local
 #include "data_term.hpp"
-#include "../../math/tensors.hpp"
 #include "../../math/boolean_operations.hpp"
 #include "../../math/typedefs.hpp"
 #include "../../traversal/field_traversal_cpu.hpp"

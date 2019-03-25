@@ -25,7 +25,7 @@
 
 //local
 #include "optimizer2d.hpp"
-#include "../../math/tensors.hpp"
+#include "../../math/typedefs.hpp"
 #include "../../telemetry/convergence_report.hpp"
 #include "../../telemetry/optimization_iteration_data.hpp"
 
