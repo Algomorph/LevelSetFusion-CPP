@@ -142,4 +142,3 @@ void export_telemetry_utilities() {
 				.def(bp::vector_indexing_suite<std::vector<telemetry::OptimizationIterationData>>());
 }
 } //namespace python_export
-
