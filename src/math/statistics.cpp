@@ -135,6 +135,7 @@ float min_norm(const MatrixXv2f& vector_field) {
 	}
 	return std::sqrt(min_norm_container.load());
 
+/**
 * Locates the maximum L2 norm (Euclidean length) of the vector in the given 3d field.
 * Identical to @see locate_max_norm with the exception that this version is using a generic traversal function.
 * @param[out] max_norm length of the longest vector
