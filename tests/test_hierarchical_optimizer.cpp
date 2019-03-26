@@ -29,7 +29,6 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 
 // test data
-
 #include "data/test_data_hierarchical_optimizer.hpp"
 
 // test targets

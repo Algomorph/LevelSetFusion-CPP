@@ -36,34 +36,9 @@
 #include "../src/math/typedefs.hpp"
 #include "../src/math/collection_comparison.hpp"
 #include "../src/imageio/png_eigen.hpp"
+#include "common.hpp"
 
 namespace eig = Eigen;
-
-static inline bool read_image_helper(eig::MatrixXus& depth_image, std::string filename) {
-	std::string full_path = "test_data/" + filename;
-	bool image_read = imageio::png::read_GRAY16(full_path.c_str(), depth_image);
-	if (!image_read) {
-		//are we running from the project root dir, maybe?
-		std::string full_path = "tests/data/" + filename;
-		image_read = imageio::png::read_GRAY16(full_path.c_str(), depth_image);
-	}
-	return image_read;
-}
-
-//TODO: move image testing to it's own test suite
-BOOST_AUTO_TEST_CASE(test_image_read01) {
-	eig::MatrixXus depth_image;
-	bool image_read = read_image_helper(depth_image, "zigzag_depth_00064.png");
-	BOOST_REQUIRE(image_read);
-	BOOST_REQUIRE_EQUAL(depth_image.rows(), 480);
-	BOOST_REQUIRE_EQUAL(depth_image.cols(), 640);
-	BOOST_REQUIRE_EQUAL(depth_image(0, 0), (unsigned short )1997);
-	BOOST_REQUIRE_EQUAL(depth_image(479, 0), (unsigned short )1997);
-	BOOST_REQUIRE_EQUAL(depth_image(479, 639), (unsigned short ) 5154);
-	eig::MatrixXus sample = depth_image.block(40, 60, 1, 20);
-	BOOST_REQUIRE(sample.isApprox(test_data::depth_00064_sample));
-
-}
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 

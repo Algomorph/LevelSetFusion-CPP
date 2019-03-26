@@ -362,21 +362,38 @@ add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
 # ================== UNIT TESTING ======================================================================================
 enable_testing()
 
+# TODO: this is beginnning to look like a lot of DRY violations -- good source material for a CMake macro or function
+# that would set up a single test based on the sources  
+
+set (COMMON_TEST_SOURCES
+	tests/common.hpp
+	tests/common.cpp
+)
+
 add_executable(test_tsdf
 	tests/test_tsdf.cpp
 	tests/data/test_data_tsdf.hpp
+	${COMMON_TEST_SOURCES}
 )
 add_executable(test_math
 	tests/test_math.cpp
 	tests/data/test_data_math.hpp
+	${COMMON_TEST_SOURCES}
 )
 add_executable(test_slavcheva_optimizer
 	tests/test_slavcheva_optimizer.cpp
 	tests/data/test_data_slavcheva_optimizer.hpp
+	${COMMON_TEST_SOURCES}
 )
 add_executable(test_hierarchical_optimizer
 	tests/test_hierarchical_optimizer.cpp
 	tests/data/test_data_hierarchical_optimizer.hpp
+	${COMMON_TEST_SOURCES}
+)
+add_executable(test_image_io
+	tests/test_image_io.cpp
+	tests/data/test_data_image_io.hpp
+	${COMMON_TEST_SOURCES}
 )
 
 target_link_libraries(test_tsdf ${MODULE_NAME} ${Boost_LIBRARIES})
@@ -387,7 +404,10 @@ target_link_libraries(test_slavcheva_optimizer ${MODULE_NAME} ${Boost_LIBRARIES}
 target_include_directories(test_slavcheva_optimizer PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(test_hierarchical_optimizer ${MODULE_NAME} ${Boost_LIBRARIES})
 target_include_directories(test_hierarchical_optimizer PRIVATE ${EIGEN3_INCLUDE_DIRS})
+target_link_libraries(test_image_io ${MODULE_NAME} ${Boost_LIBRARIES})
+target_include_directories(test_image_io PRIVATE ${EIGEN3_INCLUDE_DIRS})
 
+add_test(NAME image_io COMMAND test_image_io)
 add_test(NAME tsdf COMMAND test_tsdf)
 add_test(NAME math COMMAND test_math)
 add_test(NAME slavcheva_optimizer COMMAND test_slavcheva_optimizer)
