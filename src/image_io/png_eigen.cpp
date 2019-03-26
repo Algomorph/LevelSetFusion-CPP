@@ -7,11 +7,11 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "png_eigen.hpp"
+#include "../image_io/png_eigen.hpp"
 
-#include "imageio_stb_image.hpp"
+#include "../image_io/imageio_stb_image.hpp"
 
-bool imageio::png::read_RGBA(
+bool image_io::png::read_RGBA(
 		const std::string png_file,
 		Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic>& R,
 		Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic>& G,
@@ -38,12 +38,12 @@ bool imageio::png::read_RGBA(
 		}
 	}
 
-	imageio::stbi_image_free(data);
+	image_io::stbi_image_free(data);
 
 	return true;
 }
 
-bool imageio::png::read_GRAY16(const std::string png_file,
+bool image_io::png::read_GRAY16(const std::string png_file,
 		Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic>& D) {
 	int cols, rows, n;
 	unsigned short *data = stbi_load_16(png_file.c_str(), &cols, &rows, &n, 1);
@@ -58,7 +58,7 @@ bool imageio::png::read_GRAY16(const std::string png_file,
 		}
 	}
 
-	imageio::stbi_image_free(data);
+	image_io::stbi_image_free(data);
 
 	return true;
 }

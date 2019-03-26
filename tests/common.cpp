@@ -22,11 +22,11 @@
 
 bool read_image_helper(eig::MatrixXus& depth_image, std::string filename) {
 	std::string full_path = "test_data/" + filename;
-	bool image_read = imageio::png::read_GRAY16(full_path.c_str(), depth_image);
+	bool image_read = image_io::png::read_GRAY16(full_path.c_str(), depth_image);
 	if (!image_read) {
 		//are we running from the project root dir, maybe?
 		std::string full_path = "tests/data/" + filename;
-		image_read = imageio::png::read_GRAY16(full_path.c_str(), depth_image);
+		image_read = image_io::png::read_GRAY16(full_path.c_str(), depth_image);
 	}
 	return image_read;
 }

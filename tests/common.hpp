@@ -21,7 +21,7 @@
 
 //test targets
 #include "../src/math/typedefs.hpp"
-#include "../src/imageio/png_eigen.hpp"
+#include "../src/image_io/png_eigen.hpp"
 
 bool read_image_helper(eig::MatrixXus& depth_image, std::string filename);
 

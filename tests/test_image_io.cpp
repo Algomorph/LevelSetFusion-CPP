@@ -1,3 +1,4 @@
+
 /*
  * test_image_io.cpp
  *
@@ -27,7 +28,7 @@
 
 //test targets
 #include "../src/math/typedefs.hpp"
-#include "../src/imageio/png_eigen.hpp"
+#include "../src/image_io/png_eigen.hpp"
 #include "common.hpp"
 
 BOOST_AUTO_TEST_CASE(test_image_read01) {

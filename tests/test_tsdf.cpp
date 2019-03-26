@@ -35,7 +35,7 @@
 #include "../src/tsdf/ewa.hpp"
 #include "../src/math/typedefs.hpp"
 #include "../src/math/collection_comparison.hpp"
-#include "../src/imageio/png_eigen.hpp"
+#include "../src/image_io/png_eigen.hpp"
 #include "common.hpp"
 
 namespace eig = Eigen;

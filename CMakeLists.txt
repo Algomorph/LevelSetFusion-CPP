@@ -286,12 +286,12 @@ add_library(${MODULE_NAME} SHARED
 			src/tsdf/ewa_common.hpp
 			src/tsdf/ewa.hpp
 
-			src/imageio/stb_image.h
-			src/imageio/stb_image_write.h
-			src/imageio/imageio_stb_image.hpp
-			src/imageio/imageio_stb_image.cpp
-			src/imageio/png_eigen.hpp
-			src/imageio/png_eigen.cpp
+			src/image_io/stb_image.h
+			src/image_io/stb_image_write.h
+			src/image_io/imageio_stb_image.hpp
+			src/image_io/imageio_stb_image.cpp
+			src/image_io/png_eigen.hpp
+			src/image_io/png_eigen.cpp
 
 			src/console/progress_bar.cpp
 			src/console/progress_bar.hpp)
