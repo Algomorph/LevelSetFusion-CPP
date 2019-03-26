@@ -30,6 +30,7 @@ template<class T>
 class Vector2 : public Vector2_<T> {
 public:
 	typedef T value_type;
+	typedef T Scalar;
 	static const int size = 2;
 	_CPU_AND_GPU_CODE_ inline int get_size() const { return 2; }
 

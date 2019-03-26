@@ -255,6 +255,7 @@ add_library(${MODULE_NAME} SHARED
 			### math: mathematical utilities
       		src/math/checks.hpp
       		src/math/collection_comparison.hpp
+      		src/math/collection_comparison.tpp
       		src/math/collection_comparison.cpp
 			src/math/boolean_operations.hpp
 			src/math/conics.cpp

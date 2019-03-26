@@ -31,6 +31,7 @@ template<class T>
 class Matrix2 : public Matrix2_<T> {
 public:
 	static const int size = 4;
+	typedef T Scalar;
 
 	_CPU_AND_GPU_CODE_ Matrix2() {}
 
@@ -123,6 +124,7 @@ public:
 		return transposed;
 	}
 
+	//scalar multiply
 	_CPU_AND_GPU_CODE_ inline friend Matrix2 operator*(const Matrix2& lhs, const T& rhs) {
 		Matrix2 r;
 		for (int i = 0; i < 4; i++) {
@@ -152,9 +154,16 @@ public:
 		return r;
 	}
 
+	// matrix coefficient-wise add
 	_CPU_AND_GPU_CODE_ inline friend Matrix2 operator+(const Matrix2& lhs, const Matrix2& rhs) {
 		Matrix2 res(lhs.values);
 		return res += rhs;
+	}
+
+	// matrix coefficient-wise subtract
+	_CPU_AND_GPU_CODE_ inline friend Matrix2 operator-(const Matrix2& lhs, const Matrix2& rhs) {
+		Matrix2 res(lhs.values);
+		return res -= rhs;
 	}
 
 	_CPU_AND_GPU_CODE_ inline Vector2<T> operator*(const Vector2<T>& rhs) const {
