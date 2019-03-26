@@ -27,6 +27,7 @@
 
 namespace eig = Eigen;
 namespace math {
+
 template bool matrix_almost_equal<eig::MatrixXf, float>(eig::MatrixXf matrix_a, eig::MatrixXf matrix_b,
 		float tolerance);
 template bool matrix_almost_equal<eig::MatrixXf, double>(eig::MatrixXf matrix_a, eig::MatrixXf matrix_b,
@@ -63,12 +64,15 @@ template bool tensor_almost_equal_verbose<eig::Tensor3f, float>(eig::Tensor3f te
 template bool tensor_almost_equal_verbose<eig::Tensor3f, double>(eig::Tensor3f tensor_a, eig::Tensor3f tensor_b,
 		double tolerance);
 
-//TODO
-//template bool tensor_almost_equal_verbose<math::Tensor3v3f>(math::Tensor3v3f tensor_a, math::Tensor3v3f tensor_b,
-//		double tolerance);
+template bool tensor_almost_equal<math::Tensor3v3f, float>(math::Tensor3v3f tensor_a, math::Tensor3v3f tensor_b,
+		float tolerance);
+template bool tensor_almost_equal<math::Tensor3v3f, double>(math::Tensor3v3f tensor_a, math::Tensor3v3f tensor_b,
+		double tolerance);
+template bool tensor_almost_equal_verbose<math::Tensor3v3f, float>(math::Tensor3v3f tensor_a, math::Tensor3v3f tensor_b,
+		float tolerance);
+template bool tensor_almost_equal_verbose<math::Tensor3v3f, double>(math::Tensor3v3f tensor_a, math::Tensor3v3f tensor_b,
+		double tolerance);
 
-//template bool almost_equal<float>(float a, float b, float epsilon=3e-6);
-//template bool almost_equal<double>(double a, double b, double epsilon=3e-6);
 template bool almost_equal<float>(float a, float b);
 template bool almost_equal<float, float>(float a, float b, float tolerance);
 template bool almost_equal<float, double>(float a, float b, double tolerance);

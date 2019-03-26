@@ -40,7 +40,7 @@ bool almost_equal(TCollection a, TCollection b);
 template<typename TCollection, typename TElementType>
 bool almost_equal(TCollection a, TCollection b, TElementType tolerance);
 
-//TODO: templatize further into almost_equal and almost_equal_verbose
+//TODO: templatize further into almost_equal and almost_equal_verbose (unified data structure API)
 template<typename TMatrix, typename TBaseElementType>
 bool matrix_almost_equal(TMatrix matrix_a, TMatrix matrix_b, TBaseElementType tolerance = 1e-10);
 template<typename TMatrix, typename TBaseElementType>
