@@ -37,7 +37,7 @@ bool is_power_of_two(int number){
 }
 
 /**
- * A pyramid representation of a contiguous 2d scalar field
+ * A pyramid representation of a continuous 2d scalar field
  */
 class Pyramid2d {
 public:

@@ -30,7 +30,7 @@
 #include "../../math/statistics.hpp"
 #include "../../math/gradients.hpp"
 #include "../../math/convolution.hpp"
-#include "../../math/tensors.hpp"
+#include "../../math/typedefs.hpp"
 #include "../../telemetry/warp_delta_statistics.hpp"
 #include "../../telemetry/convergence_report.hpp"
 
@@ -125,7 +125,7 @@ float SobolevOptimizer2d::perform_optimization_iteration_and_return_max_warp(eig
 	warp_field = (data_term_gradient + smoothing_term_gradient * sobolev_parameters().smoothing_term_weight)
 			* -shared_parameters().gradient_descent_rate;
 	math::convolve_with_kernel_preserve_zeros(warp_field, sobolev_parameters().sobolev_kernel);
-	warped_live_field = resample(warp_field, warped_live_field, canonical_field, true);
+	warped_live_field = warp_2d_advanced(warp_field, warped_live_field, canonical_field, true);
 	float maximum_warp_length;
 	math::locate_max_norm(maximum_warp_length, max_warp_location, warp_field);
 	return maximum_warp_length;

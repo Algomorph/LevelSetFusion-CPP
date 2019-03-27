@@ -34,36 +34,11 @@
 //test targets
 #include "../src/tsdf/ewa.hpp"
 #include "../src/math/typedefs.hpp"
-#include "../src/math/assessment.hpp"
-#include "../src/imageio/png_eigen.hpp"
+#include "../src/math/collection_comparison.hpp"
+#include "../src/image_io/png_eigen.hpp"
+#include "common.hpp"
 
 namespace eig = Eigen;
-
-static inline bool read_image_helper(eig::MatrixXus& depth_image, std::string filename) {
-	std::string full_path = "test_data/" + filename;
-	bool image_read = imageio::png::read_GRAY16(full_path.c_str(), depth_image);
-	if (!image_read) {
-		//are we running from the project root dir, maybe?
-		std::string full_path = "tests/data/" + filename;
-		image_read = imageio::png::read_GRAY16(full_path.c_str(), depth_image);
-	}
-	return image_read;
-}
-
-//TODO: move image testing to it's own test suite
-BOOST_AUTO_TEST_CASE(test_image_read01) {
-	eig::MatrixXus depth_image;
-	bool image_read = read_image_helper(depth_image, "zigzag_depth_00064.png");
-	BOOST_REQUIRE(image_read);
-	BOOST_REQUIRE_EQUAL(depth_image.rows(), 480);
-	BOOST_REQUIRE_EQUAL(depth_image.cols(), 640);
-	BOOST_REQUIRE_EQUAL(depth_image(0, 0), (unsigned short )1997);
-	BOOST_REQUIRE_EQUAL(depth_image(479, 0), (unsigned short )1997);
-	BOOST_REQUIRE_EQUAL(depth_image(479, 639), (unsigned short ) 5154);
-	eig::MatrixXus sample = depth_image.block(40, 60, 1, 20);
-	BOOST_REQUIRE(sample.isApprox(test_data::depth_00064_sample));
-
-}
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 
@@ -90,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 			20 // narrow band width
 			);
 
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field, test_data::out_sdf_field, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field, test_data::out_sdf_field, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
@@ -141,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 				);
 	}
 
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6));
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation05) {
@@ -192,7 +167,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation05) {
 				);
 	}
 	//TODO: add data for this test
-	//BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6));
+	//BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation06) {
@@ -243,7 +218,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation06) {
 				);
 	}
 	//TODO test against data
-	//BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6));
+	//BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
@@ -274,7 +249,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 			20 // narrow band width
 			);
 
-	BOOST_REQUIRE(math::tensor_almost_equal_verbose(field, test_data::TSDF_slice01, 1e-6));
+	BOOST_REQUIRE(math::tensor_almost_equal_verbose(field, test_data::TSDF_slice01, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
@@ -305,6 +280,5 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
 			20, // narrow band width
 			0.5f
 			);
-
-	BOOST_REQUIRE(math::tensor_almost_equal_verbose(field, test_data::TSDF_slice02, 1e-5));
+	BOOST_REQUIRE(math::tensor_almost_equal_verbose(field, test_data::TSDF_slice02, 1e-5f));
 }

@@ -19,9 +19,11 @@
 
 //local
 #include "../math/boolean_operations.hpp"
-#include "../math/tensors.hpp"
 #include "../math/typedefs.hpp"
 #include "field_warping.hpp"
+#include "field_warping.tpp"
+#include "../math/tensor_operations.hpp"
+#include "../traversal/index_raveling.hpp"
 
 namespace nonrigid_optimization {
 
@@ -30,6 +32,15 @@ inline float sample_tsdf_value_at(const eig::MatrixXf& tsdf_field, int x, int y)
 		return 1.0;
 	}
 	return tsdf_field(y, x);
+}
+
+inline float sample_tsdf_value_at(const eig::Tensor3f& tsdf_field, int x, int y, int z){
+	if (x < 0 || x >= tsdf_field.dimension(0) ||
+			y < 0 || y >= tsdf_field.dimension(1) ||
+			z < 0 || z >= tsdf_field.dimension(2)) {
+		return 1.0;
+	}
+	return tsdf_field(x, y, z);
 }
 
 inline float sample_tsdf_value_replacing_when_out_of_bounds(const eig::MatrixXf& tsdf_field, int x, int y,
@@ -42,7 +53,7 @@ inline float sample_tsdf_value_replacing_when_out_of_bounds(const eig::MatrixXf&
 
 template<bool TModifyWarpField>
 inline eig::MatrixXf
-resample_aux(math::MatrixXv2f& warp_field,
+warp_2d_advanced_aux(math::MatrixXv2f& warp_field,
 		const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field,
 		bool band_union_only, bool known_values_only,
 		bool substitute_original, float truncation_float_threshold) {
@@ -114,21 +125,21 @@ resample_aux(math::MatrixXv2f& warp_field,
 	return new_live_field;
 }
 
-eig::MatrixXf resample(math::MatrixXv2f& warp_field,
+eig::MatrixXf warp_2d_advanced(math::MatrixXv2f& warp_field,
 		const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field,
 		bool band_union_only, bool known_values_only,
 		bool substitute_original, float truncation_float_threshold) {
-	return resample_aux<true>(warp_field, warped_live_field, canonical_field, band_union_only, known_values_only,
+	return warp_2d_advanced_aux<true>(warp_field, warped_live_field, canonical_field, band_union_only, known_values_only,
 			substitute_original, truncation_float_threshold);
 }
 
-eig::MatrixXf resample_warp_unchanged(
+eig::MatrixXf warp_2d_advanced_warp_unchanged(
 		math::MatrixXv2f& warp_field,
 		const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field,
 		bool band_union_only, bool known_values_only,
 		bool substitute_original, float truncation_float_threshold) {
-	return resample_aux<false>(warp_field, warped_live_field, canonical_field, band_union_only, known_values_only,
+	return warp_2d_advanced_aux<false>(warp_field, warped_live_field, canonical_field, band_union_only, known_values_only,
 			substitute_original, truncation_float_threshold);
 }
 
@@ -136,7 +147,7 @@ eig::MatrixXf resample_warp_unchanged(
  violations*/
 
 template<bool WithReplacement>
-inline eig::MatrixXf resample_field_aux(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
+inline eig::MatrixXf warp_2d_aux(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
 		float replacement_value = 0.0f) {
 	int matrix_size = static_cast<int>(scalar_field.size());
 	const int column_count = static_cast<int>(scalar_field.cols());
@@ -190,22 +201,89 @@ inline eig::MatrixXf resample_field_aux(const eig::MatrixXf& scalar_field, math:
 	return resampled_field;
 }
 
-eig::MatrixXf resample_field(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field) {
-	return resample_field_aux<false>(scalar_field, warp_field);
+eig::MatrixXf warp_2d(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field) {
+	return warp_2d_aux<false>(scalar_field, warp_field);
 }
 
-eig::MatrixXf resample_field_replacement(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
+
+eig::MatrixXf warp_2d_replacement(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
 		float replacement_value) {
-	return resample_field_aux<true>(scalar_field, warp_field, replacement_value);
+	return warp_2d_aux<true>(scalar_field, warp_field, replacement_value);
 }
 
-bp::object py_resample(const eig::MatrixXf& warped_live_field,
+template
+eig::Tensor3f warp_3d<float>(const eig::Tensor3f& scalar_field, math::Tensor3v3f& warp_field);
+
+template
+eig::Tensor3f warp_3d_with_replacement<float>(const eig::Tensor3f& scalar_field, math::Tensor3v3f& warp_field,
+		float replacement_value);
+
+template
+math::Tensor3v3f warp_3d_with_replacement<math::Vector3f>(const math::Tensor3v3f& vector_field, math::Tensor3v3f& warp_field,
+		math::Vector3f replacement_value);
+
+//eig::Tensor3f warp_3d(const eig::Tensor3f& scalar_field, math::Tensor3v3f& warp_field){
+//	int matrix_size = static_cast<int>(scalar_field.size());
+//
+//	eig::Tensor3f warped_field(scalar_field.dimensions());
+//
+//	int y_stride = scalar_field.dimension(0);
+//	int z_stride = y_stride * scalar_field.dimension(1);
+//
+//#pragma omp parallel for
+//	for (int i_element = 0; i_element < matrix_size; i_element++) {
+//		int x,y,z;
+//		traversal::unravel_3d_index(x,y,z,i_element, y_stride,z_stride);
+//
+//		math::Vector3f local_warp = warp_field(i_element);
+//		float lookup_x = x + local_warp.u;
+//		float lookup_y = y + local_warp.v;
+//		float lookup_z = z + local_warp.w;
+//		int base_x = static_cast<int>(std::floor(lookup_x));
+//		int base_y = static_cast<int>(std::floor(lookup_y));
+//		int base_z = static_cast<int>(std::floor(lookup_z));
+//		float ratio_x = lookup_x - base_x;
+//		float ratio_y = lookup_y - base_y;
+//		float ratio_z = lookup_z - base_z;
+//		float inverse_ratio_x = 1.0f - ratio_x;
+//		float inverse_ratio_y = 1.0f - ratio_y;
+//		float inverse_ratio_z = 1.0f - ratio_z;
+//
+//		float value000, value010, value100, value110, value001, value011, value101, value111;
+//
+//		value000 = sample_tsdf_value_at(scalar_field, base_x, base_y, base_z);
+//		value010 = sample_tsdf_value_at(scalar_field, base_x, base_y + 1, base_z);
+//		value100 = sample_tsdf_value_at(scalar_field, base_x + 1, base_y, base_z);
+//		value110 = sample_tsdf_value_at(scalar_field, base_x + 1, base_y + 1, base_z);
+//		value001 = sample_tsdf_value_at(scalar_field, base_x, base_y, base_z + 1);
+//		value011 = sample_tsdf_value_at(scalar_field, base_x, base_y + 1, base_z + 1);
+//		value101 = sample_tsdf_value_at(scalar_field, base_x + 1, base_y, base_z + 1);
+//		value111 = sample_tsdf_value_at(scalar_field, base_x + 1, base_y + 1, base_z + 1);
+//
+//		float interpolated_value00 = value000 * inverse_ratio_z + value001 * ratio_z;
+//		float interpolated_value01 = value010 * inverse_ratio_z + value011 * ratio_z;
+//		float interpolated_value10 = value100 * inverse_ratio_z + value101 * ratio_z;
+//		float interpolated_value11 = value110 * inverse_ratio_z + value111 * ratio_z;
+//
+//		float interpolated_value0 = interpolated_value00 * inverse_ratio_y + interpolated_value01 * ratio_y;
+//		float interpolated_value1 = interpolated_value10 * inverse_ratio_y + interpolated_value11 * ratio_y;
+//
+//		float new_value = interpolated_value0 * inverse_ratio_x + interpolated_value1 * ratio_x;
+//
+//		warped_field(i_element) = new_value;
+//	}
+//
+//	return warped_field;
+//}
+
+
+bp::object py_warp_field(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,
 		eig::MatrixXf warp_field_v, bool band_union_only, bool known_values_only,
 		bool substitute_original, float truncation_float_threshold)
 		{
 	math::MatrixXv2f warp_field = math::stack_as_xv2f(warp_field_u, warp_field_v);
-	eig::MatrixXf new_warped_live_field = resample(warp_field, warped_live_field,
+	eig::MatrixXf new_warped_live_field = warp_2d_advanced(warp_field, warped_live_field,
 			canonical_field, band_union_only, known_values_only, substitute_original,
 			truncation_float_threshold);
 	math::unstack_xv2f(warp_field_u, warp_field_v, warp_field);
@@ -215,13 +293,13 @@ bp::object py_resample(const eig::MatrixXf& warped_live_field,
 	return bp::make_tuple(warped_live_field_out, bp::make_tuple(warp_field_u_out, warp_field_v_out));
 }
 
-bp::object py_resample_warp_unchanged(const eig::MatrixXf& warped_live_field,
+bp::object py_warp_field_no_warp_change(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,
 		eig::MatrixXf warp_field_v, bool band_union_only, bool known_values_only,
 		bool substitute_original, float truncation_float_threshold)
 		{
 	math::MatrixXv2f warp_field = math::stack_as_xv2f(warp_field_u, warp_field_v);
-	eig::MatrixXf new_warped_live_field = resample_warp_unchanged(warp_field, warped_live_field,
+	eig::MatrixXf new_warped_live_field = warp_2d_advanced_warp_unchanged(warp_field, warped_live_field,
 			canonical_field, band_union_only, known_values_only, substitute_original,
 			truncation_float_threshold);
 	bp::object warped_live_field_out(new_warped_live_field);

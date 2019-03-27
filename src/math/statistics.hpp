@@ -20,16 +20,16 @@
 
 #pragma once
 
-#include "tensors.hpp"
+#include "tensor_operations.hpp"
 #include "typedefs.hpp"
 
 namespace math{
-	void locate_max_norm(float& max_norm, Vector2i& coordinate, const MatrixXv2f& vector_field);
-	void locate_max_norm2(float& max_norm, Vector2i& coordinate, const MatrixXv2f& vector_field);
+	void locate_max_norm(float& max_norm,  math::Vector2i& coordinate, const math::MatrixXv2f& vector_field);
+	void locate_max_norm2(float& max_norm,  math::Vector2i& coordinate, const math::MatrixXv2f& vector_field);
 	float min_norm(const MatrixXv2f& vector_field);
-	void locate_min_norm(float& min_norm, Vector2i& coordinate, const MatrixXv2f& vector_field);
-	float ratio_of_vector_lengths_above_threshold(const MatrixXv2f& vector_field, float threshold);
-	float mean_vector_length(const MatrixXv2f& vector_field);
-	void mean_and_std_vector_length(float& mean, float& standard_deviation, const MatrixXv2f& vector_field);
+	void locate_min_norm(float& min_norm,  math::Vector2i& coordinate, const math::MatrixXv2f& vector_field);
+	void locate_max_norm_3d(float& max_norm, math::Vector3i& coordinate, const math::Tensor3v3f& vector_field);
+	float ratio_of_vector_lengths_above_threshold(const math::MatrixXv2f& vector_field, float threshold);
+	float mean_vector_length(const math::MatrixXv2f& vector_field);
+	void mean_and_std_vector_length(float& mean, float& standard_deviation, const math::MatrixXv2f& vector_field);
 }
-

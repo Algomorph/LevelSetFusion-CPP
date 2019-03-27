@@ -26,20 +26,20 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/python.hpp>
 #include <Eigen/Eigen>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 // test data
-
 #include "data/test_data_hierarchical_optimizer.hpp"
 
 // test targets
-#include "../src/math/tensors.hpp"
-#include "../src/math/assessment.hpp"
+#include "../src/math/typedefs.hpp"
+#include "../src/math/collection_comparison.hpp"
 #include "../src/nonrigid_optimization/hierarchical/pyramid2d.hpp"
 #include "../src/nonrigid_optimization/hierarchical/optimizer2d.hpp"
 #include "../src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp"
 #include "../src/telemetry/optimization_iteration_data.hpp"
 #include "../src/nonrigid_optimization/field_warping.hpp"
-
+#include "../src/nonrigid_optimization/pyramid3d.hpp"
 
 namespace eig = Eigen;
 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(power_of_two_test01){
 	BOOST_REQUIRE(!nro_h::is_power_of_two(38));
 }
 
-BOOST_AUTO_TEST_CASE(pyramid_test01) {
+BOOST_AUTO_TEST_CASE(pyramid2d_test01) {
 	// corresponds to test_contstruct_scalar_pyramid for Python
 
 	eig::MatrixXf tile(8, 8);
@@ -116,19 +116,35 @@ BOOST_AUTO_TEST_CASE(pyramid_test01) {
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(1)(0, 1), l1_01);
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(1)(1, 1), l1_11);
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(0)(0, 0), 5.0f/4.0f);
-
-	BOOST_REQUIRE(true);
 }
 
-BOOST_AUTO_TEST_CASE(resample_field_test01){
+BOOST_AUTO_TEST_CASE(pyramid3d_test01) {
+	eig::Tensor<float,3> field = test_data::pyramid3d_argument_field;
+	int field_dim0 = test_data::pyramid3d_argument_field.dimension(0);
+	int field_dim1 = test_data::pyramid3d_argument_field.dimension(1);
+	int field_dim2 = test_data::pyramid3d_argument_field.dimension(2);
+	nro::Pyramid3d<float> pyramid(field, 8);
+	BOOST_REQUIRE_EQUAL(pyramid.level_count(), (unsigned)4);
+	BOOST_REQUIRE_EQUAL(pyramid.level(0).dimension(0),1);
+	BOOST_REQUIRE_EQUAL(pyramid.level(0).dimension(1),1);
+	BOOST_REQUIRE_EQUAL(pyramid.level(0).dimension(2),1);
+	BOOST_REQUIRE_EQUAL(pyramid.level(0)(0),255.5f);
+	BOOST_REQUIRE_EQUAL(pyramid.level(2).dimension(0),field_dim0/2);
+	BOOST_REQUIRE_EQUAL(pyramid.level(2).dimension(1),field_dim1/2);
+	BOOST_REQUIRE_EQUAL(pyramid.level(2).dimension(2),field_dim2/2);
+	BOOST_REQUIRE_EQUAL(pyramid.level(2)(0),36.5);
+	BOOST_REQUIRE_EQUAL(pyramid.level(2)(pyramid.level(2).size()-1),474.5);
+}
+
+BOOST_AUTO_TEST_CASE(warp_field_test01){
 	//corresponds to test_resample_field01 in python code
-	eig::MatrixXf resampled_field = nro::resample_field(test_data::field_A_16x16,test_data::warp_field_A_16x16);
+	eig::MatrixXf resampled_field = nro::warp_2d(test_data::field_A_16x16,test_data::warp_field_A_16x16);
 	BOOST_REQUIRE(resampled_field.isApprox(test_data::fA_resampled_with_wfA));
 }
 
-BOOST_AUTO_TEST_CASE(resample_field_test02){
+BOOST_AUTO_TEST_CASE(warp_field_test02){
 	//corresponds to test_resample_field_replacement01 in python code
-	eig::MatrixXf resampled_field = nro::resample_field_replacement(test_data::field_B_16x16,test_data::warp_field_B_16x16,0);
+	eig::MatrixXf resampled_field = nro::warp_2d_replacement(test_data::field_B_16x16,test_data::warp_field_B_16x16,0);
 	BOOST_REQUIRE(resampled_field.isApprox(test_data::fB_resampled_with_wfB_replacement));
 }
 
@@ -145,7 +161,7 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 			eig::VectorXf(0)
 			);
 	math::MatrixXv2f warp_field_out = optimizer.optimize(test_data::canonical_field, test_data::live_field);
-	eig::MatrixXf final_live_resampled = nro::resample_field(test_data::live_field,warp_field_out);
+	eig::MatrixXf final_live_resampled = nro::warp_2d(test_data::live_field,warp_field_out);
 
 	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field_out,test_data::warp_field,10e-6));
 	BOOST_REQUIRE(final_live_resampled.isApprox(test_data::final_live_field));
@@ -165,7 +181,7 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer_iteration_data){
 			nro_h::Optimizer2dTelemetry::LoggingParameters(true,true)
 			);
 	math::MatrixXv2f warp_field_out = optimizer.optimize(test_data::canonical_field, test_data::live_field);
-	eig::MatrixXf final_live_resampled = nro::resample_field(test_data::live_field,warp_field_out);
+	eig::MatrixXf final_live_resampled = nro::warp_2d(test_data::live_field,warp_field_out);
 
 	std::vector<telemetry::OptimizationIterationData> data = optimizer.get_per_level_iteration_data();
 

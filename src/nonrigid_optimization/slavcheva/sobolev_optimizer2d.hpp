@@ -23,7 +23,8 @@
 #include <boost/property_tree/ptree.hpp>
 
 //local
-#include "../../math/tensors.hpp"
+#include "../../math/tensor_operations.hpp"
+#include "../../math/typedefs.hpp"
 #include "../../telemetry/convergence_report.hpp"
 #include "optimizer2d.hpp"
 

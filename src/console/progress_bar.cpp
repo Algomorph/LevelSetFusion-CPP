@@ -27,8 +27,6 @@ namespace console {
 ProgressBar::ProgressBar() {
 }
 
-//TODO: change to "maximum character width", possibly, that calculates filler_count_cap based on maximum possible width
-//of characters around it.
 ProgressBar::ProgressBar(int filler_count_cap) : filler_count_cap(filler_count_cap) {
 }
 

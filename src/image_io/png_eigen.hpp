@@ -11,7 +11,7 @@
 #include <Eigen/Core>
 #include <string>
 
-namespace imageio {
+namespace image_io {
 namespace png {
 // Read an image from a .png file into 4 memory buffers
 //

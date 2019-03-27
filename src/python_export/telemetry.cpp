@@ -31,7 +31,6 @@
 //local
 #include "telemetry.hpp"
 #include "../math/typedefs.hpp"
-#include "../math/tensors.hpp"
 #include "../telemetry/warp_delta_statistics.hpp"
 #include "../telemetry/tsdf_difference_statistics.hpp"
 #include "../telemetry/convergence_report.hpp"

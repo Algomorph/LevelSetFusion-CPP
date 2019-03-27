@@ -44,8 +44,8 @@ find_python_interpreter(${LSFusion_PYTHON3_VERSION} 3.4 PYTHON3_LIBRARY PYTHON3_
 
 include("HunterGate")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.93.tar.gz"
-    SHA1 "0977005fb76c1380a7d9e41929090376cfd45023"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.125.tar.gz"
+    SHA1 "458d4ffb3e62c86322943baf5b94a3a21a6b9397"
     LOCAL
 )
 
@@ -79,10 +79,10 @@ message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 
 #=================================================================
 # PYTHON library detection & final configuration
-            
+
 find_python(${LSFusion_PYTHON3_VERSION} 3.4 PYTHON3_LIBRARY PYTHON3_INCLUDE_DIR
             ${PYTHON3INTERP_FOUND} ${PYTHON3_EXECUTABLE} ${PYTHON3_VERSION_STRING}
-            ${PYTHON3_VERSION_MAJOR} ${PYTHON3_VERSION_MINOR} ${PYTHON3_VERSION_PATCH} 
+            ${PYTHON3_VERSION_MAJOR} ${PYTHON3_VERSION_MINOR} ${PYTHON3_VERSION_PATCH}
             PYTHON3LIBS_FOUND
             PYTHON3LIBS_VERSION_STRING PYTHON3_LIBRARIES PYTHON3_LIBRARY
             PYTHON3_DEBUG_LIBRARIES PYTHON3_LIBRARY_DEBUG PYTHON3_INCLUDE_PATH
@@ -179,9 +179,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 # main library
 add_library(${MODULE_NAME} SHARED
-			
+
 			src/module.cpp
-			
+
 			### python export: all code for porting everything from the other namespaces (as nescessary) to Python
 			src/python_export/conversion_tests.hpp
 			src/python_export/conversion_tests.cpp
@@ -205,12 +205,13 @@ add_library(${MODULE_NAME} SHARED
 			#### nonrigid_optimization: namespace for algorithms performing non-rigid optimization on TSDF grids #######
 			# TSDF: voxel grid containing truncated signed distances to nearest surface in the volume (F is "field")
 			# Level set == different name for "approximately" the same concept
-			# for more details, see KillingFusion & SobolevFusion publications by Slavcheva et al., 
-			# VolumeDeform by Innmann et al. and DynamicFusion by Newcombe et al. 
-			
+			# for more details, see KillingFusion & SobolevFusion publications by Slavcheva et al.,
+			# VolumeDeform by Innmann et al. and DynamicFusion by Newcombe et al.
+
 			src/nonrigid_optimization/field_warping.hpp
+			src/nonrigid_optimization/field_warping.tpp
 			src/nonrigid_optimization/field_warping.cpp
-			
+
 			### nonrigid optimization, slavcheva: KillingFusion/Sobolev fusion
 			src/nonrigid_optimization/slavcheva/data_term.hpp
 			src/nonrigid_optimization/slavcheva/data_term.cpp
@@ -222,7 +223,7 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/slavcheva/optimizer2d.hpp
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp
-			
+
 			### nonrigid optimization, hierarchical: hierarchical SLAM optimizer (active research & development)
 			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical/optimizer2d.hpp
@@ -230,10 +231,17 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
+		    #TODO: move to hierarchical
+		    src/nonrigid_optimization/hierarchical_optimizer3d.cpp
+		  	src/nonrigid_optimization/hierarchical_optimizer3d.hpp
+		  	src/nonrigid_optimization/pyramid3d.cpp
+		  	src/nonrigid_optimization/pyramid3d.tpp
+		  	src/nonrigid_optimization/pyramid3d.hpp
 
 			### traversal: algorithms for traversal of data structures
 			src/traversal/field_traversal_cpu.hpp
-			
+			src/traversal/index_raveling.hpp
+
 			### telemetry: namespace for logging progress and storing up intermediate results for later analysis #######
 			src/telemetry/optimization_iteration_data.hpp
 			src/telemetry/optimization_iteration_data.cpp
@@ -243,10 +251,12 @@ add_library(${MODULE_NAME} SHARED
 			src/telemetry/tsdf_difference_statistics.cpp
 			src/telemetry/convergence_report.hpp
 			src/telemetry/convergence_report.cpp
-			
+
 			### math: mathematical utilities
-			src/math/assessment.hpp
-			src/math/assessment.cpp
+      		src/math/checks.hpp
+      		src/math/collection_comparison.hpp
+      		src/math/collection_comparison.tpp
+      		src/math/collection_comparison.cpp
 			src/math/boolean_operations.hpp
 			src/math/conics.cpp
 			src/math/conics.hpp
@@ -259,30 +269,31 @@ add_library(${MODULE_NAME} SHARED
 			src/math/math_utils.hpp
 			src/math/matrix_base.hpp
 			src/math/matrix2.hpp
+			src/math/nestable_type_metainfo.hpp
 			src/math/platform_independence.hpp
 			src/math/statistics.cpp
 			src/math/statistics.hpp
-			src/math/tensors.hpp
-			src/math/tensors.cpp
+			src/math/tensor_operations.hpp
+			src/math/tensor_operations.cpp
 			src/math/typedefs.hpp
 			src/math/vector_base.hpp
 			src/math/vector_operations.hpp
 			src/math/vector2.hpp
 			src/math/vector3.hpp
-			
+
 			src/tsdf/ewa_2d.cpp
 			src/tsdf/ewa_3d.cpp
 			src/tsdf/ewa_3d_viz.cpp
 			src/tsdf/ewa_common.hpp
 			src/tsdf/ewa.hpp
-			
-			src/imageio/stb_image.h
-			src/imageio/stb_image_write.h
-			src/imageio/imageio_stb_image.hpp
-			src/imageio/imageio_stb_image.cpp
-			src/imageio/png_eigen.hpp
-			src/imageio/png_eigen.cpp
-			
+
+			src/image_io/stb_image.h
+			src/image_io/stb_image_write.h
+			src/image_io/imageio_stb_image.hpp
+			src/image_io/imageio_stb_image.cpp
+			src/image_io/png_eigen.hpp
+			src/image_io/png_eigen.cpp
+
 			src/console/progress_bar.cpp
 			src/console/progress_bar.hpp)
 
@@ -297,7 +308,7 @@ target_link_libraries(${MODULE_NAME}
         PRIVATE
         OpenMP::OpenMP_CXX
 )
-        
+
 target_include_directories(${MODULE_NAME} PUBLIC
 		 ${PYTHON3_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIRS}
@@ -352,21 +363,38 @@ add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
 # ================== UNIT TESTING ======================================================================================
 enable_testing()
 
-add_executable(test_tsdf 
-	tests/test_tsdf.cpp 
+# TODO: this is beginnning to look like a lot of DRY violations -- good source material for a CMake macro or function
+# that would set up a single test based on the sources  
+
+set (COMMON_TEST_SOURCES
+	tests/common.hpp
+	tests/common.cpp
+)
+
+add_executable(test_tsdf
+	tests/test_tsdf.cpp
 	tests/data/test_data_tsdf.hpp
+	${COMMON_TEST_SOURCES}
 )
-add_executable(test_math 
-	tests/test_math.cpp 
+add_executable(test_math
+	tests/test_math.cpp
 	tests/data/test_data_math.hpp
+	${COMMON_TEST_SOURCES}
 )
-add_executable(test_slavcheva_optimizer 
-	tests/test_slavcheva_optimizer.cpp 
+add_executable(test_slavcheva_optimizer
+	tests/test_slavcheva_optimizer.cpp
 	tests/data/test_data_slavcheva_optimizer.hpp
+	${COMMON_TEST_SOURCES}
 )
-add_executable(test_hierarchical_optimizer 
+add_executable(test_hierarchical_optimizer
 	tests/test_hierarchical_optimizer.cpp
 	tests/data/test_data_hierarchical_optimizer.hpp
+	${COMMON_TEST_SOURCES}
+)
+add_executable(test_image_io
+	tests/test_image_io.cpp
+	tests/data/test_data_image_io.hpp
+	${COMMON_TEST_SOURCES}
 )
 
 target_link_libraries(test_tsdf ${MODULE_NAME} ${Boost_LIBRARIES})
@@ -377,20 +405,23 @@ target_link_libraries(test_slavcheva_optimizer ${MODULE_NAME} ${Boost_LIBRARIES}
 target_include_directories(test_slavcheva_optimizer PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(test_hierarchical_optimizer ${MODULE_NAME} ${Boost_LIBRARIES})
 target_include_directories(test_hierarchical_optimizer PRIVATE ${EIGEN3_INCLUDE_DIRS})
+target_link_libraries(test_image_io ${MODULE_NAME} ${Boost_LIBRARIES})
+target_include_directories(test_image_io PRIVATE ${EIGEN3_INCLUDE_DIRS})
 
+add_test(NAME image_io COMMAND test_image_io)
 add_test(NAME tsdf COMMAND test_tsdf)
 add_test(NAME math COMMAND test_math)
 add_test(NAME slavcheva_optimizer COMMAND test_slavcheva_optimizer)
 add_test(NAME hierarchical_optimizer COMMAND test_hierarchical_optimizer)
 
 # copy test data
-file(GLOB PNG_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/*.png") 
+file(GLOB PNG_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/*.png")
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_data")
 foreach(PNG_DATA_FILE ${PNG_DATA_FILES})
 	get_filename_component(FILENAME ${PNG_DATA_FILE} NAME)
 	configure_file(
-		${PNG_DATA_FILE} 
-		"${CMAKE_CURRENT_BINARY_DIR}/test_data/${FILENAME}" 
+		${PNG_DATA_FILE}
+		"${CMAKE_CURRENT_BINARY_DIR}/test_data/${FILENAME}"
 		COPYONLY
 	)
-endforeach(PNG_DATA_FILE) 
+endforeach(PNG_DATA_FILE)

@@ -24,6 +24,7 @@ template<class T>
 class Vector3 : public Vector3_<T> {
 public:
 	typedef T value_type;
+	typedef T Scalar;
 	static const int size = 3;
 	_CPU_AND_GPU_CODE_ inline int get_size() const { return 3; }
 
@@ -35,12 +36,14 @@ public:
 		this->x = t;
 		this->y = t;
 		this->z = t;
-	} // Scalar constructor
-	_CPU_AND_GPU_CODE_ explicit Vector3(const T* tp) {
-		this->x = tp[0];
-		this->y = tp[1];
-		this->z = tp[2];
-	} // Construct from array
+	}
+	// Scalar constructor
+	//TODO: ambiguity with above on calls like Vector2(0), provide meaningful alternative
+//	_CPU_AND_GPU_CODE_ explicit Vector3(const T* tp) {
+//		this->x = tp[0];
+//		this->y = tp[1];
+//		this->z = tp[2];
+//	} // Construct from array
 	_CPU_AND_GPU_CODE_ Vector3(const T v0, const T v1, const T v2) {
 		this->x = v0;
 		this->y = v1;

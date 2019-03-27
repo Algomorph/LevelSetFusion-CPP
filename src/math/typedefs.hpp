@@ -17,11 +17,13 @@
 
 //libraries
 #include <Eigen/Eigen>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 //local
 #include "vector2.hpp"
 #include "vector3.hpp"
 #include "matrix2.hpp"
+#include "nestable_type_metainfo.hpp"
 
 namespace math{
 typedef unsigned char uchar;
@@ -42,8 +44,19 @@ typedef class math::Vector3<uchar> Vector3u;
 typedef class math::Vector3<float> Vector3f;
 typedef class math::Matrix2<float> Matrix2f;
 
+typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic> MatrixXv2f;
+typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> MatrixXv2f_rm;
+typedef Eigen::Matrix<math::Matrix2<float>, Eigen::Dynamic, Eigen::Dynamic> MatrixXm2f;
+
+typedef Eigen::Tensor<math::Vector2<float>,3> Tensor3v2f;
+typedef Eigen::Tensor<math::Vector3<float>,3> Tensor3v3f;
+
 }//namespace math
 
+// TODO: move these under the math namespace. See explanation below.
+// Even though these are pure 'Eigen' types,
+// for more clear code transfer to other projects, these typedefs should be namespaced
+// in agreement with the project they were actually defined in, which is this one.
 namespace Eigen{
 
 typedef class Eigen::Matrix<unsigned short, Eigen::Dynamic,Eigen::Dynamic> MatrixXus;
@@ -52,7 +65,8 @@ typedef class Eigen::Matrix<unsigned short, 1, Eigen::Dynamic> Matrix1Xus;
 typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,Eigen::Dynamic> MatrixXuc;
 typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,1> MatrixX1uc;
 typedef class Eigen::Matrix<unsigned char, 1, Eigen::Dynamic> Matrix1Xuc;
-
 typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,Eigen::Dynamic> MatrixXuc;
+
+typedef class Eigen::Tensor<float,3> Tensor3f;
 
 }//namespace Eigen

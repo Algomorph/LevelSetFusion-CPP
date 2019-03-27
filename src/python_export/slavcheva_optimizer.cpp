@@ -54,9 +54,9 @@ boost::shared_ptr<SharedParameters> get_shared_shared_parameters() {
 	return boost::shared_ptr<SharedParameters>(&SharedParameters::get_instance(), NullDeleter());
 }
 
-BOOST_PYTHON_FUNCTION_OVERLOADS(resample_overloads, nonrigid_optimization::py_resample, 4, 8)
-BOOST_PYTHON_FUNCTION_OVERLOADS(resample_warp_unchanged_overloads, nonrigid_optimization::py_resample_warp_unchanged, 4,
-		8)
+BOOST_PYTHON_FUNCTION_OVERLOADS(resample_overloads, nonrigid_optimization::py_warp_field, 4, 8)
+BOOST_PYTHON_FUNCTION_OVERLOADS(resample_warp_unchanged_overloads, nonrigid_optimization::py_warp_field_no_warp_change,
+		4,8)
 
 namespace python_export {
 
@@ -64,7 +64,7 @@ namespace slavcheva {
 void export_auxiliary_functions() {
 	bp::def("data_term_at_location", nro_s::py_data_term_at_location);
 
-	bp::def("resample", nro::py_resample,
+	bp::def("warp_field", nro::py_warp_field,
 			resample_overloads(
 					bp::args("warped_live_field", "canonical_field", "warp_field_u", "warp_field_v", "band_union_only",
 							"known_values_only", "substitute_original", "truncation_float_threshold"),
@@ -75,7 +75,7 @@ void export_auxiliary_functions() {
 							" :param band_union_only when set to True, skips processing locations for which both"
 							" warped_live_field and canonical_field contain the values +1 or -1 (truncated sdf values)")
 					);
-	bp::def("resample_warp_unchanged", nro::py_resample_warp_unchanged,
+	bp::def("warp_field_no_warp_change", nro::py_warp_field_no_warp_change,
 			resample_warp_unchanged_overloads(
 					bp::args("warped_live_field", "canonical_field", "warp_field_u", "warp_field_v", "band_union_only",
 							"known_values_only", "substitute_original", "truncation_float_threshold"),
@@ -137,4 +137,3 @@ void export_algorithms() {
 }
 } // namespace slavcheva
 } // namespace python_export
-

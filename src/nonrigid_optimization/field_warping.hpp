@@ -18,10 +18,11 @@
 
 //libraries
 #include <Eigen/Eigen>
+#include <unsupported/Eigen/CXX11/Tensor>
 #include <boost/python.hpp>
 
 //local
-#include "../math/tensors.hpp"
+#include "../math/typedefs.hpp"
 
 namespace bp = boost::python;
 namespace eig = Eigen;
@@ -32,25 +33,38 @@ namespace nonrigid_optimization {
 //TODO: refactor->rename all functions, "resample" should be replaced with "warp", fix function names that are hard to understand
 // motivation: resampling means something completely different usually, the more common term in literature
 // for this operation is to "warp a field"
-eig::MatrixXf resample(math::MatrixXv2f& warp_field,
+eig::MatrixXf warp_2d_advanced(math::MatrixXv2f& warp_field,
 		const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field,
 		bool band_union_only = false, bool known_values_only = false,
 		bool substitute_original = false, float truncation_float_threshold = 1e-6);
-eig::MatrixXf resample_warp_unchanged(math::MatrixXv2f& warp_field,
+eig::MatrixXf warp_2d_advanced_warp_unchanged(math::MatrixXv2f& warp_field,
 		const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field,
 		bool band_union_only = false, bool known_values_only = false,
 		bool substitute_original = false, float truncation_float_threshold = 1e-6);
 
-eig::MatrixXf resample_field(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field);
-eig::MatrixXf resample_field_replacement(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
+//TODO: templatize as follows:
+//template<typename TScalarField, typename TWarpField>
+//TScalarField warp(const TScalarField& scalar_field, TWarpField& warp_field);
+eig::MatrixXf warp_2d(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field);
+template<typename ElementType>
+
+eig::Tensor<ElementType, 3> warp_3d(const eig::Tensor<ElementType, 3>& scalar_field, math::Tensor3v3f& warp_field);
+
+template<typename ElementType>
+eig::Tensor<ElementType, 3> warp_3d_with_replacement(const eig::Tensor<ElementType, 3>& scalar_field,
+		math::Tensor3v3f& warp_field,
+		ElementType replacement_value);
+
+eig::MatrixXf warp_2d_replacement(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
 		float replacement_value);
 
-bp::object py_resample(const eig::MatrixXf& warped_live_field,
+//TODO: are we still using this for anything? if not, remove
+bp::object py_warp_field(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,
 		eig::MatrixXf warp_field_v, bool band_union_only = false, bool known_values_only = false,
 		bool substitute_original = false, float truncation_float_threshold = 1e-6);
 
-bp::object py_resample_warp_unchanged(const eig::MatrixXf& warped_live_field,
+bp::object py_warp_field_no_warp_change(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,
 		eig::MatrixXf warp_field_v, bool band_union_only = false, bool known_values_only = false,
 		bool substitute_original = false, float truncation_float_threshold = 1e-6);
