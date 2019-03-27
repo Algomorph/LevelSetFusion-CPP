@@ -20,7 +20,7 @@
 
 //local
 #include "pyramid3d.tpp"
-#include "../math/typedefs.hpp"
+#include "../../math/typedefs.hpp"
 
 namespace nonrigid_optimization {
 
