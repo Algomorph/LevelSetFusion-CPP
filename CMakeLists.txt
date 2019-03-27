@@ -280,12 +280,14 @@ add_library(${MODULE_NAME} SHARED
 			src/math/vector2.hpp
 			src/math/vector3.hpp
 
+			# tsdf: utilities for generating TSDF voxel grids in various ways
 			src/tsdf/ewa_2d.cpp
 			src/tsdf/ewa_3d.cpp
 			src/tsdf/ewa_3d_viz.cpp
 			src/tsdf/ewa_common.hpp
 			src/tsdf/ewa.hpp
 
+			# image_io: minimalistic image reading / writing
 			src/image_io/stb_image.h
 			src/image_io/stb_image_write.h
 			src/image_io/imageio_stb_image.hpp
@@ -293,6 +295,9 @@ add_library(${MODULE_NAME} SHARED
 			src/image_io/png_eigen.hpp
 			src/image_io/png_eigen.cpp
 
+			# console: utilities for printing things to the console in better ways
+			src/console/colors.hpp
+			src/console/colors.cpp
 			src/console/progress_bar.cpp
 			src/console/progress_bar.hpp)
 
