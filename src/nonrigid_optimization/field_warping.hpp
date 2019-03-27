@@ -29,7 +29,6 @@ namespace eig = Eigen;
 
 namespace nonrigid_optimization {
 
-//TODO: refactor everything "resampling" to "warping". Resampling refers to some completely different things from this in most contexts.
 //TODO: break this up into multiple functions (as necessary, judge by usage) instead of passing behavior flags
 //TODO: refactor->rename all functions, "resample" should be replaced with "warp", fix function names that are hard to understand
 // motivation: resampling means something completely different usually, the more common term in literature
@@ -60,12 +59,12 @@ eig::MatrixXf warp_2d_replacement(const eig::MatrixXf& scalar_field, math::Matri
 		float replacement_value);
 
 //TODO: are we still using this for anything? if not, remove
-bp::object py_resample(const eig::MatrixXf& warped_live_field,
+bp::object py_warp_field(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,
 		eig::MatrixXf warp_field_v, bool band_union_only = false, bool known_values_only = false,
 		bool substitute_original = false, float truncation_float_threshold = 1e-6);
 
-bp::object py_resample_warp_unchanged(const eig::MatrixXf& warped_live_field,
+bp::object py_warp_field_no_warp_change(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,
 		eig::MatrixXf warp_field_v, bool band_union_only = false, bool known_values_only = false,
 		bool substitute_original = false, float truncation_float_threshold = 1e-6);

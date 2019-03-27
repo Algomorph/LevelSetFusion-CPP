@@ -277,7 +277,7 @@ math::Tensor3v3f warp_3d_with_replacement<math::Vector3f>(const math::Tensor3v3f
 //}
 
 
-bp::object py_resample(const eig::MatrixXf& warped_live_field,
+bp::object py_warp_field(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,
 		eig::MatrixXf warp_field_v, bool band_union_only, bool known_values_only,
 		bool substitute_original, float truncation_float_threshold)
@@ -293,7 +293,7 @@ bp::object py_resample(const eig::MatrixXf& warped_live_field,
 	return bp::make_tuple(warped_live_field_out, bp::make_tuple(warp_field_u_out, warp_field_v_out));
 }
 
-bp::object py_resample_warp_unchanged(const eig::MatrixXf& warped_live_field,
+bp::object py_warp_field_no_warp_change(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,
 		eig::MatrixXf warp_field_v, bool band_union_only, bool known_values_only,
 		bool substitute_original, float truncation_float_threshold)
