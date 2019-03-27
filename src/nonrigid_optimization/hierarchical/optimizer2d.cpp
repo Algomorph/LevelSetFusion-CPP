@@ -21,6 +21,9 @@
 #include <limits>
 #include <cmath>
 
+//_DEBUG
+#include <iostream>
+
 //libraries
 #include <unsupported/Eigen/MatrixFunctions>
 
