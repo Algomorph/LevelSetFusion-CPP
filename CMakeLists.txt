@@ -231,12 +231,11 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
-		    #TODO: move to hierarchical
-		    src/nonrigid_optimization/hierarchical_optimizer3d.cpp
-		  	src/nonrigid_optimization/hierarchical_optimizer3d.hpp
-		  	src/nonrigid_optimization/pyramid3d.cpp
-		  	src/nonrigid_optimization/pyramid3d.tpp
-		  	src/nonrigid_optimization/pyramid3d.hpp
+		    src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.cpp
+		  	src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.hpp
+		  	src/nonrigid_optimization/hierarchical/pyramid3d.cpp
+		  	src/nonrigid_optimization/hierarchical/pyramid3d.tpp
+		  	src/nonrigid_optimization/hierarchical/pyramid3d.hpp
 
 			### traversal: algorithms for traversal of data structures
 			src/traversal/field_traversal_cpu.hpp

@@ -22,7 +22,7 @@
 
 //local
 #include "pyramid3d.hpp"
-#include "../math/checks.hpp"
+#include "../../math/checks.hpp"
 
 namespace eig = Eigen;
 

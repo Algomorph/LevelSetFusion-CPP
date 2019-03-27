@@ -23,13 +23,14 @@
 #include <algorithm>
 
 //local
-#include "../math/convolution.hpp"
-#include "../math/gradients.hpp"
-#include "../math/typedefs.hpp"
-#include "../math/statistics.hpp"
+#include "../../math/convolution.hpp"
+#include "../../math/gradients.hpp"
+#include "../../math/typedefs.hpp"
+#include "../../math/statistics.hpp"
+#include "../field_warping.hpp"
 #include "hierarchical_optimizer3d.hpp"
 #include "pyramid3d.hpp"
-#include "field_warping.hpp"
+
 
 namespace nonrigid_optimization {
 
