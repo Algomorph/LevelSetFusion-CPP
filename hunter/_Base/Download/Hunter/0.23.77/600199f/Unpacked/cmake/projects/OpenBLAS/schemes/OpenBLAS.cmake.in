@@ -1,0 +1,123 @@
+# Copyright (c) 2016 Ruslan Baratov
+# All rights reserved.
+
+cmake_minimum_required(VERSION 3.0)
+project(Hunter)
+
+include(ExternalProject) # ExternalProject_Add
+
+include("@HUNTER_SELF@/cmake/Hunter")
+
+include(hunter_status_debug)
+include(hunter_assert_not_empty_string)
+include(hunter_user_error)
+include(hunter_dump_cmake_flags)
+
+hunter_status_debug("Scheme: OpenBLAS")
+
+if("@MSVC@")
+  hunter_user_error("Not supported with Visual Studio")
+endif()
+
+# Check preconditions
+hunter_assert_not_empty_string("@HUNTER_SELF@")
+hunter_assert_not_empty_string("@HUNTER_EP_NAME@")
+hunter_assert_not_empty_string("@HUNTER_PACKAGE_URL@")
+hunter_assert_not_empty_string("@HUNTER_PACKAGE_SHA1@")
+hunter_assert_not_empty_string("@HUNTER_PACKAGE_DOWNLOAD_DIR@")
+hunter_assert_not_empty_string("@HUNTER_PACKAGE_SOURCE_DIR@")
+hunter_assert_not_empty_string("@HUNTER_PACKAGE_INSTALL_PREFIX@")
+hunter_assert_not_empty_string("@HUNTER_PACKAGE_CONFIGURATION_TYPES@")
+hunter_assert_not_empty_string("@HUNTER_PACKAGE_LICENSE_DIR@")
+hunter_assert_not_empty_string("@HUNTER_TLS_VERIFY@")
+
+set(cfg_types "@HUNTER_PACKAGE_CONFIGURATION_TYPES@")
+
+list(LENGTH cfg_types len)
+if(NOT len EQUAL 1)
+  hunter_user_error(
+      "Only one configuration type allowed for this scheme"
+      " (${cfg_types})"
+  )
+endif()
+
+string(TOUPPER "${cfg_types}" config_type)
+
+hunter_dump_cmake_flags()
+set(cflags "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${config_type}}")
+
+if(NOT BUILD_SHARED_LIBS)
+  set(lib_type NO_SHARED=1)
+else()
+  set(lib_type "")
+endif()
+
+set(compiler_arg "@CMAKE_C_COMPILER@")
+
+
+if(CMAKE_CROSSCOMPILING OR ANDROID)
+  # Tells OpenBLAS where to find host CC (HOSTCC=)
+  # and not to run tests (CROSS=1)
+  # and not to use fortran (NOFORTRAN=1)
+  # Feel free to implement cross fortran
+
+  # What is HOSTCC?
+  set(HOSTCC gcc)
+  if($ENV{CC})
+    set(HOSTCC $ENV{CC})
+  elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+    set(HOSTCC "clang")
+  endif()
+ 
+  set(cross_arg HOSTCC=${HOSTCC} CROSS=1 NOFORTRAN=1 ONLY_CBLAS=1)
+
+  # We also need to manually set target when cross compiling
+  if(ANDROID)
+    if(CMAKE_ANDROID_ARCH_ABI STREQUAL "armeabi-v7a")
+      set(target_arg TARGET=ARMV7 BINARY=32 ARM_SOFTFP_ABI=1)
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
+      set(target_arg TARGET=CORTEXA57 BINARY=64)
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86")
+      set(target_arg TARGET=CORE2 BINARY=32)
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86_64")
+      set(target_arg TARGET=PENRYN BINARY=64)
+    endif()
+  elseif(IOS)
+    set(target_arg TARGET=generic)
+  endif()
+else()
+  set(target_arg "")
+  set(cross_arg "")
+endif()
+
+ExternalProject_Add(
+    "@HUNTER_EP_NAME@"
+    URL
+    @HUNTER_PACKAGE_URL@
+    URL_HASH
+    SHA1=@HUNTER_PACKAGE_SHA1@
+    DOWNLOAD_DIR
+    "@HUNTER_PACKAGE_DOWNLOAD_DIR@"
+    TLS_VERIFY
+    "@HUNTER_TLS_VERIFY@"
+    SOURCE_DIR
+    "@HUNTER_PACKAGE_SOURCE_DIR@"
+    INSTALL_DIR
+    "@HUNTER_PACKAGE_INSTALL_PREFIX@"
+        # not used, just avoid creating Install/<name> empty directory
+    CONFIGURE_COMMAND
+    ""
+    BUILD_COMMAND
+    make ${lib_type} ${target_arg} ${cross_arg} "CC=${compiler_arg} ${cflags}" "AR=@CMAKE_AR@"
+    BUILD_IN_SOURCE
+    1
+    INSTALL_COMMAND
+    make ${lib_type} ${target_arg} ${cross_arg} "CC=${compiler_arg} ${cflags}" "AR=@CMAKE_AR@" "PREFIX=@HUNTER_PACKAGE_INSTALL_PREFIX@" install
+    COMMAND # Copy license files
+    "@CMAKE_COMMAND@"
+    "-C@HUNTER_ARGS_FILE@" # for 'HUNTER_INSTALL_LICENSE_FILES'
+    "-Dsrcdir=@HUNTER_PACKAGE_SOURCE_DIR@"
+    "-Ddstdir=@HUNTER_PACKAGE_LICENSE_DIR@"
+    -P
+    "@HUNTER_SELF@/scripts/try-copy-license.cmake"
+)

@@ -1,0 +1,47 @@
+# Copyright (c) 2013-2015, Ruslan Baratov
+# All rights reserved.
+
+if(DEFINED HUNTER_CMAKE_HUNTER_)
+  return()
+else()
+  set(HUNTER_CMAKE_HUNTER_ 1)
+endif()
+
+if(CMAKE_VERSION VERSION_LESS "3.2")
+  message(
+      FATAL_ERROR
+      "At least CMake version 3.2 required for Hunter dependency management."
+      " Update CMake or set HUNTER_ENABLED to OFF."
+  )
+endif()
+
+option(HUNTER_ENABLED "Enable Hunter package manager support" ON)
+option(HUNTER_STATUS_PRINT "Print working status" ON)
+option(HUNTER_STATUS_DEBUG "Print a lot info" OFF)
+
+set(
+    HUNTER_CONFIGURATION_TYPES
+    "Release;Debug"
+    CACHE
+    STRING
+    "Hunter configuration types"
+)
+
+### add cmake modules to search path
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/find")
+
+include(hunter_add_package) # For user project
+include(hunter_private_data) # For user project
+include(hunter_initialize)
+
+# Basic initialization - only check arguments of HunterGate. Further
+# initialization (like calculating toolchain-id and config-id) will be done
+# on first 'hunter_add_package' command (after first 'project' command =>
+# after toolchain loaded). See 'hunter_finalize'.
+#
+# Related variables:
+#   * HUNTER_CACHED_ROOT
+#   * HUNTER_VERSION
+#   * HUNTER_SHA1
+hunter_initialize()

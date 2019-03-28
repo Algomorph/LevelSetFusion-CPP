@@ -16,7 +16,7 @@
 #include "../src/math/assessment.hpp"
 
 //test data
-#include "data/test_data_sdf2sdf_optimizer.hpp"
+#include "data/test_data_sdf_2_sdf_optimizer.hpp"
 
 //test targets
 #include "../src/rigid_optimization/sdf_2_sdf_optimizer2d.hpp"

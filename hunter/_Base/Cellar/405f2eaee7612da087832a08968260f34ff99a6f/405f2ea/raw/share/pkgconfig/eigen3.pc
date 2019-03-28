@@ -1,0 +1,9 @@
+prefix=/home/fshan/Projects/LevelSetFusion2D/LevelSetFusion2DExperiments/cpp/hunter/_Base/600199f/6489299/2253825/Build/Eigen/Install
+exec_prefix=${prefix}
+
+Name: Eigen3
+Description: A C++ template library for linear algebra: vectors, matrices, and related algorithms
+Requires:
+Version: 3.3.5
+Libs:
+Cflags: -I${prefix}/include/eigen3

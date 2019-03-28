@@ -1,8 +1,19 @@
-//
-// Created by fshan on 3/5/19.
-//
+/*
+ * sdf_gradient_wrt_transformation2d.h
+ *
+ *  Created on: Mar 05, 2019
+ *      Author: Fei Shan
+ */
 
-#ifndef LEVELSETFUSIONOPTIMIZATION_SDF_GRADIENT_WRT_TRANSFORMATION_HPP
-#define LEVELSETFUSIONOPTIMIZATION_SDF_GRADIENT_WRT_TRANSFORMATION_HPP
+//libraries
+#include "Eigen/Eigen"
 
-#endif //LEVELSETFUSIONOPTIMIZATION_SDF_GRADIENT_WRT_TRANSFORMATION_HPP
+namespace eig = Eigen;
+
+namespace rigid_optimization {
+    void gradient_wrt_twist(const eig::MatrixXf& live_field,
+                            const eig::Vector3f& twist2d,
+                            const eig::Vector3i& array_offset,
+                            const float& voxel_size,
+                            eig::Matrix<eig::Vector3f, eig::Dynamic, eig::Dynamic>& gradient_field);
+}

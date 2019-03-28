@@ -1,16 +1,15 @@
-//
-// Created by fshan on 3/21/19.
-//
+/*
+ * sdf_2_sdf_optimizer.hpp
+ *
+ *  Created on: Mar 21, 2019
+ *      Author: Fei Shan
+ */
 
-#ifndef LEVELSETFUSIONOPTIMIZATION_SDF_2_SDF_OPTIMIZER_H
-#define LEVELSETFUSIONOPTIMIZATION_SDF_2_SDF_OPTIMIZER_H
-
-
-
-class sdf_2_sdf_optimizer {
-
-};
+#pragma once
 
 
-
-#endif //LEVELSETFUSIONOPTIMIZATION_SDF_2_SDF_OPTIMIZER_H
+namespace python_export{
+    namespace sdf_2_sdf_optimizer{
+        void export_algorithms();
+    } // namespace hierarchical_optimizer
+} // namespace python_export

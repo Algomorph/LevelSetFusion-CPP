@@ -15,6 +15,7 @@
 #include "python_export/tsdf.hpp"
 #include "python_export/conversion_tests.hpp"
 #include "python_export/telemetry.hpp"
+#include "python_export/sdf_2_sdf_optimizer.hpp"
 
 namespace bp = boost::python;
 namespace pe = python_export;
@@ -31,6 +32,7 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 	pe::export_math_functions();
 
 	pe::export_ewa();
+	pe::export_tsdf();
 
 	pe::export_telemetry_utilities();
 
@@ -39,4 +41,6 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 	pe::slavcheva::export_algorithms();
 
 	pe::hierarchical_optimizer::export_algorithms();
+
+	pe::sdf_2_sdf_optimizer::export_algorithms();
 }

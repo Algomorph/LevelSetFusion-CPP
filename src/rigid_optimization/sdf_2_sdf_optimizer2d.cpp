@@ -9,7 +9,7 @@
 #include <boost/python.hpp>
 
 // local
-#include "sdf2sdf_optimizer2d.hpp"
+#include "sdf_2_sdf_optimizer2d.hpp"
 #include "sdf_gradient_wrt_transformation2d.hpp"
 #include "../tsdf/tsdf.hpp"
 
@@ -44,28 +44,47 @@ Sdf2SdfOptimizer2d::VerbosityParameters::VerbosityParameters(
 {
 };
 
+Sdf2SdfOptimizer2d::TSDFGenerationParameters::TSDFGenerationParameters(
+        float depth_unit_ratio,
+        eig::Matrix3f camera_intrinsic_matrix,
+        eig::Matrix4f camera_pose,
+        eig::Vector3i array_offset,
+        int field_size,
+        float voxel_size,
+        int narrow_band_width_voxels) :
+            depth_unit_ratio(depth_unit_ratio),
+            camera_intrinsic_matrix(camera_intrinsic_matrix),
+            camera_pose(camera_pose),
+            array_offset(array_offset),
+            field_size(field_size),
+            voxel_size(voxel_size),
+            narrow_band_width_voxels(narrow_band_width_voxels)
+{
+};
+
 eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
         const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& canonical_depth_image,
         const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
-        float depth_unit_ratio,
-        const eig::Matrix3f& camera_intrinsic_matrix,
-        const eig::Matrix4f& camera_pose = eig::Matrix4f::Identity(4, 4),
-        const eig::Vector3i& array_offset =
-            [] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
-        int field_size = 128,
-        float voxel_size = 0.004,
-        int narrow_band_width_voxels = 20,
+        const Sdf2SdfOptimizer2d::TSDFGenerationParameters tsdf_generation_parameters,
+//        float depth_unit_ratio,
+//        const eig::Matrix3f& camera_intrinsic_matrix,
+//        const eig::Matrix4f& camera_pose = eig::Matrix4f::Identity(4, 4),
+//        const eig::Vector3i& array_offset =
+//            [] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
+//        int field_size = 128,
+//        float voxel_size = 0.004,
+//        int narrow_band_width_voxels = 20,
         float eta = 0.01f) {
 
     eig::MatrixXf canonical_field = tsdf::generate_TSDF_2D(image_y_coordinate,
                                                            canonical_depth_image,
-                                                           depth_unit_ratio,
-                                                           camera_intrinsic_matrix,
-                                                           camera_pose,
-                                                           array_offset,
-                                                           field_size,
-                                                           voxel_size,
-                                                           narrow_band_width_voxels);
+                                                           tsdf_generation_parameters.depth_unit_ratio,
+                                                           tsdf_generation_parameters.camera_intrinsic_matrix,
+                                                           tsdf_generation_parameters.camera_pose,
+                                                           tsdf_generation_parameters.array_offset,
+                                                           tsdf_generation_parameters.field_size,
+                                                           tsdf_generation_parameters.voxel_size,
+                                                           tsdf_generation_parameters.narrow_band_width_voxels);
 
     eig::MatrixXf canonical_weight = canonical_field.replicate(1, 1);
     for (int i=0; i < canonical_weight.rows(); ++i) { // Determine weight based on thickness
@@ -85,13 +104,13 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
     for (int iteration_count=0; iteration_count<maximum_iteration_count; ++iteration_count) {
         eig::MatrixXf live_field = tsdf::generate_TSDF_2D(image_y_coordinate,
                                                           live_depth_image,
-                                                          depth_unit_ratio,
-                                                          camera_intrinsic_matrix,
-                                                          camera_pose,
-                                                          array_offset,
-                                                          field_size,
-                                                          voxel_size,
-                                                          narrow_band_width_voxels);
+                                                          tsdf_generation_parameters.depth_unit_ratio,
+                                                          tsdf_generation_parameters.camera_intrinsic_matrix,
+                                                          tsdf_generation_parameters.camera_pose,
+                                                          tsdf_generation_parameters.array_offset,
+                                                          tsdf_generation_parameters.field_size,
+                                                          tsdf_generation_parameters.voxel_size,
+                                                          tsdf_generation_parameters.narrow_band_width_voxels);
 
         eig::MatrixXf live_weight = live_field.replicate(1, 1);
         for (int i=0; i < live_weight.rows(); ++i) { // Determine weight based on thickness
@@ -100,7 +119,11 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
             }
         }
 
-        ropt::gradient_wrt_twist(live_field, twist, array_offset, voxel_size, live_gradient);
+        ropt::gradient_wrt_twist(live_field,
+                                 twist,
+                                 tsdf_generation_parameters.array_offset,
+                                 tsdf_generation_parameters.voxel_size,
+                                 live_gradient);
 
         for (int i=0; i < live_field.rows(); ++i) {
             for (int j=0; j < live_field.cols(); ++j) {
