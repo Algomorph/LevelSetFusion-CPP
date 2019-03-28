@@ -1,7 +1,7 @@
 /*
- * pyramid3d.cpp
+ * colors.hpp
  *
- *  Created on: Mar 1, 2019
+ *  Created on: Mar 27, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -18,14 +18,20 @@
  *   limitations under the License.
  */
 
-//local
-#include "pyramid3d.tpp"
-#include "../math/typedefs.hpp"
+#pragma once
 
-namespace nonrigid_optimization {
+#include <string>
 
-	template class Pyramid3d<float>;
-	template class Pyramid3d<math::Vector3f>;
+namespace console{
+extern const std::string red;
+extern const std::string green;
+extern const std::string blue;
+extern const std::string yellow;
+extern const std::string cyan;
 
-} //namespace nonrigid_optimization
+extern const std::string bright_red;
+extern const std::string bright_cyan;
+extern const std::string reset;
+} //namespace console
+
 

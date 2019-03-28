@@ -38,8 +38,8 @@
 #include "../src/nonrigid_optimization/hierarchical/optimizer2d.hpp"
 #include "../src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp"
 #include "../src/telemetry/optimization_iteration_data.hpp"
+#include "../src/nonrigid_optimization/hierarchical/pyramid3d.hpp"
 #include "../src/nonrigid_optimization/field_warping.hpp"
-#include "../src/nonrigid_optimization/pyramid3d.hpp"
 
 namespace eig = Eigen;
 

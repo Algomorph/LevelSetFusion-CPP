@@ -21,6 +21,7 @@
 //stdlib
 #include <cmath>
 #include <atomic>
+#include <limits>
 
 //local
 #include "statistics.hpp"
@@ -126,7 +127,7 @@ void locate_min_norm(float& min_norm, Vector2i& coordinate, const MatrixXv2f& ve
  * @param vector_field the field to look at
  */
 float min_norm(const MatrixXv2f& vector_field) {
-	std::atomic<float> min_norm_container(0.0f);
+	std::atomic<float> min_norm_container(std::numeric_limits<float>::max());
 #pragma omp parallel for
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
 		float squared_length = math::squared_norm(vector_field(i_element));
@@ -135,6 +136,24 @@ float min_norm(const MatrixXv2f& vector_field) {
 	}
 	return std::sqrt(min_norm_container.load());
 }
+
+/**
+ * Locates the maximum L2 norm (length) of the vector in the given field.
+ * @param[out] min_norm length of the shortest vector
+ * @param[out] coordinate the location of the shortest vector
+ * @param vector_field the field to look at
+ */
+float max_norm(const MatrixXv2f& vector_field) {
+	std::atomic<float> max_norm_container(0.0f);
+#pragma omp parallel for
+	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
+		float squared_length = math::squared_norm(vector_field(i_element));
+		float max_squared_norm = max_norm_container.load();
+		while (squared_length > max_squared_norm && max_norm_container.compare_exchange_weak(max_squared_norm, squared_length));
+	}
+	return std::sqrt(max_norm_container.load());
+}
+
 /**
 * Locates the maximum L2 norm (Euclidean length) of the vector in the given 3d field.
 * Identical to @see locate_max_norm with the exception that this version is using a generic traversal function.

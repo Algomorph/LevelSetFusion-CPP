@@ -231,12 +231,11 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
-		    #TODO: move to hierarchical
-		    src/nonrigid_optimization/hierarchical_optimizer3d.cpp
-		  	src/nonrigid_optimization/hierarchical_optimizer3d.hpp
-		  	src/nonrigid_optimization/pyramid3d.cpp
-		  	src/nonrigid_optimization/pyramid3d.tpp
-		  	src/nonrigid_optimization/pyramid3d.hpp
+		    src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.cpp
+		  	src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.hpp
+		  	src/nonrigid_optimization/hierarchical/pyramid3d.cpp
+		  	src/nonrigid_optimization/hierarchical/pyramid3d.tpp
+		  	src/nonrigid_optimization/hierarchical/pyramid3d.hpp
 
 			### traversal: algorithms for traversal of data structures
 			src/traversal/field_traversal_cpu.hpp
@@ -281,12 +280,14 @@ add_library(${MODULE_NAME} SHARED
 			src/math/vector2.hpp
 			src/math/vector3.hpp
 
+			# tsdf: utilities for generating TSDF voxel grids in various ways
 			src/tsdf/ewa_2d.cpp
 			src/tsdf/ewa_3d.cpp
 			src/tsdf/ewa_3d_viz.cpp
 			src/tsdf/ewa_common.hpp
 			src/tsdf/ewa.hpp
 
+			# image_io: minimalistic image reading / writing
 			src/image_io/stb_image.h
 			src/image_io/stb_image_write.h
 			src/image_io/imageio_stb_image.hpp
@@ -294,6 +295,9 @@ add_library(${MODULE_NAME} SHARED
 			src/image_io/png_eigen.hpp
 			src/image_io/png_eigen.cpp
 
+			# console: utilities for printing things to the console in better ways
+			src/console/colors.hpp
+			src/console/colors.cpp
 			src/console/progress_bar.cpp
 			src/console/progress_bar.hpp)
 
