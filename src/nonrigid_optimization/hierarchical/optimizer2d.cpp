@@ -34,6 +34,7 @@
 #include "../../math/gradients.hpp"
 #include "../../math/typedefs.hpp"
 #include "../../math/statistics.hpp"
+#include "../../math/resampling.hpp"
 #include "optimizer2d.hpp"
 #include "optimizer2d_common.hpp"
 

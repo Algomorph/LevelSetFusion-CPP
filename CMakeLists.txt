@@ -257,21 +257,24 @@ add_library(${MODULE_NAME} SHARED
       		src/math/collection_comparison.tpp
       		src/math/collection_comparison.cpp
 			src/math/boolean_operations.hpp
-			src/math/conics.cpp
 			src/math/conics.hpp
+			src/math/conics.cpp
 			src/math/convolution.hpp
 			src/math/convolution.cpp
-			src/math/filtered_statistics.cpp
 			src/math/filtered_statistics.hpp
-			src/math/gradients.cpp
+			src/math/filtered_statistics.cpp
 			src/math/gradients.hpp
+			src/math/gradients.cpp
 			src/math/math_utils.hpp
 			src/math/matrix_base.hpp
 			src/math/matrix2.hpp
 			src/math/nestable_type_metainfo.hpp
 			src/math/platform_independence.hpp
-			src/math/statistics.cpp
+			src/math/resampling.hpp
+			src/math/resampling.tpp
+			src/math/resampling.cpp
 			src/math/statistics.hpp
+			src/math/statistics.cpp
 			src/math/tensor_operations.hpp
 			src/math/tensor_operations.cpp
 			src/math/typedefs.hpp
@@ -353,6 +356,7 @@ if (WIN32)
 else ()
     set(PYTHON_INSTALL_ARCHIVE ARCHIVE DESTINATION ${PYTHON3_PACKAGES_PATH} COMPONENT python)
 endif ()
+
 # install target
 install(TARGETS ${MODULE_NAME}
         ${PYTHON_INSTALL_CONFIGURATIONS}
