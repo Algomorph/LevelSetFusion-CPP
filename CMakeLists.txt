@@ -335,7 +335,7 @@ endif()
 #message(STATUS "${MODULE_NAME}: [archive output name:]  ${ARCHIVE_OUTPUT_NAME} [archive suffix:] ${${MODULE_NAME}_PY_SUFFIX}")
 #message(STATUS "[include dirs:] ${PYTHON3_INCLUDE_DIRS} [packages path:] ${PYTHON3_PACKAGES_PATH} [libraries:] ${PYTHON3_LIBRARIES}")
 
-#======== INSTALLATION MAKE TARGET =====================================================================================
+#======== INSTALL/UNINSTALL TARGET =====================================================================================
 set_target_properties(${MODULE_NAME} PROPERTIES
         ARCHIVE_OUTPUT_NAME ${ARCHIVE_OUTPUT_NAME}  # prevent name conflict for python2/3 outputs
         PREFIX ""
@@ -353,13 +353,24 @@ if (WIN32)
 else ()
     set(PYTHON_INSTALL_ARCHIVE ARCHIVE DESTINATION ${PYTHON3_PACKAGES_PATH} COMPONENT python)
 endif ()
-
+# install target
 install(TARGETS ${MODULE_NAME}
         ${PYTHON_INSTALL_CONFIGURATIONS}
         RUNTIME DESTINATION ${PYTHON3_PACKAGES_PATH} COMPONENT python
         LIBRARY DESTINATION ${PYTHON3_PACKAGES_PATH} COMPONENT python
         ${PYTHON_INSTALL_ARCHIVE}
         )
+        
+# uninstall target
+if(NOT TARGET uninstall)
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY)
+
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
 # ================== COPY LIBRARY TO PYTHON DIRECTORY ABOVE ============================================================
 add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${MODULE_NAME}> ${PROJECT_SOURCE_DIR}/../$<TARGET_FILE_NAME:${MODULE_NAME}>
