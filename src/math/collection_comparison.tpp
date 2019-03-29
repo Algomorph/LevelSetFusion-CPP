@@ -135,7 +135,7 @@ bool compare_tensor_dimensions_verbose(TTensor tensor_a, TTensor tensor_b) {
 
 template<typename TMatrix, typename TReportFunction>
 bool compare_matrix_dimensions(TMatrix matrix_a, TMatrix matrix_b, TReportFunction&& report_function) {
-	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.rows()) {
+	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.cols()) {
 		std::forward<TReportFunction>(report_function)(matrix_a, matrix_b);
 		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.cols() << " columns by " << matrix_a.rows()
 				<< " rows, Matrix b: " << matrix_b.cols() << " columns by " << matrix_b.rows() << " rows."

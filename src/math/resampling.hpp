@@ -24,13 +24,60 @@
 #include <Eigen/Eigen>
 
 namespace math{
-
+/**
+ * Upsample the field such that the output is a field 2X larger than the original in each dimension.
+ * This procedure uses a simple box filter / no interpolation, i.e. simply copies the value to it's immediate "children"
+ * in the upsampled version.
+ * Conceptual example:
+ * ⸢1  2⸣
+ * ⸤3  4⸥
+ * yields
+ * ⸢ 1  1  2  2 ⸣
+ * │1  1  2  2 │
+ * │3  3  4  4 │
+ * ⸤ 3  3  4  4 ⸥
+ * @param field input field
+ * @return upsampled field
+ */
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
-		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& matrix);
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
 
+/**
+ * @see upsampleX2 (previous definition)
+ * @param field
+ * @param field input field
+ * @return upsampled field
+ */
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX2(
-		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& matrix);
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& field);
+
+/**
+ * Upsample the field such that the output is a field 2X larger than the original in each dimension using bilinear
+ * filtering. This procedure uses a simple tent filter in each dimension to compute the values, i.e. bilinear filtering.
+ * Conceptual example:
+ * The influence coefficients for the voxels in the output field (small circles) fall off linearly from 1.0 at the
+ * current input voxel (●) to 0.0 at it's neighbors (○).
+ *    ⚬          ⚬       ⚬       ⚬        ⚬         ⚬
+ *       ○┈┈┈┈┈┈┈┈┈○┈┈┈┈┈┈┈┈┈○
+ *    ⚬    ┊  ⚬       ⚬       ⚬        ⚬   ┊  ⚬
+ *       ┊                    ┊
+ *    ⚬    ┊  ⚬       ⚬       ⚬        ⚬   ┊  ⚬
+ *       ○                  ●                  ○
+ *    ⚬    ┊  ⚬       ⚬       ⚬        ⚬   ┊  ⚬
+ *       ┊                    ┊
+ *    ⚬    ┊  ⚬       ⚬       ⚬        ⚬   ┊  ⚬
+ *       ○┈┈┈┈┈┈┈┈┈○┈┈┈┈┈┈┈┈┈○
+ *    ⚬          ⚬       ⚬       ⚬        ⚬         ⚬
+ *  Boundary voxels are processed as if the boundary values of the input repeat infinitely.
+ *
+ * @param field input field
+ * @return upsampled field
+ */
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_bilinear(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+
 
 }// namespace math

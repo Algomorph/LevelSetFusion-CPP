@@ -24,8 +24,9 @@
 
 namespace math{
 
-template eig::MatrixXf upsampleX2<float>(const eig::MatrixXf& matrix);
-template math::MatrixXv2f upsampleX2<math::Vector2f>(const math::MatrixXv2f& matrix);
+template eig::MatrixXf upsampleX2<float>(const eig::MatrixXf& field);
+template math::MatrixXv2f upsampleX2<math::Vector2f>(const math::MatrixXv2f& field);
+template eig::MatrixXf upsampleX2_bilinear<float>(const eig::MatrixXf& field);
 
 }// namespace math
 
