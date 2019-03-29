@@ -24,9 +24,12 @@
 
 namespace math{
 
-template eig::MatrixXf upsampleX2<float>(const eig::MatrixXf& field);
-template math::MatrixXv2f upsampleX2<math::Vector2f>(const math::MatrixXv2f& field);
-template eig::MatrixXf upsampleX2_bilinear<float>(const eig::MatrixXf& field);
+template eig::MatrixXf upsampleX2_nearest<float>(const eig::MatrixXf& field);
+template math::MatrixXv2f upsampleX2_nearest<math::Vector2f>(const math::MatrixXv2f& field);
+template eig::MatrixXf upsampleX2_linear<float>(const eig::MatrixXf& field);
+template eig::MatrixXf downsampleX2_nearest<float>(const eig::MatrixXf& field);
+template math::MatrixXv2f downsampleX2_nearest<math::Vector2f>(const math::MatrixXv2f& field);
+template eig::MatrixXf downsampleX2_linear<float>(const eig::MatrixXf& field);
 
 }// namespace math
 

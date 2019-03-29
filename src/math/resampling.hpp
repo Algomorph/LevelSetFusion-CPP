@@ -29,55 +29,103 @@ namespace math{
  * This procedure uses a simple box filter / no interpolation, i.e. simply copies the value to it's immediate "children"
  * in the upsampled version.
  * Conceptual example:
- * ⸢1  2⸣
- * ⸤3  4⸥
+ * ⎡1  2⎤
+ * ⎣3  4⎦
  * yields
- * ⸢ 1  1  2  2 ⸣
- * │1  1  2  2 │
- * │3  3  4  4 │
- * ⸤ 3  3  4  4 ⸥
+ * ⎡1  1  2  2⎤
+ * ⎢1  1  2  2⎥
+ * ⎢3  3  4  4⎥
+ * ⎣3  3  4  4⎦
  * @param field input field
  * @return upsampled field
  */
 template<typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_nearest(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
 
 /**
- * @see upsampleX2 (previous definition)
+ * @see upsampleX2 (previous definition), same thing but for row-major matrices
  * @param field
  * @param field input field
  * @return upsampled field
  */
 template<typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX2(
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX2_nearest(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& field);
 
 /**
  * Upsample the field such that the output is a field 2X larger than the original in each dimension using bilinear
  * filtering. This procedure uses a simple tent filter in each dimension to compute the values, i.e. bilinear filtering.
  * Conceptual example:
- * The influence coefficients for the voxels in the output field (small circles) fall off linearly from 1.0 at the
- * current input voxel (●) to 0.0 at it's neighbors (○).
- *    ⚬          ⚬       ⚬       ⚬        ⚬         ⚬
- *       ○┈┈┈┈┈┈┈┈┈○┈┈┈┈┈┈┈┈┈○
- *    ⚬    ┊  ⚬       ⚬       ⚬        ⚬   ┊  ⚬
- *       ┊                    ┊
- *    ⚬    ┊  ⚬       ⚬       ⚬        ⚬   ┊  ⚬
- *       ○                  ●                  ○
- *    ⚬    ┊  ⚬       ⚬       ⚬        ⚬   ┊  ⚬
- *       ┊                    ┊
- *    ⚬    ┊  ⚬       ⚬       ⚬        ⚬   ┊  ⚬
- *       ○┈┈┈┈┈┈┈┈┈○┈┈┈┈┈┈┈┈┈○
- *    ⚬          ⚬       ⚬       ⚬        ⚬         ⚬
+ * The influence coefficients for the voxels in the output field (o) fall off linearly from 1.0 at the
+ * current input voxel (X) to 0.0 at it's neighbors (O).
+ *    o     o    o     o    o     o
+ *       O┈┈┈┈┈┈┈┈┈┈O┈┈┈┈┈┈┈┈┈┈O
+ *    o  ┊  o    o     o    o  ┊  o
+ *       ┊                     ┊
+ *    o  ┊  o    o     o    o  ┊  o
+ *       O          X          O
+ *    o  ┊  o    o     o    o  ┊  o
+ *       ┊                     ┊
+ *    o  ┊  o    o     o    o  ┊  o
+ *       O┈┈┈┈┈┈┈┈┈┈O┈┈┈┈┈┈┈┈┈┈O
+ *    o     o    o     o    o     o
  *  Boundary voxels are processed as if the boundary values of the input repeat infinitely.
  *
  * @param field input field
  * @return upsampled field
  */
 template<typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_bilinear(
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
 
+/**
+ * Downsample the provided matrix using a box filter such that each dimension of the downsampled field is half the
+ * corresponding dimension of the input field. Uses a simple box filter, i.e. each "downsampled" value will be the
+ * average of it's source values in the input.
+ *
+ * Conceptual example (for 2d case):
+ * ⎡1  2  4  5⎤
+ * ⎢2  3  5  6⎥
+ * ⎢1  3  6  7⎥
+ * ⎣3  5  7  8⎦
+ * yields
+ * ⎡2  5⎤
+ * ⎣3  7⎦
+ *
+ * @param field input field
+ * @return downsampled field
+ */
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_nearest(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+
+/**
+ * Downsample the provided matrix using a box filter such that each dimension of the downsampled field is half the
+ * corresponding dimension of the input field. Uses a tent filter, i.e. each "downsampled" value will be influenced by
+ * values of the input weighted by the inverse ratio of their distance to the neighbor values.
+ *
+ * Conceptual example:
+ * The influence coefficients for the source voxels in the input field (x) fall off linearly from 1.0 at the current
+ * target voxel (X) to 0.0 at it's neighbors (O).
+ *    o     o    o     o    o     o
+ *       O┈┈┈┈┈┈┈┈┈┈O┈┈┈┈┈┈┈┈┈┈O
+ *    o  ┊  o    o     o    o  ┊  o
+ *       ┊                     ┊
+ *    o  ┊  o    o     o    o  ┊  o
+ *       O          X          O
+ *    o  ┊  o    o     o    o  ┊  o
+ *       ┊                     ┊
+ *    o  ┊  o    o     o    o  ┊  o
+ *       O┈┈┈┈┈┈┈┈┈┈O┈┈┈┈┈┈┈┈┈┈O
+ *    o     o    o     o    o     o
+ *  Boundary voxels are processed as if the boundary values of the input repeat infinitely.
+ *
+ * @param field input field
+ * @return downsampled field
+ */
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_linear(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
 
 }// namespace math

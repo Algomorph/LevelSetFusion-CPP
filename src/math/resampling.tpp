@@ -22,12 +22,13 @@
 
 //local
 #include "resampling.hpp"
+#include "checks.hpp"
 
 namespace eig = Eigen;
 namespace math {
 
 template<typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_nearest(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
 	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampled(field.rows() * 2,
 			field.cols() * 2);
@@ -44,7 +45,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 }
 
 template<typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX2(
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX2_nearest(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& field) {
 	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampled(field.rows() * 2,
 			field.cols() * 2);
@@ -61,7 +62,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX
 }
 
 template<typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_bilinear(
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
 
 	eig::Index upsampled_cols = field.cols() * 2;
@@ -136,13 +137,170 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 			upsampled(dest_row, dest_col + 1)     = 0.1875f*value00 + 0.5625f*value01 + 0.0625f*value10 + 0.1875f*value11;
 			upsampled(dest_row + 1, dest_col)     = 0.1875f*value00 + 0.0625f*value01 + 0.5625f*value10 + 0.1875f*value11;
 			upsampled(dest_row + 1, dest_col + 1) = 0.0625f*value00 + 0.1875f*value01 + 0.1875f*value10 + 0.5625f*value11;
-			//@formatter:on
+																											//@formatter:on
 			value00 = value10;
 			value01 = value11;
 		}
 	}
 
 	return upsampled;
+}
+
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_nearest(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
+#ifndef NDEBUG
+	eigen_assert((math::is_power_of_two(field.rows()) && math::is_power_of_two(field.cols()))
+			&& "The argument 'field' must have a power of two for each dimension.");
+#endif
+
+	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampled(field.rows() / 2,
+			field.cols() / 2);
+	//average each square of 4 cells into one
+#pragma omp parallel for
+	for (eig::Index i_downsampled_col = 0, i_field_col = 0; i_downsampled_col < downsampled.cols();
+			i_downsampled_col++, i_field_col += 2) {
+		for (eig::Index i_downsampled_row = 0, i_field_row = 0;
+				i_downsampled_row < downsampled.rows();
+				i_downsampled_row++, i_field_row += 2) {
+			downsampled(i_downsampled_row, i_downsampled_col) = ( //@formatter:off
+					field(i_field_row, i_field_col) +
+					field(i_field_row, i_field_col + 1) +
+					field(i_field_row + 1, i_field_col) +
+					field(i_field_row + 1, i_field_col + 1)//@formatter:on
+			) / 4.0f;
+		}
+	}
+	return downsampled;
+}
+
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_linear(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
+#ifndef NDEBUG
+	eigen_assert((field.rows() % 2 == 0 && field.cols() % 2 == 0 &&
+			field.rows() > 2 && field.cols() > 2)
+			&& "Each dimension of the argument 'field' must be divisible by 2 and greater than 2.");
+#endif
+	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampled(field.rows() / 2,
+			field.cols() / 2);
+
+	const float coeff0 = 0.140625f;
+	const float coeff1 = 0.046875f;
+	const float coeff2 = 0.015625f;
+
+	Eigen::Index lc = field.cols() - 1, lr = field.rows() - 1;
+	Eigen::Index dlc = downsampled.cols()-1, dlr = downsampled.rows()-1;
+	//upper-left
+	downsampled(0,0) =
+			coeff0 * field(0,0) + coeff0 * field(1,0) + coeff0 * field(0,1) + coeff0 * field(1,1) +
+			coeff1 * field(0,0) + coeff1 * field(0,0) + coeff1 * field(0,1) + coeff1 * field(1,0) +
+			coeff1 * field(0,2) + coeff1 * field(1,2) + coeff1 * field(2,1) + coeff1 * field(2,0) +
+			coeff2 * field(0,0) + coeff2 * field(0,2) + coeff2 * field(2,0) + coeff2 * field(2,2);
+	//upper-right
+	downsampled(0,dlc) =
+			coeff0 * field(0,lc) + coeff0 * field(1,lc) + coeff0 * field(0,lc-1) + coeff0 * field(1,lc-1) +
+			coeff1 * field(0,lc) + coeff1 * field(0,lc) + coeff1 * field(0,lc-1) + coeff1 * field(1,lc) +
+			coeff1 * field(0,lc-2) + coeff1 * field(1,lc-2) + coeff1 * field(2,lc-1) + coeff1 * field(2,lc) +
+			coeff2 * field(0,lc) + coeff2 * field(0,lc-2) + coeff2 * field(2,lc) + coeff2 * field(2,lc-2);
+	//lower-left
+	downsampled(dlr,0) =
+			coeff0 * field(lr,0) + coeff0 * field(lr-1,0) + coeff0 * field(lr,1) + coeff0 * field(lr-1,1) +
+			coeff1 * field(lr,0) + coeff1 * field(lr,0) + coeff1 * field(lr,1) + coeff1 * field(lr-1,0) +
+			coeff1 * field(lr,2) + coeff1 * field(lr-1,2) + coeff1 * field(lr-2,1) + coeff1 * field(lr-2,0) +
+			coeff2 * field(lr,0) + coeff2 * field(lr,2) + coeff2 * field(lr-2,0) + coeff2 * field(lr-2,2);
+	//lower-right
+	downsampled(dlr,dlc) =
+			coeff0 * field(lr,lc) + coeff0 * field(lr-1,lc) + coeff0 * field(lr,lc-1) + coeff0 * field(lr-1,lc-1) +
+			coeff1 * field(lr,lc) + coeff1 * field(lr,lc) + coeff1 * field(lr,lc-1) + coeff1 * field(lr-1,lc) +
+			coeff1 * field(lr,lc-2) + coeff1 * field(lr-1,lc-2) + coeff1 * field(lr-2,lc-1) + coeff1 * field(lr-2,lc) +
+			coeff2 * field(lr,lc) + coeff2 * field(lr,lc-2) + coeff2 * field(lr-2,lc) + coeff2 * field(lr-2,lc-2);
+
+	//upper row, lower row
+#pragma omp parallel for
+	for(eig::Index target_col = 1, source_col=2; target_col < downsampled.cols()-1; target_col++, source_col+=2){
+		downsampled(0,target_col) =//@formatter:off
+				coeff0 * field(0,source_col) + coeff0 * field(0,source_col+1) +
+				coeff0 * field(1,source_col) + coeff0 * field(1,source_col+1) +
+
+				coeff1 * field(0,source_col-1) + coeff1 * field(0, source_col) +
+				coeff1 * field(0,source_col+1) + coeff1 * field(0, source_col+2) +
+				coeff1 * field(1,source_col-1) + coeff1 * field(2, source_col) +
+				coeff1 * field(2,source_col+1) + coeff1 * field(1, source_col+2) +
+
+				coeff2 * field(0,source_col-1) + coeff2 * field(0, source_col+2) +
+				coeff2 * field(2,source_col-1) + coeff2 * field(2, source_col+2)
+		;
+		downsampled(dlr,target_col) =
+				coeff0 * field(lr,source_col) + coeff0 * field(lr,source_col+1) +
+				coeff0 * field(lr-1,source_col) + coeff0 * field(lr-1,source_col+1) +
+
+				coeff1 * field(lr,source_col-1) + coeff1 * field(lr, source_col) +
+				coeff1 * field(lr,source_col+1) + coeff1 * field(lr, source_col+2) +
+				coeff1 * field(lr-1,source_col-1) + coeff1 * field(lr-2, source_col) +
+				coeff1 * field(lr-2,source_col+1) + coeff1 * field(lr-1, source_col+2) +
+
+				coeff2 * field(lr,source_col-1) + coeff2 * field(lr, source_col+2) +
+				coeff2 * field(lr-2,source_col-1) + coeff2 * field(lr-2, source_col+2)
+		;//@formatter:on
+	}
+
+	//left column, right column
+#pragma omp parallel for
+	for(eig::Index target_row = 1, source_row = 2; target_row < downsampled.rows(); target_row++, source_row+=2){
+		downsampled(target_row, 0) =//@formatter:off
+					coeff0 * field(source_row  ,0) + coeff0 * field(source_row+1,0) +
+					coeff0 * field(source_row  ,1) + coeff0 * field(source_row+1,1) +
+
+					coeff1 * field(source_row-1,0) + coeff1 * field(source_row  ,0) +
+					coeff1 * field(source_row+1,0) + coeff1 * field(source_row+2,0) +
+					coeff1 * field(source_row-1,1) + coeff1 * field(source_row  ,2) +
+					coeff1 * field(source_row+1,2) + coeff1 * field(source_row+2,1) +
+
+					coeff2 * field(source_row-1,0) + coeff2 * field(source_row+2,0) +
+					coeff2 * field(source_row-1,2) + coeff2 * field(source_row+2,2)
+		;//@formatter:on
+		downsampled(target_row, dlc) =//@formatter:off
+					coeff0 * field(source_row  ,lc-0) + coeff0 * field(source_row+1,lc-0) +
+					coeff0 * field(source_row  ,lc-1) + coeff0 * field(source_row+1,lc-1) +
+                                                                                    lc-
+					coeff1 * field(source_row-1,lc-0) + coeff1 * field(source_row  ,lc-0) +
+					coeff1 * field(source_row+1,lc-0) + coeff1 * field(source_row+2,lc-0) +
+					coeff1 * field(source_row-1,lc-1) + coeff1 * field(source_row  ,lc-2) +
+					coeff1 * field(source_row+1,lc-2) + coeff1 * field(source_row+2,lc-1) +
+                                                                                    lc-
+					coeff2 * field(source_row-1,lc-0) + coeff2 * field(source_row+2,lc-0) +
+					coeff2 * field(source_row-1,lc-2) + coeff2 * field(source_row+2,lc-2)
+		;//@formatter:on
+	}
+
+#pragma omp parallel for
+	for (eig::Index target_col = 1, source_col = 2; target_col < downsampled.cols(); target_col++, source_col += 2) {
+		for (eig::Index target_row = 1, source_row = 2; target_row < downsampled.rows();
+				target_row++, source_row += 2) {
+			downsampled(target_row, target_col) = //@formatter:off
+					coeff0 * field(source_row, source_col) +
+					coeff0 * field(source_row, source_col + 1) +
+					coeff0 * field(source_row + 1, source_col) +
+					coeff0 * field(source_row + 1, source_col + 1) +
+
+					coeff1 * field(source_row - 1, source_col) +
+					coeff1 * field(source_row, source_col - 1) +
+					coeff1 * field(source_row - 1, source_col + 1) +
+					coeff1 * field(source_row, source_col + 2) +
+					coeff1 * field(source_row + 2, source_col) +
+					coeff1 * field(source_row + 1, source_col - 1) +
+					coeff1 * field(source_row + 2, source_col + 1) +
+					coeff1 * field(source_row + 1, source_col + 2) +
+
+					coeff2 * field(source_row - 1, source_col - 1) +
+					coeff2 * field(source_row - 1, source_col + 2) +
+					coeff2 * field(source_row + 2, source_col - 1) +
+					coeff2 * field(source_row + 2, source_col + 2)
+			;//@formatter:on
+		}
+	}
+	return downsampled;
 }
 
 } // namespace math
