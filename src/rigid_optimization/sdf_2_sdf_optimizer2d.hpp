@@ -12,7 +12,7 @@
 #include <Eigen/Eigen>
 
 //local
-#include "../math/tensors.hpp"
+#include "../math/tensor_operations.hpp"
 
 namespace eig = Eigen;
 
@@ -40,7 +40,7 @@ class Sdf2SdfOptimizer2d {
                                             0.f, 570.3999633789062f, 240.f,
                                             0.f, 0.f, 1.f;
                                             return camera_intrinsic_matrix;}(),
-                                     eig::Matrix4f camera_pose = eig::MatrixXf::Identity(3, 3),
+                                     eig::Matrix4f camera_pose = eig::MatrixXf::Identity(4, 4),
                                      eig::Vector3i array_offset = eig::Vector3i(-16, -16, 93), // 93.4375
                                      int field_size = 32,
                                      float voxel_size = 0.004f,

@@ -201,6 +201,8 @@ add_library(${MODULE_NAME} SHARED
 			src/python_export/slavcheva_optimizer.cpp
 			src/python_export/tsdf.hpp
 			src/python_export/tsdf.cpp
+			src/python_export/sdf_2_sdf_optimizer.hpp
+			src/python_export/sdf_2_sdf_optimizer.cpp
 
 			#### nonrigid_optimization: namespace for algorithms performing non-rigid optimization on TSDF grids #######
 			# TSDF: voxel grid containing truncated signed distances to nearest surface in the volume (F is "field")
@@ -223,7 +225,7 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/slavcheva/optimizer2d.cpp
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
-			
+
 
 			### nonrigid optimization, hierarchical: hierarchical SLAM optimizer (active research & development)
 			src/nonrigid_optimization/hierarchical/optimizer.hpp
@@ -302,6 +304,8 @@ add_library(${MODULE_NAME} SHARED
 			src/math/vector_operations.hpp
 			src/math/vector2.hpp
 			src/math/vector3.hpp
+            src/math/transformation.cpp
+            src/math/transformation.hpp
 
 			# tsdf: utilities for generating TSDF voxel grids in various ways
 			src/tsdf/ewa_2d.cpp
@@ -309,6 +313,8 @@ add_library(${MODULE_NAME} SHARED
 			src/tsdf/ewa_3d_viz.cpp
 			src/tsdf/ewa_common.hpp
 			src/tsdf/ewa.hpp
+			src/tsdf/tsdf.hpp
+			src/tsdf/tsdf_2d.cpp
 
 			# image_io: minimalistic image reading / writing
 			src/image_io/stb_image.h
@@ -324,8 +330,13 @@ add_library(${MODULE_NAME} SHARED
 			src/console/pretty_printers.hpp
 			src/console/progress_bar.cpp
 			src/console/progress_bar.hpp
-			
-			src/error_handling/throw_assert.hpp
+
+            src/error_handling/throw_assert.hpp
+
+			src/rigid_optimization/sdf_2_sdf_optimizer2d.cpp
+			src/rigid_optimization/sdf_2_sdf_optimizer2d.hpp
+			src/rigid_optimization/sdf_gradient_wrt_transformation2d.cpp
+			src/rigid_optimization/sdf_gradient_wrt_transformation2d.hpp
 			)
 
 target_link_libraries(${MODULE_NAME}

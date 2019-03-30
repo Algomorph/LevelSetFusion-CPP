@@ -25,7 +25,7 @@ eig::MatrixXf generate_TSDF_2D(
         float default_value) {
     eig::MatrixXf field(field_size, field_size);
     std::fill_n(field.data(), field.size(), default_value);
-    float narrow_band_half_width = static_cast<float>(narrow_band_width_voxels / 2.f) * voxel_size;
+    float narrow_band_half_width = static_cast<float>(narrow_band_width_voxels / 2) * voxel_size;
 
     float w_voxel = 1.0f;
     float y_voxel = 0.0f;
@@ -58,10 +58,11 @@ eig::MatrixXf generate_TSDF_2D(
         }
 
         // ray distance from camera to voxel center
+        // TODO: there is difference between voxel_camera.norm() and voxel_camera[2]
         float ray_distance = voxel_camera.norm();
 
-        int image_x_coordinate = int(voxel_image(0));
-        float depth = static_cast<float>(depth_image(image_x_coordinate, image_y_coordinate)) * depth_unit_ratio;
+        int image_x_coordinate = int(voxel_image(0) + 0.5);
+        float depth = static_cast<float>(depth_image(image_y_coordinate, image_x_coordinate)) * depth_unit_ratio;
 
         if (depth <= 0.0f) {
             continue;
