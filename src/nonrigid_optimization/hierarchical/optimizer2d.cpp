@@ -52,7 +52,9 @@ Optimizer2d::Optimizer2d(
 
 		float data_term_amplifier,
 		float tikhonov_strength,
-		eig::VectorXf kernel
+		eig::VectorXf kernel,
+
+		Optimizer2d::ResamplingStrategy resampling_strategy
 		) :
 		tikhonov_term_enabled(tikhonov_term_enabled && tikhonov_strength > 0.0f),
 				gradient_kernel_enabled(gradient_kernel_enabled && kernel.size() > 0),
@@ -64,7 +66,9 @@ Optimizer2d::Optimizer2d(
 
 				data_term_amplifier(data_term_amplifier),
 				tikhonov_strength(tikhonov_strength),
-				kernel_1d(kernel)
+				kernel_1d(kernel),
+
+				resampling_strategy(resampling_strategy)
 {
 
 }

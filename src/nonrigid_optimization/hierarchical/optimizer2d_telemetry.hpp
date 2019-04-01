@@ -76,6 +76,8 @@ public:
 			float tikhonov_strength = 0.2f,
 			eig::VectorXf kernel = eig::VectorXf(0),
 
+			Optimizer2d::ResamplingStrategy resampling_strategy = Optimizer2d::ResamplingStrategy::NEAREST_AND_AVERAGE,
+
 			VerbosityParameters verbosity_parameters = VerbosityParameters(),
 			LoggingParameters logging_parameters = LoggingParameters());
 

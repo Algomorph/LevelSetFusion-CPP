@@ -29,6 +29,8 @@
 
 namespace eig = Eigen;
 
+//TODO: templatize on field type, merge with 3D case
+
 namespace nonrigid_optimization {
 namespace hierarchical{
 inline static

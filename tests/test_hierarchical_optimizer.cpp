@@ -177,6 +177,7 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer_iteration_data){
 			1.0,
 			0.2,
 			eig::VectorXf(0),
+			nro_h::Optimizer2d::NEAREST_AND_AVERAGE,
 			nro_h::Optimizer2dTelemetry::VerbosityParameters(),
 			nro_h::Optimizer2dTelemetry::LoggingParameters(true,true)
 			);

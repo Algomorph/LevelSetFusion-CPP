@@ -40,9 +40,10 @@ Optimizer2dTelemetry::Optimizer2dTelemetry(
 		float tikhonov_strength,
 		eig::VectorXf kernel,
 
+		Optimizer2d::ResamplingStrategy resampling_strategy,
+
 		VerbosityParameters verbosity_parameters,
-		LoggingParameters logging_parameters
-		) :
+		LoggingParameters logging_parameters) :
 		Optimizer2d(
 				tikhonov_term_enabled,
 				gradient_kernel_enabled,
@@ -54,7 +55,9 @@ Optimizer2dTelemetry::Optimizer2dTelemetry(
 
 				data_term_amplifier,
 				tikhonov_strength,
-				kernel),
+				kernel,
+
+				resampling_strategy),
 
 		verbosity_parameters(verbosity_parameters),
 				logging_parameters(logging_parameters)

@@ -34,10 +34,16 @@ namespace nonrigid_optimization {
 namespace hierarchical{
 
 //not thread-safe
-
+/**
+ * Hierarchical non-rigid optimizer that constructs pyramids of the initial live (source) TSDF and canonical (target)
+ * TSDF fields, and then constructs composite warp vectors level-by-level, upsampling the warp field at each new level.
+ */
 class Optimizer2d {
-
 public:
+	enum ResamplingStrategy {
+		NEAREST_AND_AVERAGE = 0,
+		LINEAR = 1
+	};
 	Optimizer2d(
 			bool tikhonov_term_enabled = true,
 			bool gradient_kernel_enabled = true,
@@ -49,7 +55,11 @@ public:
 
 			float data_term_amplifier = 1.0f,
 			float tikhonov_strength = 0.2f,
-			eig::VectorXf kernel = eig::VectorXf(0));
+			eig::VectorXf kernel = eig::VectorXf(0),
+
+			ResamplingStrategy resampling_strategy = ResamplingStrategy::NEAREST_AND_AVERAGE
+	);
+
 	virtual ~Optimizer2d();
 
 	virtual math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
@@ -65,6 +75,7 @@ protected:
 	const float data_term_amplifier = 1.0f;
 	const float tikhonov_strength = 0.2f;
 	const eig::VectorXf kernel_1d = eig::VectorXf(0);
+	const ResamplingStrategy resampling_strategy;
 
 	virtual void optimize_level(
 			math::MatrixXv2f& warp_field,
