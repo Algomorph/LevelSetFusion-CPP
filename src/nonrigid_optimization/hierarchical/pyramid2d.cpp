@@ -55,7 +55,7 @@ Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
 	eig::MatrixXf* previous_level = &field;
 
 	for (int i_level = 1; i_level < level_count; i_level++) {
-		eig::MatrixXf current_level = math::downsampleX2_nearest(*previous_level);
+		eig::MatrixXf current_level = math::downsampleX2_average(*previous_level);
 		levels.push_back(current_level);
 		previous_level = &levels[levels.size()-1];
 	}

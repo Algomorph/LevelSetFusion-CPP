@@ -103,7 +103,7 @@ math::MatrixXv2f Optimizer2d::optimize(eig::MatrixXf canonical_field, eig::Matri
 				live_gradient_x_level, live_gradient_y_level);
 
 		if (current_hierarchy_level != level_count - 1) {
-			warp_field = math::upsampleX2(warp_field);
+			warp_field = math::upsampleX2_nearest(warp_field);
 		}
 
 	}
