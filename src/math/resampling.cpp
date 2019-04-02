@@ -24,12 +24,19 @@
 
 namespace math{
 
+template eig::MatrixXf upsampleX2<float>(const eig::MatrixXf& field, UpsamplingStrategy upsampling_strategy);
+template math::MatrixXv2f upsampleX2<math::Vector2f>(const math::MatrixXv2f& field, UpsamplingStrategy upsampling_strategy);
 template eig::MatrixXf upsampleX2_nearest<float>(const eig::MatrixXf& field);
 template math::MatrixXv2f upsampleX2_nearest<math::Vector2f>(const math::MatrixXv2f& field);
 template eig::MatrixXf upsampleX2_linear<float>(const eig::MatrixXf& field);
+template math::MatrixXv2f upsampleX2_linear<math::Vector2f>(const math::MatrixXv2f& field);
+
+template eig::MatrixXf downsampleX2<float>(const eig::MatrixXf& field, DownsamplingStrategy downsampling_strategy);
+template math::MatrixXv2f downsampleX2<math::Vector2f>(const math::MatrixXv2f& field, DownsamplingStrategy downsampling_strategy);
 template eig::MatrixXf downsampleX2_average<float>(const eig::MatrixXf& field);
 template math::MatrixXv2f downsampleX2_average<math::Vector2f>(const math::MatrixXv2f& field);
 template eig::MatrixXf downsampleX2_linear<float>(const eig::MatrixXf& field);
+template math::MatrixXv2f downsampleX2_linear<math::Vector2f>(const math::MatrixXv2f& field);
 
 }// namespace math
 

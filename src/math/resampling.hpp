@@ -24,6 +24,22 @@
 #include <Eigen/Eigen>
 
 namespace math{
+
+enum class UpsamplingStrategy{
+	NEAREST = 0,
+	LINEAR = 1
+};
+
+enum class DownsamplingStrategy{
+	AVERAGE = 0,
+	LINEAR = 1
+};
+
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+		UpsamplingStrategy upsampling_strategy = UpsamplingStrategy::NEAREST);
+
 /**
  * Upsample the field such that the output is a field 2X larger than the original in each dimension.
  * This procedure uses a simple box filter / no interpolation, i.e. simply copies the value to it's immediate "children"
@@ -78,6 +94,12 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+
+
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+		DownsamplingStrategy downsampling_strategy = DownsamplingStrategy::AVERAGE);
 
 /**
  * Downsample the provided matrix using a box filter such that each dimension of the downsampled field is half the

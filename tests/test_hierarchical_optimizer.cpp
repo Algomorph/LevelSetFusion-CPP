@@ -46,13 +46,6 @@ namespace eig = Eigen;
 namespace nro_h = nonrigid_optimization::hierarchical;
 namespace nro = nonrigid_optimization;
 
-BOOST_AUTO_TEST_CASE(power_of_two_test01){
-	BOOST_REQUIRE(nro_h::is_power_of_two(128));
-	BOOST_REQUIRE(nro_h::is_power_of_two(2));
-	BOOST_REQUIRE(nro_h::is_power_of_two(16));
-	BOOST_REQUIRE(!nro_h::is_power_of_two(17));
-	BOOST_REQUIRE(!nro_h::is_power_of_two(38));
-}
 
 BOOST_AUTO_TEST_CASE(pyramid2d_test01) {
 	// corresponds to test_contstruct_scalar_pyramid for Python

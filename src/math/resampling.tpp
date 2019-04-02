@@ -20,12 +20,30 @@
 
 #pragma once
 
+//stdlib
+#include <cassert>
+
 //local
 #include "resampling.hpp"
 #include "checks.hpp"
 
 namespace eig = Eigen;
 namespace math {
+
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+		UpsamplingStrategy upsampling_strategy){
+	switch(upsampling_strategy){
+	case UpsamplingStrategy::NEAREST:
+		return upsampleX2_nearest(field);
+	case UpsamplingStrategy::LINEAR:
+		return upsampleX2_linear(field);
+	default:
+		assert(false && "Unknown UpsamplingStrategy");
+		return Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>();
+	}
+}
 
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_nearest(
@@ -148,6 +166,22 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 	}
 
 	return upsampled;
+}
+
+
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+		DownsamplingStrategy downsampling_strategy){
+	switch(downsampling_strategy){
+	case DownsamplingStrategy::AVERAGE:
+		return downsampleX2_average(field);
+	case DownsamplingStrategy::LINEAR:
+		return downsampleX2_linear(field);
+	default:
+		assert(false && "Unknown UpsamplingStrategy");
+		return Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>();
+	}
 }
 
 template<typename Scalar>

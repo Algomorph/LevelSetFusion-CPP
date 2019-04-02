@@ -20,6 +20,7 @@
 //stdlib
 #include <limits>
 #include <cmath>
+#include <memory>
 
 //_DEBUG
 #include <iostream>
@@ -82,10 +83,22 @@ math::MatrixXv2f Optimizer2d::optimize(eig::MatrixXf canonical_field, eig::Matri
 
 	eig::MatrixXf live_gradient_x, live_gradient_y;
 	math::scalar_field_gradient(live_field, live_gradient_x, live_gradient_y);
-	Pyramid2d canonical_pyramid(canonical_field, this->maximum_chunk_size);
-	Pyramid2d live_pyramid(live_field, this->maximum_chunk_size);
-	Pyramid2d live_gradient_x_pyramid(live_gradient_x, this->maximum_chunk_size);
-	Pyramid2d live_gradient_y_pyramid(live_gradient_y, this->maximum_chunk_size);
+	math::DownsamplingStrategy hierarchy_downsampling_strategy;
+	math::UpsamplingStrategy warp_upsampling_strategy;
+	switch(this->resampling_strategy){
+	case Optimizer2d::ResamplingStrategy::LINEAR:
+		warp_upsampling_strategy = math::UpsamplingStrategy::LINEAR;
+		hierarchy_downsampling_strategy = math::DownsamplingStrategy::LINEAR;
+		break;
+	case Optimizer2d::ResamplingStrategy::NEAREST_AND_AVERAGE:
+	default:
+		warp_upsampling_strategy = math::UpsamplingStrategy::NEAREST;
+		hierarchy_downsampling_strategy = math::DownsamplingStrategy::AVERAGE;
+	}
+	Pyramid2d canonical_pyramid(canonical_field, this->maximum_chunk_size, hierarchy_downsampling_strategy);
+	Pyramid2d live_pyramid(live_field, this->maximum_chunk_size, hierarchy_downsampling_strategy);
+	Pyramid2d live_gradient_x_pyramid(live_gradient_x, this->maximum_chunk_size, hierarchy_downsampling_strategy);
+	Pyramid2d live_gradient_y_pyramid(live_gradient_y, this->maximum_chunk_size, hierarchy_downsampling_strategy);
 
 	this->current_hierarchy_level = 0;
 
@@ -107,7 +120,7 @@ math::MatrixXv2f Optimizer2d::optimize(eig::MatrixXf canonical_field, eig::Matri
 				live_gradient_x_level, live_gradient_y_level);
 
 		if (current_hierarchy_level != level_count - 1) {
-			warp_field = math::upsampleX2_nearest(warp_field);
+			warp_field = math::upsampleX2(warp_field, warp_upsampling_strategy);
 		}
 
 	}

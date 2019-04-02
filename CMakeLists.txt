@@ -215,27 +215,29 @@ add_library(${MODULE_NAME} SHARED
 			### nonrigid optimization, slavcheva: KillingFusion/Sobolev fusion
 			src/nonrigid_optimization/slavcheva/data_term.hpp
 			src/nonrigid_optimization/slavcheva/data_term.cpp
-			src/nonrigid_optimization/slavcheva/full_gradient.cpp
 			src/nonrigid_optimization/slavcheva/full_gradient.hpp
-			src/nonrigid_optimization/slavcheva/smoothing_term.cpp
+			src/nonrigid_optimization/slavcheva/full_gradient.cpp
 			src/nonrigid_optimization/slavcheva/smoothing_term.hpp
-			src/nonrigid_optimization/slavcheva/optimizer2d.cpp
+			src/nonrigid_optimization/slavcheva/smoothing_term.cpp
 			src/nonrigid_optimization/slavcheva/optimizer2d.hpp
-			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
+			src/nonrigid_optimization/slavcheva/optimizer2d.cpp
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp
+			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
+			
 
 			### nonrigid optimization, hierarchical: hierarchical SLAM optimizer (active research & development)
-			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical/optimizer2d.hpp
-			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.cpp
+			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp
-			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
+			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
+			src/nonrigid_optimization/hierarchical/pyramid2d.tpp
+			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
+		    src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.hpp
 		    src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.cpp
-		  	src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.hpp
-		  	src/nonrigid_optimization/hierarchical/pyramid3d.cpp
-		  	src/nonrigid_optimization/hierarchical/pyramid3d.tpp
 		  	src/nonrigid_optimization/hierarchical/pyramid3d.hpp
+		  	src/nonrigid_optimization/hierarchical/pyramid3d.tpp
+		  	src/nonrigid_optimization/hierarchical/pyramid3d.cpp
 
 			### traversal: algorithms for traversal of data structures
 			src/traversal/field_traversal_cpu.hpp

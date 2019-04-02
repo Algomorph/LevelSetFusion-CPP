@@ -19,23 +19,20 @@
  */
 //A pyramid representation of a contiguous 2d scalar field
 
-//Standard library
-#include <cmath>
-#include <algorithm>
+//stdlib
+#include <cassert>
+
 //Local
-#include "pyramid2d.hpp"
-#include "../../math/checks.hpp"
-#include "../../math/resampling.hpp"
+#include "pyramid2d.tpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical{
 
-//TODO: Pyramid2d templated on the Scalar type to allow alternative element types
 /**
  * @param field -- scalar field
  * @param maximum_chunk_size -- size of the chunk of the original field represented by a single element at the coarsest level
  */
-Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
+Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size, math::DownsamplingStrategy downsampling_strategy) :
 		levels() {
 #ifndef NDEBUG
 	eigen_assert((math::is_power_of_two(field.rows()) && math::is_power_of_two(field.cols())) // @suppress("Invalid arguments")
@@ -55,17 +52,13 @@ Pyramid2d::Pyramid2d(eig::MatrixXf field, int maximum_chunk_size) :
 	eig::MatrixXf* previous_level = &field;
 
 	for (int i_level = 1; i_level < level_count; i_level++) {
-		eig::MatrixXf current_level = math::downsampleX2_average(*previous_level);
+		eig::MatrixXf current_level = math::downsampleX2(*previous_level, downsampling_strategy);
 		levels.push_back(current_level);
 		previous_level = &levels[levels.size()-1];
 	}
 
 	//levels should be ordered from coarsest to finest, reverse the order
 	std::reverse(levels.begin(), levels.end());
-}
-
-Pyramid2d::~Pyramid2d()
-{
 }
 
 const eig::MatrixXf& Pyramid2d::get_level(int i_level) const {
@@ -75,5 +68,6 @@ const eig::MatrixXf& Pyramid2d::get_level(int i_level) const {
 size_t Pyramid2d::get_level_count() const {
 	return this->levels.size();
 }
+
 } /* namespace hierarchical */
 } /* namespace nonrigid_optimization */
