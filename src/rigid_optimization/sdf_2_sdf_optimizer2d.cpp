@@ -66,14 +66,6 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
         const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& canonical_depth_image,
         const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
         const Sdf2SdfOptimizer2d::TSDFGenerationParameters tsdf_generation_parameters,
-//        float depth_unit_ratio,
-//        const eig::Matrix3f& camera_intrinsic_matrix,
-//        const eig::Matrix4f& camera_pose = eig::Matrix4f::Identity(4, 4),
-//        const eig::Vector3i& array_offset =
-//            [] {eig::Vector3i default_offset; default_offset << -64, -64, 64; return default_offset;}(),
-//        int field_size = 128,
-//        float voxel_size = 0.004,
-//        int narrow_band_width_voxels = 20,
         float eta = 0.01f) {
 
     eig::MatrixXf canonical_field = tsdf::generate_TSDF_2D(image_y_coordinate,
@@ -92,9 +84,6 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
             canonical_weight(i, j) = (canonical_weight(i, j) <= -eta) ? 0.0f : 1.0f;
         }
     }
-
-
-
 
     eig::Matrix3f matrix_A;
     eig::Vector3f vector_b;

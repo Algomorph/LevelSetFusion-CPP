@@ -10,15 +10,15 @@
 
 //libraries
 #include <Eigen/Eigen>
+#include <boost/python/numpy.hpp>
 
 //local
 #include "../math/tensor_operations.hpp"
 
 namespace eig = Eigen;
+namespace np = boost::python::numpy;
 
 namespace rigid_optimization {
-
-
 
 class Sdf2SdfOptimizer2d {
     public:
@@ -45,19 +45,13 @@ class Sdf2SdfOptimizer2d {
                                      int field_size = 32,
                                      float voxel_size = 0.004f,
                                      int narrow_band_width_voxels = 2);
-            const float depth_unit_ratio = 0.001f;
-            const eig::Matrix3f camera_intrinsic_matrix = []
-                {eig::Matrix3f camera_intrinsic_matrix;
-                    camera_intrinsic_matrix <<
-                        570.3999633789062f, 0.f, 320.f,
-                        0.f, 570.3999633789062f, 240.f,
-                        0.f, 0.f, 1.f;
-                return camera_intrinsic_matrix;}();
-            const eig::Matrix4f camera_pose = eig::MatrixXf::Identity(3, 3);
-            const eig::Vector3i array_offset = eig::Vector3i(-16, -16, 93); // 93.4375
-            int field_size = 32;
-            float voxel_size = 0.004f;
-            int narrow_band_width_voxels = 2;
+            const float depth_unit_ratio;
+            const eig::Matrix3f camera_intrinsic_matrix;
+            const eig::Matrix4f camera_pose;
+            const eig::Vector3i array_offset;
+            int field_size;
+            float voxel_size;
+            int narrow_band_width_voxels;
         };
 
         Sdf2SdfOptimizer2d(
@@ -68,12 +62,13 @@ class Sdf2SdfOptimizer2d {
 
         virtual ~Sdf2SdfOptimizer2d();
 
-        eig::Vector3f optimize(int image_y_coordinate,
-                               const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& canonical_depth_image,
-                               const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
-                               const TSDFGenerationParameters tsdf_generation_parameters,
-                               float eta);
+    eig::Vector3f optimize(int image_y_coordinate,
+                           const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& canonical_depth_image,
+                           const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
+                           const TSDFGenerationParameters tsdf_generation_parameters,
+                           float eta);
 
+    void test_input(int image_y_coordinate) {};
 
     private:
         const float rate = 0.5f;
