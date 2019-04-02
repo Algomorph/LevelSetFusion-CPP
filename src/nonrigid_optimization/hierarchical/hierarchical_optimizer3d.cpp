@@ -72,7 +72,7 @@ HierarchicalOptimizer3d::VerbosityParameters::VerbosityParameters(
 								) {
 }
 //
-//math::Tensor3v3f HierarchicalOptimizer3d::optimize(eig::Tensor3f canonical_field, eig::Tensor3f live_field) {
+//math::Tensor3v3f HierarchicalOptimizer3d::optimize(math::Tensor3f canonical_field, math::Tensor3f live_field) {
 //
 //	math::Tensor3v3f live_gradient;
 //	math::field_gradient(live_gradient, live_field);
@@ -110,8 +110,8 @@ HierarchicalOptimizer3d::VerbosityParameters::VerbosityParameters(
 //
 void HierarchicalOptimizer3d::optimize_level(
 		math::Tensor3v3f& warp_field,
-		const eig::Tensor3f& canonical_pyramid_level,
-		const eig::Tensor3f& live_pyramid_level,
+		const math::Tensor3f& canonical_pyramid_level,
+		const math::Tensor3f& live_pyramid_level,
 		const math::Tensor3v3f& live_gradient_level
 		) {
 	float maximum_warp_update_length = std::numeric_limits<float>::max();
@@ -129,14 +129,14 @@ void HierarchicalOptimizer3d::optimize_level(
 
 	while (not this->termination_conditions_reached(maximum_warp_update_length, iteration_count)) {
 		// resample the live field & its gradients using current warps
-		eig::Tensor3f resampled_live = warp_3d(live_pyramid_level, warp_field);
+		math::Tensor3f resampled_live = warp_3d(live_pyramid_level, warp_field);
 
 		math::Tensor3v3f resampled_live_gradient =
 				warp_3d_with_replacement(live_gradient_level, warp_field, math::Vector3f(0.0f));
 
 		// see how badly our sampled values correspond to the canonical values at the same locations
 		// data_gradient = (warped_live - canonical) * warped_gradient(live)
-		eig::Tensor3f diff = resampled_live - canonical_pyramid_level;
+		math::Tensor3f diff = resampled_live - canonical_pyramid_level;
 		//math::Tensor3v3f data_gradient = diff * resampled_live_gradient;
 
 		if (this->tikhonov_term_enabled) {

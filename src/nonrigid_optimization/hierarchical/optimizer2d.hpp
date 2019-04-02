@@ -60,7 +60,7 @@ public:
 			ResamplingStrategy resampling_strategy = ResamplingStrategy::NEAREST_AND_AVERAGE
 	);
 
-	virtual ~Optimizer2d();
+	virtual ~Optimizer2d() = default;
 
 	virtual math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field);
 

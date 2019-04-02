@@ -55,13 +55,13 @@ template bool matrix_almost_equal_verbose<math::MatrixXm2f, float>(math::MatrixX
 template bool matrix_almost_equal_verbose<math::MatrixXm2f, double>(math::MatrixXm2f matrix_a,
 		math::MatrixXm2f matrix_b, double tolerance);
 
-template bool tensor_almost_equal<eig::Tensor3f, float>(eig::Tensor3f tensor_a, eig::Tensor3f tensor_b,
+template bool tensor_almost_equal<math::Tensor3f, float>(math::Tensor3f tensor_a, math::Tensor3f tensor_b,
 		float tolerance);
-template bool tensor_almost_equal<eig::Tensor3f, double>(eig::Tensor3f tensor_a, eig::Tensor3f tensor_b,
+template bool tensor_almost_equal<math::Tensor3f, double>(math::Tensor3f tensor_a, math::Tensor3f tensor_b,
 		double tolerance);
-template bool tensor_almost_equal_verbose<eig::Tensor3f, float>(eig::Tensor3f tensor_a, eig::Tensor3f tensor_b,
+template bool tensor_almost_equal_verbose<math::Tensor3f, float>(math::Tensor3f tensor_a, math::Tensor3f tensor_b,
 		float tolerance);
-template bool tensor_almost_equal_verbose<eig::Tensor3f, double>(eig::Tensor3f tensor_a, eig::Tensor3f tensor_b,
+template bool tensor_almost_equal_verbose<math::Tensor3f, double>(math::Tensor3f tensor_a, math::Tensor3f tensor_b,
 		double tolerance);
 
 template bool tensor_almost_equal<math::Tensor3v3f, float>(math::Tensor3v3f tensor_a, math::Tensor3v3f tensor_b,

@@ -20,7 +20,7 @@
 
 #include "common.hpp"
 
-bool read_image_helper(eig::MatrixXus& depth_image, std::string filename) {
+bool read_image_helper(math::MatrixXus& depth_image, std::string filename) {
 	std::string full_path = "test_data/" + filename;
 	bool image_read = image_io::png::read_GRAY16(full_path.c_str(), depth_image);
 	if (!image_read) {

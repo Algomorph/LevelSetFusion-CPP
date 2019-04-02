@@ -26,8 +26,8 @@
 #include "../src/math/typedefs.hpp"
 
 namespace test_data {
-static eig::MatrixXus depth_00064_sample = [] {
-	eig::MatrixXus depth_00064_sample(1,20);
+static math::MatrixXus depth_00064_sample = [] {
+	math::MatrixXus depth_00064_sample(1,20);
 	depth_00064_sample << 2121, 2126, 2124, 2123, 2128, 2133, 2138, 2130, 2135, 2140, 2145,
 	2147, 2142, 2147, 2152, 2158, 2150, 2155, 2160, 2165;
 	return depth_00064_sample;

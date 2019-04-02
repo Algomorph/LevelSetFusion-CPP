@@ -35,7 +35,7 @@ namespace eig = Eigen;
 namespace math{
 
 eig::Vector2f compute_centered_ellipse_bound_points(const eig::Matrix2f& ellipse_matrix, float ellipse_scale);
-void draw_ellipse(eig::MatrixXuc& image, eig::Vector2f center,
+void draw_ellipse(math::MatrixXuc& image, eig::Vector2f center,
 		//DEBUG -- verbose
 		const eig::Matrix2f& ellipse_matrix, float ellipse_scale, bool verbose = false);
 }//namespace math

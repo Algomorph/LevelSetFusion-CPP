@@ -254,9 +254,10 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 					  field(lr, lc - 2) + field(lr - 1, lc - 2) + field(lr - 2, lc - 1) + field(lr - 2, lc)) +
 			coeff2 * (field(lr, lc)     + field(lr, lc - 2)     + field(lr - 2, lc)     + field(lr - 2, lc - 2)); //@formatter:on
 	//upper row, lower row
-//#pragma omp parallel for //TODO -- parallelize properly, omp for loop cannot have extra loop vars
-	for (eig::Index target_col = 1, source_col = 2; target_col < downsampled.cols() - 1;
-			target_col++, source_col += 2) {
+#pragma omp parallel for
+	for (eig::Index target_col = 1; target_col < downsampled.cols() - 1;
+			target_col++) {
+		eig::Index source_col = target_col * 2;
 		downsampled(0, target_col) = //@formatter:off
 			coeff0 * (field(0, source_col)     + field(0, source_col + 1) +
 					  field(1, source_col)     + field(1, source_col + 1)) +
@@ -284,9 +285,9 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 	}
 
 	//left column, right column
-//#pragma omp parallel for //TODO -- parallelize properly, omp for loop cannot have extra loop vars
-	for (eig::Index target_row = 1, source_row = 2; target_row < downsampled.rows() - 1;
-			target_row++, source_row += 2) {
+#pragma omp parallel for
+	for (eig::Index target_row = 1; target_row < downsampled.rows() - 1;target_row++) {
+		eig::Index source_row = target_row * 2;
 		downsampled(target_row, 0) = //@formatter:off
 			coeff0 * (field(source_row, 0) + field(source_row + 1, 0) +
 					  field(source_row, 1) + field(source_row + 1, 1)) +

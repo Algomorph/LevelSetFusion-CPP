@@ -32,7 +32,7 @@
 #include "common.hpp"
 
 BOOST_AUTO_TEST_CASE(test_image_read01) {
-	eig::MatrixXus depth_image;
+	math::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag_depth_00064.png");
 	BOOST_REQUIRE(image_read);
 	BOOST_REQUIRE_EQUAL(depth_image.rows(), 480);
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(test_image_read01) {
 	BOOST_REQUIRE_EQUAL(depth_image(0, 0), (unsigned short )1997);
 	BOOST_REQUIRE_EQUAL(depth_image(479, 0), (unsigned short )1997);
 	BOOST_REQUIRE_EQUAL(depth_image(479, 639), (unsigned short ) 5154);
-	eig::MatrixXus sample = depth_image.block(40, 60, 1, 20);
+	math::MatrixXus sample = depth_image.block(40, 60, 1, 20);
 	BOOST_REQUIRE(sample.isApprox(test_data::depth_00064_sample));
 }
 

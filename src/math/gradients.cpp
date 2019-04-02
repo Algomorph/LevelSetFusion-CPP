@@ -95,11 +95,11 @@ inline void vector_field_laplacian_aux(const math::MatrixXv2f& field, math::Matr
 	}
 }
 
-void vector_field_laplacian_2d(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian) {
+void vector_field_laplacian_2d(math::MatrixXv2f& laplacian, const math::MatrixXv2f& field) {
 	vector_field_laplacian_aux<LaplaceOperatorFunctor<math::Vector2f>>(field, laplacian);
 }
 
-void vector_field_negative_laplacian(const math::MatrixXv2f& field, math::MatrixXv2f& laplacian) {
+void vector_field_negative_laplacian(math::MatrixXv2f& laplacian, const math::MatrixXv2f& field) {
 	vector_field_laplacian_aux<NegativeLaplaceOperatorFunctor<math::Vector2f>>(field, laplacian);
 }
 
@@ -184,7 +184,7 @@ void vector_field_laplacian_3d(math::Tensor3v3f& laplacian, const math::Tensor3v
  * @param[out] live_gradient_x output gradient along the x axis
  * @param[out] live_gradient_y output gradient along the y axis
  */
-void scalar_field_gradient(const eig::MatrixXf& field, eig::MatrixXf& gradient_x, eig::MatrixXf& gradient_y) {
+void scalar_field_gradient(eig::MatrixXf& gradient_x, eig::MatrixXf& gradient_y, const eig::MatrixXf& field) {
 
 	eig::Index column_count = field.cols();
 	eig::Index row_count = field.rows();
@@ -231,7 +231,7 @@ void scalar_field_gradient(const eig::MatrixXf& field, eig::MatrixXf& gradient_x
  * @param[in] field scalar field representing the implicit function to differentiate
  * @param[out] live_gradient_field output gradient field with vectors containing the x and the y gradient for each location
  */
-void scalar_field_gradient(const eig::MatrixXf& field, math::MatrixXv2f& gradient) {
+void scalar_field_gradient(math::MatrixXv2f& gradient, const eig::MatrixXf& field) {
 	eig::Index column_count = field.cols();
 	eig::Index row_count = field.rows();
 	gradient = math::MatrixXv2f(row_count, column_count);
@@ -277,7 +277,7 @@ void scalar_field_gradient(const eig::MatrixXf& field, math::MatrixXv2f& gradien
  * \param field a matrix of 2-entry vectors
  * \param gradient numerical gradient of the input matrix
  */
-void vector_field_gradient(const math::MatrixXv2f& field, math::MatrixXm2f& gradient) {
+void vector_field_gradient(math::MatrixXm2f& gradient, const math::MatrixXv2f& field) {
 
 	eig::Index row_count = field.rows();
 	eig::Index column_count = field.cols();
@@ -316,7 +316,7 @@ void vector_field_gradient(const math::MatrixXv2f& field, math::MatrixXm2f& grad
 }
 
 //TODO: test which gradient method is faster
-void field_gradient2(math::Tensor3v3f& gradient, const eig::Tensor3f field) {
+void field_gradient2(math::Tensor3v3f& gradient, const math::Tensor3f field) {
 	gradient = math::Tensor3v3f(field.dimensions());
 	int y_stride = field.dimension(0);
 	int z_stride = y_stride * field.dimension(1);
@@ -361,7 +361,7 @@ void field_gradient2(math::Tensor3v3f& gradient, const eig::Tensor3f field) {
 	}
 }
 
-void field_gradient(math::Tensor3v3f& gradient, const eig::Tensor3f field) {
+void field_gradient(math::Tensor3v3f& gradient, const math::Tensor3f field) {
 	gradient = math::Tensor3v3f(field.dimensions());
 
 	const int x_size = field.dimension(0);

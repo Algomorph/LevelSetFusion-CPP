@@ -400,13 +400,13 @@ setup_Eigen_matrix_converters() {
 	MAT_CONV(3, 4, float);
 	MAT_CONV(2, X, float);
 
-	EIGEN_MATRIX_CONVERTER(MatrixXus);
-	EIGEN_MATRIX_CONVERTER(MatrixX1us);
-	EIGEN_MATRIX_CONVERTER(Matrix1Xus);
+	EIGEN_MATRIX_CONVERTER(math::MatrixXus);
+	EIGEN_MATRIX_CONVERTER(math::MatrixX1us);
+	EIGEN_MATRIX_CONVERTER(math::Matrix1Xus);
 
-	EIGEN_MATRIX_CONVERTER(MatrixXuc);
-	EIGEN_MATRIX_CONVERTER(MatrixX1uc);
-	EIGEN_MATRIX_CONVERTER(Matrix1Xuc);
+	EIGEN_MATRIX_CONVERTER(math::MatrixXuc);
+	EIGEN_MATRIX_CONVERTER(math::MatrixX1uc);
+	EIGEN_MATRIX_CONVERTER(math::Matrix1Xuc);
 
 	//TODO: generalize these to math::Matrix<subtype> in a separate converter
 	EigenMatrixFromPython<math::MatrixXv2f>();

@@ -18,11 +18,11 @@
  *   limitations under the License.
  */
 
-
-
+//local
 #include "filtered_statistics.hpp"
 #include "boolean_operations.hpp"
 #include "vector_operations.hpp"
+#include "typedefs.hpp"
 
 namespace math {
 

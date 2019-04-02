@@ -129,8 +129,8 @@ void Optimizer2dTelemetry::optimize_iteration(
 		math::unstack_xv2f(gradient_u_component, gradient_v_component, gradient);
 		eig::MatrixXf u_x, u_y, v_x, v_y;
 		float gradient_aggregate_mean;
-		math::scalar_field_gradient(gradient_u_component, u_x, u_y);
-		math::scalar_field_gradient(gradient_v_component, v_x, v_y);
+		math::scalar_field_gradient(u_x, u_y, gradient_u_component);
+		math::scalar_field_gradient(v_x, v_y, gradient_v_component);
 		gradient_aggregate_mean = (u_x.array().square() + u_y.array().square()
 				+ v_x.array().square() + v_y.array().square()).mean();
 		normalized_tikhonov_energy = energy_factor * 0.5 * gradient_aggregate_mean;
