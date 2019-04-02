@@ -53,7 +53,7 @@ namespace tsdf {
  * @param voxel_size size of every (3D) voxel's (edge) in meters
  * @return resulting 2D square TSDF field
  */
-eig::MatrixXuc generate_TSDF_3D_EWA_image_visualization(
+math::MatrixXuc generate_TSDF_3D_EWA_image_visualization(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
 		float depth_unit_ratio,
 		const eig::Tensor<float, 3>& field,
@@ -65,7 +65,7 @@ eig::MatrixXuc generate_TSDF_3D_EWA_image_visualization(
 		float tsdf_threshold,
 		float gaussian_covariance_scale) {
 
-	eig::MatrixXuc output_image = eig::MatrixXuc::Constant(depth_image.rows() * scale, depth_image.cols() * scale, 255);
+	math::MatrixXuc output_image = math::MatrixXuc::Constant(depth_image.rows() * scale, depth_image.cols() * scale, 255);
 
 	float w_voxel = 1.0f;
 

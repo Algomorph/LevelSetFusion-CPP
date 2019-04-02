@@ -42,7 +42,7 @@ namespace eig = Eigen;
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 
-	eig::MatrixXus depth_image = eig::MatrixXus::Constant(3, 640, USHRT_MAX);
+	math::MatrixXus depth_image = math::MatrixXus::Constant(3, 640, USHRT_MAX);
 	depth_image.block(0, 399, 3, 18) = test_data::depth_image_region;
 
 	eig::Matrix3f camera_intrinsic_matrix;
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
-	eig::MatrixXus depth_image;
+	math::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
 	bool test_full_image = true;
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation05) {
-	eig::MatrixXus depth_image;
+	math::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
 	bool test_full_image = true;
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation05) {
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation06) {
-	eig::MatrixXus depth_image;
+	math::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag_depth_00064.png");
 	BOOST_REQUIRE(image_read);
 	bool test_full_image = false;
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation06) {
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
-	eig::MatrixXus depth_image;
+	math::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
 
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
-	eig::MatrixXus depth_image;
+	math::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
 

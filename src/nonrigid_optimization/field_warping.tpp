@@ -47,7 +47,9 @@ inline ElementType sample_tsdf_value_with_replacement(const eig::Tensor<ElementT
 }
 
 template<typename ElementType, bool WithReplacement>
-static inline eig::Tensor<ElementType, 3> warp_3d_auxilary(const eig::Tensor<ElementType, 3>& scalar_field, math::Tensor3v3f& warp_field,
+static inline eig::Tensor<ElementType, 3> warp_3d_auxilary(
+		const eig::Tensor<ElementType, 3>& scalar_field,
+		math::Tensor3v3f& warp_field,
 		ElementType replacement_value = ElementType(0.0f)) {
 	int matrix_size = static_cast<int>(scalar_field.size());
 

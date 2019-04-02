@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(gradient_test01) {
 			0.70888318, 0.02178612;
 
 	eig::MatrixXf gradient_x, gradient_y;
-	math::scalar_field_gradient(field, gradient_x, gradient_y);
+	math::scalar_field_gradient(gradient_x, gradient_y, field);
 
 	BOOST_REQUIRE(gradient_x.isApprox(expected_gradient_x));
 	BOOST_REQUIRE(gradient_y.isApprox(expected_gradient_y));
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(gradient_test02) {
 			-0.73450874, 0.03700753, -0.81714937;
 
 	MatrixXf gradient_x, gradient_y;
-	math::scalar_field_gradient(field, gradient_x, gradient_y);
+	math::scalar_field_gradient(gradient_x, gradient_y, field);
 
 	BOOST_REQUIRE(gradient_x.isApprox(expected_gradient_x));
 	BOOST_REQUIRE(gradient_y.isApprox(expected_gradient_y));
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(gradient_test03) {
 	using namespace Eigen;
 
 	MatrixXf gradient_x, gradient_y;
-	math::scalar_field_gradient(test_data::field, gradient_x, gradient_y);
+	math::scalar_field_gradient(gradient_x, gradient_y, test_data::field);
 
 	BOOST_REQUIRE(gradient_x.isApprox(test_data::expected_gradient_x));
 	BOOST_REQUIRE(gradient_y.isApprox(test_data::expected_gradient_y));
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(gradient_test04) {
 													//@formatter:on
 
 	math::MatrixXv2f gradient;
-	math::scalar_field_gradient(field, gradient);
+	math::scalar_field_gradient(gradient, field);
 
 	BOOST_REQUIRE(math::matrix_almost_equal(gradient, expected_gradient, 1e-6));
 }
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(gradient_test05) {
 					-0.40353082f, -0.81714937f);
 													//@formatter:on
 	math::MatrixXv2f gradient;
-	math::scalar_field_gradient(field, gradient);
+	math::scalar_field_gradient(gradient, field);
 
 	BOOST_REQUIRE(math::matrix_almost_equal(gradient, expected_gradient, 1e-6));
 }
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(gradient_test06) {
 	namespace eig = Eigen;
 
 	math::MatrixXv2f gradient;
-	math::scalar_field_gradient(test_data::field, gradient);
+	math::scalar_field_gradient(gradient, test_data::field);
 
 	eig::MatrixXf exp_grad_x = test_data::expected_gradient_x;
 	eig::MatrixXf exp_grad_y = test_data::expected_gradient_y;
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
 													//@formatter:on
 
 	math::MatrixXm2f gradient;
-	math::vector_field_gradient(vector_field, gradient);
+	math::vector_field_gradient(gradient, vector_field);
 
 	math::MatrixXm2f expected_gradient(2, 2);
 	expected_gradient << math::Matrix2f(1.0f, -1.0f, -1.0f, 1.0f), math::Matrix2f(1.0f, 0.0f, -1.0f, 2.0f),
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
 
 BOOST_AUTO_TEST_CASE(vector_field_gradient_test02) {
 	math::MatrixXm2f gradient;
-	math::vector_field_gradient(test_data::vector_field, gradient);
+	math::vector_field_gradient(gradient, test_data::vector_field);
 	BOOST_REQUIRE(math::matrix_almost_equal(gradient, test_data::vector_field_gradient, 1e-6));
 }
 

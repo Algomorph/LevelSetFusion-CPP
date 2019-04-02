@@ -82,7 +82,7 @@ eig::MatrixXf generate_TSDF_2D_EWA_TSDF_inclusive(
 		int narrow_band_width_voxels = 20,
 		float gaussian_covariance_scale = 1.0f);
 
-eig::MatrixXuc generate_TSDF_3D_EWA_image_visualization(
+math::MatrixXuc generate_TSDF_3D_EWA_image_visualization(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
 		float depth_unit_ratio,
 		const eig::Tensor<float, 3>& field,

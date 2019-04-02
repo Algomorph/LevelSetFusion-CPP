@@ -60,14 +60,14 @@ public:
 	);
 	virtual ~HierarchicalOptimizer3d() = default;
 
-//	math::Tensor3v3f optimize(eig::Tensor3f canonical_field, eig::Tensor3f live_field);
+//	math::Tensor3v3f optimize(math::Tensor3f canonical_field, math::Tensor3f live_field);
 
 private:
 
 	void optimize_level(
 			math::Tensor3v3f& warp_field,
-			const eig::Tensor3f& canonical_pyramid_level,
-			const eig::Tensor3f& live_pyramid_level,
+			const math::Tensor3f& canonical_pyramid_level,
+			const math::Tensor3f& live_pyramid_level,
 			const math::Tensor3v3f& live_gradient_level
 			);
 
