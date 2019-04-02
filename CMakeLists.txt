@@ -215,27 +215,29 @@ add_library(${MODULE_NAME} SHARED
 			### nonrigid optimization, slavcheva: KillingFusion/Sobolev fusion
 			src/nonrigid_optimization/slavcheva/data_term.hpp
 			src/nonrigid_optimization/slavcheva/data_term.cpp
-			src/nonrigid_optimization/slavcheva/full_gradient.cpp
 			src/nonrigid_optimization/slavcheva/full_gradient.hpp
-			src/nonrigid_optimization/slavcheva/smoothing_term.cpp
+			src/nonrigid_optimization/slavcheva/full_gradient.cpp
 			src/nonrigid_optimization/slavcheva/smoothing_term.hpp
-			src/nonrigid_optimization/slavcheva/optimizer2d.cpp
+			src/nonrigid_optimization/slavcheva/smoothing_term.cpp
 			src/nonrigid_optimization/slavcheva/optimizer2d.hpp
-			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
+			src/nonrigid_optimization/slavcheva/optimizer2d.cpp
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp
+			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
+			
 
 			### nonrigid optimization, hierarchical: hierarchical SLAM optimizer (active research & development)
-			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical/optimizer2d.hpp
-			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.cpp
+			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp
-			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
+			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
+			src/nonrigid_optimization/hierarchical/pyramid2d.tpp
+			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
+		    src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.hpp
 		    src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.cpp
-		  	src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.hpp
-		  	src/nonrigid_optimization/hierarchical/pyramid3d.cpp
-		  	src/nonrigid_optimization/hierarchical/pyramid3d.tpp
 		  	src/nonrigid_optimization/hierarchical/pyramid3d.hpp
+		  	src/nonrigid_optimization/hierarchical/pyramid3d.tpp
+		  	src/nonrigid_optimization/hierarchical/pyramid3d.cpp
 
 			### traversal: algorithms for traversal of data structures
 			src/traversal/field_traversal_cpu.hpp
@@ -257,21 +259,24 @@ add_library(${MODULE_NAME} SHARED
       		src/math/collection_comparison.tpp
       		src/math/collection_comparison.cpp
 			src/math/boolean_operations.hpp
-			src/math/conics.cpp
 			src/math/conics.hpp
+			src/math/conics.cpp
 			src/math/convolution.hpp
 			src/math/convolution.cpp
-			src/math/filtered_statistics.cpp
 			src/math/filtered_statistics.hpp
-			src/math/gradients.cpp
+			src/math/filtered_statistics.cpp
 			src/math/gradients.hpp
+			src/math/gradients.cpp
 			src/math/math_utils.hpp
 			src/math/matrix_base.hpp
 			src/math/matrix2.hpp
 			src/math/nestable_type_metainfo.hpp
 			src/math/platform_independence.hpp
-			src/math/statistics.cpp
+			src/math/resampling.hpp
+			src/math/resampling.tpp
+			src/math/resampling.cpp
 			src/math/statistics.hpp
+			src/math/statistics.cpp
 			src/math/tensor_operations.hpp
 			src/math/tensor_operations.cpp
 			src/math/typedefs.hpp
@@ -353,6 +358,7 @@ if (WIN32)
 else ()
     set(PYTHON_INSTALL_ARCHIVE ARCHIVE DESTINATION ${PYTHON3_PACKAGES_PATH} COMPONENT python)
 endif ()
+
 # install target
 install(TARGETS ${MODULE_NAME}
         ${PYTHON_INSTALL_CONFIGURATIONS}

@@ -30,6 +30,7 @@
 #include "../src/math/typedefs.hpp"
 #include "../src/math/convolution.hpp"
 #include "../src/math/statistics.hpp"
+#include "../src/math/resampling.hpp"
 
 BOOST_AUTO_TEST_CASE(power_of_two_test01) {
 	BOOST_REQUIRE(math::is_power_of_two(128));
@@ -102,7 +103,7 @@ BOOST_AUTO_TEST_CASE(gradient_test04) {
 			//@formatter:off
 			math::Vector2f(-0.34999183f, 0.70888318f), math::Vector2f(-0.34999183f, 0.02178612f),
 			math::Vector2f(-1.03708889f, 0.70888318f), math::Vector2f(-1.03708889f, 0.02178612f);
-	//@formatter:on
+													//@formatter:on
 
 	math::MatrixXv2f gradient;
 	math::scalar_field_gradient(field, gradient);
@@ -127,7 +128,7 @@ BOOST_AUTO_TEST_CASE(gradient_test05) {
 					0.45062608f, 0.16872265f),
 			math::Vector2f(1.02331373f, -0.73450874f), math::Vector2f(0.30989146f, 0.03700753f), math::Vector2f(
 					-0.40353082f, -0.81714937f);
-	//@formatter:on
+													//@formatter:on
 	math::MatrixXv2f gradient;
 	math::scalar_field_gradient(field, gradient);
 
@@ -153,7 +154,7 @@ BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
 	vector_field << //@formatter:off
 			math::Vector2f(0.0f, 0.0f), math::Vector2f(1.0f, -1.0f),
 			math::Vector2f(-1.0f, 1.0f), math::Vector2f(1.0f, 1.0f);
-	//@formatter:on
+													//@formatter:on
 
 	math::MatrixXm2f gradient;
 	math::vector_field_gradient(vector_field, gradient);
@@ -381,4 +382,94 @@ BOOST_AUTO_TEST_CASE(mean_and_std_test01) {
 	math::mean_and_std_vector_length(mean, std, test_data::vector_field);
 	BOOST_REQUIRE_CLOSE(mean, 0.7791687f, 1e-8);
 	BOOST_REQUIRE_CLOSE(std, 0.26306444f, 1e-8);
+}
+
+BOOST_AUTO_TEST_CASE(test_upsampling01) {
+	eig::MatrixXf input(2, 3);
+	input << 1.0f, 2.0f, 3.0f,
+			4.0f, 5.0f, 6.0f;
+
+	eig::MatrixXf expected_output(4, 6);
+	expected_output <<
+			1.00f, 1.25f, 1.75f, 2.25f, 2.75f, 3.00f,
+			1.75f, 2.00f, 2.50f, 3.00f, 3.50f, 3.75f,
+			3.25f, 3.50f, 4.00f, 4.50f, 5.00f, 5.25f,
+			4.00f, 4.25f, 4.75f, 5.25f, 5.75f, 6.00f;
+	eig::MatrixXf output = math::upsampleX2_linear(input);
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(output, expected_output, 1e-6));
+
+	eig::MatrixXf input2(3, 2);
+	input2 <<
+			1.0f, 2.0f,
+			3.0f, 4.0f,
+			5.0f, 6.0f;
+
+	eig::MatrixXf expected_output2(6, 4);
+	expected_output2 <<
+			1.00f, 1.25f, 1.75f, 2.00f,
+			1.50f, 1.75f, 2.25f, 2.50f,
+			2.50f, 2.75f, 3.25f, 3.50f,
+			3.50f, 3.75f, 4.25f, 4.50f,
+			4.50f, 4.75f, 5.25f, 5.50f,
+			5.00f, 5.25f, 5.75f, 6.00f;
+
+	eig::MatrixXf output2 = math::upsampleX2_linear(input2);
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(output2, expected_output2, 1e-6));
+
+	eig::MatrixXf input3(3, 3);
+	input3 <<
+			1.0f, 2.0f, 3.0f,
+			4.0f, 5.0f, 6.0f,
+			7.0f, 8.0f, 9.0f;
+	eig::MatrixXf expected_output3(6, 6);
+	expected_output3 <<
+			1.00f, 1.25f, 1.75f, 2.25f, 2.75f, 3.00f,
+			1.75f, 2.00f, 2.50f, 3.00f, 3.50f, 3.75f,
+			3.25f, 3.50f, 4.00f, 4.50f, 5.00f, 5.25f,
+			4.75f, 5.00f, 5.50f, 6.00f, 6.50f, 6.75f,
+			6.25f, 6.50f, 7.00f, 7.50f, 8.00f, 8.25f,
+			7.00f, 7.25f, 7.75f, 8.25f, 8.75f, 9.00f;
+	eig::MatrixXf output3 = math::upsampleX2_linear(input3);
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(output3, expected_output3, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_downsampling01) {
+	eig::MatrixXf input(6, 4);
+	input <<
+			0.0f, 1.0f, 2.0f, 3.0f,
+			4.0f, 5.0f, 6.0f, 7.0f,
+			8.0f, 9.0f, 10.0f, 11.0f,
+			12.0f, 13.0f, 14.0f, 15.0f,
+			16.0f, 17.0f, 18.0f, 19.0f,
+			20.0f, 21.0f, 22.0f, 23.0f;
+	eig::MatrixXf expected_output(3, 2);
+	expected_output <<
+			3.125f, 4.875f,
+			10.625f, 12.375f,
+			18.125f, 19.875f;
+	eig::MatrixXf output = math::downsampleX2_linear(input);
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(output, expected_output, 1e-6));
+
+	eig::MatrixXf input2(8, 8);
+	input2 <<
+			0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f,
+			8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f,
+			16.0f, 17.0f, 18.0f, 19.0f, 20.0f, 21.0f, 22.0f, 23.0f,
+			24.0f, 25.0f, 26.0f, 27.0f, 28.0f, 29.0f, 30.0f, 31.0f,
+			32.0f, 33.0f, 34.0f, 35.0f, 36.0f, 37.0f, 38.0f, 39.0f,
+			40.0f, 41.0f, 42.0f, 43.0f, 44.0f, 45.0f, 46.0f, 47.0f,
+			48.0f, 49.0f, 50.0f, 51.0f, 52.0f, 53.0f, 54.0f, 55.0f,
+			56.0f, 57.0f, 58.0f, 59.0f, 60.0f, 61.0f, 62.0f, 63.0f;
+	eig::MatrixXf expected_output2(4, 4);
+	// NB: output is different from OpenCV at the border because OpenCV resize w/ INTER_LINEAR simply averages
+	// each coarse border value from the 4 corresponding fine values, whereas this code treats the border values
+	// as repeating and applies the same set of coefficients at the borders as any other place.
+	expected_output2 <<
+			5.625f, 7.5f, 9.5f, 11.375f,
+			20.625f, 22.5f, 24.5f, 26.375f,
+			36.625f, 38.5f, 40.5f, 42.375f,
+			51.625f, 53.5f, 55.5f, 57.375f;
+
+	eig::MatrixXf output2 = math::downsampleX2_linear(input2);
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(output2, expected_output2, 1e-6));
 }

@@ -41,6 +41,7 @@ void export_algorithms() {
 								bool, bool,
 								int, float, int, float,
 								float, float, eig::VectorXf,
+								HierarchicalOptimizer2d::ResamplingStrategy,
 								HierarchicalOptimizer2d::VerbosityParameters,
 								HierarchicalOptimizer2d::LoggingParameters> >(
 								bp::args("tikhonov_term_enabled",
@@ -55,8 +56,11 @@ void export_algorithms() {
 										"tikhonov_strength",
 										"kernel",
 
+										"resampling_strategy",
+
 										"verbosity_parameters",
-										"logging_parameters")))
+										"logging_parameters"
+										)))
 						.def("optimize", &HierarchicalOptimizer2d::optimize,
 						"Find optimal warp to map given live SDF to given canonical SDF",
 						bp::args("canonical_field", "live_field"))
@@ -65,6 +69,9 @@ void export_algorithms() {
 						.def("get_per_level_iteration_data",
 						&HierarchicalOptimizer2d::get_per_level_iteration_data)
 						;
+		bp::enum_<HierarchicalOptimizer2d::ResamplingStrategy>("ResamplingStrategy")
+				.value("NEAREST_AND_AVERAGE", HierarchicalOptimizer2d::ResamplingStrategy::NEAREST_AND_AVERAGE)
+				.value("LINEAR", HierarchicalOptimizer2d::ResamplingStrategy::LINEAR);
 		bp::class_<HierarchicalOptimizer2d::VerbosityParameters>("VerbosityParameters",
 				"Parameters that control verbosity to stdout. "
 						"Assumes being used in an \"immutable\" manner, i.e. just a structure that holds values",
