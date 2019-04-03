@@ -1,2 +1,0 @@
-set("A" "value1" CACHE INTERNAL "")
-set("B" "value2" CACHE INTERNAL "")

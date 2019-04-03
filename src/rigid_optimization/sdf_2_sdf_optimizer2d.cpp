@@ -77,6 +77,7 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
                                                            tsdf_generation_parameters.field_size,
                                                            tsdf_generation_parameters.voxel_size,
                                                            tsdf_generation_parameters.narrow_band_width_voxels);
+    std::cout << "canonical field generated" << std::endl;
 
     eig::MatrixXf canonical_weight = canonical_field.replicate(1, 1);
     for (int i=0; i < canonical_weight.rows(); ++i) { // Determine weight based on thickness
@@ -100,6 +101,7 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
                                                           tsdf_generation_parameters.field_size,
                                                           tsdf_generation_parameters.voxel_size,
                                                           tsdf_generation_parameters.narrow_band_width_voxels);
+        std::cout << "iteration_count: " << iteration_count << ", live field generated"<< std::endl;
 
         eig::MatrixXf live_weight = live_field.replicate(1, 1);
         for (int i=0; i < live_weight.rows(); ++i) { // Determine weight based on thickness
@@ -113,6 +115,7 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
                                  tsdf_generation_parameters.array_offset,
                                  tsdf_generation_parameters.voxel_size,
                                  live_gradient);
+        std::cout << "gradient field generated" << std::endl;
 
         for (int i=0; i < live_field.rows(); ++i) {
             for (int j=0; j < live_field.cols(); ++j) {

@@ -1,6 +1,0 @@
-lib/cmake/Boost/BoostConfig.cmake
-lib/cmake/Boost/BoostConfigVersion.cmake
-lib/libboost_numpy36-mt-d.a
-lib/libboost_numpy36-mt.a
-lib/libboost_python36-mt-d.a
-lib/libboost_python36-mt.a
