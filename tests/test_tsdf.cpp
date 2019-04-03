@@ -34,7 +34,7 @@
 //test targets
 #include "../src/tsdf/ewa.hpp"
 #include "../src/math/typedefs.hpp"
-#include "../src/math/collection_comparison.hpp"
+#include "../src/math/almost_equal.hpp"
 #include "../src/image_io/png_eigen.hpp"
 #include "common.hpp"
 
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 			20 // narrow band width
 			);
 
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field, test_data::out_sdf_field, 1e-6f));
+	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::out_sdf_field, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 				);
 	}
 
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
+	BOOST_REQUIRE(math::almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation05) {
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation05) {
 				);
 	}
 	//TODO: add data for this test
-	//BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
+	//BOOST_REQUIRE(math::almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_2D_generation06) {
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation06) {
 				);
 	}
 	//TODO test against data
-	//BOOST_REQUIRE(math::matrix_almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
+	//BOOST_REQUIRE(math::almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation01) {
 			20 // narrow band width
 			);
 
-	BOOST_REQUIRE(math::tensor_almost_equal_verbose(field, test_data::TSDF_slice01, 1e-6f));
+	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::TSDF_slice01, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
@@ -280,5 +280,5 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
 			20, // narrow band width
 			0.5f
 			);
-	BOOST_REQUIRE(math::tensor_almost_equal_verbose(field, test_data::TSDF_slice02, 1e-5f));
+	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::TSDF_slice02, 1e-5f));
 }
