@@ -21,23 +21,44 @@
 #pragma once
 
 //libraries
-#include <Eigen/Eigen>
+#include <Eigen/Dense>
+#include <unsupported/Eigen/CXX11/Tensor>
 
-namespace math{
+namespace math {
 
-enum class UpsamplingStrategy{
-	NEAREST = 0,
-	LINEAR = 1
+/**
+ * Different strategies for upsampling a discrete field
+ */
+enum class UpsamplingStrategy {
+	NEAREST = 0, ///@see upsampleX2_nearest for details
+	LINEAR = 1 ///@see upsampleX2_linear for details
 };
 
-enum class DownsamplingStrategy{
-	AVERAGE = 0,
-	LINEAR = 1
+/**
+ * Different strategies for downsampling a discrete field
+ */
+enum class DownsamplingStrategy {
+	AVERAGE = 0, ///@see downsampleX2_average for details
+	LINEAR = 1 ///@see downsampleX2_linear for details
 };
 
+/**
+ * Upsample the field such that the output is a field 2X larger than the original in each dimension.
+ * @param field input field
+ * @param upsampling_strategy -- which upsampling strategy to use.
+ * @return upsampled field
+ */
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+		UpsamplingStrategy upsampling_strategy = UpsamplingStrategy::NEAREST);
+/**
+ * Upsample the field such that the output is a field 2X larger than the original in each dimension.
+ * @overload
+ */
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field,
 		UpsamplingStrategy upsampling_strategy = UpsamplingStrategy::NEAREST);
 
 /**
@@ -60,14 +81,22 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
 
 /**
- * @see upsampleX2 (previous definition), same thing but for row-major matrices
- * @param field
- * @param field input field
- * @return upsampled field
+ * Upsample the field such that the output is a field 2X larger than the original in each dimension using the
+ * nearest-neighbor (NEAREST) strategy.
+ * @overload
  */
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX2_nearest(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& field);
+
+/**
+ * Upsample the field such that the output is a field 2X larger than the original in each dimension.
+ * @overload
+ */
+//TODO
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_nearest(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
 
 /**
  * Upsample the field such that the output is a field 2X larger than the original in each dimension using bilinear
@@ -94,11 +123,35 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+/**
+ * Upsample the field such that the output is a field 2X larger than the original in each dimension using bilinear
+ * interpolation (LINEAR) strategy.
+ * @overload
+ */
+//TODO
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
 
-
+/**
+ * Downsample the provided matrix using a box filter such that each dimension of the downsampled field is half the
+ * corresponding dimension of the input field.
+ * @param field input field
+ * @param downsampling_strategy strategy to use for downsampling
+ * @return downsampled field
+ */
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+		DownsamplingStrategy downsampling_strategy = DownsamplingStrategy::AVERAGE);
+/**
+ * Downsample the provided matrix using a box filter such that each dimension of the downsampled field is half the
+ * corresponding dimension of the input field.
+ * @overload
+ */
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field,
 		DownsamplingStrategy downsampling_strategy = DownsamplingStrategy::AVERAGE);
 
 /**
@@ -121,6 +174,15 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_average(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+/**
+ * Downsample the provided matrix using a box filter such that each dimension of the downsampled field is half the
+ * corresponding dimension of the input field using simple averaging (AVERAGE strategy).
+ * @overload
+ */
+//TODO
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_average(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
 
 /**
  * Downsample the provided matrix using a box filter such that each dimension of the downsampled field is half the
@@ -149,5 +211,14 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+/**
+ * Downsample the provided matrix using a box filter such that each dimension of the downsampled field is half the
+ * corresponding dimension of the input field using bilinear interpolation (LINEAR strategy).
+ * @overload
+ */
+//TODO
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
 
-}// namespace math
+} // namespace math

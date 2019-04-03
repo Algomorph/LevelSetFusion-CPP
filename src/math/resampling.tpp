@@ -30,10 +30,10 @@
 namespace eig = Eigen;
 namespace math {
 
-template<typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
-		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
-		UpsamplingStrategy upsampling_strategy){
+// region ================================ GENERIC UPSAMPLING ==========================================================
+template<typename ContainerType, typename Scalar>
+static inline
+ContainerType upsampleX2_aux(const ContainerType& field, UpsamplingStrategy upsampling_strategy){
 	switch(upsampling_strategy){
 	case UpsamplingStrategy::NEAREST:
 		return upsampleX2_nearest(field);
@@ -41,10 +41,26 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 		return upsampleX2_linear(field);
 	default:
 		assert(false && "Unknown UpsamplingStrategy");
-		return Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>();
+		return ContainerType();
 	}
 }
 
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+		UpsamplingStrategy upsampling_strategy){
+	return upsampleX2_aux(field,upsampling_strategy);
+}
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field,
+		UpsamplingStrategy upsampling_strategy = UpsamplingStrategy::NEAREST){
+	return upsampleX2_aux(field,upsampling_strategy);
+}
+
+// endregion
+// region ================================ NEAREST UPSAMPLING ==========================================================
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_nearest(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
@@ -167,11 +183,11 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 
 	return upsampled;
 }
-
-
-template<typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2(
-		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+//region ===================================== GENERIC DOWNSAMPLING ====================================================
+template<typename ContainerType, typename Scalar>
+static inline
+ContainerType downsampleX2_aux(
+		const ContainerType& field,
 		DownsamplingStrategy downsampling_strategy){
 	switch(downsampling_strategy){
 	case DownsamplingStrategy::AVERAGE:
@@ -180,10 +196,25 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 		return downsampleX2_linear(field);
 	default:
 		assert(false && "Unknown UpsamplingStrategy");
-		return Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>();
+		return ContainerType();
 	}
 }
 
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+		DownsamplingStrategy downsampling_strategy){
+	return downsampleX2_aux(field,downsampling_strategy);
+}
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field,
+		DownsamplingStrategy downsampling_strategy = DownsamplingStrategy::AVERAGE){
+	return downsampleX2_aux(field,downsampling_strategy);
+}
+//endregion
+//region ============================== DOWNSAMPLING USING AVERAGE STRATEGY ============================================
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_average(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
@@ -211,7 +242,8 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 	}
 	return downsampled;
 }
-
+//endregion
+//region ============================== DOWNSAMPLING USING LINEAR STRATEGY =============================================
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
