@@ -26,7 +26,7 @@
 //test targets
 #include "../src/math/checks.hpp"
 #include "../src/math/gradients.hpp"
-#include "../src/math/collection_comparison.hpp"
+#include "../src/math/almost_equal.hpp"
 #include "../src/math/typedefs.hpp"
 #include "../src/math/convolution.hpp"
 #include "../src/math/statistics.hpp"
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(power_of_two_test01) {
 	BOOST_REQUIRE(!math::is_power_of_two(38));
 }
 
-BOOST_AUTO_TEST_CASE(gradient_test01) {
+BOOST_AUTO_TEST_CASE(scalar_field_gradient_test01) {
 	namespace eig = Eigen;
 	eig::Matrix2f field;
 	field << -0.46612028, -0.8161121,
@@ -53,13 +53,13 @@ BOOST_AUTO_TEST_CASE(gradient_test01) {
 			0.70888318, 0.02178612;
 
 	eig::MatrixXf gradient_x, gradient_y;
-	math::scalar_field_gradient(gradient_x, gradient_y, field);
+	math::gradient(gradient_x, gradient_y, field);
 
 	BOOST_REQUIRE(gradient_x.isApprox(expected_gradient_x));
 	BOOST_REQUIRE(gradient_y.isApprox(expected_gradient_y));
 }
 
-BOOST_AUTO_TEST_CASE(gradient_test02) {
+BOOST_AUTO_TEST_CASE(scalar_field_gradient_test02) {
 	using namespace Eigen;
 	Matrix3f field;
 	field << 0.11007435, -0.94589225, -0.54835034,
@@ -75,23 +75,23 @@ BOOST_AUTO_TEST_CASE(gradient_test02) {
 			-0.73450874, 0.03700753, -0.81714937;
 
 	MatrixXf gradient_x, gradient_y;
-	math::scalar_field_gradient(gradient_x, gradient_y, field);
+	math::gradient(gradient_x, gradient_y, field);
 
 	BOOST_REQUIRE(gradient_x.isApprox(expected_gradient_x));
 	BOOST_REQUIRE(gradient_y.isApprox(expected_gradient_y));
 }
 
-BOOST_AUTO_TEST_CASE(gradient_test03) {
+BOOST_AUTO_TEST_CASE(scalar_field_gradient_test03) {
 	using namespace Eigen;
 
 	MatrixXf gradient_x, gradient_y;
-	math::scalar_field_gradient(gradient_x, gradient_y, test_data::field);
+	math::gradient(gradient_x, gradient_y, test_data::field);
 
 	BOOST_REQUIRE(gradient_x.isApprox(test_data::expected_gradient_x));
 	BOOST_REQUIRE(gradient_y.isApprox(test_data::expected_gradient_y));
 }
 
-BOOST_AUTO_TEST_CASE(gradient_test04) {
+BOOST_AUTO_TEST_CASE(scalar_field_gradient_test04) {
 	namespace eig = Eigen;
 
 	eig::Matrix2f field;
@@ -106,12 +106,12 @@ BOOST_AUTO_TEST_CASE(gradient_test04) {
 													//@formatter:on
 
 	math::MatrixXv2f gradient;
-	math::scalar_field_gradient(gradient, field);
+	math::gradient(gradient, field);
 
 	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
 }
 
-BOOST_AUTO_TEST_CASE(gradient_test05) {
+BOOST_AUTO_TEST_CASE(scalar_field_gradient_test05) {
 	namespace eig = Eigen;
 
 	eig::Matrix3f field;
@@ -130,16 +130,16 @@ BOOST_AUTO_TEST_CASE(gradient_test05) {
 					-0.40353082f, -0.81714937f);
 													//@formatter:on
 	math::MatrixXv2f gradient;
-	math::scalar_field_gradient(gradient, field);
+	math::gradient(gradient, field);
 
 	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
 }
 
-BOOST_AUTO_TEST_CASE(gradient_test06) {
+BOOST_AUTO_TEST_CASE(scalar_field_gradient_test06) {
 	namespace eig = Eigen;
 
 	math::MatrixXv2f gradient;
-	math::scalar_field_gradient(gradient, test_data::field);
+	math::gradient(gradient, test_data::field);
 
 	eig::MatrixXf exp_grad_x = test_data::expected_gradient_x;
 	eig::MatrixXf exp_grad_y = test_data::expected_gradient_y;
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
 													//@formatter:on
 
 	math::MatrixXm2f gradient;
-	math::vector_field_gradient(gradient, vector_field);
+	math::gradient(gradient, vector_field);
 
 	math::MatrixXm2f expected_gradient(2, 2);
 	expected_gradient << math::Matrix2f(1.0f, -1.0f, -1.0f, 1.0f), math::Matrix2f(1.0f, 0.0f, -1.0f, 2.0f),
@@ -168,8 +168,8 @@ BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
 
 BOOST_AUTO_TEST_CASE(vector_field_gradient_test02) {
 	math::MatrixXm2f gradient;
-	math::vector_field_gradient(gradient, test_data::vector_field);
-	BOOST_REQUIRE(math::almost_equal(gradient, test_data::vector_field_gradient, 1e-6));
+	math::gradient(gradient, test_data::vector_field);
+	BOOST_REQUIRE(math::almost_equal(gradient, test_data::expected_vector_field_gradient, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(convolution_test01) {

@@ -71,7 +71,7 @@ inline void optimize_iteration(
 	data_gradient = math::stack_as_xv2f(data_gradient_x, data_gradient_y);
 
 	if (tikhonov_term_enabled) {
-		math::vector_field_laplacian_2d(tikhonov_gradient, gradient);
+		math::laplacian(tikhonov_gradient, gradient);
 		gradient = data_term_amplifier * data_gradient - tikhonov_strength * tikhonov_gradient;
 	} else {
 		gradient = data_term_amplifier * data_gradient;

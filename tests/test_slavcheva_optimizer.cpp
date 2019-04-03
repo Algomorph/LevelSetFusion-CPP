@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(test_data_term_gradient01) {
 	math::MatrixXv2f data_term_gradient, data_term_gradient_band_union_only;
 	float data_term_energy;
 	math::MatrixXv2f warped_live_field_gradient;
-	math::scalar_field_gradient(warped_live_field_gradient, test_data::warped_live_field);
+	math::gradient(warped_live_field_gradient, test_data::warped_live_field);
 	float expected_energy_out = 4.142916451210006f;
 	float expected_energy_out_band_union_only = 0.14291645121000718f;
 	nro_s::compute_data_term_gradient(data_term_gradient, data_term_energy,

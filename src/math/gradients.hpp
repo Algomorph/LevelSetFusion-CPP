@@ -20,14 +20,14 @@
 
 namespace math {
 
-void vector_field_laplacian_2d(math::MatrixXv2f& laplacian, const math::MatrixXv2f& field);
-void vector_field_laplacian_3d(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field);
-void vector_field_negative_laplacian(math::MatrixXv2f& laplacian, const math::MatrixXv2f& field);
-void vector_field_gradient(math::MatrixXm2f& gradient, const math::MatrixXv2f& field);
-void scalar_field_gradient(eig::MatrixXf& gradient_x, eig::MatrixXf& gradient_y, const eig::MatrixXf& field);
-void scalar_field_gradient(math::MatrixXv2f& gradient, const eig::MatrixXf& field);
-void field_gradient(math::Tensor3v3f& gradient, const math::Tensor3f field);
-void field_gradient2(math::Tensor3v3f& gradient, const math::Tensor3f field);
+void laplacian(math::MatrixXv2f& laplacian, const math::MatrixXv2f& field);
+void laplacian(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field);
+void negative_laplacian(math::MatrixXv2f& laplacian, const math::MatrixXv2f& field);
+void gradient(math::MatrixXm2f& gradient, const math::MatrixXv2f& field);
+void gradient(eig::MatrixXf& gradient_x, eig::MatrixXf& gradient_y, const eig::MatrixXf& field);
+void gradient(math::MatrixXv2f& gradient, const eig::MatrixXf& field);
+void gradient(math::Tensor3v3f& gradient, const math::Tensor3f field);
+void gradient2(math::Tensor3v3f& gradient, const math::Tensor3f field);
 
 }
 

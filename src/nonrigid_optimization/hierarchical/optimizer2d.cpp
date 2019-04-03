@@ -78,7 +78,7 @@ Optimizer2d::Optimizer2d(
 math::MatrixXv2f Optimizer2d::optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field) {
 
 	eig::MatrixXf live_gradient_x, live_gradient_y;
-	math::scalar_field_gradient(live_gradient_x, live_gradient_y, live_field);
+	math::gradient(live_gradient_x, live_gradient_y, live_field);
 	math::DownsamplingStrategy hierarchy_downsampling_strategy;
 	math::UpsamplingStrategy warp_upsampling_strategy;
 	switch(this->resampling_strategy){
@@ -184,7 +184,7 @@ void Optimizer2d::optimize_iteration(
 	data_gradient = math::stack_as_xv2f(data_gradient_x, data_gradient_y);
 
 	if (this->tikhonov_term_enabled) {
-		math::vector_field_laplacian_2d(tikhonov_gradient, gradient);
+		math::laplacian(tikhonov_gradient, gradient);
 		gradient = this->data_term_amplifier * data_gradient - this->tikhonov_strength * tikhonov_gradient;
 	} else {
 		gradient = this->data_term_amplifier * data_gradient;
