@@ -68,8 +68,6 @@ class Sdf2SdfOptimizer2d {
                            const TSDFGenerationParameters tsdf_generation_parameters,
                            float eta);
 
-    void test_input(int image_y_coordinate) {};
-
     private:
         const float rate = 0.5f;
         const int maximum_iteration_count = 60;
