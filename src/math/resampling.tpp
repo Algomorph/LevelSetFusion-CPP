@@ -32,9 +32,8 @@ namespace math {
 
 // region ================================ GENERIC UPSAMPLING ==========================================================
 template<typename ContainerType, typename Scalar>
-static inline
-ContainerType upsampleX2_aux(const ContainerType& field, UpsamplingStrategy upsampling_strategy){
-	switch(upsampling_strategy){
+static inline ContainerType upsampleX2_aux(const ContainerType& field, UpsamplingStrategy upsampling_strategy) {
+	switch (upsampling_strategy) {
 	case UpsamplingStrategy::NEAREST:
 		return upsampleX2_nearest(field);
 	case UpsamplingStrategy::LINEAR:
@@ -48,15 +47,16 @@ ContainerType upsampleX2_aux(const ContainerType& field, UpsamplingStrategy upsa
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
-		UpsamplingStrategy upsampling_strategy){
-	return upsampleX2_aux<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Scalar>(field,upsampling_strategy);
+		UpsamplingStrategy upsampling_strategy) {
+	return upsampleX2_aux<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Scalar>(field,
+			upsampling_strategy);
 }
 
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field,
-		UpsamplingStrategy upsampling_strategy){
-	return upsampleX2_aux<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>, Scalar>(field,upsampling_strategy);
+		UpsamplingStrategy upsampling_strategy) {
+	return upsampleX2_aux<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>, Scalar>(field, upsampling_strategy);
 }
 
 // endregion
@@ -97,7 +97,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX
 
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_nearest(
-		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
 	//TODO
 	assert(false && "not implemented");
 	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
@@ -184,7 +184,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 					+ 0.1875f * value11;
 			upsampled(dest_row + 1, dest_col + 1) = 0.0625f * value00 + 0.1875f * value01 + 0.1875f * value10
 					+ 0.5625f * value11;
-																																																						//@formatter:on
+																																																												//@formatter:on
 			value00 = value10;
 			value01 = value11;
 		}
@@ -194,7 +194,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 }
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
-		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
 	//TODO
 	assert(false && "Not implemented");
 	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
@@ -202,11 +202,10 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
 //endregion
 //region ===================================== GENERIC DOWNSAMPLING ====================================================
 template<typename ContainerType, typename Scalar>
-static inline
-ContainerType downsampleX2_aux(
+static inline ContainerType downsampleX2_aux(
 		const ContainerType& field,
-		DownsamplingStrategy downsampling_strategy){
-	switch(downsampling_strategy){
+		DownsamplingStrategy downsampling_strategy) {
+	switch (downsampling_strategy) {
 	case DownsamplingStrategy::AVERAGE:
 		return downsampleX2_average(field);
 	case DownsamplingStrategy::LINEAR:
@@ -220,15 +219,16 @@ ContainerType downsampleX2_aux(
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
-		DownsamplingStrategy downsampling_strategy){
-	return downsampleX2_aux<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Scalar>(field,downsampling_strategy);
+		DownsamplingStrategy downsampling_strategy) {
+	return downsampleX2_aux<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Scalar>(field,
+			downsampling_strategy);
 }
 
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field,
-		DownsamplingStrategy downsampling_strategy){
-	return downsampleX2_aux<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>, Scalar>(field,downsampling_strategy);
+		DownsamplingStrategy downsampling_strategy) {
+	return downsampleX2_aux<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>, Scalar>(field, downsampling_strategy);
 }
 //endregion
 //region ============================== DOWNSAMPLING USING AVERAGE STRATEGY ============================================
@@ -262,10 +262,37 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_average(
-		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
-	//TODO
-	assert(false && "Not implemented");
-	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
+	eig::Tensor<Scalar, 3> downsampled(
+			field.dimension(0) / 2,
+			field.dimension(1) / 2,
+			field.dimension(2) / 2
+	);
+	//average each square of 4 cells into one
+	for (int z_target = 0, z_source = 0;
+			z_target < downsampled.dimension(2);
+			z_target++, z_source += 2) {
+		for (eig::Index y_target = 0, y_source = 0;
+				y_target < downsampled.dimension(1);
+				y_target++, y_source += 2) {
+			for (eig::Index x_target = 0, x_source = 0;
+					x_target < downsampled.dimension(0);
+					x_target++, x_source += 2) {
+				/* @formatter:off*/
+				downsampled(x_target, y_target, z_target) = (
+						field(x_source, y_source, z_source) +
+						field(x_source + 1, y_source, z_source) +
+						field(x_source, y_source + 1, z_source) +
+						field(x_source + 1, y_source + 1, z_source) +
+						field(x_source, y_source, z_source + 1) +
+						field(x_source + 1, y_source, z_source + 1) +
+						field(x_source, y_source + 1, z_source + 1)+
+						field(x_source + 1, y_source + 1, z_source + 1)
+				) / 8.0f;/* @formatter:on */
+			}
+		}
+	}
+	return downsampled;
 }
 
 //endregion
@@ -275,7 +302,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
 #ifndef NDEBUG
 	eigen_assert((field.rows() % 2 == 0 && field.cols() % 2 == 0 &&
-					field.rows() > 2 && field.cols() > 2)
+			field.rows() > 2 && field.cols() > 2)
 			&& "Each dimension of the argument 'field' must be divisible by 2 and greater than 2.");
 #endif
 	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampled(field.rows() / 2,
@@ -344,7 +371,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 
 	//left column, right column
 #pragma omp parallel for
-	for (eig::Index target_row = 1; target_row < downsampled.rows() - 1;target_row++) {
+	for (eig::Index target_row = 1; target_row < downsampled.rows() - 1; target_row++) {
 		eig::Index source_row = target_row * 2;
 		downsampled(target_row, 0) = //@formatter:off
 			coeff0 * (field(source_row, 0) + field(source_row + 1, 0) +
@@ -395,7 +422,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 }
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
-		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
 	//TODO
 	assert(false && "Not implemented");
 	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
