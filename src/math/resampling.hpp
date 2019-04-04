@@ -93,7 +93,6 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX
  * Upsample the field such that the output is a field 2X larger than the original in each dimension.
  * @overload
  */
-//TODO
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_nearest(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
@@ -128,7 +127,6 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
  * interpolation (LINEAR) strategy.
  * @overload
  */
-//TODO
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
@@ -179,7 +177,6 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
  * corresponding dimension of the input field using simple averaging (AVERAGE strategy).
  * @overload
  */
-//TODO
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_average(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
@@ -216,7 +213,6 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
  * corresponding dimension of the input field using bilinear interpolation (LINEAR strategy).
  * @overload
  */
-//TODO
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);

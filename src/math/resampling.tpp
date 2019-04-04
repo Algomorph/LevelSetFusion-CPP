@@ -49,14 +49,14 @@ template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
 		UpsamplingStrategy upsampling_strategy){
-	return upsampleX2_aux(field,upsampling_strategy);
+	return upsampleX2_aux<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Scalar>(field,upsampling_strategy);
 }
 
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field,
-		UpsamplingStrategy upsampling_strategy = UpsamplingStrategy::NEAREST){
-	return upsampleX2_aux(field,upsampling_strategy);
+		UpsamplingStrategy upsampling_strategy){
+	return upsampleX2_aux<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>, Scalar>(field,upsampling_strategy);
 }
 
 // endregion
@@ -95,6 +95,15 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX
 	return upsampled;
 }
 
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_nearest(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+	//TODO
+	assert(false && "not implemented");
+	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
+}
+//endregion
+//region ====================================== LINEAR UPSAMPLING ======================================================
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
@@ -183,6 +192,14 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 
 	return upsampled;
 }
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+	//TODO
+	assert(false && "Not implemented");
+	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
+}
+//endregion
 //region ===================================== GENERIC DOWNSAMPLING ====================================================
 template<typename ContainerType, typename Scalar>
 static inline
@@ -204,14 +221,14 @@ template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
 		DownsamplingStrategy downsampling_strategy){
-	return downsampleX2_aux(field,downsampling_strategy);
+	return downsampleX2_aux<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Scalar>(field,downsampling_strategy);
 }
 
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field,
-		DownsamplingStrategy downsampling_strategy = DownsamplingStrategy::AVERAGE){
-	return downsampleX2_aux(field,downsampling_strategy);
+		DownsamplingStrategy downsampling_strategy){
+	return downsampleX2_aux<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>, Scalar>(field,downsampling_strategy);
 }
 //endregion
 //region ============================== DOWNSAMPLING USING AVERAGE STRATEGY ============================================
@@ -242,6 +259,15 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 	}
 	return downsampled;
 }
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_average(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+	//TODO
+	assert(false && "Not implemented");
+	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
+}
+
 //endregion
 //region ============================== DOWNSAMPLING USING LINEAR STRATEGY =============================================
 template<typename Scalar>
@@ -366,6 +392,13 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 		}
 	}
 	return downsampled;
+}
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+	//TODO
+	assert(false && "Not implemented");
+	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
 }
 
 } // namespace math
