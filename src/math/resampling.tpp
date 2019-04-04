@@ -95,11 +95,28 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX
 	return upsampled;
 }
 
+//TODO: write tests for this
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_nearest(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
-	//TODO
-	assert(false && "not implemented");
+	Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampled(field.dimension(0) * 2, field.dimension(1) * 2, field.dimension(2) * 2);
+#pragma omp parallel for
+	for (int z_source = 0; z_source < field.dimension(2); z_source ++){
+		int z_dest = z_source*2;
+		for (int y_dest = 0, y_source = 0; y_source < field.dimension(1); y_dest += 2, y_source++) {
+			for (int x_dest = 0, x_source = 0; x_source < field.dimension(0); x_dest += 2, x_source++) {
+				Scalar value = field(x_source, y_source, z_source);
+				upsampled(x_dest, y_dest, z_dest) = value;
+				upsampled(x_dest + 1, y_dest, z_dest) = value;
+				upsampled(x_dest, y_dest + 1, z_dest) = value;
+				upsampled(x_dest + 1, x_dest + 1, z_dest) = value;
+				upsampled(x_dest, y_dest, z_dest + 1) = value;
+				upsampled(x_dest + 1, y_dest, z_dest + 1) = value;
+				upsampled(x_dest, y_dest + 1, z_dest + 1) = value;
+				upsampled(x_dest + 1, x_dest + 1, z_dest + 1) = value;
+			}
+		}
+	}
 	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
 }
 //endregion
