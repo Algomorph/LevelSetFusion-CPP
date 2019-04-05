@@ -26,6 +26,7 @@
 //local
 #include "resampling.hpp"
 #include "checks.hpp"
+#include "../error_handling/throw_assert.hpp"
 
 namespace eig = Eigen;
 namespace math {
@@ -39,7 +40,8 @@ static inline ContainerType upsampleX2_aux(const ContainerType& field, Upsamplin
 	case UpsamplingStrategy::LINEAR:
 		return upsampleX2_linear(field);
 	default:
-		assert(false && "Unknown UpsamplingStrategy");
+		throw_assert(false, "Unknown UpsamplingStrategy")
+		;
 		return ContainerType();
 	}
 }
@@ -203,7 +205,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 					+ 0.1875f * value11;
 			upsampled(dest_row + 1, dest_col + 1) = 0.0625f * value00 + 0.1875f * value01 + 0.1875f * value10
 					+ 0.5625f * value11;
-																																																																																				//@formatter:on
+																																																																																													//@formatter:on
 			value00 = value10;
 			value01 = value11;
 		}
@@ -217,12 +219,11 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
 	typedef Eigen::Tensor<Scalar, 3, Eigen::ColMajor> TensorType;
 	typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> MatrixType;
 
-	int size_x = field.dimension(0); int size_y = field.dimension(1); int size_z = field.dimension(2);
-	int usize_x = size_x * 2; int usize_y = size_y * 2; int usize_z = size_z * 2;
-	int ulx = usize_x - 1; int uly = usize_y - 1; int ulz = usize_z - 1;
+	int size_x = field.dimension(0), size_y = field.dimension(1), size_z = field.dimension(2);
+	int usize_x = size_x * 2, usize_y = size_y * 2, usize_z = size_z * 2;
+	int ulx = usize_x - 1, uly = usize_y - 1, ulz = usize_z - 1;
 
 	TensorType upsampled(usize_x, usize_y, usize_z);
-
 	//the sides can be processed as matrices.
 
 	typedef eig::array<long, 3> Arrl3;
@@ -243,24 +244,24 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
 		Arrl3 offset_target;
 		Arrl3 extent_target;
 	};
-	FaceExtentAndOffset face_extents_and_offsets[] = {//@formatter:off
+	FaceExtentAndOffset face_extents_and_offsets[] = { //@formatter:off
 			{Arrl3{0,0,0},        extents_source[0], Arrl3{0,0,  0}, extents_target[0]},  //near x
 			{Arrl3{size_x-1,0,0}, extents_source[0], Arrl3{ulx,0,0}, extents_target[0]},  //far x
 			{Arrl3{0,0,0},        extents_source[1], Arrl3{0,0,  0}, extents_target[1]},  //near y
 			{Arrl3{0,size_y-1,0}, extents_source[1], Arrl3{0,uly,0}, extents_target[1]},  //far y
 			{Arrl3{0,0,0},        extents_source[2], Arrl3{0,0,  0}, extents_target[2]},  //near z
 			{Arrl3{0,0,size_z-1}, extents_source[2], Arrl3{0,0,ulz}, extents_target[2]}   //far z
-	};//@formatter:on
-	// x sides
+	};			//@formatter:on
+			// x sides
 
-	for(const FaceExtentAndOffset& feao : face_extents_and_offsets){
+	for (const FaceExtentAndOffset& feao : face_extents_and_offsets) {
 		TensorType slice_source = field.slice(feao.offset_source, feao.extent_source);
 		MatrixType slice_matrix_source = eig::Map<MatrixType>(slice_source.data(), size_y, size_z);
 		MatrixType slice_matrix_upsampled = upsampleX2_linear(slice_matrix_source);
 		eig::TensorMap<TensorType, eig::Aligned> slice_upsampled(slice_matrix_upsampled.data(), 1, usize_y, usize_z);
 		upsampled.slice(feao.offset_target, feao.extent_target) = slice_upsampled;
 	}
-	
+
 #pragma omp parallel for
 	for (int z_source = 0; z_source < size_z - 1; z_source++) {
 		int z_dest = z_source * 2 + 1;
@@ -319,7 +320,8 @@ static inline ContainerType downsampleX2_aux(
 	case DownsamplingStrategy::LINEAR:
 		return downsampleX2_linear(field);
 	default:
-		assert(false && "Unknown UpsamplingStrategy");
+		throw_assert(false, "Unknown UpsamplingStrategy")
+		;
 		return ContainerType();
 	}
 }
@@ -343,10 +345,9 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2(
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_average(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
-#ifndef NDEBUG
-	eigen_assert((math::is_power_of_two(field.rows()) && math::is_power_of_two(field.cols()))
-			&& "The argument 'field' must have a power of two for each dimension.");
-#endif
+
+	throw_assert((math::is_power_of_two(field.rows()) && math::is_power_of_two(field.cols())),
+			"The argument 'field' must have a power of two for each dimension.");
 
 	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampled(field.rows() / 2,
 			field.cols() / 2);
@@ -408,9 +409,8 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_average(
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
-	assert((field.rows() % 2 == 0 && field.cols() % 2 == 0 &&
-			field.rows() > 2 && field.cols() > 2)
-			&& "Each dimension of the argument 'field' must be divisible by 2 and greater than 2.");
+	throw_assert((field.rows() % 2 == 0 && field.cols() % 2 == 0 && field.rows() > 2 && field.cols() > 2),
+			"Each dimension of the argument 'field' must be divisible by 2 and greater than 2.");
 
 	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampled(field.rows() / 2,
 			field.cols() / 2);
@@ -530,9 +530,114 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
-	//TODO
-	assert(false && "Not implemented");
-	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
+
+	throw_assert(field.dimension(0) % 2 == 0 && field.dimension(1) % 2 == 0 && field.dimension(2) % 2 == 0 &&
+			field.dimension(0) > 2 && field.dimension(1) > 2 && field.dimension(2) > 2,
+			"Each dimension of the argument 'field' must be divisible by 2 and greater than 2.");
+	typedef Eigen::Tensor<Scalar, 3, Eigen::ColMajor> TensorType;
+	int size_x = field.dimension(0), size_y = field.dimension(1), size_z = field.dimension(2);
+	int dsize_x = size_x / 2, dsize_y = size_y / 2, dsize_z = size_z / 2;
+	TensorType downsampled(dsize_x, dsize_y, dsize_z);
+	const float c0 = 0.052734375f;
+	const float c1 = 0.017578125f;
+	const float c2 = 0.005859375f;
+	const float c3 = 0.001953125f;
+
+	downsampled.setZero();
+
+//#pragma omp parallel for
+	for (int x_target = 1; x_target < dsize_x-1; x_target++) {
+		int x_source = x_target * 2;
+		for (int y_target = 1, y_source = 2; y_target < dsize_y-1; y_target++, y_source += 2) {
+			for (int z_target = 1, z_source = 2; z_target < dsize_z-1; z_target++, z_source += 2) {
+				downsampled(x_target,y_target,z_target) = //@formatter:off
+						c0 * (field(x_source + 0, y_source + 0, z_source + 0) +
+							  field(x_source + 1, y_source + 0, z_source + 0) +
+							  field(x_source + 0, y_source + 1, z_source + 0) +
+							  field(x_source + 1, y_source + 1, z_source + 0) +
+							  field(x_source + 0, y_source + 0, z_source + 1) +
+							  field(x_source + 1, y_source + 0, z_source + 1) +
+							  field(x_source + 0, y_source + 1, z_source + 1) +
+							  field(x_source + 1, y_source + 1, z_source + 1)) +
+
+					    c1 * (field(x_source - 1, y_source + 0, z_source + 0) +
+							  field(x_source + 0, y_source - 1, z_source + 0) +
+							  field(x_source + 0, y_source + 0, z_source - 1) +
+
+							  field(x_source + 2, y_source + 0, z_source + 0) +
+							  field(x_source + 1, y_source - 1, z_source + 0) +
+							  field(x_source + 1, y_source + 0, z_source - 1) +
+
+							  field(x_source - 1, y_source + 1, z_source + 0) +
+							  field(x_source + 0, y_source + 2, z_source + 0) +
+							  field(x_source + 0, y_source + 1, z_source - 1) +
+
+							  field(x_source + 2, y_source + 1, z_source + 0) +
+							  field(x_source + 1, y_source + 2, z_source + 0) +
+							  field(x_source + 1, y_source + 1, z_source - 1) +
+
+							  field(x_source - 1, y_source + 0, z_source + 1) +
+							  field(x_source + 0, y_source - 1, z_source + 1) +
+							  field(x_source + 0, y_source + 0, z_source + 2) +
+
+							  field(x_source + 2, y_source + 0, z_source + 1) +
+							  field(x_source + 1, y_source - 1, z_source + 1) +
+							  field(x_source + 1, y_source + 0, z_source + 2) +
+
+							  field(x_source - 1, y_source + 1, z_source + 1) +
+							  field(x_source + 0, y_source + 2, z_source + 1) +
+							  field(x_source + 0, y_source + 1, z_source + 2) +
+
+							  field(x_source + 2, y_source + 1, z_source + 1) +
+							  field(x_source + 1, y_source + 2, z_source + 1) +
+							  field(x_source + 1, y_source + 1, z_source + 2)) +
+
+						c2 * (field(x_source - 1, y_source - 1, z_source + 0) +
+							  field(x_source + 0, y_source - 1, z_source - 1) +
+							  field(x_source - 1, y_source + 0, z_source - 1) +
+
+							  field(x_source + 2, y_source - 1, z_source + 0) +
+							  field(x_source + 1, y_source - 1, z_source - 1) +
+							  field(x_source + 2, y_source + 0, z_source - 1) +
+
+							  field(x_source - 1, y_source + 2, z_source + 0) +
+							  field(x_source + 0, y_source + 2, z_source - 1) +
+							  field(x_source - 1, y_source + 1, z_source - 1) +
+
+							  field(x_source + 2, y_source + 2, z_source + 0) +
+							  field(x_source + 1, y_source + 2, z_source - 1) +
+							  field(x_source + 2, y_source + 1, z_source - 1) +
+
+							  field(x_source - 1, y_source - 1, z_source + 1) +
+							  field(x_source + 0, y_source - 1, z_source + 2) +
+							  field(x_source - 1, y_source + 0, z_source + 2) +
+
+							  field(x_source + 2, y_source - 1, z_source + 1) +
+							  field(x_source + 1, y_source - 1, z_source + 2) +
+							  field(x_source + 2, y_source + 0, z_source + 2) +
+
+							  field(x_source - 1, y_source + 2, z_source + 1) +
+							  field(x_source + 0, y_source + 2, z_source + 2) +
+							  field(x_source - 1, y_source + 1, z_source + 2) +
+
+							  field(x_source + 2, y_source + 2, z_source + 1) +
+							  field(x_source + 1, y_source + 2, z_source + 2) +
+							  field(x_source + 2, y_source + 1, z_source + 2)) +
+
+					    c3 * (field(x_source - 1, y_source - 1, z_source - 1) +
+							  field(x_source + 2, y_source - 1, z_source - 1) +
+							  field(x_source - 1, y_source + 2, z_source - 1) +
+							  field(x_source + 2, y_source + 2, z_source - 1) +
+							  field(x_source - 1, y_source - 1, z_source + 2) +
+							  field(x_source + 2, y_source - 1, z_source + 2) +
+							  field(x_source - 1, y_source + 2, z_source + 2) +
+							  field(x_source + 2, y_source + 2, z_source + 2))
+
+				;//@formatter:on
+			}
+		}
+	}
+	return downsampled;
 }
 
 } // namespace math

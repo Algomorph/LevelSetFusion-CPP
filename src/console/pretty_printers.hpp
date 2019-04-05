@@ -26,7 +26,7 @@
 std::ostream& operator<<(std::ostream& os, const math::Tensor3f& tensor)
 {
 	std::ios_base::fmtflags original_flags(os.flags());
-	os.precision(4);
+	os.precision(6);
 	os << std::fixed;
 	for(int z = 0; z < tensor.dimension(2); z++){
 		for(int y = 0; y < tensor.dimension(1); y++){
@@ -41,7 +41,7 @@ std::ostream& operator<<(std::ostream& os, const math::Tensor3f& tensor)
     return os;
 }
 namespace console{
-void print_initialization_array(std::ostream& os, const math::Tensor3f& tensor, int precision = 4)
+void print_initializer_list(std::ostream& os, const math::Tensor3f& tensor, int precision = 4)
 {
 	std::ios_base::fmtflags original_flags(os.flags());
 	os.precision(precision);
@@ -56,9 +56,9 @@ void print_initialization_array(std::ostream& os, const math::Tensor3f& tensor, 
 				os << "  ";
 			os << "{";
 			for(int z =0; z < tensor.dimension(2)-1; z++){
-				os << tensor(x,y,z) << ", ";
+				os << tensor(x,y,z) << "f, ";
 			}
-			os << tensor(x,y,tensor.dimension(2)-1) << "}";
+			os << tensor(x,y,tensor.dimension(2)-1) << "f}";
 			if(y == tensor.dimension(1)-1){
 				os << "";
 			}else{
@@ -71,7 +71,7 @@ void print_initialization_array(std::ostream& os, const math::Tensor3f& tensor, 
 			os << "}," << std::endl;
 		}
 	}
-	os << "};";
+	os << "}" << std::endl;
 	os.flags(original_flags);
 }
 } //end namespace console
