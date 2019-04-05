@@ -15,10 +15,16 @@
 
 #define BOOST_TEST_MODULE test_math
 
+//stdlib
+#include <iostream>
+
 //libraries
 #include <boost/test/unit_test.hpp>
 #include <boost/python.hpp>
 #include <Eigen/Eigen>
+
+//utils
+#include "../src/console/pretty_printers.hpp"
 
 //test data
 #include "data/test_data_math.hpp"
@@ -103,7 +109,7 @@ BOOST_AUTO_TEST_CASE(scalar_field_gradient_test04) {
 			//@formatter:off
 			math::Vector2f(-0.34999183f, 0.70888318f), math::Vector2f(-0.34999183f, 0.02178612f),
 			math::Vector2f(-1.03708889f, 0.70888318f), math::Vector2f(-1.03708889f, 0.02178612f);
-													//@formatter:on
+																			//@formatter:on
 
 	math::MatrixXv2f gradient;
 	math::gradient(gradient, field);
@@ -128,7 +134,7 @@ BOOST_AUTO_TEST_CASE(scalar_field_gradient_test05) {
 					0.45062608f, 0.16872265f),
 			math::Vector2f(1.02331373f, -0.73450874f), math::Vector2f(0.30989146f, 0.03700753f), math::Vector2f(
 					-0.40353082f, -0.81714937f);
-													//@formatter:on
+																			//@formatter:on
 	math::MatrixXv2f gradient;
 	math::gradient(gradient, field);
 
@@ -154,7 +160,7 @@ BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
 	vector_field << //@formatter:off
 			math::Vector2f(0.0f, 0.0f), math::Vector2f(1.0f, -1.0f),
 			math::Vector2f(-1.0f, 1.0f), math::Vector2f(1.0f, 1.0f);
-													//@formatter:on
+																			//@formatter:on
 
 	math::MatrixXm2f gradient;
 	math::gradient(gradient, vector_field);
@@ -384,7 +390,7 @@ BOOST_AUTO_TEST_CASE(mean_and_std_test01) {
 	BOOST_REQUIRE_CLOSE(std, 0.26306444f, 1e-8);
 }
 
-BOOST_AUTO_TEST_CASE(test_upsampling01) {
+BOOST_AUTO_TEST_CASE(test_upsampling_linear_matrix01) {
 	eig::MatrixXf input(2, 3);
 	input << 1.0f, 2.0f, 3.0f,
 			4.0f, 5.0f, 6.0f;
@@ -433,7 +439,73 @@ BOOST_AUTO_TEST_CASE(test_upsampling01) {
 	BOOST_REQUIRE(math::almost_equal_verbose(output3, expected_output3, 1e-6));
 }
 
-BOOST_AUTO_TEST_CASE(test_downsampling01) {
+BOOST_AUTO_TEST_CASE(test_upsampling_nearest_tensor01) {
+	math::Tensor3f input(2, 2, 2);
+	input.setValues( //@formatter:off
+		{{{ 1.0f, 2.0f },
+		  { 3.0f, 4.0f }},
+		 {{ 5.0f, 6.0f },
+		  { 7.0f, 8.0f }}}
+	); //@formatter:on
+
+	math::Tensor3f expected_output(4,4,4);
+	expected_output.setValues(//@formatter:off
+		{{{1.0f, 1.0f, 2.0f, 2.0f},
+		  {1.0f, 1.0f, 2.0f, 2.0f},
+		  {3.0f, 3.0f, 4.0f, 4.0f},
+		  {3.0f, 3.0f, 4.0f, 4.0f}},
+		 {{1.0f, 1.0f, 2.0f, 2.0f},
+		  {1.0f, 1.0f, 2.0f, 2.0f},
+		  {3.0f, 3.0f, 4.0f, 4.0f},
+		  {3.0f, 3.0f, 4.0f, 4.0f}},
+		 {{5.0f, 5.0f, 6.0f, 6.0f},
+		  {5.0f, 5.0f, 6.0f, 6.0f},
+		  {7.0f, 7.0f, 8.0f, 8.0f},
+		  {7.0f, 7.0f, 8.0f, 8.0f}},
+		 {{5.0f, 5.0f, 6.0f, 6.0f},
+		  {5.0f, 5.0f, 6.0f, 6.0f},
+		  {7.0f, 7.0f, 8.0f, 8.0f},
+		  {7.0f, 7.0f, 8.0f, 8.0f}}}
+	); //@formatter:on
+
+	math::Tensor3f output = math::upsampleX2_nearest(input);
+	BOOST_REQUIRE(math::almost_equal_verbose(output, expected_output, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_upsampling_linear_tensor01) {
+	math::Tensor3f input(2, 2, 2);
+	input.setValues( //@formatter:off
+		{{{ 1.0f, 5.0f },
+		  { 3.0f, 7.0f }},
+		 {{ 2.0f, 6.0f },
+		  { 4.0f, 8.0f }}}
+	); //@formatter:on
+
+	math::Tensor3f expected_output(4,4,4);
+	expected_output.setValues(//@formatter:off
+		{{{1.0000, 2.0000, 4.0000, 5.0000},
+		  {1.5000, 2.5000, 4.5000, 5.5000},
+		  {2.5000, 3.5000, 5.5000, 6.5000},
+		  {3.0000, 4.0000, 6.0000, 7.0000}},
+		 {{1.2500, 2.2500, 4.2500, 5.2500},
+		  {1.7500, 2.7500, 4.7500, 5.7500},
+		  {2.7500, 3.7500, 5.7500, 6.7500},
+		  {3.2500, 4.2500, 6.2500, 7.2500}},
+		 {{1.7500, 2.7500, 4.7500, 5.7500},
+		  {2.2500, 3.2500, 5.2500, 6.2500},
+		  {3.2500, 4.2500, 6.2500, 7.2500},
+		  {3.7500, 4.7500, 6.7500, 7.7500}},
+		 {{2.0000, 3.0000, 5.0000, 6.0000},
+		  {2.5000, 3.5000, 5.5000, 6.5000},
+		  {3.5000, 4.5000, 6.5000, 7.5000},
+		  {4.0000, 5.0000, 7.0000, 8.0000}}}
+	); //@formatter:on
+
+	math::Tensor3f output = math::upsampleX2_linear(input);
+	BOOST_REQUIRE(math::almost_equal_verbose(output, expected_output, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_downsampling_linear_matrix01) {
 	eig::MatrixXf input(6, 4);
 	input <<
 			0.0f, 1.0f, 2.0f, 3.0f,

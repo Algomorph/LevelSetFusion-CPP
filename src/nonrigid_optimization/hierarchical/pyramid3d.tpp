@@ -20,13 +20,11 @@
 
 #pragma once
 
-//stdlib
-#include <cassert>
-
 //local
 #include "pyramid3d.hpp"
 #include "../../math/checks.hpp"
 #include "../../math/resampling.tpp"
+#include "../../error_handling/throw_assert.hpp"
 
 
 namespace eig = Eigen;
@@ -37,12 +35,11 @@ template<typename ElementType>
 Pyramid3d<ElementType>::Pyramid3d(eig::Tensor<ElementType, 3> field, int maximum_chunk_size) :
 		levels() {
 
-	assert((math::is_power_of_two(field.dimension(0))
+	throw_assert((math::is_power_of_two(field.dimension(0))
 			&& math::is_power_of_two(field.dimension(1))
-			&& math::is_power_of_two(field.dimension(1)))
-			&& "The argument 'field' must have a power of two for each dimension.");
+			&& math::is_power_of_two(field.dimension(1))), "The argument 'field' must have a power of two for each dimension.");
 
-	assert(math::is_power_of_two(maximum_chunk_size) && // @suppress("Invalid arguments")
+	throw_assert(math::is_power_of_two(maximum_chunk_size),
 			"The argument 'maximum_chunk_size' must be an integer power of 2, i.e. 4, 8, 16, etc.");
 
 	int power_of_two_largest_chunk = static_cast<int>(std::log2(maximum_chunk_size));
@@ -51,7 +48,7 @@ Pyramid3d<ElementType>::Pyramid3d(eig::Tensor<ElementType, 3> field, int maximum
 	int max_level_count = static_cast<int>(
 			std::min( { std::log2(field.dimension(0)), std::log2(field.dimension(1)), std::log2(field.dimension(2)) }))
 			+ 1;
-	assert(max_level_count > power_of_two_largest_chunk && "Maximum chunk size too large for the field size."); // @suppress("Invalid arguments")
+	throw_assert(max_level_count > power_of_two_largest_chunk, "Maximum chunk size too large for the field size.");
 
 
 	int level_count = power_of_two_largest_chunk + 1;

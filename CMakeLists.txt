@@ -303,8 +303,12 @@ add_library(${MODULE_NAME} SHARED
 			# console: utilities for printing things to the console in better ways
 			src/console/colors.hpp
 			src/console/colors.cpp
+			src/console/pretty_printers.hpp
 			src/console/progress_bar.cpp
-			src/console/progress_bar.hpp)
+			src/console/progress_bar.hpp
+			
+			src/error_handling/throw_assert.hpp
+			)
 
 target_link_libraries(${MODULE_NAME}
         PUBLIC

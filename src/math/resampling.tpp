@@ -99,25 +99,27 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_nearest(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
-	Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampled(field.dimension(0) * 2, field.dimension(1) * 2, field.dimension(2) * 2);
+	Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampled(field.dimension(0) * 2, field.dimension(1) * 2,
+			field.dimension(2) * 2);
 #pragma omp parallel for
-	for (int z_source = 0; z_source < field.dimension(2); z_source ++){
-		int z_dest = z_source*2;
+	for (int z_source = 0; z_source < field.dimension(2); z_source++) {
+		int z_dest = z_source * 2;
 		for (int y_dest = 0, y_source = 0; y_source < field.dimension(1); y_dest += 2, y_source++) {
 			for (int x_dest = 0, x_source = 0; x_source < field.dimension(0); x_dest += 2, x_source++) {
 				Scalar value = field(x_source, y_source, z_source);
 				upsampled(x_dest, y_dest, z_dest) = value;
 				upsampled(x_dest + 1, y_dest, z_dest) = value;
 				upsampled(x_dest, y_dest + 1, z_dest) = value;
-				upsampled(x_dest + 1, x_dest + 1, z_dest) = value;
+				upsampled(x_dest + 1, y_dest + 1, z_dest) = value;
+
 				upsampled(x_dest, y_dest, z_dest + 1) = value;
 				upsampled(x_dest + 1, y_dest, z_dest + 1) = value;
 				upsampled(x_dest, y_dest + 1, z_dest + 1) = value;
-				upsampled(x_dest + 1, x_dest + 1, z_dest + 1) = value;
+				upsampled(x_dest + 1, y_dest + 1, z_dest + 1) = value;
 			}
 		}
 	}
-	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
+	return upsampled;
 }
 //endregion
 //region ====================================== LINEAR UPSAMPLING ======================================================
@@ -201,7 +203,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 					+ 0.1875f * value11;
 			upsampled(dest_row + 1, dest_col + 1) = 0.0625f * value00 + 0.1875f * value01 + 0.1875f * value10
 					+ 0.5625f * value11;
-																																																												//@formatter:on
+																																																																																				//@formatter:on
 			value00 = value10;
 			value01 = value11;
 		}
@@ -212,9 +214,98 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
-	//TODO
-	assert(false && "Not implemented");
-	return Eigen::Tensor<Scalar, 3, Eigen::ColMajor>();
+	typedef Eigen::Tensor<Scalar, 3, Eigen::ColMajor> TensorType;
+	typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> MatrixType;
+
+	int size_x = field.dimension(0); int size_y = field.dimension(1); int size_z = field.dimension(2);
+	int usize_x = size_x * 2; int usize_y = size_y * 2; int usize_z = size_z * 2;
+	int ulx = usize_x - 1; int uly = usize_y - 1; int ulz = usize_z - 1;
+
+	TensorType upsampled(usize_x, usize_y, usize_z);
+
+	//the sides can be processed as matrices.
+
+	typedef eig::array<long, 3> Arrl3;
+
+	Arrl3 extents_source[] = {
+			Arrl3 { 1, size_y, size_z },
+			Arrl3 { size_x, 1, size_z },
+			Arrl3 { size_x, size_y, 1 }
+	};
+	Arrl3 extents_target[] = {
+			Arrl3 { 1, usize_y, usize_z },
+			Arrl3 { usize_x, 1, usize_z },
+			Arrl3 { usize_x, usize_y, 1 }
+	};
+	struct FaceExtentAndOffset {
+		Arrl3 offset_source;
+		Arrl3 extent_source;
+		Arrl3 offset_target;
+		Arrl3 extent_target;
+	};
+	FaceExtentAndOffset face_extents_and_offsets[] = {//@formatter:off
+			{Arrl3{0,0,0},        extents_source[0], Arrl3{0,0,  0}, extents_target[0]},  //near x
+			{Arrl3{size_x-1,0,0}, extents_source[0], Arrl3{ulx,0,0}, extents_target[0]},  //far x
+			{Arrl3{0,0,0},        extents_source[1], Arrl3{0,0,  0}, extents_target[1]},  //near y
+			{Arrl3{0,size_y-1,0}, extents_source[1], Arrl3{0,uly,0}, extents_target[1]},  //far y
+			{Arrl3{0,0,0},        extents_source[2], Arrl3{0,0,  0}, extents_target[2]},  //near z
+			{Arrl3{0,0,size_z-1}, extents_source[2], Arrl3{0,0,ulz}, extents_target[2]}   //far z
+	};//@formatter:on
+	// x sides
+
+	for(const FaceExtentAndOffset& feao : face_extents_and_offsets){
+		TensorType slice_source = field.slice(feao.offset_source, feao.extent_source);
+		MatrixType slice_matrix_source = eig::Map<MatrixType>(slice_source.data(), size_y, size_z);
+		MatrixType slice_matrix_upsampled = upsampleX2_linear(slice_matrix_source);
+		eig::TensorMap<TensorType, eig::Aligned> slice_upsampled(slice_matrix_upsampled.data(), 1, usize_y, usize_z);
+		upsampled.slice(feao.offset_target, feao.extent_target) = slice_upsampled;
+	}
+	
+#pragma omp parallel for
+	for (int z_source = 0; z_source < size_z - 1; z_source++) {
+		int z_dest = z_source * 2 + 1;
+		for (int y_dest = 1, y_source = 0; y_source < size_y - 1; y_dest += 2, y_source++) {
+			for (int x_dest = 1, x_source = 0; x_source < size_x - 1; x_dest += 2, x_source++) {
+				//@formatting:off
+				Scalar v000 = field(x_source, y_source, z_source);
+				Scalar v100 = field(x_source + 1, y_source, z_source);
+				Scalar v010 = field(x_source, y_source + 1, z_source);
+				Scalar v110 = field(x_source + 1, y_source + 1, z_source);
+				Scalar v001 = field(x_source, y_source, z_source + 1);
+				Scalar v101 = field(x_source + 1, y_source, z_source + 1);
+				Scalar v011 = field(x_source, y_source + 1, z_source + 1);
+				Scalar v111 = field(x_source + 1, y_source + 1, z_source + 1); //@formatting:on
+				//interpolate along x dimension
+				Scalar xv000 = 0.75f * v000 + 0.25f * v100;
+				Scalar xv100 = 0.25f * v000 + 0.75f * v100;
+				Scalar xv010 = 0.75f * v010 + 0.25f * v110;
+				Scalar xv110 = 0.25f * v010 + 0.75f * v110;
+				Scalar xv001 = 0.75f * v001 + 0.25f * v101;
+				Scalar xv101 = 0.25f * v001 + 0.75f * v101;
+				Scalar xv011 = 0.75f * v011 + 0.25f * v111;
+				Scalar xv111 = 0.25f * v011 + 0.75f * v111;
+				//interpolate along y dimension
+				Scalar yv000 = 0.75f * xv000 + 0.25f * xv010;
+				Scalar yv010 = 0.25f * xv000 + 0.75f * xv010;
+				Scalar yv100 = 0.75f * xv100 + 0.25f * xv110;
+				Scalar yv110 = 0.25f * xv100 + 0.75f * xv110;
+				Scalar yv001 = 0.75f * xv001 + 0.25f * xv011;
+				Scalar yv011 = 0.25f * xv001 + 0.75f * xv011;
+				Scalar yv101 = 0.75f * xv101 + 0.25f * xv111;
+				Scalar yv111 = 0.25f * xv101 + 0.75f * xv111;
+				//interpolate along z dimension
+				upsampled(x_dest, y_dest, z_dest) = 0.75f * yv000 + 0.25f * yv001;
+				upsampled(x_dest + 1, y_dest, z_dest) = 0.75f * yv100 + 0.25f * yv101;
+				upsampled(x_dest, y_dest + 1, z_dest) = 0.75f * yv010 + 0.25f * yv011;
+				upsampled(x_dest + 1, y_dest + 1, z_dest) = 0.75f * yv110 + 0.25f * yv111;
+				upsampled(x_dest, y_dest, z_dest + 1) = 0.25f * yv000 + 0.75f * yv001;
+				upsampled(x_dest + 1, y_dest, z_dest + 1) = 0.25f * yv100 + 0.75f * yv101;
+				upsampled(x_dest, y_dest + 1, z_dest + 1) = 0.25f * yv010 + 0.75f * yv011;
+				upsampled(x_dest + 1, y_dest + 1, z_dest + 1) = 0.25f * yv110 + 0.75f * yv111;
+			}
+		}
+	}
+	return upsampled;
 }
 //endregion
 //region ===================================== GENERIC DOWNSAMPLING ====================================================
@@ -284,7 +375,7 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_average(
 			field.dimension(0) / 2,
 			field.dimension(1) / 2,
 			field.dimension(2) / 2
-	);
+					);
 	//average each square of 4 cells into one
 	for (int z_target = 0, z_source = 0;
 			z_target < downsampled.dimension(2);
@@ -317,11 +408,10 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_average(
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
-#ifndef NDEBUG
-	eigen_assert((field.rows() % 2 == 0 && field.cols() % 2 == 0 &&
+	assert((field.rows() % 2 == 0 && field.cols() % 2 == 0 &&
 			field.rows() > 2 && field.cols() > 2)
 			&& "Each dimension of the argument 'field' must be divisible by 2 and greater than 2.");
-#endif
+
 	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampled(field.rows() / 2,
 			field.cols() / 2);
 
