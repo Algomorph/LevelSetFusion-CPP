@@ -527,6 +527,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 	}
 	return downsampled;
 }
+
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
@@ -538,10 +539,11 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
 	int size_x = field.dimension(0), size_y = field.dimension(1), size_z = field.dimension(2);
 	int dsize_x = size_x / 2, dsize_y = size_y / 2, dsize_z = size_z / 2;
 	TensorType downsampled(dsize_x, dsize_y, dsize_z);
-	const float c0 = 0.052734375f;
-	const float c1 = 0.017578125f;
-	const float c2 = 0.005859375f;
-	const float c3 = 0.001953125f;
+	//multiplication now and division later increases precision
+	const float c0 = 0.052734375f * 4.0f;
+	const float c1 = 0.017578125f * 4.0f;
+	const float c2 = 0.005859375f * 4.0f;
+	const float c3 = 0.001953125f * 4.0f;
 
 	downsampled.setZero();
 
@@ -551,7 +553,7 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
 		for (int y_target = 1, y_source = 2; y_target < dsize_y-1; y_target++, y_source += 2) {
 			for (int z_target = 1, z_source = 2; z_target < dsize_z-1; z_target++, z_source += 2) {
 				downsampled(x_target,y_target,z_target) = //@formatter:off
-						c0 * (field(x_source + 0, y_source + 0, z_source + 0) +
+						(c0 * (field(x_source + 0, y_source + 0, z_source + 0) +
 							  field(x_source + 1, y_source + 0, z_source + 0) +
 							  field(x_source + 0, y_source + 1, z_source + 0) +
 							  field(x_source + 1, y_source + 1, z_source + 0) +
@@ -631,7 +633,7 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
 							  field(x_source - 1, y_source - 1, z_source + 2) +
 							  field(x_source + 2, y_source - 1, z_source + 2) +
 							  field(x_source - 1, y_source + 2, z_source + 2) +
-							  field(x_source + 2, y_source + 2, z_source + 2))
+							  field(x_source + 2, y_source + 2, z_source + 2))) * 0.25f;
 
 				;//@formatter:on
 			}
