@@ -312,3 +312,34 @@ BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation01) {
 //	std::cout << field.format(eig::IOFormat(eig::FullPrecision, 0, "f, ", "f,\n")) << std::endl;
 	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field, test_data::expected_tsdf_field01, 1e-6f));
 }
+
+BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation02) {
+	eig::MatrixXus depth_image;
+	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
+	BOOST_REQUIRE(image_read);
+	eig::Matrix3f camera_intrinsic_matrix;
+	camera_intrinsic_matrix <<
+							700.0f, 0.0f, 320.0f,
+			0.0f, 700.0f, 240.0f,
+			0.0f, 0.0f, 1.0f;
+	eig::Matrix4f camera_extrinsic_matrix = eig::Matrix4f::Identity();
+	camera_extrinsic_matrix(2, 3) = 0.004;
+
+	eig::Vector3i offset;
+	offset << -8, -8, 144;
+	int field_size = 16;
+	eig::MatrixXf field = tsdf::generate_TSDF_2D(
+			200, // y coord
+			depth_image,
+			0.001f, //depth unit ratio
+			camera_intrinsic_matrix,
+			camera_extrinsic_matrix, //camera pose
+			offset,
+			field_size, //field size
+			0.004f, //voxel size
+			20, // narrow band width
+			-999.f
+	);
+//	std::cout << field.format(eig::IOFormat(eig::FullPrecision, 0, "f, ", "f,\n")) << std::endl;
+	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field, test_data::expected_tsdf_field02, 1e-6f));
+}

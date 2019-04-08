@@ -18,19 +18,21 @@ namespace eig = Eigen;
 
 namespace rigid_optimization {
     void gradient_wrt_twist(const eig::MatrixXf& live_field,
-                            const eig::Vector3f& twist2d,
+                            const eig::Vector3f& twist,
                             const eig::Vector3i& array_offset,
                             const float& voxel_size,
                             eig::Matrix<eig::Vector3f, eig::Dynamic, eig::Dynamic>& gradient_field) {
 
         math::MatrixXv2f gradient_first_term;
         math::scalar_field_gradient(live_field, gradient_first_term);
-        eig::Matrix3f twist_matrix_homo_inv2d = math::transformation_vector_to_matrix2d(twist2d);
+        eig::Matrix3f twist_matrix_homo_inv2d = math::transformation_vector_to_matrix2d(-twist);
 
         float x_voxel, z_voxel, w_voxel = 1;
 
         for (int y_field=0; y_field<live_field.rows(); ++y_field) {
             for (int x_field=0; x_field<live_field.cols(); ++x_field) {
+//                gradient_field(y_field, x_field) = eig::Vector3f(0.0f, 0.0f, 0.0f);
+
                 x_voxel = (x_field + array_offset[0]) * voxel_size; // x coordinate
                 z_voxel = (y_field + array_offset[2]) * voxel_size; // z coordinate
 
@@ -40,9 +42,11 @@ namespace rigid_optimization {
                 gradient_second_term << 1, 0, trans_point[1],
                                         0, 1, -trans_point[0];
 
-                gradient_field(y_field, x_field) = (eig::Vector2f(gradient_first_term(y_field, x_field)[1],
-                                                                  gradient_first_term(y_field, x_field)[0])/voxel_size).transpose()
-                                                   * gradient_second_term;
+
+                eig::Vector3f gradient = eig::Vector2f(gradient_first_term(y_field, x_field)[0],
+                                                       gradient_first_term(y_field, x_field)[1]).transpose()
+                                         * gradient_second_term;
+                gradient_field(y_field, x_field) = gradient/voxel_size;
             }
         }
     };

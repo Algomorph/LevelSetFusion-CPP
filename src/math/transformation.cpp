@@ -29,9 +29,10 @@ namespace math {
         eig::Vector3f translation = twist.head<3>();
         eig::Vector3f rotation = twist.tail<3>();
         float theta = rotation.norm();
-        eig::Vector3f r = rotation/theta;
 
-        eig::Quaternionf q(theta, r(0), r(1), r(2));
+        eig::Quaternionf q;
+        q = eig::Quaternionf(theta, rotation(0), rotation(1), rotation(2));
+
         eig::Matrix3f rotation_matrix = q.toRotationMatrix();
 
         eig::Matrix4f twist_matrix_homo;
