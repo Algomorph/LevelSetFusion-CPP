@@ -20,6 +20,27 @@
 
 #pragma once
 
+//libraries
+#include <Eigen/Dense>
+#include <unsupported/Eigen/CXX11/Tensor>
+
+namespace math{
+
+/**
+ * Pad tensor by repeating its border values.
+ * Same border behavior as mode='edge' for NumPy or BORDER_REPLICATE for OpenCV
+ * NB: For simple padding with zeros, use the Tensor::pad method provided by Eigen.
+ * @param tensor input tensor
+ * @return padded tensor
+ */
+template<typename Scalar>
+Eigen::Tensor<Scalar,3,Eigen::ColMajor> pad_replicate(const Eigen::Tensor<Scalar,3,Eigen::ColMajor>& tensor, int border_width=1);
+
+//TODO: provide Eigen::Matrix overload (if there is no Eigen equivalent)
+
+
+} //end namespace math
+
 
 
 

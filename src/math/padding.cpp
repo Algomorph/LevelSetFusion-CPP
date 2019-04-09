@@ -19,5 +19,13 @@
  */
 
 
+//local
+#include "padding.tpp"
+#include "typedefs.hpp"
 
+namespace math{
 
+template math::Tensor3f pad_replicate<float>(const math::Tensor3f& tensor, int border_width);
+template math::Tensor3v3f pad_replicate<math::Vector3f>(const math::Tensor3v3f& tensor, int border_width);
+
+} //end namespace math

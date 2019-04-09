@@ -271,6 +271,9 @@ add_library(${MODULE_NAME} SHARED
 			src/math/matrix_base.hpp
 			src/math/matrix2.hpp
 			src/math/nestable_type_metainfo.hpp
+			src/math/padding.hpp
+			src/math/padding.tpp
+			src/math/padding.cpp
 			src/math/platform_independence.hpp
 			src/math/resampling.hpp
 			src/math/resampling.tpp
