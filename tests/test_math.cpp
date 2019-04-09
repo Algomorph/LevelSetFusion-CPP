@@ -610,6 +610,79 @@ BOOST_AUTO_TEST_CASE(test_upsampling_linear_tensor01) {
 	math::Tensor3f output2 = math::upsampleX2_linear(input2);
 	BOOST_REQUIRE(math::almost_equal_verbose(output2, expected_output2, 1e-6));
 }
+BOOST_AUTO_TEST_CASE(test_upsampling_linear_tensor02){
+	math::Tensor3f input(4,3,3);
+	input.setValues(//@formatter:off
+			{{{1.0f,1.0f,1.0f},
+			  {1.0f,1.0f,1.0f},
+			  {1.0f,1.0f,1.0f}},
+			 {{2.0f,2.0f,2.0f},
+			  {2.0f,2.0f,2.0f},
+			  {2.0f,2.0f,2.0f}},
+			 {{3.0f,3.0f,3.0f},
+			  {3.0f,3.0f,3.0f},
+			  {3.0f,3.0f,3.0f}},
+			 {{4.0f,4.0f,4.0f},
+			  {4.0f,4.0f,4.0f},
+			  {4.0f,4.0f,4.0f}}
+	});//@formatter:on
+
+	math::Tensor3f expected_output(8,6,6);
+	expected_output.setValues(//@formatter:off
+			{{{1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f},
+			  {1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f},
+			  {1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f},
+			  {1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f},
+			  {1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f},
+			  {1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f}},
+			 {{1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f},
+			  {1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f},
+			  {1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f},
+			  {1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f},
+			  {1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f},
+			  {1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f}},
+			 {{1.75f, 1.75f, 1.75f, 1.75f, 1.75f, 1.75f},
+			  {1.75f, 1.75f, 1.75f, 1.75f, 1.75f, 1.75f},
+			  {1.75f, 1.75f, 1.75f, 1.75f, 1.75f, 1.75f},
+			  {1.75f, 1.75f, 1.75f, 1.75f, 1.75f, 1.75f},
+			  {1.75f, 1.75f, 1.75f, 1.75f, 1.75f, 1.75f},
+			  {1.75f, 1.75f, 1.75f, 1.75f, 1.75f, 1.75f}},
+			 {{2.25f, 2.25f, 2.25f, 2.25f, 2.25f, 2.25f},
+			  {2.25f, 2.25f, 2.25f, 2.25f, 2.25f, 2.25f},
+			  {2.25f, 2.25f, 2.25f, 2.25f, 2.25f, 2.25f},
+			  {2.25f, 2.25f, 2.25f, 2.25f, 2.25f, 2.25f},
+			  {2.25f, 2.25f, 2.25f, 2.25f, 2.25f, 2.25f},
+			  {2.25f, 2.25f, 2.25f, 2.25f, 2.25f, 2.25f}},
+			 {{2.75f, 2.75f, 2.75f, 2.75f, 2.75f, 2.75f},
+			  {2.75f, 2.75f, 2.75f, 2.75f, 2.75f, 2.75f},
+			  {2.75f, 2.75f, 2.75f, 2.75f, 2.75f, 2.75f},
+			  {2.75f, 2.75f, 2.75f, 2.75f, 2.75f, 2.75f},
+			  {2.75f, 2.75f, 2.75f, 2.75f, 2.75f, 2.75f},
+			  {2.75f, 2.75f, 2.75f, 2.75f, 2.75f, 2.75f}},
+			 {{3.25f, 3.25f, 3.25f, 3.25f, 3.25f, 3.25f},
+			  {3.25f, 3.25f, 3.25f, 3.25f, 3.25f, 3.25f},
+			  {3.25f, 3.25f, 3.25f, 3.25f, 3.25f, 3.25f},
+			  {3.25f, 3.25f, 3.25f, 3.25f, 3.25f, 3.25f},
+			  {3.25f, 3.25f, 3.25f, 3.25f, 3.25f, 3.25f},
+			  {3.25f, 3.25f, 3.25f, 3.25f, 3.25f, 3.25f}},
+			 {{3.75f, 3.75f, 3.75f, 3.75f, 3.75f, 3.75f},
+			  {3.75f, 3.75f, 3.75f, 3.75f, 3.75f, 3.75f},
+			  {3.75f, 3.75f, 3.75f, 3.75f, 3.75f, 3.75f},
+			  {3.75f, 3.75f, 3.75f, 3.75f, 3.75f, 3.75f},
+			  {3.75f, 3.75f, 3.75f, 3.75f, 3.75f, 3.75f},
+			  {3.75f, 3.75f, 3.75f, 3.75f, 3.75f, 3.75f}},
+			 {{4.00f, 4.00f, 4.00f, 4.00f, 4.00f, 4.00f},
+			  {4.00f, 4.00f, 4.00f, 4.00f, 4.00f, 4.00f},
+			  {4.00f, 4.00f, 4.00f, 4.00f, 4.00f, 4.00f},
+			  {4.00f, 4.00f, 4.00f, 4.00f, 4.00f, 4.00f},
+			  {4.00f, 4.00f, 4.00f, 4.00f, 4.00f, 4.00f},
+			  {4.00f, 4.00f, 4.00f, 4.00f, 4.00f, 4.00f}}}
+	);//@formatter:on
+
+	math::Tensor3f output = math::upsampleX2_linear(input);
+	BOOST_REQUIRE(math::almost_equal_verbose(output, expected_output, 1e-6));
+}
+
 
 BOOST_AUTO_TEST_CASE(test_downsampling_linear_matrix01) {
 	eig::MatrixXf input(6, 4);
@@ -672,8 +745,15 @@ BOOST_AUTO_TEST_CASE(test_downsampling_linear_tensor01) {
 		  {3.5000, 4.5000, 6.5000, 7.5000},
 		  {4.0000, 5.0000, 7.0000, 8.0000}}}
 	); 		//@formatter:on
+	math::Tensor3f expected_output(2,2,2);
+	expected_output.setValues(//@formatter:off
+			{{{2.3125f, 4.8125f},
+			  {3.5625f, 6.0625f}},
+			 {{2.9375f, 5.4375f},
+			  {4.1875f, 6.6875f}}}
+	);//@formatter:on
 	math::Tensor3f output = math::downsampleX2_linear(input);
-	//std::cout << output << std::endl;
+	BOOST_REQUIRE(math::almost_equal_verbose(output, expected_output, 1e-6));
 
 	math::Tensor3f input2(6, 6, 6);
 	input2.setValues( //@formatter:off
@@ -714,6 +794,52 @@ BOOST_AUTO_TEST_CASE(test_downsampling_linear_tensor01) {
 			  {8.25f, 10.50f, 15.00f, 19.50f, 24.00f, 26.25f},
 			  {9.00f, 11.25f, 15.75f, 20.25f, 24.75f, 27.00f}}}
 	);  //@formatter:on
+	math::Tensor3f expected_output2(3,3,3);
+	expected_output2.setValues(//@formatter:off
+		{{{3.4375f, 10.7500f, 18.0625f},
+		  {5.8750f, 13.1875f, 20.5000f},
+		  {8.3125f, 15.6250f, 22.9375f}},
+		 {{4.2500f, 11.5625f, 18.8750f},
+		  {6.6875f, 14.0000f, 21.3125f},
+		  {9.1250f, 16.4375f, 23.7500f}},
+		 {{5.0625f, 12.3750f, 19.6875f},
+		  {7.5000f, 14.8125f, 22.1250f},
+		  {9.9375f, 17.2500f, 24.5625f}}}
+	);//@formatter:on
 	math::Tensor3f output2 = math::downsampleX2_linear(input2);
-	//std::cout << output2 << std::endl;
+	BOOST_REQUIRE(math::almost_equal_verbose(output2, expected_output2, 1e-6));
+
+	math::Tensor3f input3_up(4,3,3);
+	input3_up.setValues(//@formatter:off
+			{{{1.0f,1.0f,1.0f},
+			  {1.0f,1.0f,1.0f},
+			  {1.0f,1.0f,1.0f}},
+			 {{2.0f,2.0f,2.0f},
+			  {2.0f,2.0f,2.0f},
+			  {2.0f,2.0f,2.0f}},
+			 {{3.0f,3.0f,3.0f},
+			  {3.0f,3.0f,3.0f},
+			  {3.0f,3.0f,3.0f}},
+			 {{4.0f,4.0f,4.0f},
+			  {4.0f,4.0f,4.0f},
+			  {4.0f,4.0f,4.0f}}
+	});//@formatter:on
+	math::Tensor3f input3_down = math::upsampleX2_linear(input3_up);
+	math::Tensor3f expected_output3(4,3,3);
+	expected_output3.setValues(//@formatter:off
+			{{{1.1875f, 1.1875f, 1.1875f},
+			  {1.1875f, 1.1875f, 1.1875f},
+			  {1.1875f, 1.1875f, 1.1875f}},
+			 {{2.0000f, 2.0000f, 2.0000f},
+			  {2.0000f, 2.0000f, 2.0000f},
+			  {2.0000f, 2.0000f, 2.0000f}},
+			 {{3.0000f, 3.0000f, 3.0000f},
+			  {3.0000f, 3.0000f, 3.0000f},
+			  {3.0000f, 3.0000f, 3.0000f}},
+			 {{3.8125f, 3.8125f, 3.8125f},
+			  {3.8125f, 3.8125f, 3.8125f},
+			  {3.8125f, 3.8125f, 3.8125f}}}
+	);//@formatter:on
+	math::Tensor3f output3 = math::downsampleX2_linear(input3_down);
+	BOOST_REQUIRE(math::almost_equal_verbose(output3, expected_output3, 1e-6));
 }

@@ -27,6 +27,7 @@
 #include "resampling.hpp"
 #include "checks.hpp"
 #include "../error_handling/throw_assert.hpp"
+#include "padding.hpp"
 
 namespace eig = Eigen;
 namespace math {
@@ -205,7 +206,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 					+ 0.1875f * value11;
 			upsampled(dest_row + 1, dest_col + 1) = 0.0625f * value00 + 0.1875f * value01 + 0.1875f * value10
 					+ 0.5625f * value11;
-																																																																																													//@formatter:on
+																																																																																																//@formatter:on
 			value00 = value10;
 			value01 = value11;
 		}
@@ -224,14 +225,21 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
 	int ulx = usize_x - 1, uly = usize_y - 1, ulz = usize_z - 1;
 
 	TensorType upsampled(usize_x, usize_y, usize_z);
+
 	//the sides can be processed as matrices.
 
 	typedef eig::array<long, 3> Arrl3;
+	typedef eig::array<long, 2> Arrl2;
 
 	Arrl3 extents_source[] = {
 			Arrl3 { 1, size_y, size_z },
 			Arrl3 { size_x, 1, size_z },
 			Arrl3 { size_x, size_y, 1 }
+	};
+	Arrl2 mat_extents_source[] {
+			Arrl2 { size_y, size_z },
+			Arrl2 { size_x, size_z },
+			Arrl2 { size_x, size_y }
 	};
 	Arrl3 extents_target[] = {
 			Arrl3 { 1, usize_y, usize_z },
@@ -241,24 +249,28 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
 	struct FaceExtentAndOffset {
 		Arrl3 offset_source;
 		Arrl3 extent_source;
+		Arrl2 mat_extent_source;
 		Arrl3 offset_target;
 		Arrl3 extent_target;
 	};
 	FaceExtentAndOffset face_extents_and_offsets[] = { //@formatter:off
-			{Arrl3{0,0,0},        extents_source[0], Arrl3{0,0,  0}, extents_target[0]},  //near x
-			{Arrl3{size_x-1,0,0}, extents_source[0], Arrl3{ulx,0,0}, extents_target[0]},  //far x
-			{Arrl3{0,0,0},        extents_source[1], Arrl3{0,0,  0}, extents_target[1]},  //near y
-			{Arrl3{0,size_y-1,0}, extents_source[1], Arrl3{0,uly,0}, extents_target[1]},  //far y
-			{Arrl3{0,0,0},        extents_source[2], Arrl3{0,0,  0}, extents_target[2]},  //near z
-			{Arrl3{0,0,size_z-1}, extents_source[2], Arrl3{0,0,ulz}, extents_target[2]}   //far z
-	};			//@formatter:on
-			// x sides
+			{Arrl3{0,0,0},        extents_source[0], mat_extents_source[0], Arrl3{0,0,  0}, extents_target[0]},  //near x
+			{Arrl3{size_x-1,0,0}, extents_source[0], mat_extents_source[0], Arrl3{ulx,0,0}, extents_target[0]},  //far x
+			{Arrl3{0,0,0},        extents_source[1], mat_extents_source[1], Arrl3{0,0,  0}, extents_target[1]},  //near y
+			{Arrl3{0,size_y-1,0}, extents_source[1], mat_extents_source[1], Arrl3{0,uly,0}, extents_target[1]},  //far y
+			{Arrl3{0,0,0},        extents_source[2], mat_extents_source[2], Arrl3{0,0,  0}, extents_target[2]},  //near z
+			{Arrl3{0,0,size_z-1}, extents_source[2], mat_extents_source[2], Arrl3{0,0,ulz}, extents_target[2]}   //far z
+	};//@formatter:on
 
 	for (const FaceExtentAndOffset& feao : face_extents_and_offsets) {
 		TensorType slice_source = field.slice(feao.offset_source, feao.extent_source);
-		MatrixType slice_matrix_source = eig::Map<MatrixType>(slice_source.data(), size_y, size_z);
+		MatrixType slice_matrix_source = eig::Map<MatrixType>(
+				slice_source.data(),
+				feao.mat_extent_source[0],
+				feao.mat_extent_source[1]
+				);
 		MatrixType slice_matrix_upsampled = upsampleX2_linear(slice_matrix_source);
-		eig::TensorMap<TensorType, eig::Aligned> slice_upsampled(slice_matrix_upsampled.data(), 1, usize_y, usize_z);
+		eig::TensorMap<TensorType, eig::Aligned> slice_upsampled(slice_matrix_upsampled.data(), feao.extent_target);
 		upsampled.slice(feao.offset_target, feao.extent_target) = slice_upsampled;
 	}
 
@@ -545,95 +557,98 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
 	const float c2 = 0.005859375f * 4.0f;
 	const float c3 = 0.001953125f * 4.0f;
 
+	TensorType padded = math::pad_replicate(field, 1);
+
+	//_DEBUG
 	downsampled.setZero();
 
 //#pragma omp parallel for
-	for (int x_target = 1; x_target < dsize_x-1; x_target++) {
-		int x_source = x_target * 2;
-		for (int y_target = 1, y_source = 2; y_target < dsize_y-1; y_target++, y_source += 2) {
-			for (int z_target = 1, z_source = 2; z_target < dsize_z-1; z_target++, z_source += 2) {
-				downsampled(x_target,y_target,z_target) = //@formatter:off
-						(c0 * (field(x_source + 0, y_source + 0, z_source + 0) +
-							  field(x_source + 1, y_source + 0, z_source + 0) +
-							  field(x_source + 0, y_source + 1, z_source + 0) +
-							  field(x_source + 1, y_source + 1, z_source + 0) +
-							  field(x_source + 0, y_source + 0, z_source + 1) +
-							  field(x_source + 1, y_source + 0, z_source + 1) +
-							  field(x_source + 0, y_source + 1, z_source + 1) +
-							  field(x_source + 1, y_source + 1, z_source + 1)) +
+	for (int x_target = 0; x_target < dsize_x; x_target++) {
+		int x_source = x_target * 2 + 1;
+		for (int y_target = 0, y_source = 1; y_target < dsize_y; y_target++, y_source += 2) {
+			for (int z_target = 0, z_source = 1; z_target < dsize_z; z_target++, z_source += 2) {
+				downsampled(x_target, y_target, z_target) = //@formatter:off
+					   (c0 * (padded(x_source + 0, y_source + 0, z_source + 0) +
+							  padded(x_source + 1, y_source + 0, z_source + 0) +
+							  padded(x_source + 0, y_source + 1, z_source + 0) +
+							  padded(x_source + 1, y_source + 1, z_source + 0) +
+							  padded(x_source + 0, y_source + 0, z_source + 1) +
+							  padded(x_source + 1, y_source + 0, z_source + 1) +
+							  padded(x_source + 0, y_source + 1, z_source + 1) +
+							  padded(x_source + 1, y_source + 1, z_source + 1)) +
 
-					    c1 * (field(x_source - 1, y_source + 0, z_source + 0) +
-							  field(x_source + 0, y_source - 1, z_source + 0) +
-							  field(x_source + 0, y_source + 0, z_source - 1) +
+					    c1 * (padded(x_source - 1, y_source + 0, z_source + 0) +
+							  padded(x_source + 0, y_source - 1, z_source + 0) +
+							  padded(x_source + 0, y_source + 0, z_source - 1) +
 
-							  field(x_source + 2, y_source + 0, z_source + 0) +
-							  field(x_source + 1, y_source - 1, z_source + 0) +
-							  field(x_source + 1, y_source + 0, z_source - 1) +
+							  padded(x_source + 2, y_source + 0, z_source + 0) +
+							  padded(x_source + 1, y_source - 1, z_source + 0) +
+							  padded(x_source + 1, y_source + 0, z_source - 1) +
 
-							  field(x_source - 1, y_source + 1, z_source + 0) +
-							  field(x_source + 0, y_source + 2, z_source + 0) +
-							  field(x_source + 0, y_source + 1, z_source - 1) +
+							  padded(x_source - 1, y_source + 1, z_source + 0) +
+							  padded(x_source + 0, y_source + 2, z_source + 0) +
+							  padded(x_source + 0, y_source + 1, z_source - 1) +
 
-							  field(x_source + 2, y_source + 1, z_source + 0) +
-							  field(x_source + 1, y_source + 2, z_source + 0) +
-							  field(x_source + 1, y_source + 1, z_source - 1) +
+							  padded(x_source + 2, y_source + 1, z_source + 0) +
+							  padded(x_source + 1, y_source + 2, z_source + 0) +
+							  padded(x_source + 1, y_source + 1, z_source - 1) +
 
-							  field(x_source - 1, y_source + 0, z_source + 1) +
-							  field(x_source + 0, y_source - 1, z_source + 1) +
-							  field(x_source + 0, y_source + 0, z_source + 2) +
+							  padded(x_source - 1, y_source + 0, z_source + 1) +
+							  padded(x_source + 0, y_source - 1, z_source + 1) +
+							  padded(x_source + 0, y_source + 0, z_source + 2) +
 
-							  field(x_source + 2, y_source + 0, z_source + 1) +
-							  field(x_source + 1, y_source - 1, z_source + 1) +
-							  field(x_source + 1, y_source + 0, z_source + 2) +
+							  padded(x_source + 2, y_source + 0, z_source + 1) +
+							  padded(x_source + 1, y_source - 1, z_source + 1) +
+							  padded(x_source + 1, y_source + 0, z_source + 2) +
 
-							  field(x_source - 1, y_source + 1, z_source + 1) +
-							  field(x_source + 0, y_source + 2, z_source + 1) +
-							  field(x_source + 0, y_source + 1, z_source + 2) +
+							  padded(x_source - 1, y_source + 1, z_source + 1) +
+							  padded(x_source + 0, y_source + 2, z_source + 1) +
+							  padded(x_source + 0, y_source + 1, z_source + 2) +
 
-							  field(x_source + 2, y_source + 1, z_source + 1) +
-							  field(x_source + 1, y_source + 2, z_source + 1) +
-							  field(x_source + 1, y_source + 1, z_source + 2)) +
+							  padded(x_source + 2, y_source + 1, z_source + 1) +
+							  padded(x_source + 1, y_source + 2, z_source + 1) +
+							  padded(x_source + 1, y_source + 1, z_source + 2)) +
 
-						c2 * (field(x_source - 1, y_source - 1, z_source + 0) +
-							  field(x_source + 0, y_source - 1, z_source - 1) +
-							  field(x_source - 1, y_source + 0, z_source - 1) +
+						c2 * (padded(x_source - 1, y_source - 1, z_source + 0) +
+							  padded(x_source + 0, y_source - 1, z_source - 1) +
+							  padded(x_source - 1, y_source + 0, z_source - 1) +
 
-							  field(x_source + 2, y_source - 1, z_source + 0) +
-							  field(x_source + 1, y_source - 1, z_source - 1) +
-							  field(x_source + 2, y_source + 0, z_source - 1) +
+							  padded(x_source + 2, y_source - 1, z_source + 0) +
+							  padded(x_source + 1, y_source - 1, z_source - 1) +
+							  padded(x_source + 2, y_source + 0, z_source - 1) +
 
-							  field(x_source - 1, y_source + 2, z_source + 0) +
-							  field(x_source + 0, y_source + 2, z_source - 1) +
-							  field(x_source - 1, y_source + 1, z_source - 1) +
+							  padded(x_source - 1, y_source + 2, z_source + 0) +
+							  padded(x_source + 0, y_source + 2, z_source - 1) +
+							  padded(x_source - 1, y_source + 1, z_source - 1) +
 
-							  field(x_source + 2, y_source + 2, z_source + 0) +
-							  field(x_source + 1, y_source + 2, z_source - 1) +
-							  field(x_source + 2, y_source + 1, z_source - 1) +
+							  padded(x_source + 2, y_source + 2, z_source + 0) +
+							  padded(x_source + 1, y_source + 2, z_source - 1) +
+							  padded(x_source + 2, y_source + 1, z_source - 1) +
 
-							  field(x_source - 1, y_source - 1, z_source + 1) +
-							  field(x_source + 0, y_source - 1, z_source + 2) +
-							  field(x_source - 1, y_source + 0, z_source + 2) +
+							  padded(x_source - 1, y_source - 1, z_source + 1) +
+							  padded(x_source + 0, y_source - 1, z_source + 2) +
+							  padded(x_source - 1, y_source + 0, z_source + 2) +
 
-							  field(x_source + 2, y_source - 1, z_source + 1) +
-							  field(x_source + 1, y_source - 1, z_source + 2) +
-							  field(x_source + 2, y_source + 0, z_source + 2) +
+							  padded(x_source + 2, y_source - 1, z_source + 1) +
+							  padded(x_source + 1, y_source - 1, z_source + 2) +
+							  padded(x_source + 2, y_source + 0, z_source + 2) +
 
-							  field(x_source - 1, y_source + 2, z_source + 1) +
-							  field(x_source + 0, y_source + 2, z_source + 2) +
-							  field(x_source - 1, y_source + 1, z_source + 2) +
+							  padded(x_source - 1, y_source + 2, z_source + 1) +
+							  padded(x_source + 0, y_source + 2, z_source + 2) +
+							  padded(x_source - 1, y_source + 1, z_source + 2) +
 
-							  field(x_source + 2, y_source + 2, z_source + 1) +
-							  field(x_source + 1, y_source + 2, z_source + 2) +
-							  field(x_source + 2, y_source + 1, z_source + 2)) +
+							  padded(x_source + 2, y_source + 2, z_source + 1) +
+							  padded(x_source + 1, y_source + 2, z_source + 2) +
+							  padded(x_source + 2, y_source + 1, z_source + 2)) +
 
-					    c3 * (field(x_source - 1, y_source - 1, z_source - 1) +
-							  field(x_source + 2, y_source - 1, z_source - 1) +
-							  field(x_source - 1, y_source + 2, z_source - 1) +
-							  field(x_source + 2, y_source + 2, z_source - 1) +
-							  field(x_source - 1, y_source - 1, z_source + 2) +
-							  field(x_source + 2, y_source - 1, z_source + 2) +
-							  field(x_source - 1, y_source + 2, z_source + 2) +
-							  field(x_source + 2, y_source + 2, z_source + 2))) * 0.25f;
+					    c3 * (padded(x_source - 1, y_source - 1, z_source - 1) +
+							  padded(x_source + 2, y_source - 1, z_source - 1) +
+							  padded(x_source - 1, y_source + 2, z_source - 1) +
+							  padded(x_source + 2, y_source + 2, z_source - 1) +
+							  padded(x_source - 1, y_source - 1, z_source + 2) +
+							  padded(x_source + 2, y_source - 1, z_source + 2) +
+							  padded(x_source - 1, y_source + 2, z_source + 2) +
+							  padded(x_source + 2, y_source + 2, z_source + 2))) * 0.25f;
 
 				;//@formatter:on
 			}

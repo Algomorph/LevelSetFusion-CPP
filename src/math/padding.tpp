@@ -47,8 +47,6 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> pad_replicate(const Eigen::Tensor<Scal
 	Arrl3 offset = { border_width, border_width, border_width };
 	Arrl3 extent = { x_dim, y_dim, z_dim };
 
-	//_DEBUG
-	padded.setZero();
 	padded.slice(offset, extent) = tensor;
 
 	// *** CORNERS ***
