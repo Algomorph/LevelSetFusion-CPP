@@ -226,15 +226,15 @@ add_library(${MODULE_NAME} SHARED
 			
 
 			### nonrigid optimization, hierarchical: hierarchical SLAM optimizer (active research & development)
-			src/nonrigid_optimization/hierarchical/optimizer2d.hpp
-			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
-			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp
-			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.cpp
+			src/nonrigid_optimization/hierarchical/optimizer.hpp
+			src/nonrigid_optimization/hierarchical/optimizer.tpp
+			src/nonrigid_optimization/hierarchical/optimizer.cpp
+			src/nonrigid_optimization/hierarchical/optimizer_with_telemetry.hpp
+			src/nonrigid_optimization/hierarchical/optimizer_with_telemetry.tpp
+			src/nonrigid_optimization/hierarchical/optimizer_with_telemetry.cpp
 			src/nonrigid_optimization/hierarchical/pyramid.hpp
 			src/nonrigid_optimization/hierarchical/pyramid.tpp
 			src/nonrigid_optimization/hierarchical/pyramid.cpp
-		    src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.hpp
-		    src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.cpp
 
 			### traversal: algorithms for traversal of data structures
 			src/traversal/field_traversal_cpu.hpp

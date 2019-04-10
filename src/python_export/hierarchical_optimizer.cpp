@@ -23,13 +23,16 @@
 #include <boost/python.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "../nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp"
+//local
+#include "../nonrigid_optimization/hierarchical/optimizer_with_telemetry.hpp"
 #include "eigen_numpy.hpp"
+#include "../math/typedefs.hpp"
 
 namespace bp = boost::python;
 namespace impl = nonrigid_optimization::hierarchical;
+namespace eig = Eigen;
 
-typedef impl::Optimizer2dTelemetry HierarchicalOptimizer2d;
+typedef impl::OptimizerWithTelemetry<eig::MatrixXf,math::MatrixXv2f> HierarchicalOptimizer2d;
 
 namespace python_export {
 namespace hierarchical_optimizer {
