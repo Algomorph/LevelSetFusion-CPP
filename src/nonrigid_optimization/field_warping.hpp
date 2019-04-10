@@ -29,6 +29,29 @@ namespace eig = Eigen;
 
 namespace nonrigid_optimization {
 
+template<typename ElementType, typename Scalar>
+Eigen::Matrix<ElementType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+warp(const Eigen::Matrix<ElementType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& scalar_field,
+	 const Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& warp_field);
+
+template<typename ElementType, typename Scalar>
+eig::Tensor<ElementType, 3, Eigen::ColMajor>
+warp(const eig::Tensor<ElementType, 3, Eigen::ColMajor>& scalar_field,
+	 const eig::Tensor<math::Vector3<Scalar>, 3, Eigen::ColMajor>& warp_field);
+
+template<typename ElementType, typename Scalar>
+Eigen::Matrix<ElementType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+warp_with_replacement(const Eigen::Matrix<ElementType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& scalar_field,
+				      const Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& warp_field,
+				      ElementType replacement_value);
+
+template<typename ElementType, typename Scalar>
+eig::Tensor<ElementType, 3, Eigen::ColMajor>
+warp_with_replacement(const eig::Tensor<ElementType, 3, Eigen::ColMajor>& scalar_field,
+					  const eig::Tensor<math::Vector3<Scalar>, 3, Eigen::ColMajor>& warp_field,
+					  ElementType replacement_value);
+
+//================= legacy (Sobolev/KillingFusion only) ========================
 eig::MatrixXf warp_2d_advanced(math::MatrixXv2f& warp_field,
 		const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field,
 		bool band_union_only = false, bool known_values_only = false,
@@ -38,21 +61,6 @@ eig::MatrixXf warp_2d_advanced_warp_unchanged(math::MatrixXv2f& warp_field,
 		bool band_union_only = false, bool known_values_only = false,
 		bool substitute_original = false, float truncation_float_threshold = 1e-6);
 
-//TODO: templatize as follows:
-//template<typename TScalarField, typename TWarpField>
-//TScalarField warp(const TScalarField& scalar_field, TWarpField& warp_field);
-eig::MatrixXf warp_2d(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field);
-template<typename ElementType>
-
-eig::Tensor<ElementType, 3> warp_3d(const eig::Tensor<ElementType, 3>& scalar_field, math::Tensor3v3f& warp_field);
-
-template<typename ElementType>
-eig::Tensor<ElementType, 3> warp_3d_with_replacement(const eig::Tensor<ElementType, 3>& scalar_field,
-		math::Tensor3v3f& warp_field,
-		ElementType replacement_value);
-
-eig::MatrixXf warp_2d_replacement(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
-		float replacement_value);
 
 bp::object py_warp_field(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,

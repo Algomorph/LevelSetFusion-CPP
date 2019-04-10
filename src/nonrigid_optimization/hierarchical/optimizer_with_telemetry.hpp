@@ -24,18 +24,19 @@
 #include <chrono>
 
 //local
-#include "optimizer2d.hpp"
 #include "../../math/typedefs.hpp"
 #include "../../telemetry/convergence_report.hpp"
 #include "../../telemetry/optimization_iteration_data.hpp"
+#include "optimizer.hpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical {
 
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> time_point;
 
-class Optimizer2dTelemetry:
-		public Optimizer2d {
+template<typename ScalarContainer, typename VectorContainer>
+class OptimizerWithTelemetry:
+		public Optimizer<ScalarContainer, VectorContainer> {
 public:
 	struct VerbosityParameters {
 		VerbosityParameters(
@@ -63,7 +64,7 @@ public:
 		const bool collect_per_level_iteration_data = false;
 	};
 
-	Optimizer2dTelemetry(
+	OptimizerWithTelemetry(
 			bool tikhonov_term_enabled = true,
 			bool gradient_kernel_enabled = true,
 
@@ -76,30 +77,28 @@ public:
 			float tikhonov_strength = 0.2f,
 			eig::VectorXf kernel = eig::VectorXf(0),
 
-			Optimizer2d::ResamplingStrategy resampling_strategy = Optimizer2d::ResamplingStrategy::NEAREST_AND_AVERAGE,
+			typename Optimizer<ScalarContainer, VectorContainer>::ResamplingStrategy resampling_strategy = Optimizer<ScalarContainer, VectorContainer>::ResamplingStrategy::NEAREST_AND_AVERAGE,
 
 			VerbosityParameters verbosity_parameters = VerbosityParameters(),
 			LoggingParameters logging_parameters = LoggingParameters());
 
-	math::MatrixXv2f optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field) override;
+	VectorContainer optimize(const ScalarContainer& canonical_field, const ScalarContainer& live_field) override;
 	void optimize_level(
-			math::MatrixXv2f& warp_field,
-			const eig::MatrixXf& canonical_pyramid_level,
-			const eig::MatrixXf& live_pyramid_level,
-			const eig::MatrixXf& live_gradient_x_level,
-			const eig::MatrixXf& live_gradient_y_level
+			VectorContainer& warp_field,
+			const ScalarContainer& canonical_pyramid_level,
+			const ScalarContainer& live_pyramid_level,
+			const VectorContainer& live_gradient_level
 			) override;
 	void optimize_iteration(
-			math::MatrixXv2f& gradient,
-			math::MatrixXv2f& warp_field,
-			eig::MatrixXf& diff,
-			math::MatrixXv2f& data_gradient,
-			math::MatrixXv2f& tikhonov_gradient,
+			VectorContainer& gradient,
+			VectorContainer& warp_field,
+			ScalarContainer& diff,
+			VectorContainer& data_gradient,
+			VectorContainer& tikhonov_gradient,
 			float& maximum_warp_update_length,
-			const eig::MatrixXf& canonical_pyramid_level,
-			const eig::MatrixXf& live_pyramid_level,
-			const eig::MatrixXf& live_gradient_x_level,
-			const eig::MatrixXf& live_gradient_y_level
+			const ScalarContainer& canonical_pyramid_level,
+			const ScalarContainer& live_pyramid_level,
+			const VectorContainer& live_gradient_level
 			) override;
 	std::vector<telemetry::ConvergenceReport> get_per_level_convergence_reports();
 	std::vector<telemetry::OptimizationIterationData> get_per_level_iteration_data();
@@ -117,6 +116,8 @@ private:
 	const VerbosityParameters verbosity_parameters;
 	const LoggingParameters logging_parameters;
 };
+
+typedef OptimizerWithTelemetry<Eigen::MatrixXf,math::MatrixXv2f> OptimizerWithTelemetry2d;
 
 } // namespace hierarchical
 } // namespace nonrigid_optimization

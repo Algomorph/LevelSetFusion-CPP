@@ -18,38 +18,48 @@
 #include <iostream>
 
 //local
+#include "field_warping.tpp"
 #include "../math/boolean_operations.hpp"
 #include "../math/typedefs.hpp"
-#include "field_warping.hpp"
-#include "field_warping.tpp"
 #include "../math/tensor_operations.hpp"
 #include "../traversal/index_raveling.hpp"
 
+namespace eig = Eigen;
+
 namespace nonrigid_optimization {
 
-inline float sample_tsdf_value_at(const eig::MatrixXf& tsdf_field, int x, int y) {
-	if (x < 0 || x >= tsdf_field.cols() || y < 0 || y >= tsdf_field.rows()) {
-		return 1.0;
-	}
-	return tsdf_field(y, x);
-}
 
-inline float sample_tsdf_value_at(const math::Tensor3f& tsdf_field, int x, int y, int z){
-	if (x < 0 || x >= tsdf_field.dimension(0) ||
-			y < 0 || y >= tsdf_field.dimension(1) ||
-			z < 0 || z >= tsdf_field.dimension(2)) {
-		return 1.0;
-	}
-	return tsdf_field(x, y, z);
-}
+template
+math::Tensor3f warp<float,float>(const math::Tensor3f& scalar_field, const math::Tensor3v3f& warp_field);
 
-inline float sample_tsdf_value_replacing_when_out_of_bounds(const eig::MatrixXf& tsdf_field, int x, int y,
-		float replacement_value) {
-	if (x < 0 || x >= tsdf_field.cols() || y < 0 || y >= tsdf_field.rows()) {
-		return replacement_value;
-	}
-	return tsdf_field(y, x);
-}
+template
+math::Tensor3f warp_with_replacement<float, float>( // @suppress("Ambiguous problem")
+		const math::Tensor3f& scalar_field,
+		const math::Tensor3v3f& warp_field,
+		float replacement_value);
+
+template
+math::Tensor3v3f warp_with_replacement<math::Vector3f, float>(
+		const math::Tensor3v3f& vector_field,
+		const math::Tensor3v3f& warp_field,
+		math::Vector3f replacement_value);
+
+template
+eig::MatrixXf warp<float,float>(const eig::MatrixXf& scalar_field, const math::MatrixXv2f& warp_field);
+
+template
+eig::MatrixXf warp_with_replacement<float,float>(const eig::MatrixXf& scalar_field, // @suppress("Ambiguous problem")
+		const math::MatrixXv2f& warp_field,
+		float replacement_value);
+
+template
+math::MatrixXv2f warp_with_replacement<math::Vector2f,float>(const math::MatrixXv2f& scalar_field,
+		const math::MatrixXv2f& warp_field,
+		math::Vector2f replacement_value);
+
+//================= legacy (Sobolev/KillingFusion only) ========================
+
+
 
 template<bool TModifyWarpField>
 inline eig::MatrixXf
@@ -97,19 +107,19 @@ warp_2d_advanced_aux(math::MatrixXv2f& warp_field,
 
 		float value00, value01, value10, value11;
 		if (substitute_original) {
-			value00 = sample_tsdf_value_replacing_when_out_of_bounds(warped_live_field, base_x, base_y,
+			value00 = sample_tsdf_value_with_replacement(warped_live_field, base_x, base_y,
 					live_tsdf_value);
-			value01 = sample_tsdf_value_replacing_when_out_of_bounds(warped_live_field, base_x, base_y + 1,
+			value01 = sample_tsdf_value_with_replacement(warped_live_field, base_x, base_y + 1,
 					live_tsdf_value);
-			value10 = sample_tsdf_value_replacing_when_out_of_bounds(warped_live_field, base_x + 1, base_y,
+			value10 = sample_tsdf_value_with_replacement(warped_live_field, base_x + 1, base_y,
 					live_tsdf_value);
-			value11 = sample_tsdf_value_replacing_when_out_of_bounds(warped_live_field, base_x + 1, base_y + 1,
+			value11 = sample_tsdf_value_with_replacement(warped_live_field, base_x + 1, base_y + 1,
 					live_tsdf_value);
 		} else {
-			value00 = sample_tsdf_value_at(warped_live_field, base_x, base_y);
-			value01 = sample_tsdf_value_at(warped_live_field, base_x, base_y + 1);
-			value10 = sample_tsdf_value_at(warped_live_field, base_x + 1, base_y);
-			value11 = sample_tsdf_value_at(warped_live_field, base_x + 1, base_y + 1);
+			value00 = sample_tsdf_value(warped_live_field, base_x, base_y);
+			value01 = sample_tsdf_value(warped_live_field, base_x, base_y + 1);
+			value10 = sample_tsdf_value(warped_live_field, base_x + 1, base_y);
+			value11 = sample_tsdf_value(warped_live_field, base_x + 1, base_y + 1);
 		}
 
 		float interpolated_value0 = value00 * inverse_ratio_y + value01 * ratio_y;
@@ -142,85 +152,6 @@ eig::MatrixXf warp_2d_advanced_warp_unchanged(
 	return warp_2d_advanced_aux<false>(warp_field, warped_live_field, canonical_field, band_union_only, known_values_only,
 			substitute_original, truncation_float_threshold);
 }
-
-/*TODO: condense resample_field_aux and resample_aux into a single function with more template parameters to avoid DRY
- violations*/
-
-template<bool WithReplacement>
-inline eig::MatrixXf warp_2d_aux(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
-		float replacement_value = 0.0f) {
-	int matrix_size = static_cast<int>(scalar_field.size());
-	const int column_count = static_cast<int>(scalar_field.cols());
-	const int row_count = static_cast<int>(scalar_field.rows());
-
-	eig::MatrixXf resampled_field(row_count, column_count);
-
-#pragma omp parallel for
-	for (int i_element = 0; i_element < matrix_size; i_element++) {
-		// Any MatrixXf in Eigen is column-major
-		// i_element = x * column_count + y
-		div_t division_result = div(i_element, column_count);
-		int x = division_result.quot;
-		int y = division_result.rem;
-
-		math::Vector2f local_warp = warp_field(i_element);
-		float lookup_x = x + local_warp.u;
-		float lookup_y = y + local_warp.v;
-		int base_x = static_cast<int>(std::floor(lookup_x));
-		int base_y = static_cast<int>(std::floor(lookup_y));
-		float ratio_x = lookup_x - base_x;
-		float ratio_y = lookup_y - base_y;
-		float inverse_ratio_x = 1.0F - ratio_x;
-		float inverse_ratio_y = 1.0F - ratio_y;
-
-		float value00, value01, value10, value11;
-
-		if (WithReplacement) {
-			value00 = sample_tsdf_value_replacing_when_out_of_bounds(scalar_field, base_x, base_y,
-					replacement_value);
-			value01 = sample_tsdf_value_replacing_when_out_of_bounds(scalar_field, base_x, base_y + 1,
-					replacement_value);
-			value10 = sample_tsdf_value_replacing_when_out_of_bounds(scalar_field, base_x + 1, base_y,
-					replacement_value);
-			value11 = sample_tsdf_value_replacing_when_out_of_bounds(scalar_field, base_x + 1, base_y + 1,
-					replacement_value);
-		} else {
-			value00 = sample_tsdf_value_at(scalar_field, base_x, base_y);
-			value01 = sample_tsdf_value_at(scalar_field, base_x, base_y + 1);
-			value10 = sample_tsdf_value_at(scalar_field, base_x + 1, base_y);
-			value11 = sample_tsdf_value_at(scalar_field, base_x + 1, base_y + 1);
-		}
-
-		float interpolated_value0 = value00 * inverse_ratio_y + value01 * ratio_y;
-		float interpolated_value1 = value10 * inverse_ratio_y + value11 * ratio_y;
-		float new_value = interpolated_value0 * inverse_ratio_x + interpolated_value1 * ratio_x;
-
-		resampled_field(i_element) = new_value;
-	}
-
-	return resampled_field;
-}
-
-eig::MatrixXf warp_2d(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field) {
-	return warp_2d_aux<false>(scalar_field, warp_field);
-}
-
-
-eig::MatrixXf warp_2d_replacement(const eig::MatrixXf& scalar_field, math::MatrixXv2f& warp_field,
-		float replacement_value) {
-	return warp_2d_aux<true>(scalar_field, warp_field, replacement_value);
-}
-
-template
-math::Tensor3f warp_3d<float>(const math::Tensor3f& scalar_field, math::Tensor3v3f& warp_field);
-
-template
-math::Tensor3f warp_3d_with_replacement<float>(const math::Tensor3f& scalar_field, math::Tensor3v3f& warp_field,
-		float replacement_value);
-
-template
-math::Tensor3v3f warp_3d_with_replacement<math::Vector3f>(const math::Tensor3v3f& vector_field, math::Tensor3v3f& warp_field,
-		math::Vector3f replacement_value);
 
 bp::object py_warp_field(const eig::MatrixXf& warped_live_field,
 		const eig::MatrixXf& canonical_field, eig::MatrixXf warp_field_u,
