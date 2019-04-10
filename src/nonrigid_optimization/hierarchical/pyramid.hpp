@@ -1,9 +1,9 @@
 /*
- * pyramid2d.h
+ * pyramid.hpp
  *
- *  Created on: Dec 18, 2018
+ *  Created on: Apr 10, 2019
  *      Author: Gregory Kramida
- *   Copyright: 2018 Gregory Kramida
+ *   Copyright: 2019 Gregory Kramida
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,39 +17,36 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-//A pyramid representation of a contiguous 2d scalar field
+
+#pragma once
 
 //Standard library
 #include <vector>
 #include <memory>
 
 //Libraries
-#include <Eigen/Eigen>
+#include <Eigen/Dense>
 
 //local
 #include "../../math/resampling.hpp"
 
-#pragma once
-
-namespace eig = Eigen;
-
-//TODO: templatize on field type, merge with 3D case
-
 namespace nonrigid_optimization {
 namespace hierarchical{
+
 /**
- * A pyramid representation of a continuous 2d scalar field
+ * A pyramid representation of a discrete scalar field
  */
-class Pyramid2d{
+template <typename Container>
+class Pyramid{
 public:
-	Pyramid2d(eig::MatrixXf field, int maximum_chunk_size=8, math::DownsamplingStrategy downsampling_strategy
+	Pyramid(Container field, int maximum_chunk_size=8, math::DownsamplingStrategy downsampling_strategy
 			= math::DownsamplingStrategy::AVERAGE);
 
-	const eig::MatrixXf& get_level(int i_level) const;
+	const Container& get_level(int i_level) const;
 	size_t get_level_count() const;
 private:
-	std::vector<eig::MatrixXf> levels;
+	std::vector<Container> levels;
 };
 
-} /* namespace hierarchical */
-} /* namespace nonrigid_optimization */
+} //namespace hierarchical
+} //namespace nonrigid_optimization
