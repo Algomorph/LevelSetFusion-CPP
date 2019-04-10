@@ -29,6 +29,19 @@
 namespace nonrigid_optimization {
 namespace hierarchical {
 
+template<typename Scalar>
+static inline
+int get_max_level_count(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field){
+	return static_cast<int>(std::min(std::log2(field.rows()), std::log2(field.cols()))) + 1;
+}
+
+template<typename Scalar>
+static inline
+int get_max_level_count(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+	return static_cast<int>( std::min(
+			{ std::log2(field.dimension(0)), std::log2(field.dimension(1)), std::log2(field.dimension(2)) })) + 1;
+}
+
 
 /**
  * @param field -- scalar field
@@ -37,16 +50,14 @@ namespace hierarchical {
 template <typename Container>
 Pyramid<Container>::Pyramid(Container field, int maximum_chunk_size, math::DownsamplingStrategy downsampling_strategy)
 : levels(){
-		throw_assert(math::is_power_of_two(field.rows()) && math::is_power_of_two(field.cols()),
-				"The argument 'field' must have a power of two for each dimension.");
 		throw_assert(math::is_power_of_two(maximum_chunk_size),
 				"The argument 'maximum_chunk_size' must be an integer power of 2, i.e. 4, 8, 16, etc.");
 
 		int power_of_two_largest_chunk = static_cast<int>(std::log2(maximum_chunk_size));
 
 		//check that we can get a level with the maximum chunk size
-		int max_level_count = static_cast<int>(std::min(std::log2(field.rows()), std::log2(field.cols()))) + 1;
-		eigen_assert(max_level_count > power_of_two_largest_chunk && "Maximum chunk size too large for the field size.");// @suppress("Invalid arguments")
+		int max_level_count = get_max_level_count(field);
+		throw_assert(max_level_count > power_of_two_largest_chunk, "Maximum chunk size too large for the field size.");// @suppress("Invalid arguments")
 
 		int level_count = power_of_two_largest_chunk + 1;
 		levels.push_back(field);
