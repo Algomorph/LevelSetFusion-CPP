@@ -29,7 +29,7 @@
 #include "../../math/statistics.hpp"
 #include "../field_warping.hpp"
 #include "hierarchical_optimizer3d.hpp"
-#include "pyramid3d.hpp"
+#include "pyramid.hpp"
 
 
 namespace nonrigid_optimization {
@@ -76,9 +76,9 @@ HierarchicalOptimizer3d::VerbosityParameters::VerbosityParameters(
 //
 //	math::Tensor3v3f live_gradient;
 //	math::field_gradient(live_gradient, live_field);
-//	Pyramid3d canonical_pyramid(canonical_field, this->maximum_chunk_size);
-//	Pyramid3d live_pyramid(live_field, this->maximum_chunk_size);
-//	Pyramid3d live_gradient_pyramid(live_gradient, this->maximum_chunk_size);
+//	Pyramid<math::Tensor3f> canonical_pyramid(canonical_field, this->maximum_chunk_size);
+//	Pyramid<math::Tensor3f> live_pyramid(live_field, this->maximum_chunk_size);
+//	Pyramid<math::Tensor3v3f> live_gradient_pyramid(live_gradient, this->maximum_chunk_size);
 //
 //	this->current_hierarchy_level = 0;
 //
