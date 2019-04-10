@@ -260,6 +260,9 @@ add_library(${MODULE_NAME} SHARED
 			src/math/conics.cpp
 			src/math/convolution.hpp
 			src/math/convolution.cpp
+			src/math/field_like.hpp
+			src/math/field_like.tpp
+			src/math/field_like.cpp
 			src/math/filtered_statistics.hpp
 			src/math/filtered_statistics.cpp
 			src/math/gradients.hpp
