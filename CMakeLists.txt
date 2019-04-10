@@ -279,6 +279,7 @@ add_library(${MODULE_NAME} SHARED
 			src/math/resampling.tpp
 			src/math/resampling.cpp
 			src/math/statistics.hpp
+			src/math/statistics.tpp
 			src/math/statistics.cpp
 			src/math/tensor_operations.hpp
 			src/math/tensor_operations.cpp

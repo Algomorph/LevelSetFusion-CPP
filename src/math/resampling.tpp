@@ -559,10 +559,8 @@ Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
 
 	TensorType padded = math::pad_replicate(field, 1);
 
-	//_DEBUG
-	downsampled.setZero();
 
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int x_target = 0; x_target < dsize_x; x_target++) {
 		int x_source = x_target * 2 + 1;
 		for (int y_target = 0, y_source = 1; y_target < dsize_y; y_target++, y_source += 2) {
