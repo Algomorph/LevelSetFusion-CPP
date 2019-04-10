@@ -95,7 +95,7 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
         eig::Matrix<float, 6, 1> twist3d;
         twist3d << twist(0), 0.0f, twist(1), 0.0f, twist(2), 0.0f;
         eig::Matrix4f twist_matrix3d = math::transformation_vector_to_matrix3d(twist3d);
-        std::cout << twist_matrix3d << std::endl;
+//        std::cout << twist_matrix3d << std::endl;
         eig::MatrixXf live_field = tsdf::generate_TSDF_2D(image_y_coordinate,
                                                           live_depth_image,
                                                           tsdf_generation_parameters.depth_unit_ratio,
@@ -105,7 +105,7 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
                                                           tsdf_generation_parameters.field_size,
                                                           tsdf_generation_parameters.voxel_size,
                                                           tsdf_generation_parameters.narrow_band_width_voxels);
-        if (iteration_count == 1) std::cout << live_field << std::endl;
+//        if (iteration_count == 1) std::cout << live_field << std::endl;
         eig::MatrixXf live_weight = live_field.replicate(1, 1);
         for (int i=0; i < live_weight.rows(); ++i) { // Determine weight based on thickness
             for (int j=0; j < live_weight.cols(); ++j){

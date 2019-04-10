@@ -58,7 +58,7 @@ eig::MatrixXf generate_TSDF_2D(
         }
 
         // ray distance from camera to voxel center
-        // TODO: there is difference between voxel_camera.norm() and voxel_camera[2]
+        // TODO: there is difference between voxel_camera.norm() and voxel_camera[2], not sure if +0.5 is necessary.
         float ray_distance = voxel_camera.norm();
 
         int image_x_coordinate = int(voxel_image(0) + 0.5);

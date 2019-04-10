@@ -14,14 +14,6 @@ namespace math {
         twist_matrix_homo << cos(theta), -sin(theta), twist(0),
                              sin(theta), cos(theta),  twist(1),
                              0.f,        0.f,         1.f;
-
-//        twist_matrix_homo(0, 0) = cos(theta);
-//        twist_matrix_homo(0, 1) = -sin(theta);
-//        twist_matrix_homo(1, 0) = sin(theta);
-//        twist_matrix_homo(1, 1) = cos(theta);
-//        twist_matrix_homo(0, 2) = twist(0);
-//        twist_matrix_homo(1, 2) = twist(1);
-//        twist_matrix_homo(2, 2) = 1;
         return twist_matrix_homo;
     }
 
@@ -30,8 +22,15 @@ namespace math {
         eig::Vector3f rotation = twist.tail<3>();
         float theta = rotation.norm();
 
+        if (std::abs(theta) > 1e-14) {
+            rotation /= theta;
+        }
+
         eig::Quaternionf q;
-        q = eig::Quaternionf(theta, rotation(0), rotation(1), rotation(2));
+        q = eig::Quaternionf(cos(theta/2),
+                             sin(theta/2) * rotation(0),
+                             sin(theta/2) * rotation(1),
+                             sin(theta/2) * rotation(2));
 
         eig::Matrix3f rotation_matrix = q.toRotationMatrix();
 
@@ -41,12 +40,6 @@ namespace math {
                              rotation_matrix(1, 0), rotation_matrix(1, 1), rotation_matrix(1, 2), translation(1),
                              rotation_matrix(2, 0), rotation_matrix(2, 1), rotation_matrix(2, 2), translation(2),
                              0.0f,                  0.0f,                  0.0f,                  1.0f;
-
-//        twist_matrix_homo.conservativeResize(4, 4);
-//        twist_matrix_homo(0, 3) = translation(0);
-//        twist_matrix_homo(1, 3) = translation(1);
-//        twist_matrix_homo(2, 3) = translation(2);
-//        twist_matrix_homo(3, 3) = 1;
         return twist_matrix_homo;
     }
 }
