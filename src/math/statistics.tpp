@@ -101,7 +101,7 @@ void locate_min_norm(float& min_norm, math::Vector2i& coordinates,
 #pragma omp parallel for
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
 		float squared_length = math::squared_norm(vector_field(i_element));
-		NormLoc last_best = min_norm_container.load();
+		NormLoc last_best = min_norm_container.load(); // @suppress("Invalid arguments")
 		NormLoc new_best;
 		float min_squared_norm = last_best.norm;
 		do {
@@ -111,7 +111,7 @@ void locate_min_norm(float& min_norm, math::Vector2i& coordinates,
 			new_best.coordinates.y = i_element % column_count;
 		} while (squared_length < min_squared_norm && min_norm_container.compare_exchange_strong(last_best, new_best));
 	}
-	NormLoc last_best = min_norm_container.load();
+	NormLoc last_best = min_norm_container.load(); // @suppress("Invalid arguments")
 	min_norm = std::sqrt(last_best.norm);
 	coordinates = last_best.coordinates;
 }

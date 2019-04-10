@@ -230,6 +230,9 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
 			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp
 			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.cpp
+			src/nonrigid_optimization/hierarchical/pyramid.hpp
+			src/nonrigid_optimization/hierarchical/pyramid.tpp
+			src/nonrigid_optimization/hierarchical/pyramid.cpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.hpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.tpp
 			src/nonrigid_optimization/hierarchical/pyramid2d.cpp
