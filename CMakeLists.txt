@@ -255,9 +255,9 @@ add_library(${MODULE_NAME} SHARED
 
 			### math: mathematical utilities
       		src/math/checks.hpp
-      		src/math/collection_comparison.hpp
-      		src/math/collection_comparison.tpp
-      		src/math/collection_comparison.cpp
+      		src/math/almost_equal.hpp
+      		src/math/almost_equal.tpp
+      		src/math/almost_equal.cpp
 			src/math/boolean_operations.hpp
 			src/math/conics.hpp
 			src/math/conics.cpp
@@ -271,11 +271,15 @@ add_library(${MODULE_NAME} SHARED
 			src/math/matrix_base.hpp
 			src/math/matrix2.hpp
 			src/math/nestable_type_metainfo.hpp
+			src/math/padding.hpp
+			src/math/padding.tpp
+			src/math/padding.cpp
 			src/math/platform_independence.hpp
 			src/math/resampling.hpp
 			src/math/resampling.tpp
 			src/math/resampling.cpp
 			src/math/statistics.hpp
+			src/math/statistics.tpp
 			src/math/statistics.cpp
 			src/math/tensor_operations.hpp
 			src/math/tensor_operations.cpp
@@ -303,8 +307,12 @@ add_library(${MODULE_NAME} SHARED
 			# console: utilities for printing things to the console in better ways
 			src/console/colors.hpp
 			src/console/colors.cpp
+			src/console/pretty_printers.hpp
 			src/console/progress_bar.cpp
-			src/console/progress_bar.hpp)
+			src/console/progress_bar.hpp
+			
+			src/error_handling/throw_assert.hpp
+			)
 
 target_link_libraries(${MODULE_NAME}
         PUBLIC

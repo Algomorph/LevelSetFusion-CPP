@@ -60,7 +60,7 @@ void compute_energy_gradient(const eig::MatrixXf& warped_live_field, const eig::
 	eig::MatrixXf live_gradient_x_field, live_gradient_y_field;
 
 	// compute warped live numerical gradient
-	math::scalar_field_gradient(live_gradient_x_field, live_gradient_y_field, warped_live_field);
+	math::gradient(live_gradient_x_field, live_gradient_y_field, warped_live_field);
 
 #pragma omp parallel for
 	for (int i_element = 0; i_element < entry_count; i_element++) {

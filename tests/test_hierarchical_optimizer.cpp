@@ -33,7 +33,7 @@
 
 // test targets
 #include "../src/math/typedefs.hpp"
-#include "../src/math/collection_comparison.hpp"
+#include "../src/math/almost_equal.hpp"
 #include "../src/nonrigid_optimization/hierarchical/pyramid2d.hpp"
 #include "../src/nonrigid_optimization/hierarchical/optimizer2d.hpp"
 #include "../src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp"
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer01){
 	math::MatrixXv2f warp_field_out = optimizer.optimize(test_data::canonical_field, test_data::live_field);
 	eig::MatrixXf final_live_resampled = nro::warp_2d(test_data::live_field,warp_field_out);
 
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field_out,test_data::warp_field,10e-6));
+	BOOST_REQUIRE(math::almost_equal_verbose(warp_field_out,test_data::warp_field,10e-6));
 	BOOST_REQUIRE(final_live_resampled.isApprox(test_data::final_live_field));
 }
 
@@ -180,8 +180,8 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer_iteration_data){
 	std::vector<telemetry::OptimizationIterationData> data = optimizer.get_per_level_iteration_data();
 
 	const std::vector<math::MatrixXv2f> vec = data[3].get_warp_fields();
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(vec[50],test_data::iteration50_warp_field,10e-6));
+	BOOST_REQUIRE(math::almost_equal_verbose(vec[50],test_data::iteration50_warp_field,10e-6));
 
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field_out,test_data::warp_field,10e-6));
+	BOOST_REQUIRE(math::almost_equal_verbose(warp_field_out,test_data::warp_field,10e-6));
 	BOOST_REQUIRE(final_live_resampled.isApprox(test_data::final_live_field));
 }

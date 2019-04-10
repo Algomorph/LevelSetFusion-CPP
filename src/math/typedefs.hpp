@@ -48,6 +48,7 @@ typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic> Matr
 typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> MatrixXv2f_rm;
 typedef Eigen::Matrix<math::Matrix2<float>, Eigen::Dynamic, Eigen::Dynamic> MatrixXm2f;
 
+typedef class Eigen::Tensor<float,3> Tensor3f;
 typedef Eigen::Tensor<math::Vector2<float>,3> Tensor3v2f;
 typedef Eigen::Tensor<math::Vector3<float>,3> Tensor3v3f;
 
@@ -58,7 +59,5 @@ typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,Eigen::Dynamic> Matrix
 typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,1> MatrixX1uc;
 typedef class Eigen::Matrix<unsigned char, 1, Eigen::Dynamic> Matrix1Xuc;
 typedef class Eigen::Matrix<unsigned char, Eigen::Dynamic,Eigen::Dynamic> MatrixXuc;
-
-typedef class Eigen::Tensor<float,3> Tensor3f;
 
 }//namespace math

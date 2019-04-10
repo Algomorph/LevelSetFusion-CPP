@@ -117,7 +117,7 @@ float SobolevOptimizer2d::perform_optimization_iteration_and_return_max_warp(eig
 
 	math::MatrixXv2f data_term_gradient, smoothing_term_gradient, warped_live_field_gradient;
 	float data_term_energy, smoothing_term_energy;
-	math::scalar_field_gradient(warped_live_field_gradient, warped_live_field);
+	math::gradient(warped_live_field_gradient, warped_live_field);
 	compute_data_term_gradient_within_band_union(data_term_gradient, data_term_energy, warped_live_field,
 			canonical_field, warped_live_field_gradient, 10.0f);
 	compute_tikhonov_regularization_gradient_within_band_union(smoothing_term_gradient, smoothing_term_energy,

@@ -23,7 +23,7 @@
 
 #include "../math/filtered_statistics.hpp"
 #include "../math/statistics.hpp"
-#include "../math/collection_comparison.hpp"
+#include "../math/almost_equal.hpp"
 
 
 namespace telemetry {

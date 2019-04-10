@@ -26,25 +26,44 @@
 //local
 #include "resampling.hpp"
 #include "checks.hpp"
+#include "../error_handling/throw_assert.hpp"
+#include "padding.hpp"
 
 namespace eig = Eigen;
 namespace math {
 
-template<typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
-		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
-		UpsamplingStrategy upsampling_strategy){
-	switch(upsampling_strategy){
+// region ================================ GENERIC UPSAMPLING ==========================================================
+template<typename ContainerType, typename Scalar>
+static inline ContainerType upsampleX2_aux(const ContainerType& field, UpsamplingStrategy upsampling_strategy) {
+	switch (upsampling_strategy) {
 	case UpsamplingStrategy::NEAREST:
 		return upsampleX2_nearest(field);
 	case UpsamplingStrategy::LINEAR:
 		return upsampleX2_linear(field);
 	default:
-		assert(false && "Unknown UpsamplingStrategy");
-		return Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>();
+		throw_assert(false, "Unknown UpsamplingStrategy")
+		;
+		return ContainerType();
 	}
 }
 
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+		UpsamplingStrategy upsampling_strategy) {
+	return upsampleX2_aux<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Scalar>(field,
+			upsampling_strategy);
+}
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field,
+		UpsamplingStrategy upsampling_strategy) {
+	return upsampleX2_aux<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>, Scalar>(field, upsampling_strategy);
+}
+
+// endregion
+// region ================================ NEAREST UPSAMPLING ==========================================================
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_nearest(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
@@ -79,6 +98,34 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> upsampleX
 	return upsampled;
 }
 
+//TODO: write tests for this
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_nearest(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
+	Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampled(field.dimension(0) * 2, field.dimension(1) * 2,
+			field.dimension(2) * 2);
+#pragma omp parallel for
+	for (int z_source = 0; z_source < field.dimension(2); z_source++) {
+		int z_dest = z_source * 2;
+		for (int y_dest = 0, y_source = 0; y_source < field.dimension(1); y_dest += 2, y_source++) {
+			for (int x_dest = 0, x_source = 0; x_source < field.dimension(0); x_dest += 2, x_source++) {
+				Scalar value = field(x_source, y_source, z_source);
+				upsampled(x_dest, y_dest, z_dest) = value;
+				upsampled(x_dest + 1, y_dest, z_dest) = value;
+				upsampled(x_dest, y_dest + 1, z_dest) = value;
+				upsampled(x_dest + 1, y_dest + 1, z_dest) = value;
+
+				upsampled(x_dest, y_dest, z_dest + 1) = value;
+				upsampled(x_dest + 1, y_dest, z_dest + 1) = value;
+				upsampled(x_dest, y_dest + 1, z_dest + 1) = value;
+				upsampled(x_dest + 1, y_dest + 1, z_dest + 1) = value;
+			}
+		}
+	}
+	return upsampled;
+}
+//endregion
+//region ====================================== LINEAR UPSAMPLING ======================================================
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
@@ -159,7 +206,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 					+ 0.1875f * value11;
 			upsampled(dest_row + 1, dest_col + 1) = 0.0625f * value00 + 0.1875f * value01 + 0.1875f * value10
 					+ 0.5625f * value11;
-																																																						//@formatter:on
+																																																																																																//@formatter:on
 			value00 = value10;
 			value01 = value11;
 		}
@@ -167,30 +214,152 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> upsampleX
 
 	return upsampled;
 }
-
-
 template<typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2(
-		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
-		DownsamplingStrategy downsampling_strategy){
-	switch(downsampling_strategy){
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> upsampleX2_linear(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
+	typedef Eigen::Tensor<Scalar, 3, Eigen::ColMajor> TensorType;
+	typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> MatrixType;
+
+	int size_x = field.dimension(0), size_y = field.dimension(1), size_z = field.dimension(2);
+	int usize_x = size_x * 2, usize_y = size_y * 2, usize_z = size_z * 2;
+	int ulx = usize_x - 1, uly = usize_y - 1, ulz = usize_z - 1;
+
+	TensorType upsampled(usize_x, usize_y, usize_z);
+
+	//the sides can be processed as matrices.
+
+	typedef eig::array<long, 3> Arrl3;
+	typedef eig::array<long, 2> Arrl2;
+
+	Arrl3 extents_source[] = {
+			Arrl3 { 1, size_y, size_z },
+			Arrl3 { size_x, 1, size_z },
+			Arrl3 { size_x, size_y, 1 }
+	};
+	Arrl2 mat_extents_source[] {
+			Arrl2 { size_y, size_z },
+			Arrl2 { size_x, size_z },
+			Arrl2 { size_x, size_y }
+	};
+	Arrl3 extents_target[] = {
+			Arrl3 { 1, usize_y, usize_z },
+			Arrl3 { usize_x, 1, usize_z },
+			Arrl3 { usize_x, usize_y, 1 }
+	};
+	struct FaceExtentAndOffset {
+		Arrl3 offset_source;
+		Arrl3 extent_source;
+		Arrl2 mat_extent_source;
+		Arrl3 offset_target;
+		Arrl3 extent_target;
+	};
+	FaceExtentAndOffset face_extents_and_offsets[] = { //@formatter:off
+			{Arrl3{0,0,0},        extents_source[0], mat_extents_source[0], Arrl3{0,0,  0}, extents_target[0]},  //near x
+			{Arrl3{size_x-1,0,0}, extents_source[0], mat_extents_source[0], Arrl3{ulx,0,0}, extents_target[0]},  //far x
+			{Arrl3{0,0,0},        extents_source[1], mat_extents_source[1], Arrl3{0,0,  0}, extents_target[1]},  //near y
+			{Arrl3{0,size_y-1,0}, extents_source[1], mat_extents_source[1], Arrl3{0,uly,0}, extents_target[1]},  //far y
+			{Arrl3{0,0,0},        extents_source[2], mat_extents_source[2], Arrl3{0,0,  0}, extents_target[2]},  //near z
+			{Arrl3{0,0,size_z-1}, extents_source[2], mat_extents_source[2], Arrl3{0,0,ulz}, extents_target[2]}   //far z
+	};//@formatter:on
+
+	for (const FaceExtentAndOffset& feao : face_extents_and_offsets) {
+		TensorType slice_source = field.slice(feao.offset_source, feao.extent_source);
+		MatrixType slice_matrix_source = eig::Map<MatrixType>(
+				slice_source.data(),
+				feao.mat_extent_source[0],
+				feao.mat_extent_source[1]
+				);
+		MatrixType slice_matrix_upsampled = upsampleX2_linear(slice_matrix_source);
+		eig::TensorMap<TensorType, eig::Aligned> slice_upsampled(slice_matrix_upsampled.data(), feao.extent_target);
+		upsampled.slice(feao.offset_target, feao.extent_target) = slice_upsampled;
+	}
+
+#pragma omp parallel for
+	for (int z_source = 0; z_source < size_z - 1; z_source++) {
+		int z_dest = z_source * 2 + 1;
+		for (int y_dest = 1, y_source = 0; y_source < size_y - 1; y_dest += 2, y_source++) {
+			for (int x_dest = 1, x_source = 0; x_source < size_x - 1; x_dest += 2, x_source++) {
+				//@formatting:off
+				Scalar v000 = field(x_source, y_source, z_source);
+				Scalar v100 = field(x_source + 1, y_source, z_source);
+				Scalar v010 = field(x_source, y_source + 1, z_source);
+				Scalar v110 = field(x_source + 1, y_source + 1, z_source);
+				Scalar v001 = field(x_source, y_source, z_source + 1);
+				Scalar v101 = field(x_source + 1, y_source, z_source + 1);
+				Scalar v011 = field(x_source, y_source + 1, z_source + 1);
+				Scalar v111 = field(x_source + 1, y_source + 1, z_source + 1); //@formatting:on
+				//interpolate along x dimension
+				Scalar xv000 = 0.75f * v000 + 0.25f * v100;
+				Scalar xv100 = 0.25f * v000 + 0.75f * v100;
+				Scalar xv010 = 0.75f * v010 + 0.25f * v110;
+				Scalar xv110 = 0.25f * v010 + 0.75f * v110;
+				Scalar xv001 = 0.75f * v001 + 0.25f * v101;
+				Scalar xv101 = 0.25f * v001 + 0.75f * v101;
+				Scalar xv011 = 0.75f * v011 + 0.25f * v111;
+				Scalar xv111 = 0.25f * v011 + 0.75f * v111;
+				//interpolate along y dimension
+				Scalar yv000 = 0.75f * xv000 + 0.25f * xv010;
+				Scalar yv010 = 0.25f * xv000 + 0.75f * xv010;
+				Scalar yv100 = 0.75f * xv100 + 0.25f * xv110;
+				Scalar yv110 = 0.25f * xv100 + 0.75f * xv110;
+				Scalar yv001 = 0.75f * xv001 + 0.25f * xv011;
+				Scalar yv011 = 0.25f * xv001 + 0.75f * xv011;
+				Scalar yv101 = 0.75f * xv101 + 0.25f * xv111;
+				Scalar yv111 = 0.25f * xv101 + 0.75f * xv111;
+				//interpolate along z dimension
+				upsampled(x_dest, y_dest, z_dest) = 0.75f * yv000 + 0.25f * yv001;
+				upsampled(x_dest + 1, y_dest, z_dest) = 0.75f * yv100 + 0.25f * yv101;
+				upsampled(x_dest, y_dest + 1, z_dest) = 0.75f * yv010 + 0.25f * yv011;
+				upsampled(x_dest + 1, y_dest + 1, z_dest) = 0.75f * yv110 + 0.25f * yv111;
+				upsampled(x_dest, y_dest, z_dest + 1) = 0.25f * yv000 + 0.75f * yv001;
+				upsampled(x_dest + 1, y_dest, z_dest + 1) = 0.25f * yv100 + 0.75f * yv101;
+				upsampled(x_dest, y_dest + 1, z_dest + 1) = 0.25f * yv010 + 0.75f * yv011;
+				upsampled(x_dest + 1, y_dest + 1, z_dest + 1) = 0.25f * yv110 + 0.75f * yv111;
+			}
+		}
+	}
+	return upsampled;
+}
+//endregion
+//region ===================================== GENERIC DOWNSAMPLING ====================================================
+template<typename ContainerType, typename Scalar>
+static inline ContainerType downsampleX2_aux(
+		const ContainerType& field,
+		DownsamplingStrategy downsampling_strategy) {
+	switch (downsampling_strategy) {
 	case DownsamplingStrategy::AVERAGE:
 		return downsampleX2_average(field);
 	case DownsamplingStrategy::LINEAR:
 		return downsampleX2_linear(field);
 	default:
-		assert(false && "Unknown UpsamplingStrategy");
-		return Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>();
+		throw_assert(false, "Unknown UpsamplingStrategy")
+		;
+		return ContainerType();
 	}
 }
 
 template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2(
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field,
+		DownsamplingStrategy downsampling_strategy) {
+	return downsampleX2_aux<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Scalar>(field,
+			downsampling_strategy);
+}
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field,
+		DownsamplingStrategy downsampling_strategy) {
+	return downsampleX2_aux<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>, Scalar>(field, downsampling_strategy);
+}
+//endregion
+//region ============================== DOWNSAMPLING USING AVERAGE STRATEGY ============================================
+template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_average(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
-#ifndef NDEBUG
-	eigen_assert((math::is_power_of_two(field.rows()) && math::is_power_of_two(field.cols()))
-			&& "The argument 'field' must have a power of two for each dimension.");
-#endif
+
+	throw_assert((math::is_power_of_two(field.rows()) && math::is_power_of_two(field.cols())),
+			"The argument 'field' must have a power of two for each dimension.");
 
 	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampled(field.rows() / 2,
 			field.cols() / 2);
@@ -213,13 +382,48 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 }
 
 template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_average(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
+	eig::Tensor<Scalar, 3> downsampled(
+			field.dimension(0) / 2,
+			field.dimension(1) / 2,
+			field.dimension(2) / 2
+					);
+	//average each square of 4 cells into one
+	for (int z_target = 0, z_source = 0;
+			z_target < downsampled.dimension(2);
+			z_target++, z_source += 2) {
+		for (eig::Index y_target = 0, y_source = 0;
+				y_target < downsampled.dimension(1);
+				y_target++, y_source += 2) {
+			for (eig::Index x_target = 0, x_source = 0;
+					x_target < downsampled.dimension(0);
+					x_target++, x_source += 2) {
+				/* @formatter:off*/
+				downsampled(x_target, y_target, z_target) = (
+						field(x_source, y_source, z_source) +
+						field(x_source + 1, y_source, z_source) +
+						field(x_source, y_source + 1, z_source) +
+						field(x_source + 1, y_source + 1, z_source) +
+						field(x_source, y_source, z_source + 1) +
+						field(x_source + 1, y_source, z_source + 1) +
+						field(x_source, y_source + 1, z_source + 1)+
+						field(x_source + 1, y_source + 1, z_source + 1)
+				) / 8.0f;/* @formatter:on */
+			}
+		}
+	}
+	return downsampled;
+}
+
+//endregion
+//region ============================== DOWNSAMPLING USING LINEAR STRATEGY =============================================
+template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampleX2_linear(
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field) {
-#ifndef NDEBUG
-	eigen_assert((field.rows() % 2 == 0 && field.cols() % 2 == 0 &&
-					field.rows() > 2 && field.cols() > 2)
-			&& "Each dimension of the argument 'field' must be divisible by 2 and greater than 2.");
-#endif
+	throw_assert((field.rows() % 2 == 0 && field.cols() % 2 == 0 && field.rows() > 2 && field.cols() > 2),
+			"Each dimension of the argument 'field' must be divisible by 2 and greater than 2.");
+
 	Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampled(field.rows() / 2,
 			field.cols() / 2);
 
@@ -286,7 +490,7 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 
 	//left column, right column
 #pragma omp parallel for
-	for (eig::Index target_row = 1; target_row < downsampled.rows() - 1;target_row++) {
+	for (eig::Index target_row = 1; target_row < downsampled.rows() - 1; target_row++) {
 		eig::Index source_row = target_row * 2;
 		downsampled(target_row, 0) = //@formatter:off
 			coeff0 * (field(source_row, 0) + field(source_row + 1, 0) +
@@ -331,6 +535,121 @@ Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> downsampl
 				coeff2 * (field(source_row - 1, source_col - 1) + field(source_row - 1, source_col + 2) +
 						  field(source_row + 2, source_col - 1) + field(source_row + 2, source_col + 2))
 			; //@formatter:on
+		}
+	}
+	return downsampled;
+}
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor> downsampleX2_linear(
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field) {
+
+	throw_assert(field.dimension(0) % 2 == 0 && field.dimension(1) % 2 == 0 && field.dimension(2) % 2 == 0 &&
+			field.dimension(0) > 2 && field.dimension(1) > 2 && field.dimension(2) > 2,
+			"Each dimension of the argument 'field' must be divisible by 2 and greater than 2.");
+	typedef Eigen::Tensor<Scalar, 3, Eigen::ColMajor> TensorType;
+	int size_x = field.dimension(0), size_y = field.dimension(1), size_z = field.dimension(2);
+	int dsize_x = size_x / 2, dsize_y = size_y / 2, dsize_z = size_z / 2;
+	TensorType downsampled(dsize_x, dsize_y, dsize_z);
+	//multiplication now and division later increases precision
+	const float c0 = 0.052734375f * 4.0f;
+	const float c1 = 0.017578125f * 4.0f;
+	const float c2 = 0.005859375f * 4.0f;
+	const float c3 = 0.001953125f * 4.0f;
+
+	TensorType padded = math::pad_replicate(field, 1);
+
+
+#pragma omp parallel for
+	for (int x_target = 0; x_target < dsize_x; x_target++) {
+		int x_source = x_target * 2 + 1;
+		for (int y_target = 0, y_source = 1; y_target < dsize_y; y_target++, y_source += 2) {
+			for (int z_target = 0, z_source = 1; z_target < dsize_z; z_target++, z_source += 2) {
+				downsampled(x_target, y_target, z_target) = //@formatter:off
+					   (c0 * (padded(x_source + 0, y_source + 0, z_source + 0) +
+							  padded(x_source + 1, y_source + 0, z_source + 0) +
+							  padded(x_source + 0, y_source + 1, z_source + 0) +
+							  padded(x_source + 1, y_source + 1, z_source + 0) +
+							  padded(x_source + 0, y_source + 0, z_source + 1) +
+							  padded(x_source + 1, y_source + 0, z_source + 1) +
+							  padded(x_source + 0, y_source + 1, z_source + 1) +
+							  padded(x_source + 1, y_source + 1, z_source + 1)) +
+
+					    c1 * (padded(x_source - 1, y_source + 0, z_source + 0) +
+							  padded(x_source + 0, y_source - 1, z_source + 0) +
+							  padded(x_source + 0, y_source + 0, z_source - 1) +
+
+							  padded(x_source + 2, y_source + 0, z_source + 0) +
+							  padded(x_source + 1, y_source - 1, z_source + 0) +
+							  padded(x_source + 1, y_source + 0, z_source - 1) +
+
+							  padded(x_source - 1, y_source + 1, z_source + 0) +
+							  padded(x_source + 0, y_source + 2, z_source + 0) +
+							  padded(x_source + 0, y_source + 1, z_source - 1) +
+
+							  padded(x_source + 2, y_source + 1, z_source + 0) +
+							  padded(x_source + 1, y_source + 2, z_source + 0) +
+							  padded(x_source + 1, y_source + 1, z_source - 1) +
+
+							  padded(x_source - 1, y_source + 0, z_source + 1) +
+							  padded(x_source + 0, y_source - 1, z_source + 1) +
+							  padded(x_source + 0, y_source + 0, z_source + 2) +
+
+							  padded(x_source + 2, y_source + 0, z_source + 1) +
+							  padded(x_source + 1, y_source - 1, z_source + 1) +
+							  padded(x_source + 1, y_source + 0, z_source + 2) +
+
+							  padded(x_source - 1, y_source + 1, z_source + 1) +
+							  padded(x_source + 0, y_source + 2, z_source + 1) +
+							  padded(x_source + 0, y_source + 1, z_source + 2) +
+
+							  padded(x_source + 2, y_source + 1, z_source + 1) +
+							  padded(x_source + 1, y_source + 2, z_source + 1) +
+							  padded(x_source + 1, y_source + 1, z_source + 2)) +
+
+						c2 * (padded(x_source - 1, y_source - 1, z_source + 0) +
+							  padded(x_source + 0, y_source - 1, z_source - 1) +
+							  padded(x_source - 1, y_source + 0, z_source - 1) +
+
+							  padded(x_source + 2, y_source - 1, z_source + 0) +
+							  padded(x_source + 1, y_source - 1, z_source - 1) +
+							  padded(x_source + 2, y_source + 0, z_source - 1) +
+
+							  padded(x_source - 1, y_source + 2, z_source + 0) +
+							  padded(x_source + 0, y_source + 2, z_source - 1) +
+							  padded(x_source - 1, y_source + 1, z_source - 1) +
+
+							  padded(x_source + 2, y_source + 2, z_source + 0) +
+							  padded(x_source + 1, y_source + 2, z_source - 1) +
+							  padded(x_source + 2, y_source + 1, z_source - 1) +
+
+							  padded(x_source - 1, y_source - 1, z_source + 1) +
+							  padded(x_source + 0, y_source - 1, z_source + 2) +
+							  padded(x_source - 1, y_source + 0, z_source + 2) +
+
+							  padded(x_source + 2, y_source - 1, z_source + 1) +
+							  padded(x_source + 1, y_source - 1, z_source + 2) +
+							  padded(x_source + 2, y_source + 0, z_source + 2) +
+
+							  padded(x_source - 1, y_source + 2, z_source + 1) +
+							  padded(x_source + 0, y_source + 2, z_source + 2) +
+							  padded(x_source - 1, y_source + 1, z_source + 2) +
+
+							  padded(x_source + 2, y_source + 2, z_source + 1) +
+							  padded(x_source + 1, y_source + 2, z_source + 2) +
+							  padded(x_source + 2, y_source + 1, z_source + 2)) +
+
+					    c3 * (padded(x_source - 1, y_source - 1, z_source - 1) +
+							  padded(x_source + 2, y_source - 1, z_source - 1) +
+							  padded(x_source - 1, y_source + 2, z_source - 1) +
+							  padded(x_source + 2, y_source + 2, z_source - 1) +
+							  padded(x_source - 1, y_source - 1, z_source + 2) +
+							  padded(x_source + 2, y_source - 1, z_source + 2) +
+							  padded(x_source - 1, y_source + 2, z_source + 2) +
+							  padded(x_source + 2, y_source + 2, z_source + 2))) * 0.25f;
+
+				;//@formatter:on
+			}
 		}
 	}
 	return downsampled;

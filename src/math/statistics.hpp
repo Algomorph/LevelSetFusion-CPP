@@ -20,17 +20,82 @@
 
 #pragma once
 
-#include "tensor_operations.hpp"
+//libraries
+#include <Eigen/Dense>
+#include <unsupported/Eigen/CXX11/Tensor>
+
+//local
 #include "typedefs.hpp"
 
-namespace math{
-	void locate_max_norm(float& max_norm,  math::Vector2i& coordinate, const math::MatrixXv2f& vector_field);
-	void locate_max_norm2(float& max_norm,  math::Vector2i& coordinate, const math::MatrixXv2f& vector_field);
-	float min_norm(const MatrixXv2f& vector_field);
-	float max_norm(const MatrixXv2f& vector_field);
-	void locate_min_norm(float& min_norm,  math::Vector2i& coordinate, const math::MatrixXv2f& vector_field);
-	void locate_max_norm_3d(float& max_norm, math::Vector3i& coordinate, const math::Tensor3v3f& vector_field);
-	float ratio_of_vector_lengths_above_threshold(const math::MatrixXv2f& vector_field, float threshold);
-	float mean_vector_length(const math::MatrixXv2f& vector_field);
-	void mean_and_std_vector_length(float& mean, float& standard_deviation, const math::MatrixXv2f& vector_field);
+namespace math {
+
+/**
+ * Locates the maximum L2 norm (length) of the vector in the given field.
+ * @param[out] max_norm length of the longest vector
+ * @param[out] coordinate the location of the longest vector
+ * @param[in] vector_field the vector field to look at
+ */
+template<typename Scalar>
+void locate_max_norm(float& max_norm, math::Vector2i& coordinates,
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field);
+/**
+ * Locates the maximum L2 norm (length) of the vector in the given field.
+ * @overload
+ */
+template<typename Scalar>
+void locate_max_norm(float& max_norm, math::Vector3i& coordinates,
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
+/**
+ * Locates the minimum L2 norm (length) of the vector in the given field.
+ * @param[out] max_norm length of the longest vector
+ * @param[out] coordinate the location of the longest vector
+ * @param[in] vector_field the vector field to look at
+ */
+template<typename Scalar>
+void locate_min_norm(float& min_norm, math::Vector2i& coordinates,
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field);
+/**
+ * Locates the minimum L2 norm (length) of the vector in the given field.
+ * @overload
+ */
+template<typename Scalar>
+void locate_min_norm(float& min_norm, math::Vector3i& coordinates,
+		const Eigen::Tensor<Scalar, 3, Eigen::Dynamic>& vector_field);
+
+void locate_max_norm2(float& max_norm, math::Vector2i& coordinates, const math::MatrixXv2f& vector_field);
+
+/**
+ * Locate the maximum L2 norm (length) of the vector in the given field.
+ * @param[out] min_norm length of the shortest vector
+ * @param[out] coordinate the location of the shortest vector
+ * @param[in] vector_field the field to look at
+ */
+template<typename Scalar>
+float max_norm(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field);
+/**
+ * Locate the maximum L2 norm (length) of the vector in the given field.
+ * @override
+ */
+template<typename Scalar>
+float max_norm(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
+/**
+ * Locate the minimum L2 norm (length) of the vector in the given field.
+ * @param[out] min_norm length of the shortest vector
+ * @param[out] coordinate the location of the shortest vector
+ * @param[in] vector_field the field to look at
+ */
+template<typename Scalar>
+float min_norm(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field);
+/**
+ * Locate the minimum L2 norm (length) of the vector in the given field.
+ * @override
+ */
+template<typename Scalar>
+float min_norm(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
+
+
+float ratio_of_vector_lengths_above_threshold(const math::MatrixXv2f& vector_field, float threshold);
+float mean_vector_length(const math::MatrixXv2f& vector_field);
+void mean_and_std_vector_length(float& mean, float& standard_deviation, const math::MatrixXv2f& vector_field);
+
 }

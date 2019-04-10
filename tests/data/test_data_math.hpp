@@ -324,7 +324,7 @@ static math::MatrixXv2f vector_field2 = []{
 		return vector_field;
 }();
 
-static math::MatrixXm2f vector_field_gradient = [] {
+static math::MatrixXm2f expected_vector_field_gradient = [] {
 	math::MatrixXm2f gradient(4, 4);
 	gradient <<
 			math::Matrix2f(-1.4550204f, -1.5989913f,

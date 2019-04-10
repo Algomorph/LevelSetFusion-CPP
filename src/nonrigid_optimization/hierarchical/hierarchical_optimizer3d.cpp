@@ -141,7 +141,7 @@ void HierarchicalOptimizer3d::optimize_level(
 
 		if (this->tikhonov_term_enabled) {
 			math::Tensor3v3f tikhonov_gradient;
-			math::vector_field_laplacian_3d(tikhonov_gradient, gradient);
+			math::laplacian(tikhonov_gradient, gradient);
 			//gradient = this->data_term_amplifier * data_gradient - this->tikhonov_strength * tikhonov_gradient;
 		} else {
 			//gradient = this->data_term_amplifier * data_gradient;
@@ -156,7 +156,7 @@ void HierarchicalOptimizer3d::optimize_level(
 
 		// perform termination condition updates
 		math::Vector3i longest_vector_location;
-		math::locate_max_norm_3d(maximum_warp_update_length, longest_vector_location, gradient);
+		math::locate_max_norm(maximum_warp_update_length, longest_vector_location, gradient);
 
 		iteration_count++;
 	}

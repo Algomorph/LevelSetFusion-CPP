@@ -25,7 +25,7 @@
 #include <Eigen/Eigen>
 
 //local
-#include "../src/math/collection_comparison.hpp"
+#include "../src/math/almost_equal.hpp"
 #include "../src/math/gradients.hpp"
 
 //test data
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(warp_field_test02) {
 	Matrix3f warped_live_field_out = nonrigid_optimization::warp_2d_advanced(warp_field, warped_live_field, canonical_field,
 			true, false, true);
 	BOOST_REQUIRE(warped_live_field_out.isApprox(expected_live_out));
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(warp_field, expected_warp_field, 1e-6));
+	BOOST_REQUIRE(math::almost_equal_verbose(warp_field, expected_warp_field, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(warp_field_test03) {
@@ -230,19 +230,19 @@ BOOST_AUTO_TEST_CASE(test_data_term_gradient01) {
 	math::MatrixXv2f data_term_gradient, data_term_gradient_band_union_only;
 	float data_term_energy;
 	math::MatrixXv2f warped_live_field_gradient;
-	math::scalar_field_gradient(warped_live_field_gradient, test_data::warped_live_field);
+	math::gradient(warped_live_field_gradient, test_data::warped_live_field);
 	float expected_energy_out = 4.142916451210006f;
 	float expected_energy_out_band_union_only = 0.14291645121000718f;
 	nro_s::compute_data_term_gradient(data_term_gradient, data_term_energy,
 			test_data::warped_live_field, test_data::canonical_field,
 			warped_live_field_gradient);
-	BOOST_REQUIRE(math::matrix_almost_equal(data_term_gradient, test_data::data_term_gradient, 1e-6));
+	BOOST_REQUIRE(math::almost_equal(data_term_gradient, test_data::data_term_gradient, 1e-6));
 	BOOST_REQUIRE_CLOSE(data_term_energy, expected_energy_out, 1e-6);
 	nro_s::compute_data_term_gradient_within_band_union(data_term_gradient_band_union_only,
 			data_term_energy, test_data::warped_live_field,
 			test_data::canonical_field,
 			warped_live_field_gradient);
-	BOOST_REQUIRE(math::matrix_almost_equal(data_term_gradient_band_union_only,
+	BOOST_REQUIRE(math::almost_equal(data_term_gradient_band_union_only,
 			test_data::data_term_gradient_band_union_only, 1e-6));
 	BOOST_REQUIRE_CLOSE(data_term_energy, expected_energy_out_band_union_only, 1e-6);
 
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(test_tikhonov_regularization_gradient01) {
 			tikhonov_gradient_band_union_only, tikhonov_energy_band_union_only,
 			warp_field, live_field, canonical_field);
 
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(tikhonov_gradient_band_union_only, expected_gradient_out, 1e-6));
+	BOOST_REQUIRE(math::almost_equal_verbose(tikhonov_gradient_band_union_only, expected_gradient_out, 1e-6));
 	BOOST_REQUIRE_CLOSE(tikhonov_energy_band_union_only, expected_energy_out, 1e-6);
 }
 
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(test_tikhonov_regularization_gradient02) {
 	nro_s::compute_tikhonov_regularization_gradient(
 			tikhonov_gradient, tikhonov_energy, warp_field);
 
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(tikhonov_gradient, test_data::tikhonov_gradient, 1e-6));
+	BOOST_REQUIRE(math::almost_equal_verbose(tikhonov_gradient, test_data::tikhonov_gradient, 1e-6));
 	BOOST_REQUIRE_CLOSE(tikhonov_energy, test_data::tikhonov_energy, 1e-4);
 
 	nro_s::compute_tikhonov_regularization_gradient_within_band_union(
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(test_tikhonov_regularization_gradient02) {
 			test_data::canonical_field);
 
 	BOOST_REQUIRE(
-			math::matrix_almost_equal_verbose(tikhonov_gradient_band_union_only,
+			math::almost_equal_verbose(tikhonov_gradient_band_union_only,
 					test_data::tikhonov_gradient_band_union_only,
 					1e-6));
 	BOOST_REQUIRE_CLOSE(tikhonov_energy, test_data::tikhonov_energy_band_union_only, 1e-4);
