@@ -1,7 +1,7 @@
 /*
- * pyramid2d.tpp
+ * pyramid.cpp
  *
- *  Created on: Apr 1, 2019
+ *  Created on: Apr 10, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -18,20 +18,22 @@
  *   limitations under the License.
  */
 
-#pragma once
+//libraries
+#include <Eigen/Dense>
 
-//standard library
-#include <cmath>
-#include <algorithm>
+//local
+#include "pyramid.tpp"
+#include "../../math/typedefs.hpp"
 
-//Local
-#include "pyramid2d.hpp"
-#include "../../math/checks.hpp"
+namespace eig = Eigen;
 
 namespace nonrigid_optimization {
 namespace hierarchical{
 
-} /* namespace hierarchical */
-} /* namespace nonrigid_optimization */
+template class Pyramid<eig::MatrixXf>;
+template class Pyramid<math::MatrixXv2f>;
+template class Pyramid<math::Tensor3f>;
+template class Pyramid<math::Tensor3v3f>;
 
-
+} //namespace hierarchical
+} //namespace nonrigid_optimization

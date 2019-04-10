@@ -1,7 +1,7 @@
 /*
- * pyramid3d.hpp
+ * pyramid.hpp
  *
- *  Created on: Mar 1, 2019
+ *  Created on: Apr 10, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -20,33 +20,33 @@
 
 #pragma once
 
-
 //Standard library
 #include <vector>
+#include <memory>
 
 //Libraries
-#include <Eigen/Eigen>
-#include <unsupported/Eigen/CXX11/Tensor>
+#include <Eigen/Dense>
 
+//local
+#include "../../math/resampling.hpp"
 
 namespace nonrigid_optimization {
+namespace hierarchical{
 
 /**
- * A pyramid representation of a continuous 3d field
+ * A pyramid representation of a discrete scalar field
  */
-template<typename ElementType>
-class Pyramid3d {
+template <typename Container>
+class Pyramid{
 public:
-	Pyramid3d(Eigen::Tensor<ElementType,3> field, int maximum_chunk_size=8);
-	virtual ~Pyramid3d() = default;
-	const Eigen::Tensor<ElementType,3>& level(int i_level) const;
-	size_t level_count() const;
-private:
-	std::vector<Eigen::Tensor<ElementType,3>> levels;
+	Pyramid(Container field, int maximum_chunk_size=8, math::DownsamplingStrategy downsampling_strategy
+			= math::DownsamplingStrategy::AVERAGE);
 
+	const Container& get_level(int i_level) const;
+	size_t get_level_count() const;
+private:
+	std::vector<Container> levels;
 };
 
-
-}//namespace nonrigid_optimization
-
-
+} //namespace hierarchical
+} //namespace nonrigid_optimization

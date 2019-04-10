@@ -29,7 +29,7 @@
 #include <unsupported/Eigen/MatrixFunctions>
 
 //local
-#include "pyramid2d.hpp"
+#include "pyramid.hpp"
 #include "../field_warping.hpp"
 #include "../../math/convolution.hpp"
 #include "../../math/gradients.hpp"
@@ -91,10 +91,10 @@ math::MatrixXv2f Optimizer2d::optimize(eig::MatrixXf canonical_field, eig::Matri
 		warp_upsampling_strategy = math::UpsamplingStrategy::NEAREST;
 		hierarchy_downsampling_strategy = math::DownsamplingStrategy::AVERAGE;
 	}
-	Pyramid2d canonical_pyramid(canonical_field, this->maximum_chunk_size, hierarchy_downsampling_strategy);
-	Pyramid2d live_pyramid(live_field, this->maximum_chunk_size, hierarchy_downsampling_strategy);
-	Pyramid2d live_gradient_x_pyramid(live_gradient_x, this->maximum_chunk_size, hierarchy_downsampling_strategy);
-	Pyramid2d live_gradient_y_pyramid(live_gradient_y, this->maximum_chunk_size, hierarchy_downsampling_strategy);
+	Pyramid<eig::MatrixXf> canonical_pyramid(canonical_field, this->maximum_chunk_size, hierarchy_downsampling_strategy);
+	Pyramid<eig::MatrixXf> live_pyramid(live_field, this->maximum_chunk_size, hierarchy_downsampling_strategy);
+	Pyramid<eig::MatrixXf> live_gradient_x_pyramid(live_gradient_x, this->maximum_chunk_size, hierarchy_downsampling_strategy);
+	Pyramid<eig::MatrixXf> live_gradient_y_pyramid(live_gradient_y, this->maximum_chunk_size, hierarchy_downsampling_strategy);
 
 	this->current_hierarchy_level = 0;
 
