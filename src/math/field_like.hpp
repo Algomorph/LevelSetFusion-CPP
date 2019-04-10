@@ -1,5 +1,5 @@
 /*
- * optimizer.cpp
+ * field_like.hpp
  *
  *  Created on: Apr 10, 2019
  *      Author: Gregory Kramida
@@ -18,17 +18,23 @@
  *   limitations under the License.
  */
 
-//local
-#include "optimizer.tpp"
-#include "../../math/typedefs.hpp"
+#pragma once
 
-namespace nonrigid_optimization {
-namespace hierarchical{
 
-template class Optimizer<eig::MatrixXf,math::MatrixXv2f>;
-template class Optimizer<math::Tensor3f,math::Tensor3v3f>;
+//libraries
+#include <Eigen/Dense>
+#include <unsupported/Eigen/CXX11/Tensor>
 
-} /* namespace hierarchical */
-} /* namespace nonrigid_optimization */
+namespace math{
+
+template<typename ScalarIn, typename ScalarOut>
+Eigen::Matrix<ScalarOut, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+field_like(const Eigen::Matrix<ScalarIn, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+
+template<typename ScalarIn, typename ScalarOut>
+Eigen::Tensor<ScalarOut, 3, Eigen::ColMajor>
+field_like(const Eigen::Tensor<ScalarIn, 3, Eigen::ColMajor>& field);
+
+} //namespace math
 
 
