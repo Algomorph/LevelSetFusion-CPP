@@ -20,6 +20,9 @@
 
 #pragma once
 
+#include "vector2.hpp"
+#include "vector3.hpp"
+
 namespace Eigen {
 
 // region ============================== VECTOR 2 ======================================================================
@@ -222,6 +225,3 @@ struct ScalarBinaryOpTraits<double, math::Vector3<float>, BinaryOp> {
 };
 // endregion
 } // namespace Eigen
-
-
-
