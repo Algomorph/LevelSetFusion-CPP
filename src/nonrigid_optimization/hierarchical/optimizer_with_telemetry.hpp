@@ -101,7 +101,7 @@ public:
 			const VectorContainer& live_gradient_level
 			) override;
 	std::vector<telemetry::ConvergenceReport> get_per_level_convergence_reports();
-	std::vector<telemetry::OptimizationIterationData> get_per_level_iteration_data();
+	std::vector<telemetry::OptimizationIterationData<ScalarContainer,VectorContainer>> get_per_level_iteration_data();
 
 private:
 	//TODO: set these and provide retrieval methods as appropriate
@@ -110,7 +110,7 @@ private:
 
 	const float energy_factor = 1000000.0f;
 	std::vector<telemetry::ConvergenceReport> per_level_convergence_reports;
-	std::vector<telemetry::OptimizationIterationData> per_level_iteration_data;
+	std::vector<telemetry::OptimizationIterationData<ScalarContainer,VectorContainer>> per_level_iteration_data;
 	void clear_logs();
 
 	const VerbosityParameters verbosity_parameters;

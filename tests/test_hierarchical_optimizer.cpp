@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(test_hierarchical_optimizer_iteration_data){
 	math::MatrixXv2f warp_field_out = optimizer.optimize(test_data::canonical_field, test_data::live_field);
 	eig::MatrixXf final_live_resampled = nro::warp(test_data::live_field,warp_field_out);
 
-	std::vector<telemetry::OptimizationIterationData> data = optimizer.get_per_level_iteration_data();
+	std::vector<telemetry::OptimizationIterationData2d> data = optimizer.get_per_level_iteration_data();
 
 	const std::vector<math::MatrixXv2f> vec = data[3].get_warp_fields();
 	BOOST_REQUIRE(math::almost_equal_verbose(vec[50],test_data::iteration50_warp_field,10e-6));
