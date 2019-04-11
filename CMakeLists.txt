@@ -242,6 +242,7 @@ add_library(${MODULE_NAME} SHARED
 
 			### telemetry: namespace for logging progress and storing up intermediate results for later analysis #######
 			src/telemetry/optimization_iteration_data.hpp
+			src/telemetry/optimization_iteration_data.tpp
 			src/telemetry/optimization_iteration_data.cpp
 			src/telemetry/warp_delta_statistics.hpp
 			src/telemetry/warp_delta_statistics.cpp

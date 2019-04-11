@@ -24,6 +24,7 @@
 
 //local
 #include "../../math/gradients.hpp"
+#include "../../math/field_like.hpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical {
@@ -81,14 +82,13 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_level(
 		const ScalarContainer& live_pyramid_level,
 		const VectorContainer& live_gradient_level) {
 
-	if (this->logging_parameters.collect_per_level_iteration_data) {
-		int row_count = warp_field.rows(), column_count = warp_field.cols();
-		telemetry::OptimizationIterationData level_optimization_data;
+	if (this->logging_parameters.collect_per_level_iteration_data && this->get_current_hierarchy_level() == 0) {
+		telemetry::OptimizationIterationData<ScalarContainer,VectorContainer> level_optimization_data;
 		level_optimization_data.add_iteration_result(
 				live_pyramid_level,
-				math::MatrixXv2f::Zero(row_count, column_count),
-				math::MatrixXv2f::Zero(row_count, column_count),
-				(this->tikhonov_term_enabled ? math::MatrixXv2f::Zero(row_count, column_count) : math::MatrixXv2f()));
+				warp_field,
+				warp_field,
+				(this->tikhonov_term_enabled ? warp_field : math::MatrixXv2f()));
 		this->per_level_iteration_data.push_back(level_optimization_data);
 	}
 	Optimizer<ScalarContainer,VectorContainer>::optimize_level(warp_field, canonical_pyramid_level, live_pyramid_level,
@@ -189,7 +189,7 @@ std::vector<telemetry::ConvergenceReport> OptimizerWithTelemetry<ScalarContainer
 }
 
 template<typename ScalarContainer, typename VectorContainer>
-std::vector<telemetry::OptimizationIterationData> OptimizerWithTelemetry<ScalarContainer,VectorContainer>
+std::vector<telemetry::OptimizationIterationData<ScalarContainer,VectorContainer>> OptimizerWithTelemetry<ScalarContainer,VectorContainer>
 	::get_per_level_iteration_data() {
 	return this->per_level_iteration_data;
 }

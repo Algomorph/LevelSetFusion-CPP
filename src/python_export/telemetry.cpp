@@ -129,15 +129,15 @@ void export_telemetry_utilities() {
 	bp::class_<std::vector<telemetry::ConvergenceReport>>("ConvergenceReportVector")
 			.def(bp::vector_indexing_suite<std::vector<telemetry::ConvergenceReport>>());
 
-	bp::class_<telemetry::OptimizationIterationData>("OptimizationIterationData", bp::init<>())
-			.def("get_live_fields", &telemetry::OptimizationIterationData::get_live_fields)
-			.def("get_warp_fields", &telemetry::OptimizationIterationData::get_warp_fields)
-			.def("get_data_term_gradients", &telemetry::OptimizationIterationData::get_data_term_gradients)
-			.def("get_tikhonov_term_gradients", &telemetry::OptimizationIterationData::get_tikhonov_term_gradients)
-			.def("get_frame_count", &telemetry::OptimizationIterationData::get_frame_count)
+	bp::class_<telemetry::OptimizationIterationData2d>("OptimizationIterationData", bp::init<>())
+			.def("get_live_fields", &telemetry::OptimizationIterationData2d::get_live_fields)
+			.def("get_warp_fields", &telemetry::OptimizationIterationData2d::get_warp_fields)
+			.def("get_data_term_gradients", &telemetry::OptimizationIterationData2d::get_data_term_gradients)
+			.def("get_tikhonov_term_gradients", &telemetry::OptimizationIterationData2d::get_tikhonov_term_gradients)
+			.def("get_frame_count", &telemetry::OptimizationIterationData2d::get_frame_count)
 			;
 
-	bp::class_<std::vector<telemetry::OptimizationIterationData>>("OptimizationIterationDataVector")
-				.def(bp::vector_indexing_suite<std::vector<telemetry::OptimizationIterationData>>());
+	bp::class_<std::vector<telemetry::OptimizationIterationData2d>>("OptimizationIterationDataVector")
+				.def(bp::vector_indexing_suite<std::vector<telemetry::OptimizationIterationData2d>>());
 }
 } //namespace python_export
