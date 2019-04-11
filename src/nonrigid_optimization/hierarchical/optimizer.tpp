@@ -37,10 +37,13 @@
 #include "../../math/statistics.hpp"
 #include "../../math/resampling.hpp"
 #include "../../math/field_like.hpp"
+#include "../../math/container_wrapper.hpp"
 #include "optimizer.hpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical {
+
+
 
 template<typename ScalarContainer, typename VectorContainer>
 Optimizer<ScalarContainer, VectorContainer>::Optimizer(
@@ -79,9 +82,6 @@ template<typename ScalarContainer, typename VectorContainer>
 VectorContainer Optimizer<ScalarContainer, VectorContainer>::optimize(const ScalarContainer& canonical_field,
 		const ScalarContainer& live_field) {
 
-	typename VectorContainer::Scalar VectorType;
-	typename ScalarContainer::Scalar ScalarType;
-
 	VectorContainer live_gradient;
 	math::gradient(live_gradient, live_field);
 	math::DownsamplingStrategy hierarchy_downsampling_strategy;
@@ -114,7 +114,7 @@ VectorContainer Optimizer<ScalarContainer, VectorContainer>::optimize(const Scal
 		const VectorContainer& live_gradient_level = live_gradient_pyramid.get_level(current_hierarchy_level);
 
 		if (current_hierarchy_level == 0) {
-			warp_field = math::field_like(canonical_pyramid_level);
+			warp_field = math::vector_field_like(canonical_pyramid_level);
 		}
 
 		this->optimize_level(warp_field, canonical_pyramid_level, live_pyramid_level, live_gradient_level);
@@ -137,7 +137,7 @@ void Optimizer<ScalarContainer, VectorContainer>::optimize_level(
 		) {
 	float maximum_warp_update_length = std::numeric_limits<float>::max();
 
-	VectorContainer gradient = math::field_like(warp_field);
+	VectorContainer gradient = math::vector_field_like(warp_field);
 	gradient.setZero();
 	eig::MatrixXf diff;
 	VectorContainer data_gradient;
@@ -149,7 +149,8 @@ void Optimizer<ScalarContainer, VectorContainer>::optimize_level(
 		this->optimize_iteration(
 				gradient, warp_field, diff, data_gradient, tikhonov_gradient,
 				maximum_warp_update_length,
-				canonical_pyramid_level, live_pyramid_level,
+				canonical_pyramid_level,
+				live_pyramid_level,
 				live_gradient_level);
 		current_iteration++;
 	}
@@ -174,8 +175,6 @@ void Optimizer<ScalarContainer, VectorContainer>::optimize_iteration(
 		const ScalarContainer& canonical_pyramid_level,
 		const ScalarContainer& live_pyramid_level,
 		const VectorContainer& live_gradient_level) {
-
-	typedef typename VectorContainer::Scalar VectorType;
 
 	// resample the live field & its gradients using current warps
 	ScalarContainer resampled_live = warp(live_pyramid_level, warp_field);
@@ -202,7 +201,7 @@ void Optimizer<ScalarContainer, VectorContainer>::optimize_iteration(
 	warp_field -= this->rate * gradient;
 
 	// perform termination condition updates
-	math::Vector2i longest_vector_location;
+	Coordinates longest_vector_location;
 	math::locate_max_norm(maximum_warp_update_length, longest_vector_location, gradient);
 }
 

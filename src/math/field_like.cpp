@@ -31,13 +31,15 @@ namespace eig = Eigen;
 
 namespace math{
 
-template eig::MatrixXf field_like<float, float>(const eig::MatrixXf& field);
-template math::MatrixXv2f field_like<float, math::Vector2f>(const eig::MatrixXf& field);
-template math::MatrixXv2f field_like<math::Vector2f, math::Vector2f>(const math::MatrixXv2f& field);
+template eig::MatrixXf scalar_field_like<float>(const eig::MatrixXf& field);
+template eig::MatrixXf scalar_field_like<float>(const math::MatrixXv2f& field);
+template math::Tensor3f scalar_field_like<float>(const math::Tensor3f& field);
+template math::Tensor3f scalar_field_like<float>(const math::Tensor3v3f& field);
 
-template math::Tensor3f field_like<float, float>(const math::Tensor3f& field);
-template math::Tensor3v3f field_like<float, math::Vector3f>(const math::Tensor3f& field);
-template math::Tensor3v3f field_like<math::Vector3f, math::Vector3f>(const math::Tensor3v3f& field);
+template math::MatrixXv2f vector_field_like<float>(const eig::MatrixXf& field);
+template math::MatrixXv2f vector_field_like<float>(const math::MatrixXv2f& field);
+template math::Tensor3v3f vector_field_like<float>(const math::Tensor3f& field);
+template math::Tensor3v3f vector_field_like<float>(const math::Tensor3v3f& field);
 
 } //namespace math
 

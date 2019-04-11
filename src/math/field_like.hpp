@@ -20,20 +20,47 @@
 
 #pragma once
 
-
 //libraries
 #include <Eigen/Dense>
 #include <unsupported/Eigen/CXX11/Tensor>
 
+//local
+#include "typedefs.hpp"
+
 namespace math{
 
-template<typename ScalarIn, typename ScalarOut>
-Eigen::Matrix<ScalarOut, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
-field_like(const Eigen::Matrix<ScalarIn, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+scalar_field_like(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
 
-template<typename ScalarIn, typename ScalarOut>
-Eigen::Tensor<ScalarOut, 3, Eigen::ColMajor>
-field_like(const Eigen::Tensor<ScalarIn, 3, Eigen::ColMajor>& field);
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+scalar_field_like(const Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
+scalar_field_like(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
+scalar_field_like(const Eigen::Tensor<math::Vector3<Scalar>, 3, Eigen::ColMajor>& field);
+
+template<typename Scalar>
+Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+vector_field_like(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+
+template<typename Scalar>
+Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+vector_field_like(const Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+
+template<typename Scalar>
+Eigen::Tensor<math::Vector3<Scalar>, 3, Eigen::ColMajor>
+vector_field_like(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
+
+template<typename Scalar>
+Eigen::Tensor<math::Vector3<Scalar>, 3, Eigen::ColMajor>
+vector_field_like(const Eigen::Tensor<math::Vector3<Scalar>, 3, Eigen::ColMajor>& field);
+
 
 } //namespace math
 

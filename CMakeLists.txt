@@ -258,6 +258,9 @@ add_library(${MODULE_NAME} SHARED
 			src/math/boolean_operations.hpp
 			src/math/conics.hpp
 			src/math/conics.cpp
+			src/math/container_wrapper.hpp
+			src/math/container_wrapper.tpp
+			src/math/container_wrapper.cpp
 			src/math/convolution.hpp
 			src/math/convolution.cpp
 			src/math/field_like.hpp
