@@ -38,6 +38,7 @@
 #include "../../math/resampling.hpp"
 #include "../../math/field_like.hpp"
 #include "../../math/container_wrapper.hpp"
+#include "../../math/multiply.hpp"
 #include "optimizer.hpp"
 
 namespace nonrigid_optimization {
@@ -140,7 +141,7 @@ void Optimizer<ScalarContainer, VectorContainer>::optimize_level(
 
 	VectorContainer gradient = math::vector_field_like(warp_field);
 	gradient.setZero();
-	eig::MatrixXf diff;
+	ScalarContainer diff;
 	VectorContainer data_gradient;
 	VectorContainer tikhonov_gradient;
 	current_iteration = 0;
@@ -188,13 +189,13 @@ void Optimizer<ScalarContainer, VectorContainer>::optimize_iteration(
 	// see how badly our sampled values correspond to the canonical values at the same locations
 	// data_gradient = (warped_live - canonical) * warped_gradient(live)
 	diff = resampled_live - canonical_pyramid_level;
-	data_gradient = resampled_live_gradient.cwiseProduct(diff);
+	data_gradient = math::cwise_product(resampled_live_gradient,diff);
 
 	if (this->tikhonov_term_enabled) {
 		math::laplacian(tikhonov_gradient, gradient);
-		gradient = this->data_term_amplifier * data_gradient - this->tikhonov_strength * tikhonov_gradient;
+		gradient = math::scale(data_gradient, this->data_term_amplifier) - math::scale(tikhonov_gradient, this->tikhonov_strength);
 	} else {
-		gradient = this->data_term_amplifier * data_gradient;
+		gradient = math::scale(data_gradient, this->data_term_amplifier);
 	}
 
 	if (this->gradient_kernel_enabled) {
@@ -203,7 +204,7 @@ void Optimizer<ScalarContainer, VectorContainer>::optimize_iteration(
 
 	// apply gradient-based update to existing warps (we use negative gradient to move in direction of objective
 	// function's minimum)
-	warp_field -= this->rate * gradient;
+	warp_field -= math::scale(gradient, this->rate);
 
 	// perform termination condition updates
 	Coordinates longest_vector_location;

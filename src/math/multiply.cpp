@@ -1,7 +1,7 @@
 /*
- * optimizer.cpp
+ * multiply.cpp
  *
- *  Created on: Apr 10, 2019
+ *  Created on: Apr 11, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -19,16 +19,17 @@
  */
 
 //local
-#include "optimizer.tpp"
-#include "../../math/typedefs.hpp"
+#include "multiply.tpp"
+#include "typedefs.hpp"
 
-namespace nonrigid_optimization {
-namespace hierarchical{
+namespace eig = Eigen;
+namespace math {
+template math::MatrixXv2f scale<math::Vector2f,float>(const math::MatrixXv2f& container, float factor);
+template math::Tensor3v3f scale<math::Vector3f,float>(const math::Tensor3v3f& container, float factor);
 
-template class Optimizer<eig::MatrixXf,math::MatrixXv2f>;
-template class Optimizer<math::Tensor3f,math::Tensor3v3f>;
+template math::MatrixXv2f cwise_product<math::Vector2f,float>(const math::MatrixXv2f& container_a, const eig::MatrixXf& container_b);
+template math::Tensor3v3f cwise_product<math::Vector3f,float>(const math::Tensor3v3f& container_a, const math::Tensor3f& container_b);
 
-} /* namespace hierarchical */
-} /* namespace nonrigid_optimization */
+}  // namespace math
 
 

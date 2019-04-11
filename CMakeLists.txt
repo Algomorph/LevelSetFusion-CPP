@@ -273,6 +273,9 @@ add_library(${MODULE_NAME} SHARED
 			src/math/math_utils.hpp
 			src/math/matrix_base.hpp
 			src/math/matrix2.hpp
+			src/math/multiply.hpp
+			src/math/multiply.tpp
+			src/math/multiply.cpp
 			src/math/nestable_type_metainfo.hpp
 			src/math/padding.hpp
 			src/math/padding.tpp

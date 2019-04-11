@@ -20,11 +20,35 @@
 
 #pragma once
 
+#include <Eigen/Dense>
+#include <unsupported/Eigen/CXX11/Tensor>
+
 namespace math {
 
 inline static
 bool is_power_of_two(int number){
 	return !(number == 0) && !(number & (number - 1));
+}
+
+template<typename ScalarA, typename ScalarB>
+inline static
+bool are_dimensions_equal(
+		const Eigen::Matrix<ScalarA,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& container_a,
+		const Eigen::Matrix<ScalarB,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& container_b){
+	return container_a.rows() == container_a.rows() || container_a.cols() == container_a.cols();
+}
+
+template<typename ScalarA, typename ScalarB>
+inline static
+bool are_dimensions_equal(
+		const Eigen::Tensor<ScalarA,3,Eigen::ColMajor>& container_a,
+		const Eigen::Tensor<ScalarB,3,Eigen::ColMajor>& container_b){
+	for (int i_dim = 0; i_dim < 3; i_dim++) {
+		if (container_a.dimension(i_dim) != container_b.dimension(i_dim)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 } //namespace math
