@@ -79,7 +79,7 @@ public:
 
 private:
 	float perform_optimization_iteration_and_return_max_warp(eig::MatrixXf& warped_live_field,
-			math::Vector2i& max_warp_location, const eig::MatrixXf& canonical_field, math::MatrixXv2f& warp_field);
+			eig::Vector2i& max_warp_location, const eig::MatrixXf& canonical_field, math::MatrixXv2f& warp_field);
 	// *** Logging ***
 	telemetry::ConvergenceReport convergence_report;
 	std::vector<telemetry::WarpDeltaStatistics> warp_statistics;

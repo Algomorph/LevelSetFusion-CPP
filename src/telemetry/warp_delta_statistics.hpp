@@ -44,7 +44,7 @@ struct WarpDeltaStatistics {
 	float length_max = 0.0f;
 	float length_mean = 0.0;
 	float length_standard_deviation = 0.0;
-	math::Vector2i longest_warp_location = math::Vector2i(0);
+	eig::Vector2i longest_warp_location = eig::Vector2i(0,0);
 	bool is_largest_below_min_threshold = false;
 	bool is_largest_above_max_threshold = false;
 
@@ -55,7 +55,7 @@ struct WarpDeltaStatistics {
 			float length_max,
 			float length_mean,
 			float length_standard_deviation,
-			math::Vector2i longest_warp_location,
+			eig::Vector2i longest_warp_location,
 			bool is_largest_below_min_threshold,
 			bool is_largest_above_max_threshold
 			);

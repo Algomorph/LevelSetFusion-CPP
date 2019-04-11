@@ -59,11 +59,11 @@ void locate_max_norm(float& max_norm, Eigen::Vector3i& coordinates,
 
 	struct NormAndCoordinate {
 		NormAndCoordinate() = default;
-		NormAndCoordinate(float squared_norm, Eigen::Vector3i coordinate) :
-				squared_norm(squared_norm), coordinates(coordinate) {
+		NormAndCoordinate(float squared_norm, math::Vector3i coordinates) :
+				squared_norm(squared_norm), coordinates(coordinates) {
 		}
 		float squared_norm = 0.0f;
-		Eigen::Vector3i coordinates = Eigen::Vector3i(0,0,0);
+		math::Vector3i coordinates = math::Vector3i(0);
 	};
 
 	std::atomic<NormAndCoordinate> max_norm_and_coordinate { { 0.0f, math::Vector3i(0) } };
@@ -77,13 +77,13 @@ void locate_max_norm(float& max_norm, Eigen::Vector3i& coordinates,
 		do {
 			new_norm = last_max_norm;
 			new_norm.squared_norm = math::squared_norm(vector_field(i_element));
-			new_norm.coordinates = Eigen::Vector3i(x, y, z);
+			new_norm.coordinates = math::Vector3i(x, y, z);
 		} while (new_norm.squared_norm > last_max_norm.squared_norm &&
 				!max_norm_and_coordinate.compare_exchange_strong(last_max_norm, new_norm));
 	}
 	NormAndCoordinate last_max_norm = max_norm_and_coordinate.load(); // @suppress("Invalid arguments")
 	max_norm = std::sqrt(last_max_norm.squared_norm);
-	coordinates = last_max_norm.coordinates;
+	coordinates = Eigen::Vector3i(last_max_norm.coordinates.x,last_max_norm.coordinates.y,last_max_norm.coordinates.z);
 }
 
 template<typename Scalar>
@@ -93,7 +93,7 @@ void locate_min_norm(float& min_norm, Eigen::Vector2i& coordinates,
 	struct NormAndCoordinates {
 		NormAndCoordinates() = default;
 		float norm = 1000000.0f;
-		Eigen::Vector2i coordinates = Eigen::Vector2i(0,0);
+		math::Vector2i coordinates = math::Vector2i(0,0);
 	};
 	NormAndCoordinates initial;
 	std::atomic<NormAndCoordinates> min_norm_container(initial);
@@ -107,13 +107,13 @@ void locate_min_norm(float& min_norm, Eigen::Vector2i& coordinates,
 		do {
 			new_best = last_best;
 			new_best.norm = squared_length;
-			new_best.coordinates.x() = i_element / column_count;
-			new_best.coordinates.y() = i_element % column_count;
+			new_best.coordinates.x = i_element / column_count;
+			new_best.coordinates.y = i_element % column_count;
 		} while (squared_length < min_squared_norm && min_norm_container.compare_exchange_strong(last_best, new_best));
 	}
 	NormAndCoordinates last_best = min_norm_container.load(); // @suppress("Invalid arguments")
 	min_norm = std::sqrt(last_best.norm);
-	coordinates = last_best.coordinates;
+	coordinates = Eigen::Vector2i(last_best.coordinates.x,last_best.coordinates.y);
 }
 
 /**
@@ -129,11 +129,11 @@ void locate_min_norm(float& min_norm, Eigen::Vector3i& coordinates,
 
 	struct NormAndCoordinate {
 		NormAndCoordinate() = default;
-		NormAndCoordinate(float squared_norm, math::Vector3i coordinate) :
-				squared_norm(squared_norm), coordinates(coordinate) {
+		NormAndCoordinate(float squared_norm, math::Vector3i coordinates) :
+				squared_norm(squared_norm), coordinates(coordinates) {
 		}
 		float squared_norm = 0.0f;
-		Eigen::Vector3i coordinates = Eigen::Vector3i(0,0,0);
+		math::Vector3i coordinates = math::Vector3i(0);
 	};
 
 	std::atomic<NormAndCoordinate> min_norm_and_coordinate { { 0.0f, math::Vector3i(0) } };
@@ -153,7 +153,7 @@ void locate_min_norm(float& min_norm, Eigen::Vector3i& coordinates,
 	}
 	NormAndCoordinate last_max_norm = min_norm_and_coordinate.load(); // @suppress("Invalid arguments")
 	min_norm = std::sqrt(last_max_norm.squared_norm);
-	coordinates = last_max_norm.coordinates;
+	coordinates = Eigen::Vector3i(last_max_norm.coordinates.x,last_max_norm.coordinates.y,last_max_norm.coordinates.z);
 }
 
 template<typename Container>

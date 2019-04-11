@@ -33,7 +33,7 @@ WarpDeltaStatistics::WarpDeltaStatistics(
 		float length_max,
 		float length_mean,
 		float length_standard_deviation,
-		math::Vector2i longest_warp_location,
+		eig::Vector2i longest_warp_location,
 		bool is_largest_below_min_threshold,
 		bool is_largest_above_max_threshold
 		)
@@ -55,7 +55,7 @@ WarpDeltaStatistics::WarpDeltaStatistics(
 		const eig::MatrixXf& live_field,
 		float min_threshold, float max_threshold) {
 	float length_max;
-	math::Vector2i longest_warp_location;
+	Eigen::Vector2i longest_warp_location;
 	math::locate_max_norm(length_max, longest_warp_location, warp_field);
 	float length_mean, standard_deviation, ratio_above_min_threshold;
 	math::mean_and_std_vector_length_band_union(length_mean, standard_deviation, warp_field, live_field,
@@ -83,8 +83,8 @@ eig::VectorXf WarpDeltaStatistics::to_array() {
 			length_max,
 			length_mean,
 			length_standard_deviation,
-			static_cast<float>(longest_warp_location.x),
-			static_cast<float>(longest_warp_location.y),
+			static_cast<float>(longest_warp_location.x()),
+			static_cast<float>(longest_warp_location.y()),
 			static_cast<float>(is_largest_below_min_threshold),
 			static_cast<float>(is_largest_above_max_threshold)
 	;

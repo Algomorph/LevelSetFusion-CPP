@@ -20,24 +20,22 @@
 
 #pragma once
 
-//libraries
+// libraries
 #include <Eigen/Eigen>
 #include <unsupported/Eigen/CXX11/Tensor>
 
 namespace math {
 
 template<typename Container>
-class ContainerWrapper;
+class ContainerWrapper {};
 
 template<typename Scalar>
-template<>
-class ContainerWrapper<Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>>{
+class ContainerWrapper<Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> >{
 public:
 	static const int DimensionCount = 2;
 };
 
 template<typename Scalar, int DimensionCountIn>
-template<>
 class ContainerWrapper<Eigen::Tensor<Scalar, DimensionCountIn, Eigen::ColMajor>>{
 public:
 	static const int DimensionCount = DimensionCountIn;

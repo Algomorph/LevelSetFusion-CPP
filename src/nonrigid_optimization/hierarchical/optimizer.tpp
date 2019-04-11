@@ -115,6 +115,7 @@ VectorContainer Optimizer<ScalarContainer, VectorContainer>::optimize(const Scal
 
 		if (current_hierarchy_level == 0) {
 			warp_field = math::vector_field_like(canonical_pyramid_level);
+			warp_field.setZero();
 		}
 
 		this->optimize_level(warp_field, canonical_pyramid_level, live_pyramid_level, live_gradient_level);
@@ -147,7 +148,11 @@ void Optimizer<ScalarContainer, VectorContainer>::optimize_level(
 	while (not this->termination_conditions_reached(maximum_warp_update_length, current_iteration)) {
 
 		this->optimize_iteration(
-				gradient, warp_field, diff, data_gradient, tikhonov_gradient,
+				gradient, 
+				warp_field, 
+				diff, 
+				data_gradient, 
+				tikhonov_gradient,
 				maximum_warp_update_length,
 				canonical_pyramid_level,
 				live_pyramid_level,
