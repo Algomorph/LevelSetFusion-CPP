@@ -77,6 +77,12 @@ scalar_field_like(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
 }
 
 template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
+scalar_field_like(const Eigen::Tensor<math::Vector3<Scalar>, 3, Eigen::ColMajor>& field){
+	return scalar_field_like_tensor_aux<Scalar,Eigen::Tensor<math::Vector3<Scalar>, 3, Eigen::ColMajor> >(field);
+}
+
+template<typename Scalar>
 Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
 vector_field_like(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field){
 	return vector_field_like_matrix_aux<Scalar, Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >(field);

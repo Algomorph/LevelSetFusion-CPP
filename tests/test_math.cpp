@@ -39,6 +39,8 @@
 #include "../src/math/resampling.hpp"
 #include "../src/math/padding.hpp"
 
+namespace eig = Eigen;
+
 BOOST_AUTO_TEST_CASE(power_of_two_test01) {
 	BOOST_REQUIRE(math::is_power_of_two(128));
 	BOOST_REQUIRE(math::is_power_of_two(2));
@@ -48,7 +50,6 @@ BOOST_AUTO_TEST_CASE(power_of_two_test01) {
 }
 
 BOOST_AUTO_TEST_CASE(scalar_field_gradient_test01) {
-	namespace eig = Eigen;
 	eig::Matrix2f field;
 	field << -0.46612028, -0.8161121,
 	0.2427629, -0.79432599;
@@ -58,7 +59,6 @@ BOOST_AUTO_TEST_CASE(scalar_field_gradient_test01) {
 			-1.03708889, -1.03708889;
 	expected_gradient_y << 0.70888318, 0.02178612,
 			0.70888318, 0.02178612;
-
 	eig::MatrixXf gradient_x, gradient_y;
 	math::gradient(gradient_x, gradient_y, field);
 
@@ -67,13 +67,12 @@ BOOST_AUTO_TEST_CASE(scalar_field_gradient_test01) {
 }
 
 BOOST_AUTO_TEST_CASE(scalar_field_gradient_test02) {
-	using namespace Eigen;
-	Matrix3f field;
+	eig::Matrix3f field;
 	field << 0.11007435, -0.94589225, -0.54835034,
 			-0.09617922, 0.15561824, 0.60624432,
 			-0.83068796, 0.19262577, -0.21090505;
 
-	Matrix3f expected_gradient_x, expected_gradient_y;
+	eig::Matrix3f expected_gradient_x, expected_gradient_y;
 	expected_gradient_x << -1.0559666, -0.32921235, 0.39754191,
 			0.25179745, 0.35121177, 0.45062608,
 			1.02331373, 0.30989146, -0.40353082;
@@ -81,7 +80,7 @@ BOOST_AUTO_TEST_CASE(scalar_field_gradient_test02) {
 			-0.47038115, 0.56925901, 0.16872265,
 			-0.73450874, 0.03700753, -0.81714937;
 
-	MatrixXf gradient_x, gradient_y;
+	eig::MatrixXf gradient_x, gradient_y;
 	math::gradient(gradient_x, gradient_y, field);
 
 	BOOST_REQUIRE(gradient_x.isApprox(expected_gradient_x));
@@ -89,9 +88,7 @@ BOOST_AUTO_TEST_CASE(scalar_field_gradient_test02) {
 }
 
 BOOST_AUTO_TEST_CASE(scalar_field_gradient_test03) {
-	using namespace Eigen;
-
-	MatrixXf gradient_x, gradient_y;
+	eig::MatrixXf gradient_x, gradient_y;
 	math::gradient(gradient_x, gradient_y, test_data::field);
 
 	BOOST_REQUIRE(gradient_x.isApprox(test_data::expected_gradient_x));
@@ -99,18 +96,15 @@ BOOST_AUTO_TEST_CASE(scalar_field_gradient_test03) {
 }
 
 BOOST_AUTO_TEST_CASE(scalar_field_gradient_test04) {
-	namespace eig = Eigen;
-
 	eig::Matrix2f field;
 	field << -0.46612028, -0.8161121,
 			0.2427629, -0.79432599;
 
 	math::MatrixXv2f expected_gradient(2, 2);
 	expected_gradient <<
-			//@formatter:off
-			math::Vector2f(-0.34999183f, 0.70888318f), math::Vector2f(-0.34999183f, 0.02178612f),
-			math::Vector2f(-1.03708889f, 0.70888318f), math::Vector2f(-1.03708889f, 0.02178612f);
-																									//@formatter:on
+			// @formatter:off
+		math::Vector2f(-0.34999183f, 0.70888318f), math::Vector2f(-0.34999183f, 0.02178612f),
+		math::Vector2f(-1.03708889f, 0.70888318f), math::Vector2f(-1.03708889f, 0.02178612f);  // @formatter:on
 
 	math::MatrixXv2f gradient;
 	math::gradient(gradient, field);
@@ -128,14 +122,14 @@ BOOST_AUTO_TEST_CASE(scalar_field_gradient_test05) {
 
 	math::MatrixXv2f expected_gradient(3, 3);
 	expected_gradient <<
-			//@formatter:off
+			// @formatter:off
 			math::Vector2f(-1.0559666f, -0.20625357f), math::Vector2f(-0.32921235f, 1.10151049f), math::Vector2f(
 			0.39754191f, 1.15459466f),
 			math::Vector2f(0.25179745f, -0.47038115f), math::Vector2f(0.35121177f, 0.56925901f), math::Vector2f(
 					0.45062608f, 0.16872265f),
 			math::Vector2f(1.02331373f, -0.73450874f), math::Vector2f(0.30989146f, 0.03700753f), math::Vector2f(
 					-0.40353082f, -0.81714937f);
-																									//@formatter:on
+																									// @formatter:on
 	math::MatrixXv2f gradient;
 	math::gradient(gradient, field);
 
@@ -371,13 +365,13 @@ BOOST_AUTO_TEST_CASE(max_norm_test01) {
 			math::Vector2f(-0.57307416f, -0.20139425f),
 			math::Vector2f(-0.09964357f, -0.15942998f),
 			math::Vector2f(-0.1336017f, -0.27605268f);
-	math::Vector2i coordinates;
+	Eigen::Vector2i coordinates;
 	float max_norm;
 	math::locate_max_norm(max_norm, coordinates, vector_field);
 
 	BOOST_REQUIRE_CLOSE(max_norm, 0.7614307f, 1e-8);
-	BOOST_REQUIRE_EQUAL(coordinates.x, 1);
-	BOOST_REQUIRE_EQUAL(coordinates.y, 2);
+	BOOST_REQUIRE_EQUAL(coordinates.x(), 1);
+	BOOST_REQUIRE_EQUAL(coordinates.y(), 2);
 }
 
 BOOST_AUTO_TEST_CASE(mean_and_std_test01) {
@@ -393,7 +387,7 @@ BOOST_AUTO_TEST_CASE(mean_and_std_test01) {
 
 BOOST_AUTO_TEST_CASE(test_pad_replicate01) {
 	math::Tensor3f input(3, 3, 3);
-	input.setValues( //@formatter:off
+	input.setValues(  // @formatter:off
 				{{{1.0f, 10.0f, 19.0f},
 				  {4.0f, 13.0f, 22.0f},
 				  {7.0f, 16.0f, 25.0f}},
@@ -403,10 +397,10 @@ BOOST_AUTO_TEST_CASE(test_pad_replicate01) {
 				 {{3.0f, 12.0f, 21.0f},
 				  {6.0f, 15.0f, 24.0f},
 				  {9.0f, 18.0f, 27.0f}}}
-	); //@formatter:on
+	);  // @formatter:on
 
 	math::Tensor3f expected_output(5, 5, 5);
-	expected_output.setValues( //@formatter:off
+	expected_output.setValues(  // @formatter:off
 			{{{ 1.0f,  1.0f, 10.0f, 19.0f, 19.0f},
 			  { 1.0f,  1.0f, 10.0f, 19.0f, 19.0f},
 			  { 4.0f,  4.0f, 13.0f, 22.0f, 22.0f},
@@ -435,9 +429,9 @@ BOOST_AUTO_TEST_CASE(test_pad_replicate01) {
 			  { 3.0f,  3.0f, 12.0f, 21.0f, 21.0f},
 			  { 6.0f,  6.0f, 15.0f, 24.0f, 24.0f},
 			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f},
-			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f}}}); //@formatter:on
+			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f}}});  // @formatter:on
 
-	math::Tensor3f output = math::pad_replicate(input,1);
+	math::Tensor3f output = math::pad_replicate(input, 1);
 
 	BOOST_REQUIRE(math::almost_equal_verbose(output, expected_output, 1e-6));
 }

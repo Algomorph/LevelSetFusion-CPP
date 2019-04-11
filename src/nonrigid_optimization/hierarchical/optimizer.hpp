@@ -19,21 +19,22 @@
  */
 #pragma once
 
-//stdlib
+// stdlib
 #include <vector>
 
-//libraries
+// libraries
 #include <Eigen/Eigen>
 
-//local
+// local
 #include "../../math/typedefs.hpp"
+#include "../../math/container_wrapper.hpp"
 
 namespace eig = Eigen;
 
 namespace nonrigid_optimization {
-namespace hierarchical{
+namespace hierarchical {
 
-//not thread-safe
+// not thread-safe
 /**
  * Hierarchical non-rigid optimizer that constructs pyramids of the initial live (source) TSDF and canonical (target)
  * TSDF fields, and then constructs composite warp vectors level-by-level, upsampling the warp field at each new level.
@@ -42,7 +43,7 @@ template<typename ScalarContainer, typename VectorContainer>
 class Optimizer {
 public:
 	typedef typename VectorContainer::Scalar VectorType;
-	typedef eig::Matrix<int, math::ContainerWrapper<ScalarContainer>::DimensionCount,1> Coordinates;
+	typedef eig::Matrix<int, math::ContainerWrapper<ScalarContainer>::DimensionCount, 1> Coordinates;
 	enum ResamplingStrategy {
 		NEAREST_AND_AVERAGE = 0,
 		LINEAR = 1
@@ -68,7 +69,7 @@ public:
 	virtual VectorContainer optimize(const ScalarContainer& canonical_field, const ScalarContainer& live_field);
 
 protected:
-	//parameters
+	// parameters
 	const bool tikhonov_term_enabled = true;
 	const bool gradient_kernel_enabled = true;
 	const int maximum_chunk_size = 8;
@@ -84,8 +85,7 @@ protected:
 			VectorContainer& warp_field,
 			const ScalarContainer& canonical_pyramid_level,
 			const ScalarContainer& live_pyramid_level,
-			const VectorContainer& live_gradient_level
-			);
+			const VectorContainer& live_gradient_level);
 
 	virtual void optimize_iteration(
 			VectorContainer& gradient,
@@ -96,19 +96,18 @@ protected:
 			float& maximum_warp_update_length,
 			const ScalarContainer& canonical_pyramid_level,
 			const ScalarContainer& live_pyramid_level,
-			const VectorContainer& live_gradient_level
-			);
+			const VectorContainer& live_gradient_level);
 	inline int get_current_hierarchy_level() { return this->current_hierarchy_level; }
 	inline int get_current_iteration() { return this->current_iteration; }
+
 private:
-	//optimization state variables
+	// optimization state variables
 	int current_hierarchy_level = 0;
 	int current_iteration = 0;
 	bool termination_conditions_reached(float maximum_warp_update_length, int completed_iteration_count);
-
 };
 
-typedef Optimizer<Eigen::MatrixXf,math::MatrixXv2f> Optimizer2d;
+typedef Optimizer<Eigen::MatrixXf, math::MatrixXv2f> Optimizer2d;
 
 } /* namespace hierarchical */
 } /* namespace nonrigid_optimization */

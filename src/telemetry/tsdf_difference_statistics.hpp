@@ -41,7 +41,7 @@ struct TsdfDifferenceStatistics {
 	float difference_max = 0.0f;
 	float difference_mean = 0.0f;
 	float difference_standard_deviation = 0.0f;
-	math::Vector2i biggest_difference_location = math::Vector2i(0);
+	math::Vector2i biggest_difference_location = math::Vector2i(0,0);
 
 	TsdfDifferenceStatistics() = default;
 	TsdfDifferenceStatistics(

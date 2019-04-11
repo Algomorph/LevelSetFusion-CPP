@@ -18,9 +18,8 @@
  *   limitations under the License.
  */
 
-//local
+// local
 #include "../telemetry/tsdf_difference_statistics.hpp"
-
 #include "../math/filtered_statistics.hpp"
 #include "../math/statistics.hpp"
 #include "../math/almost_equal.hpp"
