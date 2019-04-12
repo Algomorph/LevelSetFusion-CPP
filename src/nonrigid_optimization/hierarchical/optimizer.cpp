@@ -27,7 +27,7 @@ namespace nonrigid_optimization {
 namespace hierarchical{
 
 template class Optimizer<eig::MatrixXf,math::MatrixXv2f>;
-//template class Optimizer<math::Tensor3f,math::Tensor3v3f>;
+template class Optimizer<math::Tensor3f,math::Tensor3v3f>;
 
 } /* namespace hierarchical */
 } /* namespace nonrigid_optimization */

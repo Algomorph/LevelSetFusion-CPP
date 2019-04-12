@@ -24,10 +24,9 @@
 #include <Eigen/Eigen>
 #include <unsupported/Eigen/CXX11/Tensor>
 
-#include "../../src/math/tensor_operations.hpp"
 //local
-
 #include "../src/math/typedefs.hpp"
+#include "../../src/math/stacking.hpp"
 
 namespace eig = Eigen;
 

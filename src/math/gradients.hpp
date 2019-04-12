@@ -16,7 +16,7 @@
 #pragma once
 
 #include "typedefs.hpp"
-#include "tensor_operations.hpp"
+#include "stacking.hpp"
 
 namespace math {
 
