@@ -33,6 +33,8 @@ template void locate_max_norm<math::Vector3f>(float& max_norm, math::Vector3i& c
 template void locate_min_norm<math::Vector2f>(float& min_norm, math::Vector2i& coordinates, const math::MatrixXv2f& vector_field);
 template void locate_min_norm<math::Vector3f>(float& min_norm, math::Vector3i& coordinates, const math::Tensor3v3f& vector_field);
 
+template void locate_maximum<math::Vector3f>(float& min_norm, math::Vector3i& coordinates, const math::Tensor3v3f& vector_field);
+
 template float max_norm<math::Vector2f>(const math::MatrixXv2f& vector_field);
 template float max_norm<math::Vector3f>(const math::Tensor3v3f& vector_field);
 template float min_norm<math::Vector2f>(const math::MatrixXv2f& vector_field);

@@ -91,7 +91,7 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_level(
 					live_pyramid_level,
 					empty,
 					empty,
-					(this->tikhonov_term_enabled ? empty : math::MatrixXv2f()));
+					(this->tikhonov_term_enabled ? empty : VectorContainer()));
 		}
 		this->per_level_iteration_data.push_back(level_optimization_data);
 	}
@@ -107,7 +107,7 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_level(
 				live_pyramid_level,
 				this->maximum_warp_update_threshold,
 				FLT_MAX);
-		telemetry::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
+		telemetry::TsdfDifferenceStatistics<Coordinates> tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
 		int current_iteration = this->get_current_iteration();
 		this->per_level_convergence_reports.push_back( {
 				current_iteration,
@@ -187,8 +187,8 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::clear_logs() {
 }
 
 template<typename ScalarContainer, typename VectorContainer>
-std::vector<telemetry::ConvergenceReport> OptimizerWithTelemetry<ScalarContainer,VectorContainer>
-	::get_per_level_convergence_reports() {
+std::vector<telemetry::ConvergenceReport<typename OptimizerWithTelemetry<ScalarContainer,VectorContainer>::Coordinates>>
+OptimizerWithTelemetry<ScalarContainer,VectorContainer>::get_per_level_convergence_reports() {
 	return this->per_level_convergence_reports;
 }
 

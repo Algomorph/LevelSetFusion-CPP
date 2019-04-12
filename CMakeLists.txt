@@ -288,8 +288,8 @@ add_library(${MODULE_NAME} SHARED
 			src/math/statistics.hpp
 			src/math/statistics.tpp
 			src/math/statistics.cpp
-			src/math/tensor_operations.hpp
-			src/math/tensor_operations.cpp
+			src/math/stacking.hpp
+			src/math/stacking.cpp
 			src/math/typedefs.hpp
 			src/math/vector_base.hpp
 			src/math/vector_operations.hpp

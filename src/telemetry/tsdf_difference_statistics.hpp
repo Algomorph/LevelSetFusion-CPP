@@ -36,12 +36,13 @@ namespace telemetry {
  * A structure for logging statistics pertaining to numerical differences between corresponding locations in the
  * canonical and the live (target and source) TSDF fields after optimization
  */
+template<typename Coordinates>
 struct TsdfDifferenceStatistics {
 	float difference_min = 0.0f;
 	float difference_max = 0.0f;
 	float difference_mean = 0.0f;
 	float difference_standard_deviation = 0.0f;
-	math::Vector2i biggest_difference_location = math::Vector2i(0,0);
+	Coordinates biggest_difference_location = Coordinates(0);
 
 	TsdfDifferenceStatistics() = default;
 	TsdfDifferenceStatistics(
@@ -49,11 +50,15 @@ struct TsdfDifferenceStatistics {
 			float difference_max,
 			float difference_mean,
 			float difference_standard_deviation,
-			math::Vector2i biggest_difference_location
+			Coordinates biggest_difference_location
 			);
 	TsdfDifferenceStatistics(
 			const eig::MatrixXf& canonical_field,
 			const eig::MatrixXf& live_field
+			);
+	TsdfDifferenceStatistics(
+			const math::Tensor3f& canonical_field,
+			const math::Tensor3f& live_field
 			);
 
 	eig::VectorXf to_array();
@@ -61,6 +66,10 @@ struct TsdfDifferenceStatistics {
 	bool operator==(const TsdfDifferenceStatistics& rhs);
 	bool operator!=(const TsdfDifferenceStatistics& rhs);
 };
+template<typename Coordinates>
+std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics<Coordinates> &ts);
 
-std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics &ts);
+typedef TsdfDifferenceStatistics<math::Vector2i> TsdfDifferenceStatistics2d;
+typedef TsdfDifferenceStatistics<math::Vector3i> TsdfDifferenceStatistics3d;
+
 } //namespace telemetry

@@ -38,6 +38,7 @@ template<typename ScalarContainer, typename VectorContainer>
 class OptimizerWithTelemetry:
 		public Optimizer<ScalarContainer, VectorContainer> {
 public:
+	typedef typename Optimizer<ScalarContainer, VectorContainer>::Coordinates Coordinates;
 	struct VerbosityParameters {
 		VerbosityParameters(
 				bool print_max_warp_update = false,
@@ -100,7 +101,7 @@ public:
 			const ScalarContainer& live_pyramid_level,
 			const VectorContainer& live_gradient_level
 			) override;
-	std::vector<telemetry::ConvergenceReport> get_per_level_convergence_reports();
+	std::vector<telemetry::ConvergenceReport<Coordinates>> get_per_level_convergence_reports();
 	std::vector<telemetry::OptimizationIterationData<ScalarContainer,VectorContainer>> get_per_level_iteration_data();
 
 private:
@@ -109,7 +110,7 @@ private:
 	double optimization_duration = 0.0;
 
 	const float energy_factor = 1000000.0f;
-	std::vector<telemetry::ConvergenceReport> per_level_convergence_reports;
+	std::vector<telemetry::ConvergenceReport<Coordinates>> per_level_convergence_reports;
 	std::vector<telemetry::OptimizationIterationData<ScalarContainer,VectorContainer>> per_level_iteration_data;
 	void clear_logs();
 

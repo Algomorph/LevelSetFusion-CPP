@@ -21,7 +21,7 @@
 #include "field_warping.tpp"
 #include "../math/boolean_operations.hpp"
 #include "../math/typedefs.hpp"
-#include "../math/tensor_operations.hpp"
+#include "../math/stacking.hpp"
 #include "../traversal/index_raveling.hpp"
 
 namespace eig = Eigen;

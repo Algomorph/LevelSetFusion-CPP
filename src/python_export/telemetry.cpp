@@ -82,7 +82,7 @@ void export_telemetry_utilities() {
 			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
-	bp::class_<telemetry::TsdfDifferenceStatistics>("TsdfDifferenceStatistics", bp::init<>())
+	bp::class_<telemetry::TsdfDifferenceStatistics2d>("TsdfDifferenceStatistics2d", bp::init<>())
 			.def(bp::init<float, float, float, float, math::Vector2i>(
 			bp::args("difference_min",
 					"difference_max",
@@ -91,43 +91,43 @@ void export_telemetry_utilities() {
 					"biggest_difference_location")))
 			.def(bp::init<eig::MatrixXf, eig::MatrixXf>(bp::args("canonical_field", "live_field")))
 			.def_readwrite("difference_min",
-			&telemetry::TsdfDifferenceStatistics::difference_min)
+			&telemetry::TsdfDifferenceStatistics2d::difference_min)
 			.def_readwrite("difference_max",
-			&telemetry::TsdfDifferenceStatistics::difference_max)
+			&telemetry::TsdfDifferenceStatistics2d::difference_max)
 			.def_readwrite("difference_mean",
-			&telemetry::TsdfDifferenceStatistics::difference_mean)
+			&telemetry::TsdfDifferenceStatistics2d::difference_mean)
 			.def_readwrite("difference_standard_deviation",
-			&telemetry::TsdfDifferenceStatistics::difference_standard_deviation)
+			&telemetry::TsdfDifferenceStatistics2d::difference_standard_deviation)
 			.def_readwrite("biggest_difference_location",
-			&telemetry::TsdfDifferenceStatistics::biggest_difference_location)
+			&telemetry::TsdfDifferenceStatistics2d::biggest_difference_location)
 			.def("to_array",
-			&telemetry::TsdfDifferenceStatistics::to_array)
-			.def("__eq__", &telemetry::TsdfDifferenceStatistics::operator==)
-			.def("__ne__", &telemetry::TsdfDifferenceStatistics::operator!=)
+			&telemetry::TsdfDifferenceStatistics2d::to_array)
+			.def("__eq__", &telemetry::TsdfDifferenceStatistics2d::operator==)
+			.def("__ne__", &telemetry::TsdfDifferenceStatistics2d::operator!=)
 			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
-	bp::class_<telemetry::ConvergenceReport>("ConvergenceReport", bp::init<>())
-			.def(bp::init<int, bool, telemetry::WarpDeltaStatistics, telemetry::TsdfDifferenceStatistics>(
+	bp::class_<telemetry::ConvergenceReport2d>("ConvergenceReport2d", bp::init<>())
+			.def(bp::init<int, bool, telemetry::WarpDeltaStatistics, telemetry::TsdfDifferenceStatistics2d>(
 			bp::args("iteration_count",
 					"iteration_limit_reached",
 					"warp_delta_statistics",
 					"tsdf_difference_statistics")))
 			.def_readwrite("iteration_count",
-			&telemetry::ConvergenceReport::iteration_count)
+			&telemetry::ConvergenceReport2d::iteration_count)
 			.def_readwrite("iteration_limit_reached",
-			&telemetry::ConvergenceReport::iteration_limit_reached)
+			&telemetry::ConvergenceReport2d::iteration_limit_reached)
 			.def_readwrite("warp_delta_statistics",
-			&telemetry::ConvergenceReport::warp_delta_statistics)
+			&telemetry::ConvergenceReport2d::warp_delta_statistics)
 			.def_readwrite("tsdf_difference_statistics",
-			&telemetry::ConvergenceReport::tsdf_difference_statistics)
-			.def("__eq__", &telemetry::ConvergenceReport::operator==)
-			.def("__ne__", &telemetry::ConvergenceReport::operator!=)
+			&telemetry::ConvergenceReport2d::tsdf_difference_statistics)
+			.def("__eq__", &telemetry::ConvergenceReport2d::operator==)
+			.def("__ne__", &telemetry::ConvergenceReport2d::operator!=)
 			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
-	bp::class_<std::vector<telemetry::ConvergenceReport>>("ConvergenceReportVector")
-			.def(bp::vector_indexing_suite<std::vector<telemetry::ConvergenceReport>>());
+	bp::class_<std::vector<telemetry::ConvergenceReport2d>>("ConvergenceReport2dVector")
+			.def(bp::vector_indexing_suite<std::vector<telemetry::ConvergenceReport2d>>());
 
 	bp::class_<telemetry::OptimizationIterationData2d>("OptimizationIterationData", bp::init<>())
 			.def("get_live_fields", &telemetry::OptimizationIterationData2d::get_live_fields)
