@@ -82,13 +82,17 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_level(
 		const ScalarContainer& live_pyramid_level,
 		const VectorContainer& live_gradient_level) {
 
-	if (this->logging_parameters.collect_per_level_iteration_data && this->get_current_hierarchy_level() == 0) {
+	if (this->logging_parameters.collect_per_level_iteration_data) {
+
 		telemetry::OptimizationIterationData<ScalarContainer,VectorContainer> level_optimization_data;
-		level_optimization_data.add_iteration_result(
-				live_pyramid_level,
-				warp_field,
-				warp_field,
-				(this->tikhonov_term_enabled ? warp_field : math::MatrixXv2f()));
+		if(this->get_current_hierarchy_level() == 0){
+			VectorContainer empty = math::vector_field_like(live_pyramid_level);
+			level_optimization_data.add_iteration_result(
+					live_pyramid_level,
+					empty,
+					empty,
+					(this->tikhonov_term_enabled ? empty : math::MatrixXv2f()));
+		}
 		this->per_level_iteration_data.push_back(level_optimization_data);
 	}
 	Optimizer<ScalarContainer,VectorContainer>::optimize_level(warp_field, canonical_pyramid_level, live_pyramid_level,
