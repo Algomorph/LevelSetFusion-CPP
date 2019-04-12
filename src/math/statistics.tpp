@@ -32,10 +32,10 @@
 namespace math{
 
 template<typename Scalar>
-void locate_max_norm(float& max_norm, Eigen::Vector2i& coordinates,
+void locate_max_norm(float& max_norm, math::Vector2i& coordinates,
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field) {
 	float max_squared_norm = 0;
-	coordinates = Eigen::Vector2i(0);
+	coordinates = math::Vector2i(0);
 	int column_count = static_cast<int>(vector_field.cols());
 
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
@@ -43,15 +43,15 @@ void locate_max_norm(float& max_norm, Eigen::Vector2i& coordinates,
 		if (squared_length > max_squared_norm) {
 			max_squared_norm = squared_length;
 			div_t division_result = div(static_cast<int>(i_element), column_count);
-			coordinates.x() = division_result.quot;
-			coordinates.y() = division_result.rem;
+			coordinates.x = division_result.quot;
+			coordinates.y = division_result.rem;
 		}
 	}
 	max_norm = std::sqrt(max_squared_norm);
 }
 
 template<typename Scalar>
-void locate_max_norm(float& max_norm, Eigen::Vector3i& coordinates,
+void locate_max_norm(float& max_norm, math::Vector3i& coordinates,
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field){
 	int matrix_size = static_cast<int>(vector_field.size());
 	int y_stride = vector_field.dimension(0);
@@ -83,11 +83,11 @@ void locate_max_norm(float& max_norm, Eigen::Vector3i& coordinates,
 	}
 	NormAndCoordinate last_max_norm = max_norm_and_coordinate.load(); // @suppress("Invalid arguments")
 	max_norm = std::sqrt(last_max_norm.squared_norm);
-	coordinates = Eigen::Vector3i(last_max_norm.coordinates.x,last_max_norm.coordinates.y,last_max_norm.coordinates.z);
+	coordinates = last_max_norm.coordinates;
 }
 
 template<typename Scalar>
-void locate_min_norm(float& min_norm, Eigen::Vector2i& coordinates,
+void locate_min_norm(float& min_norm, math::Vector2i& coordinates,
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field) {
 	int column_count = static_cast<int>(vector_field.cols());
 	struct NormAndCoordinates {
@@ -113,7 +113,7 @@ void locate_min_norm(float& min_norm, Eigen::Vector2i& coordinates,
 	}
 	NormAndCoordinates last_best = min_norm_container.load(); // @suppress("Invalid arguments")
 	min_norm = std::sqrt(last_best.norm);
-	coordinates = Eigen::Vector2i(last_best.coordinates.x,last_best.coordinates.y);
+	coordinates = last_best.coordinates;
 }
 
 /**
@@ -121,7 +121,7 @@ void locate_min_norm(float& min_norm, Eigen::Vector2i& coordinates,
  * @overload
  */
 template<typename Scalar>
-void locate_min_norm(float& min_norm, Eigen::Vector3i& coordinates,
+void locate_min_norm(float& min_norm, math::Vector3i& coordinates,
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field){
 	int matrix_size = static_cast<int>(vector_field.size());
 	int y_stride = vector_field.dimension(0);
@@ -153,7 +153,7 @@ void locate_min_norm(float& min_norm, Eigen::Vector3i& coordinates,
 	}
 	NormAndCoordinate last_max_norm = min_norm_and_coordinate.load(); // @suppress("Invalid arguments")
 	min_norm = std::sqrt(last_max_norm.squared_norm);
-	coordinates = Eigen::Vector3i(last_max_norm.coordinates.x,last_max_norm.coordinates.y,last_max_norm.coordinates.z);
+	coordinates = math::Vector3i(last_max_norm.coordinates.x,last_max_norm.coordinates.y,last_max_norm.coordinates.z);
 }
 
 template<typename Container>

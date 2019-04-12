@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE(test_sobolev_optimizer02) {
 
 	telemetry::WarpDeltaStatistics expected_warp_stats =
 			telemetry::WarpDeltaStatistics(0.272727, 0.0, 0.0684823, 0.0364445,
-					0.0167321, Eigen::Vector2i(1, 2), false, false);
+					0.0167321, math::Vector2i(1, 2), false, false);
 	telemetry::TsdfDifferenceStatistics expected_diff_stats =
 			telemetry::TsdfDifferenceStatistics(0, 0.246834, 0.111843, 0.0838871, math::Vector2i(3, 3));
 
