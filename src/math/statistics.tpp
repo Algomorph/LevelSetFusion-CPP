@@ -20,6 +20,9 @@
 
 #pragma once
 
+//stdlib
+#include <atomic>
+
 //local
 #include "statistics.hpp"
 #include "tensor_operations.hpp"

@@ -23,9 +23,6 @@
 #include <boost/python.hpp>
 #include <Eigen/Eigen>
 
-//utils
-#include "../src/console/pretty_printers.hpp"
-
 //test data
 #include "data/test_data_math.hpp"
 

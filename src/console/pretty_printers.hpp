@@ -74,5 +74,26 @@ void print_initializer_list(std::ostream& os, const math::Tensor3f& tensor, int 
 	os << "}" << std::endl;
 	os.flags(original_flags);
 }
+
+void print_initializer_list(std::ostream& os, const math::MatrixXv2f& matrix, bool use_scientific=false, int precision = 4)
+{
+	std::ios_base::fmtflags original_flags(os.flags());
+	if(!use_scientific){
+		os.precision(precision);
+		os << std::fixed;
+	}
+	int last_x = matrix.cols()-1;
+	for(int y = 0; y < matrix.rows(); y++){
+		for(int x = 0; x < last_x; x++){
+			os << "math::Vector2f(" << matrix(y,x).x << "f, " << matrix(y,x).y << "f), ";
+		}
+		if(y == matrix.rows() - 1){
+			os << "math::Vector2f(" << matrix(y,last_x).x << "f, " << matrix(y,last_x).y << "f);" << std::endl;
+		}else{
+			os << "math::Vector2f(" << matrix(y,last_x).x << "f, " << matrix(y,last_x).y << "f)," << std::endl;
+		}
+	}
+	os.flags(original_flags);
+}
 } //end namespace console
 

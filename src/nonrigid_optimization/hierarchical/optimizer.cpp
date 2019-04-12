@@ -20,6 +20,7 @@
 
 //local
 #include "optimizer.tpp"
+
 #include "../../math/typedefs.hpp"
 
 namespace nonrigid_optimization {
