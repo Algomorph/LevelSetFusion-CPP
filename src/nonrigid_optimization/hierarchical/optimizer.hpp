@@ -43,7 +43,7 @@ template<typename ScalarContainer, typename VectorContainer>
 class Optimizer {
 public:
 	typedef typename VectorContainer::Scalar VectorType;
-	typedef eig::Matrix<int, math::ContainerWrapper<ScalarContainer>::DimensionCount, 1> Coordinates;
+	typedef typename math::ContainerWrapper<ScalarContainer>::Coordinates Coordinates;
 	enum ResamplingStrategy {
 		NEAREST_AND_AVERAGE = 0,
 		LINEAR = 1

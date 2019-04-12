@@ -365,13 +365,13 @@ BOOST_AUTO_TEST_CASE(max_norm_test01) {
 			math::Vector2f(-0.57307416f, -0.20139425f),
 			math::Vector2f(-0.09964357f, -0.15942998f),
 			math::Vector2f(-0.1336017f, -0.27605268f);
-	Eigen::Vector2i coordinates;
+	math::Vector2i coordinates;
 	float max_norm;
 	math::locate_max_norm(max_norm, coordinates, vector_field);
 
 	BOOST_REQUIRE_CLOSE(max_norm, 0.7614307f, 1e-8);
-	BOOST_REQUIRE_EQUAL(coordinates.x(), 1);
-	BOOST_REQUIRE_EQUAL(coordinates.y(), 2);
+	BOOST_REQUIRE_EQUAL(coordinates.x, 1);
+	BOOST_REQUIRE_EQUAL(coordinates.y, 2);
 }
 
 BOOST_AUTO_TEST_CASE(mean_and_std_test01) {

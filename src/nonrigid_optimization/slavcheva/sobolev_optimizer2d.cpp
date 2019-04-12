@@ -76,7 +76,7 @@ eig::MatrixXf SobolevOptimizer2d::optimize(const eig::MatrixXf& live_field, cons
 
 	float maximum_warp_length = SobolevOptimizer2d::shared_parameters().maximum_warp_length_upper_threshold - 1.0f;
 	int completed_iteration_count;
-	Eigen::Vector2i maximum_warp_location;
+	math::Vector2i maximum_warp_location;
 	for (completed_iteration_count = 0;
 			!Optimizer2d::are_termination_conditions_reached(completed_iteration_count, maximum_warp_length);
 			completed_iteration_count++) {
@@ -114,7 +114,7 @@ eig::MatrixXf SobolevOptimizer2d::optimize(const eig::MatrixXf& live_field, cons
 }
 
 float SobolevOptimizer2d::perform_optimization_iteration_and_return_max_warp(eig::MatrixXf& warped_live_field,
-		Eigen::Vector2i& max_warp_location, const eig::MatrixXf& canonical_field, math::MatrixXv2f& warp_field) {
+		math::Vector2i& max_warp_location, const eig::MatrixXf& canonical_field, math::MatrixXv2f& warp_field) {
 
 	math::MatrixXv2f data_term_gradient, smoothing_term_gradient, warped_live_field_gradient;
 	float data_term_energy, smoothing_term_energy;

@@ -42,7 +42,7 @@ namespace python_export {
 
 void export_telemetry_utilities() {
 	bp::class_<telemetry::WarpDeltaStatistics>("WarpDeltaStatistics", bp::init<>())
-			.def(bp::init<float, float, float, float, float, eig::Vector2i, bool, bool>(
+			.def(bp::init<float, float, float, float, float, math::Vector2i, bool, bool>(
 			bp::args("ratio_above_min_threshold",
 					"length_min",
 					"length_max",

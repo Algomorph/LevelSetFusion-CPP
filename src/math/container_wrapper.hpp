@@ -24,6 +24,9 @@
 #include <Eigen/Eigen>
 #include <unsupported/Eigen/CXX11/Tensor>
 
+//local
+#include "typedefs.hpp"
+
 namespace math {
 
 template<typename Container>
@@ -33,12 +36,14 @@ template<typename Scalar>
 class ContainerWrapper<Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> >{
 public:
 	static const int DimensionCount = 2;
+	typedef math::Vector2i Coordinates;
 };
 
 template<typename Scalar, int DimensionCountIn>
 class ContainerWrapper<Eigen::Tensor<Scalar, DimensionCountIn, Eigen::ColMajor>>{
 public:
 	static const int DimensionCount = DimensionCountIn;
+	typedef math::Vector3i Coordinates;
 };
 
 
