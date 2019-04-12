@@ -19,14 +19,13 @@
  */
 
 //stdlib
+#include "statistics.tpp"
+
 #include <cmath>
 #include <atomic>
 #include <limits>
 
 //local
-#include "statistics.tpp"
-
-
 namespace math {
 
 template void locate_max_norm<math::Vector2f>(float& max_norm, math::Vector2i& coordinates, const math::MatrixXv2f& vector_field);

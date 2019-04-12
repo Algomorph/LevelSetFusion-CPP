@@ -25,7 +25,6 @@
 
 //local
 #include "multiply.hpp"
-#include "nestable_type_metainfo.hpp"
 #include "checks.hpp"
 #include "../error_handling/throw_assert.hpp"
 
