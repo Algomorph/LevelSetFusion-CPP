@@ -319,7 +319,7 @@ BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation02) {
 	BOOST_REQUIRE(image_read);
 	eig::Matrix3f camera_intrinsic_matrix;
 	camera_intrinsic_matrix <<
-							700.0f, 0.0f, 320.0f,
+			700.0f, 0.0f, 320.0f,
 			0.0f, 700.0f, 240.0f,
 			0.0f, 0.0f, 1.0f;
 	eig::Matrix4f camera_extrinsic_matrix = eig::Matrix4f::Identity();

@@ -95,7 +95,6 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
         eig::Matrix<float, 6, 1> twist3d;
         twist3d << twist(0), 0.0f, twist(1), 0.0f, twist(2), 0.0f;
         eig::Matrix4f twist_matrix3d = math::transformation_vector_to_matrix3d(twist3d);
-//        std::cout << twist_matrix3d << std::endl;
         eig::MatrixXf live_field = tsdf::generate_TSDF_2D(image_y_coordinate,
                                                           live_depth_image,
                                                           tsdf_generation_parameters.depth_unit_ratio,
@@ -105,7 +104,6 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
                                                           tsdf_generation_parameters.field_size,
                                                           tsdf_generation_parameters.voxel_size,
                                                           tsdf_generation_parameters.narrow_band_width_voxels);
-//        if (iteration_count == 1) std::cout << live_field << std::endl;
         eig::MatrixXf live_weight = live_field.replicate(1, 1);
         for (int i=0; i < live_weight.rows(); ++i) { // Determine weight based on thickness
             for (int j=0; j < live_weight.cols(); ++j){
@@ -122,24 +120,11 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
 
         for (int i=0; i < live_field.rows(); ++i) {
             for (int j=0; j < live_field.cols(); ++j) {
-//                if (i==0 && j==0){
-//                if (std::abs(live_gradient(i, j)(1)) > 0.0000001f) {
-//                    std::cout << "i: " << i << " j: " << j << std::endl;
-//                    std::cout << live_gradient(i, j) << "\n" << std::endl;
-//                }
                 matrix_A += live_gradient(i, j) * live_gradient(i, j).transpose();
                 vector_b += (canonical_field(i, j) - live_field(i, j) + live_gradient(i, j).transpose() * twist)
                             * live_gradient(i, j);
-//                if (i==0 && j==0) {
-//                    std::cout << "c++ i: " << i << " j: " << j << std::endl;
-//                    std::cout << "A: " << matrix_A << "\n"  << "b: " << vector_b << "\n"<< std::endl;
-//                }
             }
         }
-
-//        std::cout << "A: \n" << matrix_A << std::endl;
-//        std::cout << "A.inverse: \n" << matrix_A.inverse() << std::endl;
-//        std::cout << "b: \n" << vector_b << std::endl;
 
         float energy = .5f * (canonical_field.cwiseProduct(canonical_weight) -
                               live_field.cwiseProduct(live_weight)).array().pow(2.f).sum();

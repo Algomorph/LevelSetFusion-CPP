@@ -148,7 +148,7 @@ void export_ewa() {
 }
 
 void export_tsdf() {
-	bp::def("generate_TSDF_2D", &tsdf::generate_TSDF_2D,
+	bp::def("generate_tsdf_2d", &tsdf::generate_TSDF_2D,
 			"Regular TSDF generation method without interpolation.",
 			bp::args("image_y_coordinate",
 					 "depth_image",
