@@ -14,7 +14,7 @@
 //  limitations under the License.
 //  ================================================================
 
-#include "stacking.hpp"
+#include "stacking.tpp"
 
 #include "typedefs.hpp"
 

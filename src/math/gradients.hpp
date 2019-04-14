@@ -20,6 +20,7 @@
 
 namespace math {
 
+//TODO: templatize on scalar type
 void laplacian(math::MatrixXv2f& laplacian, const math::MatrixXv2f& field);
 void laplacian(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field);
 void negative_laplacian(math::MatrixXv2f& laplacian, const math::MatrixXv2f& field);

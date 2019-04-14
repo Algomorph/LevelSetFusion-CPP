@@ -289,6 +289,7 @@ add_library(${MODULE_NAME} SHARED
 			src/math/statistics.tpp
 			src/math/statistics.cpp
 			src/math/stacking.hpp
+			src/math/stacking.tpp
 			src/math/stacking.cpp
 			src/math/typedefs.hpp
 			src/math/vector_base.hpp
