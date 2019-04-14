@@ -27,7 +27,7 @@
 
 // local
 #include "../../math/typedefs.hpp"
-#include "../../math/container_wrapper.hpp"
+#include "../../math/container_traits.hpp"
 
 namespace eig = Eigen;
 

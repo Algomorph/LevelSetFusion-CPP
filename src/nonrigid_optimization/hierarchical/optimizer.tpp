@@ -37,9 +37,9 @@
 #include "../../math/statistics.hpp"
 #include "../../math/resampling.hpp"
 #include "../../math/field_like.hpp"
-#include "../../math/container_wrapper.hpp"
 #include "../../math/multiply.hpp"
 #include "optimizer.hpp"
+#include "../../math/container_traits.hpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical {

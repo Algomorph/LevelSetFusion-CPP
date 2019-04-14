@@ -37,6 +37,8 @@ class ContainerWrapper<Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen:
 public:
 	static const int DimensionCount = 2;
 	typedef math::Vector2i Coordinates;
+	typedef Eigen::Matrix<math::Vector2<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> VectorContainer;
+	typedef Eigen::Matrix<math::Matrix2<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixContainer;
 };
 
 template<typename Scalar, int DimensionCountIn>
@@ -46,5 +48,13 @@ public:
 	typedef math::Vector3i Coordinates;
 };
 
+template<typename Scalar>
+class ContainerWrapper<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>>{
+public:
+	static const int DimensionCount = 3;
+	typedef math::Vector3i Coordinates;
+	typedef Eigen::Matrix<math::Vector3<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> VectorContainer;
+	typedef Eigen::Matrix<math::Matrix3<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixContainer;
+};
 
 } // namespace math
