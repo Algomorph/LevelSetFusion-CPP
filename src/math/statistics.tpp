@@ -25,22 +25,21 @@
 
 //local
 #include "statistics.hpp"
-#include "tensor_operations.hpp"
+#include "stacking.hpp"
 #include "vector_operations.hpp"
 #include "../traversal/field_traversal_cpu.hpp"
 #include "../traversal/index_raveling.hpp"
-#include "tensor_operations.hpp"
 #include "../error_handling/throw_assert.hpp"
 
 namespace math {
 
 struct ValueAndCoordinates2d {
 	ValueAndCoordinates2d() = default;
-	ValueAndCoordinates2d(float squared_norm, math::Vector3i coordinates) :
+	ValueAndCoordinates2d(float squared_norm, math::Vector2i coordinates) :
 			value(squared_norm), coordinates(coordinates) {
 	}
 	float value = 0.0f;
-	math::Vector3i coordinates = math::Vector3i(0);
+	math::Vector2i coordinates = math::Vector2i(0);
 };
 
 struct ValueAndCoordinates3d {
@@ -78,14 +77,14 @@ void locate_max_norm(float& max_norm, math::Vector3i& coordinates,
 	int y_stride = vector_field.dimension(0);
 	int z_stride = y_stride * vector_field.dimension(1);
 
-	std::atomic<ValueAndCoordinates2d> max_norm_and_coordinate { { 0.0f, math::Vector3i(0) } };
+	std::atomic<ValueAndCoordinates3d> max_norm_and_coordinate { { 0.0f, math::Vector3i(0) } };
 
 #pragma omp parallel for
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		int x, y, z;
 		traversal::unravel_3d_index(x, y, z, i_element, y_stride, z_stride);
-		ValueAndCoordinates2d last_max_norm = max_norm_and_coordinate.load(); // @suppress("Invalid arguments")
-		ValueAndCoordinates2d new_norm;
+		ValueAndCoordinates3d last_max_norm = max_norm_and_coordinate.load(); // @suppress("Invalid arguments")
+		ValueAndCoordinates3d new_norm;
 		do {
 			new_norm = last_max_norm;
 			new_norm.value = math::squared_norm(vector_field(i_element));
@@ -93,7 +92,7 @@ void locate_max_norm(float& max_norm, math::Vector3i& coordinates,
 		} while (new_norm.value > last_max_norm.value &&
 				!max_norm_and_coordinate.compare_exchange_strong(last_max_norm, new_norm));
 	}
-	ValueAndCoordinates2d last_max_norm = max_norm_and_coordinate.load(); // @suppress("Invalid arguments")
+	ValueAndCoordinates3d last_max_norm = max_norm_and_coordinate.load(); // @suppress("Invalid arguments")
 	max_norm = std::sqrt(last_max_norm.value);
 	coordinates = last_max_norm.coordinates;
 }
@@ -154,19 +153,19 @@ void locate_min_norm(float& min_norm, math::Vector3i& coordinates,
 
 template<typename Scalar>
 void locate_maximum(float& maximum, math::Vector3i& coordinates,
-		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor> scalar_field) {
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& scalar_field) {
 	int matrix_size = static_cast<int>(scalar_field.size());
 	int y_stride = scalar_field.dimension(0);
 	int z_stride = y_stride * scalar_field.dimension(1);
 
-	std::atomic<ValueAndCoordinates2d> max_norm_and_coordinate { { 0.0f, math::Vector3i(0) } };
+	std::atomic<ValueAndCoordinates3d> max_norm_and_coordinate { { 0.0f, math::Vector3i(0) } };
 
 #pragma omp parallel for
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		int x, y, z;
 		traversal::unravel_3d_index(x, y, z, i_element, y_stride, z_stride);
-		ValueAndCoordinates2d last_max_norm = max_norm_and_coordinate.load(); // @suppress("Invalid arguments")
-		ValueAndCoordinates2d new_norm;
+		ValueAndCoordinates3d last_max_norm = max_norm_and_coordinate.load(); // @suppress("Invalid arguments")
+		ValueAndCoordinates3d new_norm;
 		do {
 			new_norm = last_max_norm;
 			new_norm.value = scalar_field(i_element);
@@ -174,7 +173,7 @@ void locate_maximum(float& maximum, math::Vector3i& coordinates,
 		} while (new_norm.value > last_max_norm.value &&
 				!max_norm_and_coordinate.compare_exchange_strong(last_max_norm, new_norm));
 	}
-	ValueAndCoordinates2d last_max_norm = max_norm_and_coordinate.load(); // @suppress("Invalid arguments")
+	ValueAndCoordinates3d last_max_norm = max_norm_and_coordinate.load(); // @suppress("Invalid arguments")
 	maximum = std::sqrt(last_max_norm.value);
 	coordinates = last_max_norm.coordinates;
 }

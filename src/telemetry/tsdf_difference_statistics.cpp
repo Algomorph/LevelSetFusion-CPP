@@ -26,6 +26,9 @@ namespace telemetry {
 template struct TsdfDifferenceStatistics<math::Vector2i>;
 template struct TsdfDifferenceStatistics<math::Vector3i>;
 
+template std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics<math::Vector2i> &ts);
+template std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics<math::Vector3i> &ts);
+
 }  // namespace telemetry
 
 
