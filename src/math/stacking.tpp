@@ -1,5 +1,5 @@
 //  ================================================================
-//  Created by Gregory Kramida on 10/23/18.
+//  Created by Gregory Kramida on 04/14/18.
 //  Copyright (c) 2018 Gregory Kramida
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -15,39 +15,27 @@
 //  ================================================================
 #pragma once
 
-//stdlib
-#include <cstdlib>
-#include <vector>
-
-//libraries
-#include <Eigen/Eigen>
-#include <unsupported/Eigen/CXX11/Tensor>
-
 //local
-#include "vector2.hpp"
-#include "matrix2.hpp"
-#include "typedefs.hpp"
+#include "stacking.hpp"
+#include "../error_handling/throw_assert.hpp"
 
+namespace math{
 
-namespace math {
-
-
-/***
- * Make a nested vector field out of a set of scalar fields by stacking values in each location into a vector.
- * @param set the set of scalar fields to use
- */
 template<typename Scalar>
 Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
-stack(const std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>>& set);
+stack(const std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>>& set){
+	throw_assert(set.size() == 2, "Size of the set should be 2 to return Vector2 as the nested type");
+	//TODO
+	throw_assert(false, "Not Implemented");
+}
 
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
-stack(const std::vector<Eigen::Tensor<Scalar, Eigen::ColMajor>>& set);
+stack(const std::vector<Eigen::Tensor<Scalar, Eigen::ColMajor>>& set){
+	throw_assert(set.size() == 3, "Size of the set should be 2 to return Vector2 as the nested type");
+	//TODO
+	throw_assert(false, "Not Implemented");
+}
 
-//legacy
-MatrixXv2f stack_as_xv2f(const Eigen::MatrixXf& matrix_a, const Eigen::MatrixXf& matrix_b);
-void unstack_xv2f(Eigen::MatrixXf& matrix_a, Eigen::MatrixXf& matrix_b, const MatrixXv2f vector_field);
 
 } //namespace math
-
-
