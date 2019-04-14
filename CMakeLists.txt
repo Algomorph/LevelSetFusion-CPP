@@ -259,9 +259,9 @@ add_library(${MODULE_NAME} SHARED
 			src/math/boolean_operations.hpp
 			src/math/conics.hpp
 			src/math/conics.cpp
-			src/math/container_wrapper.hpp
-			src/math/container_wrapper.tpp
-			src/math/container_wrapper.cpp
+			src/math/container_traits.hpp
+			src/math/container_traits.tpp
+			src/math/container_traits.cpp
 			src/math/convolution.hpp
 			src/math/convolution.cpp
 			src/math/field_like.hpp
@@ -270,6 +270,7 @@ add_library(${MODULE_NAME} SHARED
 			src/math/filtered_statistics.hpp
 			src/math/filtered_statistics.cpp
 			src/math/gradients.hpp
+			src/math/gradients.tpp
 			src/math/gradients.cpp
 			src/math/math_utils.hpp
 			src/math/matrix_base.hpp

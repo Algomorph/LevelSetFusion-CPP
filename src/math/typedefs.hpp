@@ -23,6 +23,7 @@
 #include "vector2.hpp"
 #include "vector3.hpp"
 #include "matrix2.hpp"
+#include "matrix3.hpp"
 #include "nestable_type_metainfo.hpp"
 
 namespace math{

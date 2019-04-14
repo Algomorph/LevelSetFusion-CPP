@@ -1,5 +1,5 @@
 /*
- * get_dimension_count.tpp
+ * get_dimension_count.cpp
  *
  *  Created on: Apr 11, 2019
  *      Author: Gregory Kramida
@@ -18,16 +18,14 @@
  *   limitations under the License.
  */
 
-#pragma once
-
 //libraries
 #include <Eigen/Dense>
-#include <unsupported/Eigen/CXX11/Tensor>
 
+#include "container_traits.tpp"
 //local
-#include "container_wrapper.hpp"
+#include "typedefs.hpp"
 
+namespace eig = Eigen;
 namespace math {
 
 } // namespace math
-
