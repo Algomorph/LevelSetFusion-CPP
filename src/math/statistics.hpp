@@ -71,7 +71,7 @@ void locate_min_norm(float& min_norm, math::Vector3i& coordinates,
  */
 template<typename Scalar>
 void locate_maximum(float& maximum, math::Vector3i& coordinates,
-		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor> scalar_field);
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& scalar_field);
 
 //uses traversal function/functor combo, otherwise the same as locate_max_norm
 void locate_max_norm2(float& max_norm, math::Vector2i& coordinates, const math::MatrixXv2f& vector_field);

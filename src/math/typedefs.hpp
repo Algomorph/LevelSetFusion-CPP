@@ -49,6 +49,7 @@ typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic, Eige
 typedef Eigen::Matrix<math::Matrix2<float>, Eigen::Dynamic, Eigen::Dynamic> MatrixXm2f;
 
 typedef class Eigen::Tensor<float,3> Tensor3f;
+typedef class Eigen::Tensor<float,0> Tensor0f;
 typedef Eigen::Tensor<math::Vector2<float>,3> Tensor3v2f;
 typedef Eigen::Tensor<math::Vector3<float>,3> Tensor3v3f;
 

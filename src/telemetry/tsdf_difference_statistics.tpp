@@ -43,8 +43,8 @@ TsdfDifferenceStatistics<Coordinates>::TsdfDifferenceStatistics(
 {
 }
 
-template<typename Coordinates>
-TsdfDifferenceStatistics<Coordinates>::TsdfDifferenceStatistics(const eig::MatrixXf& canonical_field,
+template<>
+TsdfDifferenceStatistics<math::Vector2i>::TsdfDifferenceStatistics(const eig::MatrixXf& canonical_field,
 		const eig::MatrixXf& live_field) {
 	eig::ArrayXXf diff = (live_field.array() - canonical_field.array()).abs().eval();
 	float diff_min = diff.minCoeff();
@@ -61,15 +61,17 @@ TsdfDifferenceStatistics<Coordinates>::TsdfDifferenceStatistics(const eig::Matri
 	this->biggest_difference_location = diff_max_loc;
 }
 
-template<typename Coordinates>
-TsdfDifferenceStatistics<Coordinates>::TsdfDifferenceStatistics(const math::Tensor3f& canonical_field,
+template<>
+TsdfDifferenceStatistics<math::Vector3i>::TsdfDifferenceStatistics(const math::Tensor3f& canonical_field,
 		const math::Tensor3f& live_field) {
+
 	math::Tensor3f diff = (live_field - canonical_field).abs().eval();
-	float diff_min = diff.minimum();
+	float diff_min = static_cast<math::Tensor0f>(diff.minimum())(0);
 	math::Vector3i max_location; float diff_max;
 	math::locate_maximum(diff_max, max_location, diff);
-	float diff_mean = diff.mean();
-	float diff_std = std::sqrt((diff - diff_mean).square().sum() / (static_cast<float>(diff.size()) - 1.0f));
+	float diff_mean = static_cast<math::Tensor0f>(diff.mean())(0);
+	float divisor = static_cast<float>(diff.size()) - 1.0f;
+	float diff_std = std::sqrt(static_cast<math::Tensor0f>((diff - diff.constant(diff_mean)).square().sum())(0) / divisor);
 
 	this->difference_min = diff_min;
 	this->difference_max = diff_max;
