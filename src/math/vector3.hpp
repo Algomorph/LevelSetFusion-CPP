@@ -48,49 +48,49 @@ public:
 		this->z = v0;
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector3<int> toIntRound() const {
+	_CPU_AND_GPU_CODE_ inline Vector3<int> to_int_round() const {
 		return Vector3<int>((int) ROUND(this->x), (int) ROUND(this->y), (int) ROUND(this->z));
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector3<int> toInt() const {
+	_CPU_AND_GPU_CODE_ inline Vector3<int> to_int() const {
 		return Vector3<int>((int) (this->x), (int) (this->y), (int) (this->z));
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector3<int> toInt(Vector3<float>& residual) const {
-		Vector3<int> intRound = toInt();
+	_CPU_AND_GPU_CODE_ inline Vector3<int> to_int(Vector3<float>& residual) const {
+		Vector3<int> intRound = to_int();
 		residual = Vector3<float>(this->x - intRound.x, this->y - intRound.y, this->z - intRound.z);
 		return intRound;
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector3<short> toShortRound() const {
+	_CPU_AND_GPU_CODE_ inline Vector3<short> to_short_round() const {
 		return Vector3<short>((short) ROUND(this->x), (short) ROUND(this->y), (short) ROUND(this->z));
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector3<short> toShortFloor() const {
+	_CPU_AND_GPU_CODE_ inline Vector3<short> to_short_floor() const {
 		return Vector3<short>((short) floor(this->x), (short) floor(this->y), (short) floor(this->z));
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector3<int> toIntFloor() const {
+	_CPU_AND_GPU_CODE_ inline Vector3<int> to_int_floor() const {
 		return Vector3<int>((int) floor(this->x), (int) floor(this->y), (int) floor(this->z));
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector3<int> toIntFloor(Vector3<float>& residual) const {
+	_CPU_AND_GPU_CODE_ inline Vector3<int> to_int_floor(Vector3<float>& residual) const {
 		Vector3<float> intFloor(floor(this->x), floor(this->y), floor(this->z));
 		residual = *this - intFloor;
 		return Vector3<int>((int) intFloor.x, (int) intFloor.y, (int) intFloor.z);
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector3<unsigned char> toUChar() const {
-		Vector3<int> vi = toIntRound();
+	_CPU_AND_GPU_CODE_ inline Vector3<unsigned char> to_uchar() const {
+		Vector3<int> vi = to_int_round();
 		return Vector3<unsigned char>((unsigned char) CLAMP(vi.x, 0, 255), (unsigned char) CLAMP(vi.y, 0, 255),
 		                              (unsigned char) CLAMP(vi.z, 0, 255));
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector3<float> toFloat() const {
+	_CPU_AND_GPU_CODE_ inline Vector3<float> to_float() const {
 		return Vector3<float>((float) this->x, (float) this->y, (float) this->z);
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector3<double> toDouble() const {
+	_CPU_AND_GPU_CODE_ inline Vector3<double> to_double() const {
 		return Vector3<double>((double) this->x, (double) this->y, (double) this->z);
 	}
 
@@ -99,9 +99,9 @@ public:
 		return Vector3<float>((float) this->x * norm, (float) this->y * norm, (float) this->z * norm);
 	}
 
-	_CPU_AND_GPU_CODE_ const T* getValues() const { return this->values; }
+	_CPU_AND_GPU_CODE_ const T* get_values() const { return this->values; }
 
-	_CPU_AND_GPU_CODE_ Vector3<T>& setValues(const T* rhs) {
+	_CPU_AND_GPU_CODE_ Vector3<T>& set_values(const T* rhs) {
 		this->x = rhs[0];
 		this->y = rhs[1];
 		this->z = rhs[2];

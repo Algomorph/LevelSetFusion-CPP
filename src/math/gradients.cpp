@@ -23,10 +23,11 @@ template void laplacian<float>(math::MatrixXv2f& laplacian, const math::MatrixXv
 template void negative_laplacian<float>(math::MatrixXv2f& laplacian, const math::MatrixXv2f& field);
 template void laplacian<float>(math::Tensor3v3f& laplacian, const math::Tensor3v3f& field);
 
-template void gradient<float>(math::MatrixXm2f& gradient, const math::MatrixXv2f& field);
 template void gradient<float>(math::MatrixXv2f& gradient, const eig::MatrixXf& field);
 template void gradient<float>(eig::MatrixXf& gradient_x, eig::MatrixXf& gradient_y, const eig::MatrixXf& field);
+template void gradient<float>(math::MatrixXm2f& gradient, const math::MatrixXv2f& field);
 template void gradient<float>(math::Tensor3v3f& gradient, const math::Tensor3f& field);
 template void gradient2<float>(math::Tensor3v3f& gradient, const math::Tensor3f& field);
+template void gradient<float>(math::Tensor3m3f& gradient, const math::Tensor3v3f& field);
 
 }  // namespace math
