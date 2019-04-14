@@ -250,7 +250,7 @@ void gradient(
 		const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& field) {
 	eig::Index column_count = field.cols();
 	eig::Index row_count = field.rows();
-	gradient = math::MatrixXv2f(row_count, column_count);
+	gradient = Eigen::Matrix<math::Vector2<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>(row_count, column_count);
 
 #pragma omp parallel for
 	for (eig::Index i_col = 0; i_col < column_count; i_col++) {
@@ -290,7 +290,7 @@ void gradient(
 	eig::Index row_count = field.rows();
 	eig::Index column_count = field.cols();
 
-	gradient = math::MatrixXm2f(row_count, column_count);
+	gradient = Eigen::Matrix<math::Matrix2<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>(row_count, column_count);
 
 #pragma omp parallel for
 	for (eig::Index i_col = 0; i_col < column_count; i_col++) {
@@ -323,12 +323,74 @@ void gradient(
 	}
 }
 
+template<typename Scalar>
+void gradient(
+		Eigen::Tensor<math::Matrix3<Scalar>,3,Eigen::ColMajor>& gradient,
+		const Eigen::Tensor<math::Vector3<Scalar>,3,Eigen::ColMajor>& field){
+
+	eig::Index size_x = field.dimension(0);
+	eig::Index size_y = field.dimension(1);
+	eig::Index size_z = field.dimension(2);
+
+	gradient = Eigen::Tensor<math::Matrix3<Scalar>,3,Eigen::ColMajor>(size_x, size_y, size_z);
+
+	#pragma omp parallel for
+	for (eig::Index z = 0; z < size_z; z++){
+		for (eig::Index y = 0; y < size_y; y++) {
+			math::Vector3<Scalar> prev_vector = field(0, y, z);
+			math::Vector3<Scalar> current_vector = field(1, y, z);
+			gradient(0, y, z).set_column(0, current_vector - prev_vector);
+			eig::Index x;
+			//traverse each column in vertical (y) direction
+			for (x = 1; x < size_x - 1; x++) {
+				math::Vector3<Scalar> next_vector = field(x + 1, y, z);
+				gradient(x, y, z).set_column(0, 0.5 * (next_vector - prev_vector));
+				prev_vector = current_vector;
+				current_vector = next_vector;
+			}
+			gradient(x, y, z).set_column(0, current_vector - prev_vector);
+		}
+	}
+	#pragma omp parallel for
+	for (eig::Index z = 0; z < size_z; z++){
+		for (eig::Index x = 0; x < size_x; x++) {
+			math::Vector3<Scalar> prev_vector = field(x, 0, z);
+			math::Vector3<Scalar> current_vector = field(x, 1, z);
+			gradient(x, 0, z).set_column(1, current_vector - prev_vector);
+			eig::Index y;
+			for (y = 1; y < size_y - 1; y++) {
+				math::Vector3<Scalar> next_vector = field(x, y + 1, z);
+				gradient(x, y, z).set_column(1, 0.5 * (next_vector - prev_vector));
+				prev_vector = current_vector;
+				current_vector = next_vector;
+			}
+			gradient(x, y, z).set_column(1, current_vector - prev_vector);
+		}
+	}
+	#pragma omp parallel for
+	for (eig::Index y = 0; y < size_y; y++){
+		for (eig::Index x = 0; x < size_x; x++) {
+			math::Vector3<Scalar> prev_vector = field(x, y, 0);
+			math::Vector3<Scalar> current_vector = field(x, y, 1);
+			gradient(x, y, 0).set_column(2, current_vector - prev_vector);
+			eig::Index z;
+			for (z = 1; z < size_z - 1; z++) {
+				math::Vector3<Scalar> next_vector = field(x, y, z + 1);
+				gradient(x, y, z).set_column(2, 0.5 * (next_vector - prev_vector));
+				prev_vector = current_vector;
+				current_vector = next_vector;
+			}
+			gradient(x, y, z).set_column(2, current_vector - prev_vector);
+		}
+	}
+}
+
 //TODO: test which gradient method is faster
 template<typename Scalar>
 void gradient2(
 		Eigen::Tensor<math::Vector3<Scalar>,3,Eigen::ColMajor>& gradient,
 		const Eigen::Tensor<Scalar,3,Eigen::ColMajor>& field){
-	gradient = math::Tensor3v3f(field.dimensions());
+	gradient = Eigen::Tensor<math::Vector3<Scalar>,3,Eigen::ColMajor>(field.dimensions());
 	int y_stride = field.dimension(0);
 	int z_stride = y_stride * field.dimension(1);
 
@@ -376,7 +438,7 @@ template<typename Scalar>
 void gradient(
 		Eigen::Tensor<math::Vector3<Scalar>,3,Eigen::ColMajor>& gradient,
 		const Eigen::Tensor<Scalar,3,Eigen::ColMajor>& field) {
-	gradient = math::Tensor3v3f(field.dimensions());
+	gradient = Eigen::Tensor<math::Vector3<Scalar>,3,Eigen::ColMajor>(field.dimensions());
 
 	const int x_size = field.dimension(0);
 	const int y_size = field.dimension(1);

@@ -66,13 +66,13 @@ public:
 		return {(unsigned char) CLAMP(vi.x, 0, 255), (unsigned char) CLAMP(vi.y, 0, 255)};
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector2<float> toFloat() const {
+	_CPU_AND_GPU_CODE_ inline Vector2<float> to_float() const {
 		return {(float) this->x, (float) this->y};
 	}
 
-	_CPU_AND_GPU_CODE_ const T* getValues() const { return this->values; }
+	_CPU_AND_GPU_CODE_ const T* get_values() const { return this->values; }
 
-	_CPU_AND_GPU_CODE_ Vector2<T>& setValues(const T* rhs) {
+	_CPU_AND_GPU_CODE_ Vector2<T>& set_values(const T* rhs) {
 		this->x = rhs[0];
 		this->y = rhs[1];
 		return *this;

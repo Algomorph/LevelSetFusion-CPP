@@ -75,10 +75,14 @@ void gradient(
 		Eigen::Matrix<math::Matrix2<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& gradient,
 		const Eigen::Matrix<math::Vector2<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& field);
 
+/**
+ * @brief Calculate the gradient (1st derivative approximation via first-order central differences) of given field.
+ * @overload
+ */
 template<typename Scalar>
 void gradient(
 		Eigen::Tensor<math::Matrix3<Scalar>,3,Eigen::ColMajor>& gradient,
-		const Eigen::Tensor<math::Vector3<Scalar>,3,Eigen::ColMajor> field);
+		const Eigen::Tensor<math::Vector3<Scalar>,3,Eigen::ColMajor>& field);
 /**
  * @brief Calculate the gradient (1st derivative approximation via first-order central differences) of given field.
  * @overload
