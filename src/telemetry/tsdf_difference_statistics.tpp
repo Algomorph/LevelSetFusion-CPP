@@ -23,7 +23,7 @@
 #include "../math/filtered_statistics.hpp"
 #include "../math/statistics.hpp"
 #include "../math/almost_equal.hpp"
-#include "../math/multiply.hpp"
+#include "../math/cwise_binary.hpp"
 
 namespace telemetry {
 

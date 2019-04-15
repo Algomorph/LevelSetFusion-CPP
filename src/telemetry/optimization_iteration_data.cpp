@@ -32,5 +32,6 @@ namespace eig = Eigen;
 namespace telemetry{
 
 template class OptimizationIterationData<eig::MatrixXf, math::MatrixXv2f>;
+template class OptimizationIterationData<math::Tensor3f, math::Tensor3v3f>;
 
 } //namespace telemetry

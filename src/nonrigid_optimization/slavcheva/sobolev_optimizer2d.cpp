@@ -86,7 +86,9 @@ eig::MatrixXf SobolevOptimizer2d::optimize(const eig::MatrixXf& live_field, cons
 
 		//log end-of-iteration results if requested
 		if (SobolevOptimizer2d::shared_parameters().enable_warp_statistics_logging) {
-			telemetry::WarpDeltaStatistics current_warp_statistics(warp_field,
+			telemetry::WarpDeltaStatistics2d current_warp_statistics = telemetry::build_warp_delta_statistics
+					<math::Vector2i, eig::MatrixXf, math::MatrixXv2f>
+					(warp_field,
 					canonical_field,
 					warped_live_field,
 					SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold,
@@ -98,7 +100,9 @@ eig::MatrixXf SobolevOptimizer2d::optimize(const eig::MatrixXf& live_field, cons
 	//log end-of-optimization results if requested
 	if (SobolevOptimizer2d::shared_parameters().enable_convergence_reporting) {
 		telemetry::TsdfDifferenceStatistics2d tsdf_difference_statistics(canonical_field, warped_live_field);
-		telemetry::WarpDeltaStatistics current_warp_statistics(warp_field,
+		telemetry::WarpDeltaStatistics2d current_warp_statistics = telemetry::build_warp_delta_statistics
+				<math::Vector2i, eig::MatrixXf, math::MatrixXv2f>
+				(warp_field,
 				canonical_field,
 				warped_live_field,
 				SobolevOptimizer2d::shared_parameters().maximum_warp_length_lower_threshold,
@@ -144,7 +148,7 @@ eig::MatrixXf SobolevOptimizer2d::get_warp_statistics_as_matrix() {
 
 	eig::MatrixXf warp_statistics_matrix(this->warp_statistics.size(), 6);
 	eig::Index i_row = 0;
-	for (telemetry::WarpDeltaStatistics& iteration_warp_statistics : this->warp_statistics) {
+	for (telemetry::WarpDeltaStatistics2d& iteration_warp_statistics : this->warp_statistics) {
 		warp_statistics_matrix.row(i_row) = iteration_warp_statistics.to_array();
 		i_row++;
 	}

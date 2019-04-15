@@ -26,7 +26,7 @@ namespace telemetry {
 template<typename Coordinates>
 ConvergenceReport<Coordinates>::ConvergenceReport(int iteration_count,
 		bool iteration_limit_reached,
-		WarpDeltaStatistics warp_delta_statistics,
+		WarpDeltaStatistics<Coordinates> warp_delta_statistics,
 		TsdfDifferenceStatistics<Coordinates> tsdf_difference_statistics)
 :
 		iteration_count(iteration_count),

@@ -53,8 +53,8 @@ class ContainerWrapper<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>>{
 public:
 	static const int DimensionCount = 3;
 	typedef math::Vector3i Coordinates;
-	typedef Eigen::Matrix<math::Vector3<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> VectorContainer;
-	typedef Eigen::Matrix<math::Matrix3<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixContainer;
+	typedef Eigen::Tensor<math::Vector3<Scalar>,3,Eigen::ColMajor> VectorContainer;
+	typedef Eigen::Tensor<math::Matrix3<Scalar>,3,Eigen::ColMajor> MatrixContainer;
 };
 
 } // namespace math

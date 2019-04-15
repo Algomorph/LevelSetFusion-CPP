@@ -40,6 +40,11 @@ template float max_norm<math::Vector3f>(const math::Tensor3v3f& vector_field);
 template float min_norm<math::Vector2f>(const math::MatrixXv2f& vector_field);
 template float min_norm<math::Vector3f>(const math::Tensor3v3f& vector_field);
 
+template float mean<float>(const eig::MatrixXf& field);
+template float mean<float>(const math::Tensor3f& field);
+template float std<float>(const eig::MatrixXf& field);
+template float std<float>(const math::Tensor3f& field);
+
 /**
  * Locates the maximum L2 norm (length) of the vector in the given field.
  * Identical to @see locate_max_norm with the exception that this version is using a generic traversal function.
@@ -126,5 +131,7 @@ void mean_and_std_vector_length(float& mean, float& standard_deviation, const Ma
 	}
 	standard_deviation = static_cast<float>(std::sqrt(total_squared_deviation / static_cast<double>(total_count)));
 }
+
+
 
 } //namespace math

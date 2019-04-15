@@ -245,6 +245,7 @@ add_library(${MODULE_NAME} SHARED
 			src/telemetry/optimization_iteration_data.tpp
 			src/telemetry/optimization_iteration_data.cpp
 			src/telemetry/warp_delta_statistics.hpp
+			src/telemetry/warp_delta_statistics.tpp
 			src/telemetry/warp_delta_statistics.cpp
 			src/telemetry/tsdf_difference_statistics.hpp
 			src/telemetry/tsdf_difference_statistics.cpp
@@ -267,10 +268,14 @@ add_library(${MODULE_NAME} SHARED
 			src/math/cwise_unary.hpp
 			src/math/cwise_unary.tpp
 			src/math/cwise_unary.cpp
+			src/math/cwise_binary.hpp
+			src/math/cwise_binary.tpp
+			src/math/cwise_binary.cpp
 			src/math/field_like.hpp
 			src/math/field_like.tpp
 			src/math/field_like.cpp
 			src/math/filtered_statistics.hpp
+			src/math/filtered_statistics.tpp
 			src/math/filtered_statistics.cpp
 			src/math/gradients.hpp
 			src/math/gradients.tpp
@@ -278,9 +283,6 @@ add_library(${MODULE_NAME} SHARED
 			src/math/math_utils.hpp
 			src/math/matrix_base.hpp
 			src/math/matrix2.hpp
-			src/math/multiply.hpp
-			src/math/multiply.tpp
-			src/math/multiply.cpp
 			src/math/nestable_type_metainfo.hpp
 			src/math/padding.hpp
 			src/math/padding.tpp

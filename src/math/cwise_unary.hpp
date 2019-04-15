@@ -36,17 +36,11 @@ void nested_sum(Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& summed,
 		const Eigen::Tensor<NestedContainer, 3, Eigen::ColMajor>& field);
 
 template<typename Scalar>
-static inline
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
-square(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> field){
-	return field.array().square();
-}
+square(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
 
-template<typename Scalar, typename NestedContainer>
-static inline
+template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
-square(Eigen::Tensor<Scalar, 3, Eigen::ColMajor> field){
-	return static_cast<Eigen::Tensor<Scalar,0,Eigen::ColMajor>>(field.square())(0);
-}
+square(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
 
 }  // namespace math

@@ -82,7 +82,7 @@ private:
 			math::Vector2i& max_warp_location, const eig::MatrixXf& canonical_field, math::MatrixXv2f& warp_field);
 	// *** Logging ***
 	telemetry::ConvergenceReport2d convergence_report;
-	std::vector<telemetry::WarpDeltaStatistics> warp_statistics;
+	std::vector<telemetry::WarpDeltaStatistics2d> warp_statistics;
 
 	void clean_out_logs();
 };

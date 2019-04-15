@@ -228,5 +228,39 @@ float min_norm(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field) {
 	return min_norm_aux<Eigen::Tensor<Scalar, 3, Eigen::ColMajor> >(vector_field);
 }
 
+
+template<typename Scalar>
+static inline
+Scalar mean(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field){
+	return field.mean();
+}
+
+template<typename Scalar>
+static inline
+Scalar mean(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+	return static_cast<Eigen::Tensor<Scalar,0,Eigen::ColMajor>>(field.mean())(0);
+}
+
+template<typename Scalar>
+static inline
+Scalar std(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field){
+	Scalar mean = math::mean(field);
+	Scalar count = static_cast<Scalar>(field.size()) ;
+	Scalar std_dev = std::sqrt((field.array() - mean).square().sum() / count);
+	return std_dev;
+}
+
+template<typename Scalar>
+static inline
+Scalar std(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+	Scalar mean = math::mean(field);
+	Scalar count = static_cast<Scalar>(field.size()) ;
+	Scalar std_dev = std::sqrt(
+			static_cast<Eigen::Tensor<Scalar, 0, Eigen::ColMajor>>((field - field.constant(mean)).square().sum())(0) /
+			count);
+	return std_dev;
+}
+
+
 } //namespace math
 

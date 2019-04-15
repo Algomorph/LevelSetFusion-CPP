@@ -35,7 +35,17 @@ inline static
 bool are_dimensions_equal(
 		const Eigen::Matrix<ScalarA,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& container_a,
 		const Eigen::Matrix<ScalarB,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& container_b){
-	return container_a.rows() == container_a.rows() || container_a.cols() == container_a.cols();
+	return container_a.rows() == container_b.rows() && container_a.cols() == container_b.cols();
+}
+
+template<typename ScalarA, typename ScalarB, typename ScalarC>
+inline static
+bool are_dimensions_equal(
+		const Eigen::Matrix<ScalarA,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& container_a,
+		const Eigen::Matrix<ScalarB,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& container_b,
+		const Eigen::Matrix<ScalarC,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& container_c){
+	return container_a.rows() == container_b.rows() && container_a.cols() == container_b.cols()
+			&& container_c.rows() == container_b.rows() && container_c.cols() == container_b.cols();
 }
 
 template<typename ScalarA, typename ScalarB>
@@ -45,6 +55,21 @@ bool are_dimensions_equal(
 		const Eigen::Tensor<ScalarB,3,Eigen::ColMajor>& container_b){
 	for (int i_dim = 0; i_dim < 3; i_dim++) {
 		if (container_a.dimension(i_dim) != container_b.dimension(i_dim)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+template<typename ScalarA, typename ScalarB, typename ScalarC>
+inline static
+bool are_dimensions_equal(
+		const Eigen::Tensor<ScalarA,3,Eigen::ColMajor>& container_a,
+		const Eigen::Tensor<ScalarB,3,Eigen::ColMajor>& container_b,
+		const Eigen::Tensor<ScalarC,3,Eigen::ColMajor>& container_c){
+	for (int i_dim = 0; i_dim < 3; i_dim++) {
+		if (container_a.dimension(i_dim) != container_b.dimension(i_dim) ||
+				container_c.dimension(i_dim) != container_c.dimension(i_dim)) {
 			return false;
 		}
 	}

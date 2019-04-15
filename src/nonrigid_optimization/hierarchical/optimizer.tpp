@@ -37,7 +37,7 @@
 #include "../../math/statistics.hpp"
 #include "../../math/resampling.hpp"
 #include "../../math/field_like.hpp"
-#include "../../math/multiply.hpp"
+#include "../../math/cwise_binary.hpp"
 #include "optimizer.hpp"
 #include "../../math/container_traits.hpp"
 

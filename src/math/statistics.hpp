@@ -107,17 +107,16 @@ template<typename Scalar>
 float min_norm(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
 
 template<typename Scalar>
-static inline
-Scalar mean(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field){
-	return vector_field.mean();
-}
+Scalar mean(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
 
 template<typename Scalar>
-static inline
-Scalar mean(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field){
-	return static_cast<Eigen::Tensor<Scalar,0,Eigen::ColMajor>>(vector_field.mean())(0);
-}
+Scalar mean(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
 
+template<typename Scalar>
+Scalar std(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);
+
+template<typename Scalar>
+Scalar std(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
 
 float ratio_of_vector_lengths_above_threshold(const math::MatrixXv2f& vector_field, float threshold);
 float mean_vector_length(const math::MatrixXv2f& vector_field);

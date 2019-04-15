@@ -26,6 +26,7 @@
 #include "../../math/gradients.hpp"
 #include "../../math/field_like.hpp"
 #include "../../math/cwise_unary.hpp"
+#include "../../math/cwise_binary.hpp"
 #include "../../math/statistics.hpp"
 
 namespace nonrigid_optimization {
@@ -104,7 +105,8 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_level(
 		std::cout << std::endl;
 	}
 	if (this->logging_parameters.collect_per_level_convergence_reports) {
-		telemetry::WarpDeltaStatistics current_warp_statistics(warp_field,
+		telemetry::WarpDeltaStatistics<Coordinates> current_warp_statistics =
+				telemetry::build_warp_delta_statistics<Coordinates,ScalarContainer,VectorContainer>(warp_field,
 				canonical_pyramid_level,
 				live_pyramid_level,
 				this->maximum_warp_update_threshold,
@@ -160,16 +162,14 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_iteration
 			std::cout << " [max upd. l.: " << maximum_warp_update_length << "]";
 		}
 		if (this->verbosity_parameters.print_iteration_mean_tsdf_difference) {
-			std::cout << " [mean diff.: " << diff.mean() << "]";
+			std::cout << " [mean diff.: " << math::mean(diff) << "]";
 		}
 		if (this->verbosity_parameters.print_iteration_std_tsdf_difference) {
-			float mean = diff.mean();
-			float count = static_cast<float>(diff.size());
-			float std_dev = std::sqrt((diff.array() - mean).square().sum() / count);
+			float std_dev = math::std(diff);
 			std::cout << " [std diff.: " << std_dev << "]";
 		}
 		if (this->verbosity_parameters.print_iteration_data_energy) {
-			float normalized_data_energy = energy_factor * diff.array().square().mean();
+			float normalized_data_energy = energy_factor * math::mean(math::square(diff));
 			std::cout << " [norm. data energy: " << normalized_data_energy << "]";
 		}
 		if (this->verbosity_parameters.print_iteration_tikhonov_energy && this->tikhonov_term_enabled) {
