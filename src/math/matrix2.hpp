@@ -244,6 +244,11 @@ public:
 	}
 	//endregion ============================================================================
 
+	// sum of matrix elements
+	_CPU_AND_GPU_CODE_ const T sum() const {
+		return this->xy00 + this->xy11 + this->xy01 + this->xy10;
+	}
+
 	// Matrix determinant
 	_CPU_AND_GPU_CODE_ inline T det() const {
 		return this->xy00 * this->xy11 - this->xy01 * this->xy10;

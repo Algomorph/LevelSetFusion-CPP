@@ -44,6 +44,7 @@ typedef class math::Vector3<uint> Vector3ui;
 typedef class math::Vector3<uchar> Vector3u;
 typedef class math::Vector3<float> Vector3f;
 typedef class math::Matrix2<float> Matrix2f;
+typedef class math::Matrix3<float> Matrix3f;
 
 typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic> MatrixXv2f;
 typedef Eigen::Matrix<math::Vector2<float>, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> MatrixXv2f_rm;

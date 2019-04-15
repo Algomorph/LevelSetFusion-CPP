@@ -108,6 +108,8 @@ public:
 		return *this;
 	}
 
+	_CPU_AND_GPU_CODE_ const T sum() const { return this->x + this->y + this->z; }
+
 	// indexing operators
 	_CPU_AND_GPU_CODE_ T& operator[](int i) { return this->values[i]; }
 

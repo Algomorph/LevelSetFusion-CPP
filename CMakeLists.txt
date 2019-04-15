@@ -264,6 +264,9 @@ add_library(${MODULE_NAME} SHARED
 			src/math/container_traits.cpp
 			src/math/convolution.hpp
 			src/math/convolution.cpp
+			src/math/cwise_unary.hpp
+			src/math/cwise_unary.tpp
+			src/math/cwise_unary.cpp
 			src/math/field_like.hpp
 			src/math/field_like.tpp
 			src/math/field_like.cpp

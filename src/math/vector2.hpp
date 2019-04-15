@@ -78,6 +78,8 @@ public:
 		return *this;
 	}
 
+	_CPU_AND_GPU_CODE_ const T sum() const { return this->x + this->y; }
+
 	bool is_zero() const{
 		return this->x == 0.0f && this->y == 0.0f;
 	}

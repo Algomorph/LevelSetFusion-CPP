@@ -25,6 +25,8 @@
 //local
 #include "../../math/gradients.hpp"
 #include "../../math/field_like.hpp"
+#include "../../math/cwise_unary.hpp"
+#include "../../math/statistics.hpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical {
@@ -134,9 +136,9 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_iteration
 	if (this->tikhonov_term_enabled && this->verbosity_parameters.print_iteration_tikhonov_energy) {
 		MatrixContainer gradient_gradient;
 		math::gradient(gradient_gradient, gradient);
-		float gradient_aggregate_mean;
-		gradient_aggregate_mean = (u_x.array().square() + u_y.array().square()
-				+ v_x.array().square() + v_y.array().square()).mean();
+		ScalarContainer gg_sum;
+		math::nested_sum(gg_sum, gradient_gradient);
+		float gradient_aggregate_mean = math::mean(math::square(gg_sum));
 		normalized_tikhonov_energy = energy_factor * 0.5 * gradient_aggregate_mean;
 	}
 	Optimizer<ScalarContainer,VectorContainer>::optimize_iteration(
