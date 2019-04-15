@@ -132,12 +132,9 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_iteration
 		) {
 	float normalized_tikhonov_energy;
 	if (this->tikhonov_term_enabled && this->verbosity_parameters.print_iteration_tikhonov_energy) {
-		eig::MatrixXf gradient_u_component, gradient_v_component;
-		math::unstack_xv2f(gradient_u_component, gradient_v_component, gradient);
-		eig::MatrixXf u_x, u_y, v_x, v_y;
+		MatrixContainer gradient_gradient;
+		math::gradient(gradient_gradient, gradient);
 		float gradient_aggregate_mean;
-		math::gradient(u_x, u_y, gradient_u_component);
-		math::gradient(v_x, v_y, gradient_v_component);
 		gradient_aggregate_mean = (u_x.array().square() + u_y.array().square()
 				+ v_x.array().square() + v_y.array().square()).mean();
 		normalized_tikhonov_energy = energy_factor * 0.5 * gradient_aggregate_mean;
