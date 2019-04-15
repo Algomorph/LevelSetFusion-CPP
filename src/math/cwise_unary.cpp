@@ -1,7 +1,7 @@
 /*
- * optimizer_with_telemetry.cpp
+ * sum.cpp
  *
- *  Created on: Apr 10, 2019
+ *  Created on: Apr 15, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -18,18 +18,16 @@
  *   limitations under the License.
  */
 
-
 //local
-#include "optimizer_with_telemetry.tpp"
-#include "../../math/typedefs.hpp"
+#include "cwise_unary.tpp"
+#include "typedefs.hpp"
 
-namespace nonrigid_optimization {
-namespace hierarchical{
+namespace eig = Eigen;
 
-template class OptimizerWithTelemetry<eig::MatrixXf,math::MatrixXv2f>;
-//template class OptimizerWithTelemetry<math::Tensor3f,math::Tensor3v3f>;
+namespace math{
 
-} /* namespace hierarchical */
-} /* namespace nonrigid_optimization */
+template void nested_sum<float,math::Matrix2f>(eig::MatrixXf& summed, const math::MatrixXm2f& field);
+template void nested_sum<float,math::Matrix3f>(math::Tensor3f& summed, const math::Tensor3m3f& field);
 
 
+}  // namespace math

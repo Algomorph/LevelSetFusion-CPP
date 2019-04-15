@@ -76,6 +76,7 @@ void locate_maximum(float& maximum, math::Vector3i& coordinates,
 //uses traversal function/functor combo, otherwise the same as locate_max_norm
 void locate_max_norm2(float& max_norm, math::Vector2i& coordinates, const math::MatrixXv2f& vector_field);
 
+//TODO: change return types to "Scalar" instead of "float"
 /**
  * Locate the maximum L2 norm (length) of the vector in the given field.
  * @param[out] min_norm length of the shortest vector
@@ -104,6 +105,18 @@ float min_norm(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen
  */
 template<typename Scalar>
 float min_norm(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
+
+template<typename Scalar>
+static inline
+Scalar mean(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field){
+	return vector_field.mean();
+}
+
+template<typename Scalar>
+static inline
+Scalar mean(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field){
+	return static_cast<Eigen::Tensor<Scalar,0,Eigen::ColMajor>>(vector_field.mean())(0);
+}
 
 
 float ratio_of_vector_lengths_above_threshold(const math::MatrixXv2f& vector_field, float threshold);

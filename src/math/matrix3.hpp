@@ -33,7 +33,6 @@ public:
 	_CPU_AND_GPU_CODE_ inline void get_values(T *mp) const	{ memcpy(mp, this->values, sizeof(T) * 9); }
 	_CPU_AND_GPU_CODE_ inline const T *get_values() const { return this->values; }
 	_CPU_AND_GPU_CODE_ inline Vector3<T> get_scale() const { return Vector3<T>(this->m00, this->m11, this->m22); }
-	_CPU_AND_GPU_CODE_ inline T sum() const { return std::accumulate(this->values, this->valuesm+9, 0); }
 
 	// Element access
 	_CPU_AND_GPU_CODE_ inline T &operator()(int x, int y)	{ return at(x, y); }
@@ -121,6 +120,9 @@ public:
 			r |= lhs.m[i] != rhs.m[i];
 		return r;
 	}
+
+	// Sum of all elements
+	_CPU_AND_GPU_CODE_ inline T sum() const { return std::accumulate(this->values, this->values+9, 0); }
 
 	// Matrix determinant
 	_CPU_AND_GPU_CODE_ inline T det() const {
