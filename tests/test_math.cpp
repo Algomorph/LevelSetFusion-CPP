@@ -848,7 +848,6 @@ BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test01) {
 			           0.f, 1.f, 0.f, 0.f,
 			           0.f, 0.f, 1.f, 0.f,
 			           0.f, 0.f, 0.f, 1.f;
-	std::cout << matrix << std::endl;
 	BOOST_REQUIRE(math::matrix_almost_equal(matrix, expected_matrix, 1e-8));
 }
 
