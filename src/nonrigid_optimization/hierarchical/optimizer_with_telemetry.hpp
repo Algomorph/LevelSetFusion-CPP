@@ -39,6 +39,7 @@ class OptimizerWithTelemetry:
 		public Optimizer<ScalarContainer, VectorContainer> {
 public:
 	typedef typename Optimizer<ScalarContainer, VectorContainer>::Coordinates Coordinates;
+	typedef typename math::ContainerWrapper<ScalarContainer>::MatrixContainer MatrixContainer;
 	struct VerbosityParameters {
 		VerbosityParameters(
 				bool print_max_warp_update = false,
