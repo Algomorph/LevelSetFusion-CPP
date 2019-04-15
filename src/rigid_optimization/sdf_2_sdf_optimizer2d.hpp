@@ -10,13 +10,11 @@
 
 //libraries
 #include <Eigen/Eigen>
-#include <boost/python/numpy.hpp>
 
 //local
 #include "../math/tensor_operations.hpp"
 
 namespace eig = Eigen;
-namespace np = boost::python::numpy;
 
 namespace rigid_optimization {
 
