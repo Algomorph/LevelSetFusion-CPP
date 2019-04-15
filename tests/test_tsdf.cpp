@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
 
 // Following tests are for regular tsdf generation without interpolation
 BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation01) {
-	eig::MatrixXus depth_image;
+	math::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
 	eig::Matrix3f camera_intrinsic_matrix;
@@ -310,11 +310,11 @@ BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation01) {
 			-999.f
 			);
 //	std::cout << field.format(eig::IOFormat(eig::FullPrecision, 0, "f, ", "f,\n")) << std::endl;
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field, test_data::expected_tsdf_field01, 1e-6f));
+	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::expected_tsdf_field01, 1e-6f));
 }
 
 BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation02) {
-	eig::MatrixXus depth_image;
+	math::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
 	eig::Matrix3f camera_intrinsic_matrix;
@@ -341,5 +341,5 @@ BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation02) {
 			-999.f
 	);
 //	std::cout << field.format(eig::IOFormat(eig::FullPrecision, 0, "f, ", "f,\n")) << std::endl;
-	BOOST_REQUIRE(math::matrix_almost_equal_verbose(field, test_data::expected_tsdf_field02, 1e-6f));
+	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::expected_tsdf_field02, 1e-6f));
 }

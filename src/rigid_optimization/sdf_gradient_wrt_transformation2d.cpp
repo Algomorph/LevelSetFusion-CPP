@@ -24,7 +24,7 @@ namespace rigid_optimization {
                             eig::Matrix<eig::Vector3f, eig::Dynamic, eig::Dynamic>& gradient_field) {
 
         math::MatrixXv2f gradient_first_term;
-        math::scalar_field_gradient(live_field, gradient_first_term);
+        math::gradient(gradient_first_term, live_field);
         eig::Matrix3f twist_matrix_homo_inv2d = math::transformation_vector_to_matrix2d(-twist);
 
         float x_voxel, z_voxel, w_voxel = 1;

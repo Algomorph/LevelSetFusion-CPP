@@ -7,6 +7,7 @@
 
 //libraries
 #include <boost/python.hpp>
+#include <iostream>
 
 // local
 #include "../math/transformation.hpp"

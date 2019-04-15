@@ -848,7 +848,7 @@ BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test01) {
 			           0.f, 1.f, 0.f, 0.f,
 			           0.f, 0.f, 1.f, 0.f,
 			           0.f, 0.f, 0.f, 1.f;
-	BOOST_REQUIRE(math::matrix_almost_equal(matrix, expected_matrix, 1e-8));
+	BOOST_REQUIRE(math::almost_equal(matrix, expected_matrix, 1e-8));
 }
 
 BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test02) {
@@ -863,7 +863,7 @@ BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test02) {
 			           0.f, 1.f, 0.f, 0.f,
 			           -0.8660254f, 0.f, 0.5f, 0.f,
 			           0.f, 0.f, 0.f, 1.f;
-	BOOST_REQUIRE(math::matrix_almost_equal(matrix, expected_matrix, 1e-6));
+	BOOST_REQUIRE(math::almost_equal(matrix, expected_matrix, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test03) {
@@ -878,5 +878,5 @@ BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test03) {
 	                   0.f, 1.f, 0.f, 0.f,
 	                   -0.06310626f, 0.f, 0.99800682f, 0.00103423f,
 	                   0.f, 0.f, 0.f, 1.f;
-	BOOST_REQUIRE(math::matrix_almost_equal(matrix, expected_matrix, 1e-6));
+	BOOST_REQUIRE(math::almost_equal(matrix, expected_matrix, 1e-6));
 }
