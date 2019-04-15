@@ -23,6 +23,7 @@
 
 //local
 #include "../math/typedefs.hpp"
+#include "../error_handling/throw_assert.hpp"
 
 #pragma once
 namespace telemetry {
@@ -45,10 +46,12 @@ public:
 	int get_frame_count() const;
 
 	bool operator==(const OptimizationIterationData& rhs){
-		return this->live_fields == rhs.live_fields &&
-				this->warp_fields == rhs.warp_fields &&
-				this->data_term_gradients == rhs.data_term_gradients &&
-				this->tikhonov_term_gradients == rhs.tikhonov_term_gradients
+		throw_assert(false, "not implemented (properly, because of bug in Eigen Tensor module)");
+		//TODO: remote the "&" and somehow fix the bug with the Tensor comparison operator
+		return &this->live_fields == &rhs.live_fields &&
+			   &this->warp_fields == &rhs.warp_fields &&
+			   &this->data_term_gradients == &rhs.data_term_gradients &&
+			   &this->tikhonov_term_gradients == &rhs.tikhonov_term_gradients
 				;
 	}
 

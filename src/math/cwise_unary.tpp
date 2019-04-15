@@ -46,5 +46,17 @@ void nested_sum(Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& summed,
 	}
 }
 
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+square(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field){
+	return field.array().square();
+}
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
+square(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+	return field.square();
+}
+
 }  // namespace math
 

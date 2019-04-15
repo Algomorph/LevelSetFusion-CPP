@@ -19,7 +19,7 @@
  */
 
 //local
-#include "multiply.tpp"
+#include "cwise_binary.tpp"
 #include "typedefs.hpp"
 
 namespace eig = Eigen;

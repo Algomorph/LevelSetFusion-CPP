@@ -24,7 +24,7 @@
 #include <Eigen/Eigen>
 
 //local
-#include "multiply.hpp"
+#include "cwise_binary.hpp"
 #include "checks.hpp"
 #include "../error_handling/throw_assert.hpp"
 
@@ -73,6 +73,17 @@ cwise_product(
 	return result;
 }
 
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+cwise_add_constant(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& container, Scalar constant){
+	return (container.array() + constant).matrix();
+}
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
+cwise_add_constant(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& container, Scalar constant){
+	return (container + container.constant(constant));
+}
 
 }  // namespace math
 

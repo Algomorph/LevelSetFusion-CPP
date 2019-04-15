@@ -1,5 +1,5 @@
 /*
- * multiply.hpp
+ * cwise_binary.hpp
  *
  *  Created on: Apr 11, 2019
  *      Author: Gregory Kramida
@@ -45,6 +45,14 @@ Eigen::Tensor<ScalarMajor, 3, Eigen::ColMajor>
 cwise_product(
 		const Eigen::Tensor<ScalarMajor, 3, Eigen::ColMajor>& container_a,
 		const Eigen::Tensor<ScalarMinor, 3, Eigen::ColMajor>& container_b);
+
+template<typename Scalar>
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+cwise_add_constant(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& container, Scalar constant);
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
+cwise_add_constant(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& container, Scalar constant);
 
 }  // namespace math
 

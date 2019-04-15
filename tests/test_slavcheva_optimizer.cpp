@@ -355,8 +355,8 @@ BOOST_AUTO_TEST_CASE(test_sobolev_optimizer02) {
 
 	telemetry::ConvergenceReport2d report = optimizer.get_convergence_report();
 
-	telemetry::WarpDeltaStatistics expected_warp_stats =
-			telemetry::WarpDeltaStatistics(0.272727, 0.0, 0.0684823, 0.0364445,
+	telemetry::WarpDeltaStatistics2d expected_warp_stats =
+			telemetry::WarpDeltaStatistics2d(0.272727, 0.0, 0.0684823, 0.0364445,
 					0.0167321, math::Vector2i(1, 2), false, false);
 	telemetry::TsdfDifferenceStatistics2d expected_diff_stats =
 			telemetry::TsdfDifferenceStatistics2d(0, 0.246834, 0.111843, 0.0838871, math::Vector2i(3, 3));
