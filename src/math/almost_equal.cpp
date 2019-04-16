@@ -57,8 +57,10 @@ template bool almost_equal<float, double>(math::Matrix2f a, math::Matrix2f b, do
 
 template bool almost_equal<float, float>(eig::MatrixXf matrix_a, eig::MatrixXf matrix_b, float tolerance);
 template bool almost_equal<float, double>(eig::MatrixXf matrix_a, eig::MatrixXf matrix_b, double tolerance);
+template bool almost_equal<double, double>(eig::MatrixXd matrix_a, eig::MatrixXd matrix_b, double tolerance);
 template bool almost_equal_verbose<float, float>(eig::MatrixXf matrix_a, eig::MatrixXf matrix_b, float tolerance);
 template bool almost_equal_verbose<float, double>(eig::MatrixXf matrix_a, eig::MatrixXf matrix_b, double tolerance);
+template bool almost_equal_verbose<double, double>(eig::MatrixXd matrix_a, eig::MatrixXd matrix_b, double tolerance);
 
 template bool almost_equal<math::Vector2f, float>(math::MatrixXv2f matrix_a, math::MatrixXv2f matrix_b,
 		float tolerance);
