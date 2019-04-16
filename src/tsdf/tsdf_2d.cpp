@@ -36,9 +36,8 @@ eig::MatrixXf generate_TSDF_2D(
     for (int i_element = 0; i_element < matrix_size; i_element++) {
         // Any MatrixXf in Eigen is column-major
         // i_element = x * column_count + y
-        div_t division_result = std::div(i_element, field_size);
-        int x_field = division_result.quot;
-        int y_field = division_result.rem;
+        int x_field = i_element / field_size;
+        int y_field = i_element % field_size;
 
         float x_voxel = (x_field + array_offset(0)) * voxel_size;
         float z_voxel = (y_field + array_offset(2)) * voxel_size;

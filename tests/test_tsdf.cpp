@@ -309,7 +309,6 @@ BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation01) {
 			20, // narrow band width
 			-999.f
 			);
-//	std::cout << field.format(eig::IOFormat(eig::FullPrecision, 0, "f, ", "f,\n")) << std::endl;
 	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::expected_tsdf_field01, 1e-6f));
 }
 
@@ -340,6 +339,5 @@ BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation02) {
 			20, // narrow band width
 			-999.f
 	);
-//	std::cout << field.format(eig::IOFormat(eig::FullPrecision, 0, "f, ", "f,\n")) << std::endl;
 	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::expected_tsdf_field02, 1e-6f));
 }

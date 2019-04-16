@@ -64,7 +64,7 @@ class Sdf2SdfOptimizer2d {
                            const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& canonical_depth_image,
                            const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
                            const TSDFGenerationParameters tsdf_generation_parameters,
-                           float eta);
+                           float eta = 0.01f);
 
     private:
         const float rate = 0.5f;

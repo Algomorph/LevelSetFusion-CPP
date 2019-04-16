@@ -68,7 +68,7 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
         const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& canonical_depth_image,
         const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
         const Sdf2SdfOptimizer2d::TSDFGenerationParameters tsdf_generation_parameters,
-        float eta = 0.01f) {
+        float eta) {
 
     eig::MatrixXf canonical_field = tsdf::generate_TSDF_2D(image_y_coordinate,
                                                            canonical_depth_image,
@@ -90,8 +90,10 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
     eig::Vector3f twist = eig::Vector3f(0.0f, 0.0f, 0.0f);
 
     for (int iteration_count=0; iteration_count<maximum_iteration_count; ++iteration_count) {
-        eig::Matrix3f matrix_A = eig::Matrix3f::Zero();
-        eig::Vector3f vector_b = eig::Vector3f::Zero();
+        eig::Matrix3f matrix_A = eig::Matrix3f::Zero(); // from sdf2sdf paper,
+                                                        // used for calculating the optimal transformation.
+        eig::Vector3f vector_b = eig::Vector3f::Zero(); // from sdf2sdf paper,
+                                                        // used to calculating the optimal transformation.
 
         eig::Matrix<float, 6, 1> twist3d;
         twist3d << twist(0), 0.0f, twist(1), 0.0f, twist(2), 0.0f;
@@ -106,8 +108,8 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
                                                           tsdf_generation_parameters.voxel_size,
                                                           tsdf_generation_parameters.narrow_band_width_voxels);
         eig::MatrixXf live_weight = live_field.replicate(1, 1);
-        for (int i=0; i < live_weight.rows(); ++i) { // Determine weight based on thickness
-            for (int j=0; j < live_weight.cols(); ++j){
+        for (int j=0; j < live_weight.cols(); ++j){ // Determine weight based on thickness
+            for (int i=0; i < live_weight.rows(); ++i) {
                 live_weight(i, j) = (live_field(i, j) <= -eta) ? 0.0f : 1.0f;
             }
         }
@@ -119,8 +121,9 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
                                  tsdf_generation_parameters.voxel_size,
                                  live_gradient);
 
-        for (int i=0; i < live_field.rows(); ++i) {
-            for (int j=0; j < live_field.cols(); ++j) {
+
+        for (int j=0; j < live_field.cols(); ++j) {
+            for (int i=0; i < live_field.rows(); ++i) {
                 matrix_A += live_gradient(i, j) * live_gradient(i, j).transpose();
                 vector_b += (canonical_field(i, j) - live_field(i, j) + live_gradient(i, j).transpose() * twist)
                             * live_gradient(i, j);
@@ -129,12 +132,12 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
 
         float energy = .5f * (canonical_field.cwiseProduct(canonical_weight) -
                               live_field.cwiseProduct(live_weight)).array().pow(2.f).sum();
-        eig::Vector3f twist_star = matrix_A.inverse() * vector_b;
-        twist = twist + this->rate * (twist_star - twist);
+        eig::Vector3f optimal_twist = matrix_A.inverse() * vector_b;
+        twist = twist + this->rate * (optimal_twist - twist);
         if (this->verbosity_parameters.print_per_iteration_info) {
             std::cout << "[ITERATION " << iteration_count << " COMPLETED]\n";
             if (this->verbosity_parameters.print_iteration_max_warp_update) {
-                std::cout << " [optimize twist:" << twist_star.transpose() << "]\n";
+                std::cout << " [optimize twist:" << optimal_twist.transpose() << "]\n";
                 std::cout << " [twist:" << twist.transpose() << "]\n";
             }
             if (this->verbosity_parameters.print_iteration_energy) {

@@ -1,5 +1,6 @@
 //  ================================================================
 //  Created by Fei Shan on 03/05/19.
+//  Converting transformation vector to matrix in 2D and 3D homogeneous coordinates.
 //  ================================================================
 
 #include "transformation.hpp"
@@ -10,11 +11,11 @@ namespace eig = Eigen;
 namespace math {
     eig::Matrix3f transformation_vector_to_matrix2d(const eig::Vector3f& twist) {
         double(theta) = twist(2);
-        eig::Matrix3f twist_matrix_homo;
-        twist_matrix_homo << cos(theta), -sin(theta), twist(0),
-                             sin(theta), cos(theta),  twist(1),
-                             0.f,        0.f,         1.f;
-        return twist_matrix_homo;
+        eig::Matrix3f twist_matrix;
+        twist_matrix << cos(theta), -sin(theta), twist(0),
+                        sin(theta), cos(theta),  twist(1),
+                        0.f,        0.f,         1.f;
+        return twist_matrix;
     }
 
     eig::Matrix4f transformation_vector_to_matrix3d(const eig::Matrix<float, 6, 1>& twist){
@@ -34,12 +35,12 @@ namespace math {
 
         eig::Matrix3f rotation_matrix = q.toRotationMatrix();
 
-        eig::Matrix4f twist_matrix_homo;
+        eig::Matrix4f twist_matrix;
 
-        twist_matrix_homo << rotation_matrix(0, 0), rotation_matrix(0, 1), rotation_matrix(0, 2), translation(0),
-                             rotation_matrix(1, 0), rotation_matrix(1, 1), rotation_matrix(1, 2), translation(1),
-                             rotation_matrix(2, 0), rotation_matrix(2, 1), rotation_matrix(2, 2), translation(2),
-                             0.0f,                  0.0f,                  0.0f,                  1.0f;
-        return twist_matrix_homo;
+        twist_matrix << rotation_matrix(0, 0), rotation_matrix(0, 1), rotation_matrix(0, 2), translation(0),
+                        rotation_matrix(1, 0), rotation_matrix(1, 1), rotation_matrix(1, 2), translation(1),
+                        rotation_matrix(2, 0), rotation_matrix(2, 1), rotation_matrix(2, 2), translation(2),
+                        0.0f,                  0.0f,                  0.0f,                  1.0f;
+        return twist_matrix;
     }
 }
