@@ -9,7 +9,6 @@
 #include "Eigen/Eigen"
 
 //local
-#include "../math/tensor_operations.hpp"
 #include "../math/gradients.hpp"
 #include "../math/transformation.hpp"
 
