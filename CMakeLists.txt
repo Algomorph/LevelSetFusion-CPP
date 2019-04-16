@@ -428,35 +428,12 @@ macro (LSF_ADD_TEST)
 	add_test(NAME ${LSF_ADD_TEST_NAME} COMMAND test_${LSF_ADD_TEST_NAME})
 endmacro()
 
-lsf_add_test(
-	NAME tsdf SOURCES
-	tests/test_tsdf.cpp
-	tests/data/test_data_tsdf.hpp
-)
-
-lsf_add_test(
-	NAME math SOURCES
-	tests/test_math.cpp
-	tests/data/test_data_math.hpp
-)
-
-lsf_add_test(
-	NAME slavcheva_optimizer SOURCES
-	tests/test_slavcheva_optimizer.cpp
-	tests/data/test_data_slavcheva_optimizer.hpp
-)
-
-lsf_add_test(
-	NAME hierarchical_optimizer SOURCES
-	tests/test_hierarchical_optimizer.cpp
-	tests/data/test_data_hierarchical_optimizer.hpp
-)
-
-lsf_add_test(
-	NAME image_io SOURCES
-	tests/test_image_io.cpp
-	tests/data/test_data_image_io.hpp
-)
+lsf_add_test(NAME tsdf SOURCES tests/test_tsdf.cpp tests/data/test_data_tsdf.hpp)
+lsf_add_test(NAME math SOURCES tests/test_math.cpp tests/data/test_data_math.hpp)
+lsf_add_test(NAME resampling SOURCES tests/test_resampling.cpp)
+lsf_add_test(NAME slavcheva_optimizer SOURCES tests/test_slavcheva_optimizer.cpp tests/data/test_data_slavcheva_optimizer.hpp)
+lsf_add_test(NAME hierarchical_optimizer SOURCES tests/test_hierarchical_optimizer.cpp tests/data/test_data_hierarchical_optimizer.hpp)
+lsf_add_test(NAME image_io SOURCES tests/test_image_io.cpp tests/data/test_data_image_io.hpp)
 
 # copy test data
 file(GLOB PNG_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/*.png")
