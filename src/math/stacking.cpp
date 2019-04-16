@@ -14,7 +14,7 @@
 //  limitations under the License.
 //  ================================================================
 
-#include "tensor_operations.hpp"
+#include "stacking.tpp"
 
 #include "typedefs.hpp"
 

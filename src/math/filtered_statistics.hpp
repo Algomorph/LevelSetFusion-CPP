@@ -18,7 +18,8 @@
  *   limitations under the License.
  */
 //libraries
-#include <Eigen/Eigen>
+#include <Eigen/Dense>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 //local
 #include "../math/typedefs.hpp"
@@ -33,10 +34,31 @@ namespace eig = Eigen;
  */
 
 namespace math {
-float ratio_of_vector_lengths_above_threshold_band_union(const math::MatrixXv2f& vector_field, float threshold,
-		const eig::MatrixXf& warped_live_field, const eig::MatrixXf& canonical_field);
-void mean_and_std_vector_length_band_union(float& mean, float& standard_deviation,
-		const math::MatrixXv2f& vector_field, const eig::MatrixXf& warped_live_field,
-		const eig::MatrixXf& canonical_field);
+
+template<typename Scalar>
+double ratio_of_vector_lengths_above_threshold_band_union(
+		const Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field,
+		Scalar threshold,
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& warped_live_field,
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& canonical_field);
+
+template<typename Scalar>
+double ratio_of_vector_lengths_above_threshold_band_union(
+		const Eigen::Tensor<math::Vector3<Scalar>, 3, Eigen::ColMajor>& vector_field,
+		Scalar threshold,
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& warped_live_field,
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& canonical_field);
+
+template<typename Scalar>
+void mean_and_std_vector_length_band_union(Scalar& mean, Scalar& standard_deviation,
+		const Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field,
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& warped_live_field,
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& canonical_field);
+
+template<typename Scalar>
+void mean_and_std_vector_length_band_union(Scalar& mean, Scalar& standard_deviation,
+		const Eigen::Tensor<math::Vector3<Scalar>, 3, Eigen::ColMajor>& vector_field,
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& warped_live_field,
+		const  Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& canonical_field);
 
 } //namespace math

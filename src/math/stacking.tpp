@@ -1,5 +1,5 @@
 //  ================================================================
-//  Created by Gregory Kramida on 11/3/18.
+//  Created by Gregory Kramida on 04/14/18.
 //  Copyright (c) 2018 Gregory Kramida
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -15,19 +15,27 @@
 //  ================================================================
 #pragma once
 
-//librarires
-#include <Eigen/Eigen>
-
 //local
 #include "stacking.hpp"
-#include "typedefs.hpp"
-
-namespace eig = Eigen;
+#include "../error_handling/throw_assert.hpp"
 
 namespace math{
-	void convolve_with_kernel_y(math::MatrixXv2f& field, const eig::VectorXf& kernel_1d);
-	void convolve_with_kernel_x(math::MatrixXv2f& field, const eig::VectorXf& kernel_1d);
-	void convolve_with_kernel_preserve_zeros(math::MatrixXv2f& field, const eig::VectorXf& kernel_1d);
-	void convolve_with_kernel(math::MatrixXv2f& field, const eig::VectorXf& kernel_1d);
-	void convolve_with_kernel(math::Tensor3v3f& field, const eig::VectorXf& kernel_1d);
-}//namespace math
+
+template<typename Scalar>
+Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+stack(const std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>>& set){
+	throw_assert(set.size() == 2, "Size of the set should be 2 to return Vector2 as the nested type");
+	//TODO
+	throw_assert(false, "Not Implemented");
+}
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
+stack(const std::vector<Eigen::Tensor<Scalar, Eigen::ColMajor>>& set){
+	throw_assert(set.size() == 3, "Size of the set should be 2 to return Vector2 as the nested type");
+	//TODO
+	throw_assert(false, "Not Implemented");
+}
+
+
+} //namespace math

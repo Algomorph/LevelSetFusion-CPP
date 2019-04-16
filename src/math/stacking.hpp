@@ -17,9 +17,11 @@
 
 //stdlib
 #include <cstdlib>
+#include <vector>
 
 //libraries
 #include <Eigen/Eigen>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 //local
 #include "vector2.hpp"
@@ -29,6 +31,20 @@
 
 namespace math {
 
+
+/***
+ * Make a nested vector field out of a set of scalar fields by stacking values in each location into a vector.
+ * @param set the set of scalar fields to use
+ */
+template<typename Scalar>
+Eigen::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+stack(const std::vector<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>>& set);
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
+stack(const std::vector<Eigen::Tensor<Scalar, Eigen::ColMajor>>& set);
+
+//legacy
 MatrixXv2f stack_as_xv2f(const Eigen::MatrixXf& matrix_a, const Eigen::MatrixXf& matrix_b);
 void unstack_xv2f(Eigen::MatrixXf& matrix_a, Eigen::MatrixXf& matrix_b, const MatrixXv2f vector_field);
 

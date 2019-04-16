@@ -60,21 +60,4 @@ template<typename ElementType, typename ToleranceType>
 bool almost_equal_verbose(Eigen::Tensor<ElementType, 3, Eigen::ColMajor> a,
 		Eigen::Tensor<ElementType, 3, Eigen::ColMajor> b, ToleranceType tolerance);
 
-
-//TODO: old stuff, remove
-//template<typename TCollection>
-//bool almost_equal(TCollection a, TCollection b);
-//template<typename TCollection, typename TElementType>
-//bool almost_equal(TCollection a, TCollection b, TElementType tolerance);
-
-//TODO: templatize further into almost_equal and almost_equal_verbose (unified data structure API)
-//template<typename TMatrix, typename TToleranceType>
-//bool matrix_almost_equal(TMatrix matrix_a, TMatrix matrix_b, TToleranceType tolerance = 1e-10);
-//template<typename TMatrix, typename TToleranceType>
-//bool matrix_almost_equal_verbose(TMatrix matrix_a, TMatrix matrix_b, TToleranceType tolerance = 1e-10);
-//template<typename TTensor, typename TToleranceType>
-//bool tensor_almost_equal(TTensor container_a, TTensor container_b, TToleranceType tolerance = 1e-10);
-//template<typename TTensor, typename TToleranceType>
-//bool tensor_almost_equal_verbose(TTensor container_a, TTensor container_b, TToleranceType tolerance = 1e-10);
-
 }//namespace math

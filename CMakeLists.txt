@@ -226,15 +226,15 @@ add_library(${MODULE_NAME} SHARED
 			
 
 			### nonrigid optimization, hierarchical: hierarchical SLAM optimizer (active research & development)
-			src/nonrigid_optimization/hierarchical/optimizer2d.hpp
-			src/nonrigid_optimization/hierarchical/optimizer2d.cpp
-			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.hpp
-			src/nonrigid_optimization/hierarchical/optimizer2d_telemetry.cpp
+			src/nonrigid_optimization/hierarchical/optimizer.hpp
+			src/nonrigid_optimization/hierarchical/optimizer.tpp
+			src/nonrigid_optimization/hierarchical/optimizer.cpp
+			src/nonrigid_optimization/hierarchical/optimizer_with_telemetry.hpp
+			src/nonrigid_optimization/hierarchical/optimizer_with_telemetry.tpp
+			src/nonrigid_optimization/hierarchical/optimizer_with_telemetry.cpp
 			src/nonrigid_optimization/hierarchical/pyramid.hpp
 			src/nonrigid_optimization/hierarchical/pyramid.tpp
 			src/nonrigid_optimization/hierarchical/pyramid.cpp
-		    src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.hpp
-		    src/nonrigid_optimization/hierarchical/hierarchical_optimizer3d.cpp
 
 			### traversal: algorithms for traversal of data structures
 			src/traversal/field_traversal_cpu.hpp
@@ -242,8 +242,10 @@ add_library(${MODULE_NAME} SHARED
 
 			### telemetry: namespace for logging progress and storing up intermediate results for later analysis #######
 			src/telemetry/optimization_iteration_data.hpp
+			src/telemetry/optimization_iteration_data.tpp
 			src/telemetry/optimization_iteration_data.cpp
 			src/telemetry/warp_delta_statistics.hpp
+			src/telemetry/warp_delta_statistics.tpp
 			src/telemetry/warp_delta_statistics.cpp
 			src/telemetry/tsdf_difference_statistics.hpp
 			src/telemetry/tsdf_difference_statistics.cpp
@@ -258,11 +260,25 @@ add_library(${MODULE_NAME} SHARED
 			src/math/boolean_operations.hpp
 			src/math/conics.hpp
 			src/math/conics.cpp
+			src/math/container_traits.hpp
+			src/math/container_traits.tpp
+			src/math/container_traits.cpp
 			src/math/convolution.hpp
 			src/math/convolution.cpp
+			src/math/cwise_unary.hpp
+			src/math/cwise_unary.tpp
+			src/math/cwise_unary.cpp
+			src/math/cwise_binary.hpp
+			src/math/cwise_binary.tpp
+			src/math/cwise_binary.cpp
+			src/math/field_like.hpp
+			src/math/field_like.tpp
+			src/math/field_like.cpp
 			src/math/filtered_statistics.hpp
+			src/math/filtered_statistics.tpp
 			src/math/filtered_statistics.cpp
 			src/math/gradients.hpp
+			src/math/gradients.tpp
 			src/math/gradients.cpp
 			src/math/math_utils.hpp
 			src/math/matrix_base.hpp
@@ -278,8 +294,9 @@ add_library(${MODULE_NAME} SHARED
 			src/math/statistics.hpp
 			src/math/statistics.tpp
 			src/math/statistics.cpp
-			src/math/tensor_operations.hpp
-			src/math/tensor_operations.cpp
+			src/math/stacking.hpp
+			src/math/stacking.tpp
+			src/math/stacking.cpp
 			src/math/typedefs.hpp
 			src/math/vector_base.hpp
 			src/math/vector_operations.hpp

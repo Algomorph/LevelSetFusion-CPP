@@ -1,18 +1,5 @@
-//  ================================================================
-//  Created by Gregory Kramida on 10/23/18.
-//  Copyright (c) 2018 Gregory Kramida
-//  Licensed under the Apache License, Version 2.0 (the "License");
-//  you may not use this file except in compliance with the License.
-//  You may obtain a copy of the License at
-
-//  http://www.apache.org/licenses/LICENSE-2.0
-
-//  Unless required by applicable law or agreed to in writing, software
-//  distributed under the License is distributed on an "AS IS" BASIS,
-//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//  See the License for the specific language governing permissions and
-//  limitations under the License.
-//  ================================================================
+// Copyright 2014-2017 Oxford University Innovation Limited and the authors of InfiniTAM
+// Modified work copyright 2019 Gregory Kramida
 #pragma once
 
 //local
@@ -25,7 +12,7 @@
 namespace math {
 
 //======================================================================================================================
-//                                      Matrix class with math operators
+//                        Matrix2 class with math operators (inspired by InfiniTAM ORUtils)
 //======================================================================================================================
 template<class T>
 class Matrix2 : public Matrix2_<T> {
@@ -256,6 +243,11 @@ public:
 		return r;
 	}
 	//endregion ============================================================================
+
+	// sum of matrix elements
+	_CPU_AND_GPU_CODE_ const T sum() const {
+		return this->xy00 + this->xy11 + this->xy01 + this->xy10;
+	}
 
 	// Matrix determinant
 	_CPU_AND_GPU_CODE_ inline T det() const {

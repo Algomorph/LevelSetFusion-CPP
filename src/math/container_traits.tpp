@@ -1,7 +1,7 @@
 /*
- * test_data_tsdf.hpp
+ * get_dimension_count.tpp
  *
- *  Created on: Jan 30, 2019
+ *  Created on: Apr 11, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -20,17 +20,14 @@
 
 #pragma once
 
-#include <Eigen/Eigen>
+//libraries
+#include <Eigen/Dense>
+#include <unsupported/Eigen/CXX11/Tensor>
 
-#include "../../src/math/stacking.hpp"
-#include "../src/math/typedefs.hpp"
+//local
+#include "container_traits.hpp"
 
-namespace test_data {
-static math::MatrixXus depth_00064_sample = [] {
-	math::MatrixXus depth_00064_sample(1,20);
-	depth_00064_sample << 2121, 2126, 2124, 2123, 2128, 2133, 2138, 2130, 2135, 2140, 2145,
-	2147, 2142, 2147, 2152, 2158, 2150, 2155, 2160, 2165;
-	return depth_00064_sample;
+namespace math {
 
-}();
-} //namespace test_data
+} // namespace math
+

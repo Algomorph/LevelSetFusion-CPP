@@ -1,18 +1,5 @@
-//  ================================================================
-//  Created by Gregory Kramida on 10/23/18.
-//  Copyright (c) 2018 Gregory Kramida
-//  Licensed under the Apache License, Version 2.0 (the "License");
-//  you may not use this file except in compliance with the License.
-//  You may obtain a copy of the License at
-
-//  http://www.apache.org/licenses/LICENSE-2.0
-
-//  Unless required by applicable law or agreed to in writing, software
-//  distributed under the License is distributed on an "AS IS" BASIS,
-//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//  See the License for the specific language governing permissions and
-//  limitations under the License.
-//  ================================================================
+// Copyright 2014-2017 Oxford University Innovation Limited and the authors of InfiniTAM
+// Modified work copyright 2018-2019 Gregory Kramida
 #pragma once
 
 //local
@@ -79,17 +66,19 @@ public:
 		return {(unsigned char) CLAMP(vi.x, 0, 255), (unsigned char) CLAMP(vi.y, 0, 255)};
 	}
 
-	_CPU_AND_GPU_CODE_ inline Vector2<float> toFloat() const {
+	_CPU_AND_GPU_CODE_ inline Vector2<float> to_float() const {
 		return {(float) this->x, (float) this->y};
 	}
 
-	_CPU_AND_GPU_CODE_ const T* getValues() const { return this->values; }
+	_CPU_AND_GPU_CODE_ const T* get_values() const { return this->values; }
 
-	_CPU_AND_GPU_CODE_ Vector2<T>& setValues(const T* rhs) {
+	_CPU_AND_GPU_CODE_ Vector2<T>& set_values(const T* rhs) {
 		this->x = rhs[0];
 		this->y = rhs[1];
 		return *this;
 	}
+
+	_CPU_AND_GPU_CODE_ const T sum() const { return this->x + this->y; }
 
 	bool is_zero() const{
 		return this->x == 0.0f && this->y == 0.0f;

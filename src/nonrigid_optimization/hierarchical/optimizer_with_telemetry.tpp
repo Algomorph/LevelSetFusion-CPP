@@ -18,16 +18,22 @@
  *   limitations under the License.
  */
 //stdlib
+#include "optimizer_with_telemetry.hpp"
+
 #include <cfloat>
 
 //local
-#include "optimizer2d_telemetry.hpp"
 #include "../../math/gradients.hpp"
+#include "../../math/field_like.hpp"
+#include "../../math/cwise_unary.hpp"
+#include "../../math/cwise_binary.hpp"
+#include "../../math/statistics.hpp"
 
 namespace nonrigid_optimization {
 namespace hierarchical {
 
-Optimizer2dTelemetry::Optimizer2dTelemetry(
+template<typename ScalarContainer, typename VectorContainer>
+OptimizerWithTelemetry<ScalarContainer,VectorContainer>::OptimizerWithTelemetry(
 		bool tikhonov_term_enabled,
 		bool gradient_kernel_enabled,
 
@@ -40,11 +46,11 @@ Optimizer2dTelemetry::Optimizer2dTelemetry(
 		float tikhonov_strength,
 		eig::VectorXf kernel,
 
-		Optimizer2d::ResamplingStrategy resampling_strategy,
+		typename Optimizer<ScalarContainer,VectorContainer>::ResamplingStrategy resampling_strategy,
 
 		VerbosityParameters verbosity_parameters,
 		LoggingParameters logging_parameters) :
-		Optimizer2d(
+		Optimizer<ScalarContainer,VectorContainer>(
 				tikhonov_term_enabled,
 				gradient_kernel_enabled,
 
@@ -64,43 +70,48 @@ Optimizer2dTelemetry::Optimizer2dTelemetry(
 {
 }
 
-math::MatrixXv2f Optimizer2dTelemetry::optimize(eig::MatrixXf canonical_field, eig::MatrixXf live_field) {
+template<typename ScalarContainer, typename VectorContainer>
+VectorContainer OptimizerWithTelemetry<ScalarContainer,VectorContainer>
+	::optimize(const ScalarContainer& canonical_field, const ScalarContainer& live_field) {
 	this->clear_logs();
-	math::MatrixXv2f result = Optimizer2d::optimize(canonical_field, live_field);
+	VectorContainer result = Optimizer<ScalarContainer,VectorContainer>::optimize(canonical_field, live_field);
 	return result;
 }
 
-void Optimizer2dTelemetry::optimize_level(
-		math::MatrixXv2f& warp_field,
-		const eig::MatrixXf& canonical_pyramid_level,
-		const eig::MatrixXf& live_pyramid_level,
-		const eig::MatrixXf& live_gradient_x_level,
-		const eig::MatrixXf& live_gradient_y_level
-		) {
+template<typename ScalarContainer, typename VectorContainer>
+void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_level(
+		VectorContainer& warp_field,
+		const ScalarContainer& canonical_pyramid_level,
+		const ScalarContainer& live_pyramid_level,
+		const VectorContainer& live_gradient_level) {
 
 	if (this->logging_parameters.collect_per_level_iteration_data) {
-		int row_count = warp_field.rows(), column_count = warp_field.cols();
-		telemetry::OptimizationIterationData level_optimization_data;
-		level_optimization_data.add_iteration_result(
-				live_pyramid_level,
-				math::MatrixXv2f::Zero(row_count, column_count),
-				math::MatrixXv2f::Zero(row_count, column_count),
-				(this->tikhonov_term_enabled ? math::MatrixXv2f::Zero(row_count, column_count) : math::MatrixXv2f()));
+
+		telemetry::OptimizationIterationData<ScalarContainer,VectorContainer> level_optimization_data;
+		if(this->get_current_hierarchy_level() == 0){
+			VectorContainer empty = math::vector_field_like(live_pyramid_level);
+			level_optimization_data.add_iteration_result(
+					live_pyramid_level,
+					empty,
+					empty,
+					(this->tikhonov_term_enabled ? empty : VectorContainer()));
+		}
 		this->per_level_iteration_data.push_back(level_optimization_data);
 	}
-	Optimizer2d::optimize_level(warp_field, canonical_pyramid_level, live_pyramid_level,
-			live_gradient_x_level, live_gradient_y_level);
+	Optimizer<ScalarContainer,VectorContainer>::optimize_level(warp_field, canonical_pyramid_level, live_pyramid_level,
+			live_gradient_level);
 	if (this->verbosity_parameters.print_per_level_info) {
 		std::cout << "[LEVEL " << this->get_current_hierarchy_level() << " COMPLETED]";
 		std::cout << std::endl;
 	}
 	if (this->logging_parameters.collect_per_level_convergence_reports) {
-		telemetry::WarpDeltaStatistics current_warp_statistics(warp_field,
+		telemetry::WarpDeltaStatistics<Coordinates> current_warp_statistics =
+				telemetry::build_warp_delta_statistics<Coordinates,ScalarContainer,VectorContainer>(warp_field,
 				canonical_pyramid_level,
 				live_pyramid_level,
 				this->maximum_warp_update_threshold,
 				FLT_MAX);
-		telemetry::TsdfDifferenceStatistics tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
+		telemetry::TsdfDifferenceStatistics<Coordinates> tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
 		int current_iteration = this->get_current_iteration();
 		this->per_level_convergence_reports.push_back( {
 				current_iteration,
@@ -111,35 +122,31 @@ void Optimizer2dTelemetry::optimize_level(
 	}
 }
 
-void Optimizer2dTelemetry::optimize_iteration(
-		math::MatrixXv2f& gradient,
-		math::MatrixXv2f& warp_field,
-		eig::MatrixXf& diff,
-		math::MatrixXv2f& data_gradient,
-		math::MatrixXv2f& tikhonov_gradient,
+template<typename ScalarContainer, typename VectorContainer>
+void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_iteration(
+		VectorContainer& gradient,
+		VectorContainer& warp_field,
+		ScalarContainer& diff,
+		VectorContainer& data_gradient,
+		VectorContainer& tikhonov_gradient,
 		float& maximum_warp_update_length,
-		const eig::MatrixXf& canonical_pyramid_level,
-		const eig::MatrixXf& live_pyramid_level,
-		const eig::MatrixXf& live_gradient_x_level,
-		const eig::MatrixXf& live_gradient_y_level
+		const ScalarContainer& canonical_pyramid_level,
+		const ScalarContainer& live_pyramid_level,
+		const VectorContainer& live_gradient_level
 		) {
 	float normalized_tikhonov_energy;
 	if (this->tikhonov_term_enabled && this->verbosity_parameters.print_iteration_tikhonov_energy) {
-		eig::MatrixXf gradient_u_component, gradient_v_component;
-		math::unstack_xv2f(gradient_u_component, gradient_v_component, gradient);
-		eig::MatrixXf u_x, u_y, v_x, v_y;
-		float gradient_aggregate_mean;
-		math::gradient(u_x, u_y, gradient_u_component);
-		math::gradient(v_x, v_y, gradient_v_component);
-		gradient_aggregate_mean = (u_x.array().square() + u_y.array().square()
-				+ v_x.array().square() + v_y.array().square()).mean();
+		MatrixContainer gradient_gradient;
+		math::gradient(gradient_gradient, gradient);
+		ScalarContainer gg_sum;
+		math::nested_sum(gg_sum, gradient_gradient);
+		float gradient_aggregate_mean = math::mean(math::square(gg_sum));
 		normalized_tikhonov_energy = energy_factor * 0.5 * gradient_aggregate_mean;
 	}
-	Optimizer2d::optimize_iteration(
+	Optimizer<ScalarContainer,VectorContainer>::optimize_iteration(
 			gradient, warp_field, diff, data_gradient, tikhonov_gradient,
 			maximum_warp_update_length,
-			canonical_pyramid_level, live_pyramid_level,
-			live_gradient_x_level, live_gradient_y_level);
+			canonical_pyramid_level, live_pyramid_level, live_gradient_level);
 
 	if (this->logging_parameters.collect_per_level_iteration_data) {
 		this->per_level_iteration_data[this->per_level_iteration_data.size() - 1].add_iteration_result(
@@ -155,16 +162,14 @@ void Optimizer2dTelemetry::optimize_iteration(
 			std::cout << " [max upd. l.: " << maximum_warp_update_length << "]";
 		}
 		if (this->verbosity_parameters.print_iteration_mean_tsdf_difference) {
-			std::cout << " [mean diff.: " << diff.mean() << "]";
+			std::cout << " [mean diff.: " << math::mean(diff) << "]";
 		}
 		if (this->verbosity_parameters.print_iteration_std_tsdf_difference) {
-			float mean = diff.mean();
-			float count = static_cast<float>(diff.size());
-			float std_dev = std::sqrt((diff.array() - mean).square().sum() / count);
+			float std_dev = math::std(diff);
 			std::cout << " [std diff.: " << std_dev << "]";
 		}
 		if (this->verbosity_parameters.print_iteration_data_energy) {
-			float normalized_data_energy = energy_factor * diff.array().square().mean();
+			float normalized_data_energy = energy_factor * math::mean(math::square(diff));
 			std::cout << " [norm. data energy: " << normalized_data_energy << "]";
 		}
 		if (this->verbosity_parameters.print_iteration_tikhonov_energy && this->tikhonov_term_enabled) {
@@ -174,20 +179,26 @@ void Optimizer2dTelemetry::optimize_iteration(
 	}
 }
 
-void Optimizer2dTelemetry::clear_logs() {
+template<typename ScalarContainer, typename VectorContainer>
+void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::clear_logs() {
 	this->per_level_convergence_reports.clear();
 	this->per_level_iteration_data.clear();
 }
 
-std::vector<telemetry::ConvergenceReport> Optimizer2dTelemetry::get_per_level_convergence_reports() {
+template<typename ScalarContainer, typename VectorContainer>
+std::vector<telemetry::ConvergenceReport<typename OptimizerWithTelemetry<ScalarContainer,VectorContainer>::Coordinates>>
+OptimizerWithTelemetry<ScalarContainer,VectorContainer>::get_per_level_convergence_reports() {
 	return this->per_level_convergence_reports;
 }
 
-std::vector<telemetry::OptimizationIterationData> Optimizer2dTelemetry::get_per_level_iteration_data() {
+template<typename ScalarContainer, typename VectorContainer>
+std::vector<telemetry::OptimizationIterationData<ScalarContainer,VectorContainer>> OptimizerWithTelemetry<ScalarContainer,VectorContainer>
+	::get_per_level_iteration_data() {
 	return this->per_level_iteration_data;
 }
 
-Optimizer2dTelemetry::VerbosityParameters::VerbosityParameters(
+template<typename ScalarContainer, typename VectorContainer>
+OptimizerWithTelemetry<ScalarContainer,VectorContainer>::VerbosityParameters::VerbosityParameters(
 		bool print_iteration_max_warp_update,
 		bool print_iteration_mean_tsdf_difference,
 		bool print_iteration_std_tsdf_difference,
@@ -209,7 +220,8 @@ Optimizer2dTelemetry::VerbosityParameters::VerbosityParameters(
 {
 }
 
-Optimizer2dTelemetry::LoggingParameters::LoggingParameters(
+template<typename ScalarContainer, typename VectorContainer>
+OptimizerWithTelemetry<ScalarContainer,VectorContainer>::LoggingParameters::LoggingParameters(
 		bool collect_per_level_convergence_reports,
 		bool collect_per_level_iteration_data
 		) :

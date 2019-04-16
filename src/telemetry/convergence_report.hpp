@@ -19,7 +19,6 @@
  */
 
 #pragma once
-//TODO: optimize imports
 //stdlib
 #include <iostream>
 
@@ -37,18 +36,19 @@ namespace telemetry {
 /**
  * A structure for logging characteristics of convergence (warp-threshold-based optimization) after a full optimization run
  */
+template<typename Coordinates>
 struct ConvergenceReport {
 	int iteration_count = 0;
 	bool iteration_limit_reached = false;
-	WarpDeltaStatistics warp_delta_statistics;
-	TsdfDifferenceStatistics tsdf_difference_statistics;
+	WarpDeltaStatistics<Coordinates> warp_delta_statistics;
+	TsdfDifferenceStatistics<Coordinates> tsdf_difference_statistics;
 
 	ConvergenceReport() = default;
 	ConvergenceReport(
 			int iteration_count,
 			bool iteration_limit_reached,
-			WarpDeltaStatistics warp_delta_statistics,
-			TsdfDifferenceStatistics tsdf_difference_statistics
+			WarpDeltaStatistics<Coordinates> warp_delta_statistics,
+			TsdfDifferenceStatistics<Coordinates> tsdf_difference_statistics
 			);
 
 	bool operator==(const ConvergenceReport& rhs) {
@@ -62,6 +62,10 @@ struct ConvergenceReport {
 	}
 
 };
+template<typename Coordinates>
+std::ostream &operator<<(std::ostream &ostr, const ConvergenceReport<Coordinates> &ts);
 
-std::ostream &operator<<(std::ostream &ostr, const ConvergenceReport &ts);
+typedef ConvergenceReport<math::Vector2i> ConvergenceReport2d;
+typedef ConvergenceReport<math::Vector3i> ConvergenceReport3d;
+
 } //namespace telemetry

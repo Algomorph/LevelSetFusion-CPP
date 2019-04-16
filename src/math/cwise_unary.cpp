@@ -1,7 +1,7 @@
 /*
- * test_data_tsdf.hpp
+ * sum.cpp
  *
- *  Created on: Jan 30, 2019
+ *  Created on: Apr 15, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -18,19 +18,17 @@
  *   limitations under the License.
  */
 
-#pragma once
+//local
+#include "cwise_unary.tpp"
+#include "typedefs.hpp"
 
-#include <Eigen/Eigen>
+namespace eig = Eigen;
 
-#include "../../src/math/stacking.hpp"
-#include "../src/math/typedefs.hpp"
+namespace math{
 
-namespace test_data {
-static math::MatrixXus depth_00064_sample = [] {
-	math::MatrixXus depth_00064_sample(1,20);
-	depth_00064_sample << 2121, 2126, 2124, 2123, 2128, 2133, 2138, 2130, 2135, 2140, 2145,
-	2147, 2142, 2147, 2152, 2158, 2150, 2155, 2160, 2165;
-	return depth_00064_sample;
+template void nested_sum<float,math::Matrix2f>(eig::MatrixXf& summed, const math::MatrixXm2f& field);
+template void nested_sum<float,math::Matrix3f>(math::Tensor3f& summed, const math::Tensor3m3f& field);
+template eig::MatrixXf square(const eig::MatrixXf& field);
+template math::Tensor3f square(const math::Tensor3f& field);
 
-}();
-} //namespace test_data
+}  // namespace math

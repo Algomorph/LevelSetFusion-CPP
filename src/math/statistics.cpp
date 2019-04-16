@@ -19,14 +19,13 @@
  */
 
 //stdlib
+#include "statistics.tpp"
+
 #include <cmath>
 #include <atomic>
 #include <limits>
 
 //local
-#include "statistics.tpp"
-
-
 namespace math {
 
 template void locate_max_norm<math::Vector2f>(float& max_norm, math::Vector2i& coordinates, const math::MatrixXv2f& vector_field);
@@ -34,10 +33,17 @@ template void locate_max_norm<math::Vector3f>(float& max_norm, math::Vector3i& c
 template void locate_min_norm<math::Vector2f>(float& min_norm, math::Vector2i& coordinates, const math::MatrixXv2f& vector_field);
 template void locate_min_norm<math::Vector3f>(float& min_norm, math::Vector3i& coordinates, const math::Tensor3v3f& vector_field);
 
+template void locate_maximum<float>(float& min_norm, math::Vector3i& coordinates, const math::Tensor3f& vector_field);
+
 template float max_norm<math::Vector2f>(const math::MatrixXv2f& vector_field);
 template float max_norm<math::Vector3f>(const math::Tensor3v3f& vector_field);
 template float min_norm<math::Vector2f>(const math::MatrixXv2f& vector_field);
 template float min_norm<math::Vector3f>(const math::Tensor3v3f& vector_field);
+
+template float mean<float>(const eig::MatrixXf& field);
+template float mean<float>(const math::Tensor3f& field);
+template float std<float>(const eig::MatrixXf& field);
+template float std<float>(const math::Tensor3f& field);
 
 /**
  * Locates the maximum L2 norm (length) of the vector in the given field.
@@ -125,5 +131,7 @@ void mean_and_std_vector_length(float& mean, float& standard_deviation, const Ma
 	}
 	standard_deviation = static_cast<float>(std::sqrt(total_squared_deviation / static_cast<double>(total_count)));
 }
+
+
 
 } //namespace math

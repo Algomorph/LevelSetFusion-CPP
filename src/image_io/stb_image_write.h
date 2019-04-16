@@ -292,7 +292,7 @@ static void stbiw__write_pixel(stbi__write_context *s, int rgb_dir, int comp, in
                px[k] = bg[k] + ((d[k] - bg[k]) * d[3]) / 255;
             stbiw__write3(s, px[1 - rgb_dir], px[1], px[1 + rgb_dir]);
             break;
-         }
+         } // @suppress("No break at end of case")
          /* FALLTHROUGH */
       case 3:
          stbiw__write3(s, d[1 - rgb_dir], d[1], d[1 + rgb_dir]);

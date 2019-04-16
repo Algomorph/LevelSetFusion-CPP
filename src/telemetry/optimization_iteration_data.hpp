@@ -23,41 +23,45 @@
 
 //local
 #include "../math/typedefs.hpp"
+#include "../error_handling/throw_assert.hpp"
 
 #pragma once
 namespace telemetry {
 
-//TODO: make templated on type of fields, i.e. 2D (MatrixXf and MatrixXv2f) vs 3D (Tensor3f and Tensor3v3f)
-
+template<typename ScalarContainer, typename VectorContainer>
 class OptimizationIterationData {
 public:
 	OptimizationIterationData() = default;
 
-	void add_iteration_result(Eigen::MatrixXf live_field = Eigen::MatrixXf(),
-			math::MatrixXv2f warp_field = math::MatrixXv2f(),
-			math::MatrixXv2f data_term_gradients = math::MatrixXv2f(),
-			math::MatrixXv2f tikhonov_term_gradients = math::MatrixXv2f());
+	void add_iteration_result(ScalarContainer live_field = ScalarContainer(),
+			VectorContainer warp_field = VectorContainer(),
+			VectorContainer data_term_gradients = VectorContainer(),
+			VectorContainer tikhonov_term_gradients = VectorContainer());
 
-	const std::vector<Eigen::MatrixXf>  get_live_fields() const;
-	const std::vector<math::MatrixXv2f> get_warp_fields() const;
-	const std::vector<math::MatrixXv2f> get_data_term_gradients() const;
-	const std::vector<math::MatrixXv2f> get_tikhonov_term_gradients() const;
+	const std::vector<ScalarContainer>  get_live_fields() const;
+	const std::vector<VectorContainer> get_warp_fields() const;
+	const std::vector<VectorContainer> get_data_term_gradients() const;
+	const std::vector<VectorContainer> get_tikhonov_term_gradients() const;
 
 	int get_frame_count() const;
 
 	bool operator==(const OptimizationIterationData& rhs){
-		return this->live_fields == rhs.live_fields &&
-				this->warp_fields == rhs.warp_fields &&
-				this->data_term_gradients == rhs.data_term_gradients &&
-				this->tikhonov_term_gradients == rhs.tikhonov_term_gradients
+		throw_assert(false, "not implemented (properly, because of bug in Eigen Tensor module)");
+		//TODO: remote the "&" and somehow fix the bug with the Tensor comparison operator
+		return &this->live_fields == &rhs.live_fields &&
+			   &this->warp_fields == &rhs.warp_fields &&
+			   &this->data_term_gradients == &rhs.data_term_gradients &&
+			   &this->tikhonov_term_gradients == &rhs.tikhonov_term_gradients
 				;
 	}
 
 private:
-	std::vector<Eigen::MatrixXf> live_fields;
-	std::vector<math::MatrixXv2f> warp_fields;
-	std::vector<math::MatrixXv2f> data_term_gradients;
-	std::vector<math::MatrixXv2f> tikhonov_term_gradients;
+	std::vector<ScalarContainer> live_fields;
+	std::vector<VectorContainer> warp_fields;
+	std::vector<VectorContainer> data_term_gradients;
+	std::vector<VectorContainer> tikhonov_term_gradients;
 };
+
+typedef OptimizationIterationData<eig::MatrixXf, math::MatrixXv2f> OptimizationIterationData2d;
 
 } //namespace telemetry

@@ -1,7 +1,7 @@
 /*
- * test_data_tsdf.hpp
+ * multiply.cpp
  *
- *  Created on: Jan 30, 2019
+ *  Created on: Apr 11, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -18,19 +18,18 @@
  *   limitations under the License.
  */
 
-#pragma once
+//local
+#include "cwise_binary.tpp"
+#include "typedefs.hpp"
 
-#include <Eigen/Eigen>
+namespace eig = Eigen;
+namespace math {
+template math::MatrixXv2f scale<math::Vector2f,float>(const math::MatrixXv2f& container, float factor);
+template math::Tensor3v3f scale<math::Vector3f,float>(const math::Tensor3v3f& container, float factor);
 
-#include "../../src/math/stacking.hpp"
-#include "../src/math/typedefs.hpp"
+template math::MatrixXv2f cwise_product<math::Vector2f,float>(const math::MatrixXv2f& container_a, const eig::MatrixXf& container_b);
+template math::Tensor3v3f cwise_product<math::Vector3f,float>(const math::Tensor3v3f& container_a, const math::Tensor3f& container_b);
 
-namespace test_data {
-static math::MatrixXus depth_00064_sample = [] {
-	math::MatrixXus depth_00064_sample(1,20);
-	depth_00064_sample << 2121, 2126, 2124, 2123, 2128, 2133, 2138, 2130, 2135, 2140, 2145,
-	2147, 2142, 2147, 2152, 2158, 2150, 2155, 2160, 2165;
-	return depth_00064_sample;
+}  // namespace math
 
-}();
-} //namespace test_data
+

@@ -1,7 +1,7 @@
 /*
  * convergence_report.cpp
  *
- *  Created on: Mar 15, 2019
+ *  Created on: Apr 12, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -19,33 +19,18 @@
  */
 
 //local
-#include "../telemetry/convergence_report.hpp"
-
+#include "convergence_report.tpp"
+#include "../math/typedefs.hpp"
 
 namespace telemetry {
-ConvergenceReport::ConvergenceReport(int iteration_count,
-		bool iteration_limit_reached,
-		WarpDeltaStatistics warp_delta_statistics,
-		TsdfDifferenceStatistics tsdf_difference_statistics)
-:
-		iteration_count(iteration_count),
-				iteration_limit_reached(iteration_limit_reached),
-				warp_delta_statistics(warp_delta_statistics),
-				tsdf_difference_statistics(tsdf_difference_statistics) {
-}
+	template struct ConvergenceReport<math::Vector2i>;
+	template struct ConvergenceReport<math::Vector3i>;
 
-std::ostream &operator<<(std::ostream &ostr, const ConvergenceReport &ts){
-	ostr << "===[convergence report]==="
-			<< std::endl << "  iter count: " << ts.iteration_count
-			<< std::endl << "  limit reached: " << ts.iteration_limit_reached
-			<< std::endl << "--------------------------"
-			<< std::endl << ts.warp_delta_statistics
-			<< std::endl << "--------------------------"
-			<< std::endl << ts.tsdf_difference_statistics
-			<< std::endl << "==========================)"
-			;
-	return ostr;
-}
-} //namespace telemetry
+	template std::ostream &operator<<(std::ostream &ostr, const ConvergenceReport<math::Vector2i> &ts);
+	template std::ostream &operator<<(std::ostream &ostr, const ConvergenceReport<math::Vector3i> &ts);
+
+}  // namespace telemetry
+
+
 
 

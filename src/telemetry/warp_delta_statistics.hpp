@@ -37,6 +37,7 @@ namespace telemetry {
  * A structure for logging statistics pertaining to warps at the end of an optimization iteration
  * (in warp- or warp-update-threshold-based optimizations)
  */
+template<typename Coordinates>
 struct WarpDeltaStatistics {
 
 	float ratio_above_min_threshold = 0.0;
@@ -44,7 +45,7 @@ struct WarpDeltaStatistics {
 	float length_max = 0.0f;
 	float length_mean = 0.0;
 	float length_standard_deviation = 0.0;
-	math::Vector2i longest_warp_location = math::Vector2i(0);
+	Coordinates longest_warp_location = Coordinates(0);
 	bool is_largest_below_min_threshold = false;
 	bool is_largest_above_max_threshold = false;
 
@@ -55,14 +56,10 @@ struct WarpDeltaStatistics {
 			float length_max,
 			float length_mean,
 			float length_standard_deviation,
-			math::Vector2i longest_warp_location,
+			Coordinates longest_warp_location,
 			bool is_largest_below_min_threshold,
 			bool is_largest_above_max_threshold
 			);
-	WarpDeltaStatistics(const math::MatrixXv2f& warp_field,
-			const eig::MatrixXf& canonical_field,
-			const eig::MatrixXf& live_field,
-			float min_threshold, float max_threshold);
 
 	eig::VectorXf to_array();
 
@@ -70,6 +67,16 @@ struct WarpDeltaStatistics {
 	bool operator!=(const WarpDeltaStatistics& rhs);
 };
 
-std::ostream &operator<<(std::ostream &ostr, const WarpDeltaStatistics &ts);
+template<typename Coordinates, typename ScalarContainer, typename VectorContainer>
+WarpDeltaStatistics<Coordinates> build_warp_delta_statistics(const VectorContainer& warp_field,
+		const ScalarContainer& canonical_field,
+		const ScalarContainer& live_field,
+		float min_threshold, float max_threshold);
+
+template<typename Coordinates>
+std::ostream &operator<<(std::ostream &ostr, const WarpDeltaStatistics<Coordinates> &ts);
+
+typedef WarpDeltaStatistics<math::Vector2i> WarpDeltaStatistics2d;
+typedef WarpDeltaStatistics<math::Vector3i> WarpDeltaStatistics3d;
 
 } //namespace telemetry
