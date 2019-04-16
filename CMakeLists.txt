@@ -223,7 +223,7 @@ add_library(${MODULE_NAME} SHARED
 			src/nonrigid_optimization/slavcheva/optimizer2d.cpp
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.hpp
 			src/nonrigid_optimization/slavcheva/sobolev_optimizer2d.cpp
-			
+
 
 			### nonrigid optimization, hierarchical: hierarchical SLAM optimizer (active research & development)
 			src/nonrigid_optimization/hierarchical/optimizer.hpp
@@ -324,7 +324,7 @@ add_library(${MODULE_NAME} SHARED
 			src/console/pretty_printers.hpp
 			src/console/progress_bar.cpp
 			src/console/progress_bar.hpp
-			
+
 			src/error_handling/throw_assert.hpp
 			)
 
@@ -388,7 +388,7 @@ install(TARGETS ${MODULE_NAME}
         LIBRARY DESTINATION ${PYTHON3_PACKAGES_PATH} COMPONENT python
         ${PYTHON_INSTALL_ARCHIVE}
         )
-        
+
 # uninstall target
 if(NOT TARGET uninstall)
     configure_file(
@@ -407,7 +407,7 @@ add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
 enable_testing()
 
 # TODO: this is beginnning to look like a lot of DRY violations -- good source material for a CMake macro or function
-# that would set up a single test based on the sources  
+# that would set up a single test based on the sources
 
 set (COMMON_TEST_SOURCES
 	tests/common.hpp
