@@ -107,6 +107,7 @@ BOOST_AUTO_TEST_CASE(test_almost_equal_real_tensors) {
 					{ 3.0f, -3.9998f },
 					{ 5.0f, 6.0f } } }
 			);
+
 	BOOST_REQUIRE(math::almost_equal(a, b, 3e-4));
 	BOOST_REQUIRE(!math::almost_equal(a, b, 1e-4));
 
@@ -144,4 +145,58 @@ BOOST_AUTO_TEST_CASE(test_almost_equal_nested_tensors) {
 			);
 	BOOST_REQUIRE(!math::almost_equal(b, c, 1e-4));
 
+}
+
+BOOST_AUTO_TEST_CASE(test_is_power_of_two) {
+	BOOST_REQUIRE(math::is_power_of_two(128));
+	BOOST_REQUIRE(math::is_power_of_two(2));
+	BOOST_REQUIRE(math::is_power_of_two(16));
+	BOOST_REQUIRE(!math::is_power_of_two(17));
+	BOOST_REQUIRE(!math::is_power_of_two(38));
+}
+
+BOOST_AUTO_TEST_CASE(test_dimension_checks_matrix) {
+	eig::MatrixXf a(2,3);
+	eig::MatrixXf b(2,3);
+	eig::MatrixXf c(2,3);
+	eig::MatrixXf d(3,2);
+	eig::MatrixXf e(2,4);
+	BOOST_REQUIRE(math::are_dimensions_equal(a,b));
+	BOOST_REQUIRE(!math::are_dimensions_equal(a,d));
+	BOOST_REQUIRE(!math::are_dimensions_equal(a,e));
+	BOOST_REQUIRE(math::are_dimensions_equal(a,b,c));
+	BOOST_REQUIRE(!math::are_dimensions_equal(a,e,c));
+
+	eig::MatrixXf f(2,3);
+	math::MatrixXv2f g(2,3);
+	math::MatrixXv2f h(2,4);
+	eig::MatrixXd i(2,3);
+	BOOST_REQUIRE(math::are_dimensions_equal(f,g));
+	BOOST_REQUIRE(!math::are_dimensions_equal(f,h));
+	BOOST_REQUIRE(!math::are_dimensions_equal(g,h));
+	BOOST_REQUIRE(!math::are_dimensions_equal(g,h,i));
+	BOOST_REQUIRE(math::are_dimensions_equal(f,g,i));
+}
+
+BOOST_AUTO_TEST_CASE(test_dimension_checks_tensor) {
+	math::Tensor3f a(2,3,2);
+	math::Tensor3f b(2,3,2);
+	math::Tensor3f c(2,3,2);
+	math::Tensor3f d(3,2,2);
+	math::Tensor3f e(2,4,2);
+	BOOST_REQUIRE(math::are_dimensions_equal(a,b));
+	BOOST_REQUIRE(!math::are_dimensions_equal(a,d));
+	BOOST_REQUIRE(!math::are_dimensions_equal(a,e));
+	BOOST_REQUIRE(math::are_dimensions_equal(a,b,c));
+	BOOST_REQUIRE(!math::are_dimensions_equal(a,e,c));
+
+	math::Tensor3f f(1,2,3);
+	math::Tensor3v3f g(1,2,3);
+	math::Tensor3v3f h(1,2,4);
+	eig::Tensor<double, 3, eig::ColMajor> i(1,2,3);
+	BOOST_REQUIRE(math::are_dimensions_equal(f,g));
+	BOOST_REQUIRE(!math::are_dimensions_equal(f,h));
+	BOOST_REQUIRE(!math::are_dimensions_equal(g,h));
+	BOOST_REQUIRE(!math::are_dimensions_equal(g,h,i));
+	BOOST_REQUIRE(math::are_dimensions_equal(f,g,i));
 }

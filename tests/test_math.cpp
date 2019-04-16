@@ -28,7 +28,6 @@
 #include "data/test_data_math.hpp"
 
 //test targets
-#include "../src/math/checks.hpp"
 #include "../src/math/gradients.hpp"
 #include "../src/math/almost_equal.hpp"
 #include "../src/math/typedefs.hpp"
@@ -36,14 +35,6 @@
 #include "../src/math/padding.hpp"
 
 namespace eig = Eigen;
-
-BOOST_AUTO_TEST_CASE(power_of_two_test01) {
-	BOOST_REQUIRE(math::is_power_of_two(128));
-	BOOST_REQUIRE(math::is_power_of_two(2));
-	BOOST_REQUIRE(math::is_power_of_two(16));
-	BOOST_REQUIRE(!math::is_power_of_two(17));
-	BOOST_REQUIRE(!math::is_power_of_two(38));
-}
 
 BOOST_AUTO_TEST_CASE(scalar_field_gradient_test01) {
 	eig::MatrixXf field(2,2);
