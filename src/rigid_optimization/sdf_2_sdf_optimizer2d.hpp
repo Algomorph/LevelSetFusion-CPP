@@ -11,9 +11,6 @@
 //libraries
 #include <Eigen/Eigen>
 
-//local
-#include "../math/tensor_operations.hpp"
-
 namespace eig = Eigen;
 
 namespace rigid_optimization {
