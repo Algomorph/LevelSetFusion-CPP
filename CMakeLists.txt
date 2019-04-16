@@ -414,48 +414,49 @@ set (COMMON_TEST_SOURCES
 	tests/common.cpp
 )
 
-add_executable(test_tsdf
+macro (LSF_ADD_TEST)
+	set(options)
+	set(oneValueArgs NAME)
+	set(multiValueArgs SOURCES)
+	cmake_parse_arguments(LSF_ADD_TEST "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	add_executable(test_${LSF_ADD_TEST_NAME}
+		${LSF_ADD_TEST_SOURCES}
+		${COMMON_TEST_SOURCES}
+	)
+	target_link_libraries(test_${LSF_ADD_TEST_NAME} ${MODULE_NAME} ${Boost_LIBRARIES})
+	target_include_directories(test_${LSF_ADD_TEST_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
+	add_test(NAME ${LSF_ADD_TEST_NAME} COMMAND test_${LSF_ADD_TEST_NAME})
+endmacro()
+
+lsf_add_test(
+	NAME tsdf SOURCES
 	tests/test_tsdf.cpp
 	tests/data/test_data_tsdf.hpp
-	${COMMON_TEST_SOURCES}
 )
-add_executable(test_math
+
+lsf_add_test(
+	NAME math SOURCES
 	tests/test_math.cpp
 	tests/data/test_data_math.hpp
-	${COMMON_TEST_SOURCES}
 )
-add_executable(test_slavcheva_optimizer
+
+lsf_add_test(
+	NAME slavcheva_optimizer SOURCES
 	tests/test_slavcheva_optimizer.cpp
 	tests/data/test_data_slavcheva_optimizer.hpp
-	${COMMON_TEST_SOURCES}
 )
-add_executable(test_hierarchical_optimizer
+
+lsf_add_test(
+	NAME hierarchical_optimizer SOURCES
 	tests/test_hierarchical_optimizer.cpp
 	tests/data/test_data_hierarchical_optimizer.hpp
-	${COMMON_TEST_SOURCES}
 )
-add_executable(test_image_io
+
+lsf_add_test(
+	NAME image_io SOURCES
 	tests/test_image_io.cpp
 	tests/data/test_data_image_io.hpp
-	${COMMON_TEST_SOURCES}
 )
-
-target_link_libraries(test_tsdf ${MODULE_NAME} ${Boost_LIBRARIES})
-target_include_directories(test_tsdf PRIVATE ${EIGEN3_INCLUDE_DIRS})
-target_link_libraries(test_math ${MODULE_NAME} ${Boost_LIBRARIES})
-target_include_directories(test_math PRIVATE ${EIGEN3_INCLUDE_DIRS})
-target_link_libraries(test_slavcheva_optimizer ${MODULE_NAME} ${Boost_LIBRARIES})
-target_include_directories(test_slavcheva_optimizer PRIVATE ${EIGEN3_INCLUDE_DIRS})
-target_link_libraries(test_hierarchical_optimizer ${MODULE_NAME} ${Boost_LIBRARIES})
-target_include_directories(test_hierarchical_optimizer PRIVATE ${EIGEN3_INCLUDE_DIRS})
-target_link_libraries(test_image_io ${MODULE_NAME} ${Boost_LIBRARIES})
-target_include_directories(test_image_io PRIVATE ${EIGEN3_INCLUDE_DIRS})
-
-add_test(NAME image_io COMMAND test_image_io)
-add_test(NAME tsdf COMMAND test_tsdf)
-add_test(NAME math COMMAND test_math)
-add_test(NAME slavcheva_optimizer COMMAND test_slavcheva_optimizer)
-add_test(NAME hierarchical_optimizer COMMAND test_hierarchical_optimizer)
 
 # copy test data
 file(GLOB PNG_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/*.png")
