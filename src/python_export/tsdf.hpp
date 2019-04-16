@@ -23,5 +23,6 @@
 namespace python_export{
 
 void export_ewa();
+void export_tsdf();
 
 }//namespace python_export

@@ -25,6 +25,7 @@
 
 //local
 #include "../tsdf/ewa.hpp"
+#include "../tsdf/tsdf.hpp"
 
 namespace bp = boost::python;
 
@@ -144,6 +145,21 @@ void export_ewa() {
 					"voxel_size",
 					"narrow_band_width_voxels",
 					"gaussian_covariance_scale"));
+}
+
+void export_tsdf() {
+	bp::def("generate_tsdf_2d", &tsdf::generate_TSDF_2D,
+			"Regular TSDF generation method without interpolation.",
+			bp::args("image_y_coordinate",
+					 "depth_image",
+					 "depth_unit_ratio",
+					 "camera_intrinsic_matrix",
+					 "camera_pose",
+					 "array_offset",
+					 "field_size",
+					 "voxel_size",
+					 "narrow_band_width_voxels",
+					 "default_value"));
 }
 
 } //namespace python_export

@@ -35,6 +35,7 @@
 #include "../src/math/statistics.hpp"
 #include "../src/math/resampling.hpp"
 #include "../src/math/padding.hpp"
+#include "../src/math/transformation.hpp"
 
 namespace eig = Eigen;
 
@@ -833,4 +834,49 @@ BOOST_AUTO_TEST_CASE(test_downsampling_linear_tensor01) {
 	);//@formatter:on
 	math::Tensor3f output3 = math::downsampleX2_linear(input3_down);
 	BOOST_REQUIRE(math::almost_equal_verbose(output3, expected_output3, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test01) {
+	using namespace Eigen;
+
+	Matrix<float, 6, 1> vector;
+	vector << 0.f, 0.f, 0.f, 0.f, 0.f, 0.f;
+	MatrixXf matrix(4, 4);
+	matrix = math::transformation_vector_to_matrix3d(vector);
+	MatrixXf expected_matrix(4, 4);
+	expected_matrix << 1.f, 0.f, 0.f, 0.f,
+			           0.f, 1.f, 0.f, 0.f,
+			           0.f, 0.f, 1.f, 0.f,
+			           0.f, 0.f, 0.f, 1.f;
+	BOOST_REQUIRE(math::almost_equal(matrix, expected_matrix, 1e-8));
+}
+
+BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test02) {
+	using namespace Eigen;
+
+	Matrix<float, 6, 1> vector;
+	vector << 0.f, 0.f, 0.f, 0.f, M_PI/3, 0.f;
+	MatrixXf matrix(4, 4);
+	matrix = math::transformation_vector_to_matrix3d(vector);
+	MatrixXf expected_matrix(4, 4);
+	expected_matrix << 0.5f, 0.f, 0.8660254f, 0.f,
+			           0.f, 1.f, 0.f, 0.f,
+			           -0.8660254f, 0.f, 0.5f, 0.f,
+			           0.f, 0.f, 0.f, 1.f;
+	BOOST_REQUIRE(math::almost_equal(matrix, expected_matrix, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test03) {
+    using namespace Eigen;
+
+	Matrix<float, 6, 1> vector;
+	vector << -0.03258679, 0.f, 0.00103423f, 0.f, 0.06314822f, 0.f;
+	MatrixXf matrix(4, 4);
+	matrix = math::transformation_vector_to_matrix3d(vector);
+	MatrixXf expected_matrix(4, 4);
+	expected_matrix << 0.99800682f, 0.f, 0.06310626f, -0.03258679f,
+	                   0.f, 1.f, 0.f, 0.f,
+	                   -0.06310626f, 0.f, 0.99800682f, 0.00103423f,
+	                   0.f, 0.f, 0.f, 1.f;
+	BOOST_REQUIRE(math::almost_equal(matrix, expected_matrix, 1e-6));
 }

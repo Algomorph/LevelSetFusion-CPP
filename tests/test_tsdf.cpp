@@ -32,6 +32,7 @@
 #include "data/test_data_tsdf.hpp"
 
 //test targets
+#include "../src/tsdf/tsdf.hpp"
 #include "../src/tsdf/ewa.hpp"
 #include "../src/math/typedefs.hpp"
 #include "../src/math/almost_equal.hpp"
@@ -281,4 +282,62 @@ BOOST_AUTO_TEST_CASE(test_EWA_3D_generation02) {
 			0.5f
 			);
 	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::TSDF_slice02, 1e-5f));
+}
+
+// Following tests are for regular tsdf generation without interpolation
+BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation01) {
+	math::MatrixXus depth_image;
+	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
+	BOOST_REQUIRE(image_read);
+	eig::Matrix3f camera_intrinsic_matrix;
+	camera_intrinsic_matrix <<
+			700.0f, 0.0f, 320.0f,
+			0.0f, 700.0f, 240.0f,
+			0.0f, 0.0f, 1.0f;
+	eig::Vector3i offset;
+	offset << -8, -8, 144;
+	int field_size = 16;
+	eig::MatrixXf field = tsdf::generate_TSDF_2D(
+			200, // y coord
+			depth_image,
+			0.001f, //depth unit ratio
+			camera_intrinsic_matrix,
+			eig::Matrix4f::Identity(), //camera pose
+			offset,
+			field_size, //field size
+			0.004f, //voxel size
+			20, // narrow band width
+			-999.f
+			);
+	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::expected_tsdf_field01, 1e-6f));
+}
+
+BOOST_AUTO_TEST_CASE(test_TSDF_2D_generation02) {
+	math::MatrixXus depth_image;
+	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
+	BOOST_REQUIRE(image_read);
+	eig::Matrix3f camera_intrinsic_matrix;
+	camera_intrinsic_matrix <<
+			700.0f, 0.0f, 320.0f,
+			0.0f, 700.0f, 240.0f,
+			0.0f, 0.0f, 1.0f;
+	eig::Matrix4f camera_extrinsic_matrix = eig::Matrix4f::Identity();
+	camera_extrinsic_matrix(2, 3) = 0.004;
+
+	eig::Vector3i offset;
+	offset << -8, -8, 144;
+	int field_size = 16;
+	eig::MatrixXf field = tsdf::generate_TSDF_2D(
+			200, // y coord
+			depth_image,
+			0.001f, //depth unit ratio
+			camera_intrinsic_matrix,
+			camera_extrinsic_matrix, //camera pose
+			offset,
+			field_size, //field size
+			0.004f, //voxel size
+			20, // narrow band width
+			-999.f
+	);
+	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::expected_tsdf_field02, 1e-6f));
 }

@@ -27,6 +27,7 @@
 //local
 #include "../math/typedefs.hpp"
 #include "../math/statistics.hpp"
+#include "../math/transformation.hpp"
 
 namespace bp = boost::python;
 
@@ -57,6 +58,9 @@ void export_math_types() {
 void export_math_functions(){
 	bp::def("mean_vector_length", &math::mean_vector_length,
 			"Computes the mean vector length for all vectors in the given field", bp::args("vector_field"));
+
+	bp::def("transformation_vector_to_matrix3d", &math::transformation_vector_to_matrix3d,
+			"Convert 6X1 transformation vector to 4X4 matrix in homogeneous coordinates", bp::args("vector"));
 }
 
 } // namespace python_export

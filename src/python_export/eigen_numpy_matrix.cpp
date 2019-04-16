@@ -399,6 +399,7 @@ setup_Eigen_matrix_converters() {
 	MAT_CONV(1, X, float);
 	MAT_CONV(3, 4, float);
 	MAT_CONV(2, X, float);
+	MAT_CONV(6, 1, float);
 
 	EIGEN_MATRIX_CONVERTER(math::MatrixXus);
 	EIGEN_MATRIX_CONVERTER(math::MatrixX1us);
