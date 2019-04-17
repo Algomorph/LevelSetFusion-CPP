@@ -37,7 +37,6 @@
 
 namespace eig = Eigen;
 
-
 BOOST_AUTO_TEST_CASE(max_norm_test01) {
 	math::MatrixXv2f vector_field(4, 4);
 	vector_field <<
@@ -92,7 +91,7 @@ BOOST_AUTO_TEST_CASE(test_pad_replicate01) {
 				 {{3.0f, 12.0f, 21.0f},
 				  {6.0f, 15.0f, 24.0f},
 				  {9.0f, 18.0f, 27.0f}}}
-	);        // @formatter:on
+	);              // @formatter:on
 
 	math::Tensor3f expected_output(5, 5, 5);
 	expected_output.setValues(  // @formatter:off
@@ -124,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_pad_replicate01) {
 			  { 3.0f,  3.0f, 12.0f, 21.0f, 21.0f},
 			  { 6.0f,  6.0f, 15.0f, 24.0f, 24.0f},
 			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f},
-			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f}}});        // @formatter:on
+			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f}}});              // @formatter:on
 
 	math::Tensor3f output = math::pad_replicate(input, 1);
 
@@ -222,18 +221,62 @@ BOOST_AUTO_TEST_CASE(test_cwise_add_constant_tensor) {
 	a.setValues( { { { 1.0f, 2.0f },
 			{ 3.0f, 4.0f } } });
 	math::Tensor3f a_plus = math::cwise_add_constant(a, 1.5f);
-	math::Tensor3f expected_a_plus(1,2,2);
+	math::Tensor3f expected_a_plus(1, 2, 2);
 	expected_a_plus.setValues( { { { 2.5f, 3.5f },
-		{ 4.5f, 5.5f } } });
+			{ 4.5f, 5.5f } } });
 	BOOST_REQUIRE(math::almost_equal_verbose(a_plus, expected_a_plus, 1e-6));
 
 	math::Tensor3v3f b(1, 2, 2);
 	b.setValues( { { { math::Vector3f(1.0f, 2.0f, 3.0f), math::Vector3f(4.0f, 5.0f, 6.0f) },
 			{ math::Vector3f(7.0f, 8.0f, 9.0f), math::Vector3f(10.0f, 11.0f, 12.0f) } } });
 	math::Tensor3v3f b_plus = math::cwise_add_constant(b, math::Vector3f(2.0f, 1.0f, -1.0f));
-	math::Tensor3v3f expected_b_plus(1,2,2);
+	math::Tensor3v3f expected_b_plus(1, 2, 2);
 	expected_b_plus.setValues( { { { math::Vector3f(3.0f, 3.0f, 2.0f), math::Vector3f(6.0f, 6.0f, 5.0f) },
-		{ math::Vector3f(9.0f, 9.0f, 8.0f), math::Vector3f(12.0, 12.0f, 11.0f) } } });
+			{ math::Vector3f(9.0f, 9.0f, 8.0f), math::Vector3f(12.0, 12.0f, 11.0f) } } });
 
 	BOOST_REQUIRE(math::almost_equal_verbose(b_plus, expected_b_plus, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_nested_sum_matrix) {
+	math::MatrixXv2f a(2, 2);
+	a << math::Vector2f(1.0f, 2.0f), math::Vector2f(3.0f, 4.0f), math::Vector2f(0.5f, 0.5f), math::Vector2f(-34.0f,
+			24.0f);
+	eig::MatrixXf b;
+	math::nested_sum(b, a);
+	eig::MatrixXf expected_b(2, 2);
+	expected_b << 3.0f, 7.0f, 1.0f, -10.0f;
+	BOOST_REQUIRE(math::almost_equal_verbose(b, expected_b, 1e-6));
+
+	math::MatrixXm2f c(1, 2);
+	c << math::Matrix2f(1.0f, 2.0f, 3.0f, 4.0f), math::Matrix2f(0.5f, -0.5f, 0.6f, -0.4f);
+	eig::MatrixXf d;
+	math::nested_sum(d, c);
+	eig::MatrixXf expected_d(1, 2);
+	expected_d << 10.0f, 0.2f;
+	BOOST_REQUIRE(math::almost_equal_verbose(d, expected_d, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_nested_sum_tensor) {
+	math::Tensor3v3f a(1, 2, 3);
+	a.setValues(  // @formatter:off
+			{{{math::Vector3f(1.0f,2.0f,3.0f), math::Vector3f(-1.0f, 4.0f, -2.0f), math::Vector3f(0.5f,0.5f, 0.5f)},
+			  {math::Vector3f(-34.0f, 24.0f, 0.0f), math::Vector3f(0.1, 0.2, 0.7), math::Vector3f(0.5, 0.5f, -1.0f)}}}
+	);        // @formatter:on
+	math::Tensor3f b(1, 2, 3);
+	math::nested_sum(b, a);
+	math::Tensor3f expected_b(1, 2, 3);
+	expected_b.setValues( { { { 6.0f, 1.0f, 1.5f }, { -10.0f, 1.0f, 0.0f } } });
+	BOOST_REQUIRE(math::almost_equal_verbose(b, expected_b, 1e-6));
+
+	math::Tensor3m3f c(1, 2, 2);
+	c.setValues(
+			{ { { math::Matrix3f(1.0f, 0.0f, 0.0f, 2.0f, 3.0f, 0.0f, 4.0f, 0.0f, 0.0f),
+				  math::Matrix3f(0.0f, 0.5f, -0.5f, 0.6f, 0.0f, 0.0f, 0.0f, -0.4f, 0.0f) } ,
+			    { math::Matrix3f(0.0f, 1.0f, 0.0f, 3.0f, 3.0f, 4.0f, 0.0f, 0.0f, 0.0f),
+				  math::Matrix3f(0.0f, 0.0f, 0.5f, 0.0f, 0.0f, -0.5f, 0.0f, 0.7f, -0.4f) } } });
+	math::Tensor3f d;
+	math::nested_sum(d, c);
+	math::Tensor3f expected_d(1, 2, 2);
+	expected_d.setValues( { { { 10.0f, 0.2f } , { 11.0f, 0.3f } } });
+	BOOST_REQUIRE(math::almost_equal_verbose(d, expected_d, 1e-6));
 }
