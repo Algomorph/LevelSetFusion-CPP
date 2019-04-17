@@ -444,6 +444,7 @@ lsf_add_test(NAME tsdf SOURCES tests/test_tsdf.cpp tests/data/test_data_tsdf.hpp
 lsf_add_test(NAME math SOURCES tests/test_math.cpp tests/data/test_data_math.hpp)
 lsf_add_test(NAME convolution SOURCES tests/test_convolution.cpp tests/data/test_data_convolution.hpp)
 lsf_add_test(NAME resampling SOURCES tests/test_resampling.cpp)
+lsf_add_test(NAME gradients SOURCES tests/test_gradients.cpp tests/data/test_data_gradients.hpp)
 lsf_add_test(NAME slavcheva_optimizer SOURCES tests/test_slavcheva_optimizer.cpp tests/data/test_data_slavcheva_optimizer.hpp)
 lsf_add_test(NAME hierarchical_optimizer SOURCES tests/test_hierarchical_optimizer.cpp tests/data/test_data_hierarchical_optimizer.hpp)
 lsf_add_test(NAME image_io SOURCES tests/test_image_io.cpp tests/data/test_data_image_io.hpp)

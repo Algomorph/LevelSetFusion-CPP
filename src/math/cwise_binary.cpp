@@ -24,12 +24,21 @@
 
 namespace eig = Eigen;
 namespace math {
-template math::MatrixXv2f scale<math::Vector2f,float>(const math::MatrixXv2f& container, float factor);
-template math::Tensor3v3f scale<math::Vector3f,float>(const math::Tensor3v3f& container, float factor);
+template eig::MatrixXf scale<float, float>(const eig::MatrixXf& container, float factor);
+template eig::MatrixXd scale<double, double>(const eig::MatrixXd& container, double factor);
+template math::MatrixXv2f scale<math::Vector2f, float>(const math::MatrixXv2f& container, float factor);
+template math::Tensor3f scale<float, float>(const math::Tensor3f& container, float factor);
+template math::Tensor3v3f scale<math::Vector3f, float>(const math::Tensor3v3f& container, float factor);
 
-template math::MatrixXv2f cwise_product<math::Vector2f,float>(const math::MatrixXv2f& container_a, const eig::MatrixXf& container_b);
-template math::Tensor3v3f cwise_product<math::Vector3f,float>(const math::Tensor3v3f& container_a, const math::Tensor3f& container_b);
+template math::MatrixXv2f cwise_product<math::Vector2f, float>(const math::MatrixXv2f& container_a,
+		const eig::MatrixXf& container_b);
+template math::Tensor3v3f cwise_product<math::Vector3f, float>(const math::Tensor3v3f& container_a,
+		const math::Tensor3f& container_b);
+
+template eig::MatrixXf cwise_add_constant<float>(const eig::MatrixXf& container, float constant);
+template math::MatrixXv2f cwise_add_constant<math::Vector2f>(const math::MatrixXv2f& container, math::Vector2f constant);
+template math::Tensor3f cwise_add_constant<float>(const math::Tensor3f& container, float constant);
+template math::Tensor3v3f cwise_add_constant<math::Vector3f>(const math::Tensor3v3f& container, math::Vector3f constant);
 
 }  // namespace math
-
 

@@ -28,138 +28,16 @@
 #include "data/test_data_math.hpp"
 
 //test targets
-#include "../src/math/gradients.hpp"
 #include "../src/math/almost_equal.hpp"
 #include "../src/math/typedefs.hpp"
 #include "../src/math/statistics.hpp"
 #include "../src/math/padding.hpp"
+#include "../src/math/cwise_binary.hpp"
+#include "../src/math/cwise_unary.hpp"
 #include "../src/math/transformation.hpp"
 
 namespace eig = Eigen;
 
-BOOST_AUTO_TEST_CASE(scalar_field_gradient_test01) {
-	eig::MatrixXf field(2,2);
-	field << -0.46612028, -0.8161121,
-	0.2427629, -0.79432599;
-
-	eig::MatrixXf expected_gradient_x(2,2), expected_gradient_y(2,2);
-	expected_gradient_x << -0.34999183, -0.34999183,
-			-1.03708889, -1.03708889;
-	expected_gradient_y << 0.70888318, 0.02178612,
-			0.70888318, 0.02178612;
-	eig::MatrixXf gradient_x, gradient_y;
-	math::gradient(gradient_x, gradient_y, field);
-
-	BOOST_REQUIRE(gradient_x.isApprox(expected_gradient_x));
-	BOOST_REQUIRE(gradient_y.isApprox(expected_gradient_y));
-}
-
-BOOST_AUTO_TEST_CASE(scalar_field_gradient_test02) {
-	eig::MatrixXf field(3,3);
-	field << 0.11007435, -0.94589225, -0.54835034,
-			-0.09617922, 0.15561824, 0.60624432,
-			-0.83068796, 0.19262577, -0.21090505;
-
-	eig::MatrixXf expected_gradient_x(3,3), expected_gradient_y(3,3);
-	expected_gradient_x << -1.0559666, -0.32921235, 0.39754191,
-			0.25179745, 0.35121177, 0.45062608,
-			1.02331373, 0.30989146, -0.40353082;
-	expected_gradient_y << -0.20625357, 1.10151049, 1.15459466,
-			-0.47038115, 0.56925901, 0.16872265,
-			-0.73450874, 0.03700753, -0.81714937;
-
-	eig::MatrixXf gradient_x, gradient_y;
-	math::gradient(gradient_x, gradient_y, field);
-
-	BOOST_REQUIRE(gradient_x.isApprox(expected_gradient_x));
-	BOOST_REQUIRE(gradient_y.isApprox(expected_gradient_y));
-}
-
-BOOST_AUTO_TEST_CASE(scalar_field_gradient_test03) {
-	eig::MatrixXf gradient_x, gradient_y;
-	math::gradient(gradient_x, gradient_y, test_data::field);
-
-	BOOST_REQUIRE(gradient_x.isApprox(test_data::expected_gradient_x));
-	BOOST_REQUIRE(gradient_y.isApprox(test_data::expected_gradient_y));
-}
-
-BOOST_AUTO_TEST_CASE(scalar_field_gradient_test04) {
-	eig::Matrix2f field;
-	field << -0.46612028, -0.8161121,
-			0.2427629, -0.79432599;
-
-	math::MatrixXv2f expected_gradient(2, 2);
-	expected_gradient <<
-			// @formatter:off
-		math::Vector2f(-0.34999183f, 0.70888318f), math::Vector2f(-0.34999183f, 0.02178612f),
-		math::Vector2f(-1.03708889f, 0.70888318f), math::Vector2f(-1.03708889f, 0.02178612f);  // @formatter:on
-
-	math::MatrixXv2f gradient;
-	math::gradient(gradient, static_cast<eig::MatrixXf>(field));
-
-	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
-}
-
-BOOST_AUTO_TEST_CASE(scalar_field_gradient_test05) {
-	namespace eig = Eigen;
-
-	eig::Matrix3f field;
-	field << 0.11007435, -0.94589225, -0.54835034,
-			-0.09617922, 0.15561824, 0.60624432,
-			-0.83068796, 0.19262577, -0.21090505;
-
-	math::MatrixXv2f expected_gradient(3, 3);
-	expected_gradient <<
-			// @formatter:off
-			math::Vector2f(-1.0559666f, -0.20625357f), math::Vector2f(-0.32921235f, 1.10151049f), math::Vector2f(
-			0.39754191f, 1.15459466f),
-			math::Vector2f(0.25179745f, -0.47038115f), math::Vector2f(0.35121177f, 0.56925901f), math::Vector2f(
-					0.45062608f, 0.16872265f),
-			math::Vector2f(1.02331373f, -0.73450874f), math::Vector2f(0.30989146f, 0.03700753f), math::Vector2f(
-					-0.40353082f, -0.81714937f);
-																									// @formatter:on
-	math::MatrixXv2f gradient;
-	math::gradient(gradient, static_cast<eig::MatrixXf>(field));
-
-	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
-}
-
-BOOST_AUTO_TEST_CASE(scalar_field_gradient_test06) {
-	namespace eig = Eigen;
-
-	math::MatrixXv2f gradient;
-	math::gradient(gradient, test_data::field);
-
-	eig::MatrixXf exp_grad_x = test_data::expected_gradient_x;
-	eig::MatrixXf exp_grad_y = test_data::expected_gradient_y;
-
-	math::MatrixXv2f expected_gradient = math::stack_as_xv2f(test_data::expected_gradient_x,
-			test_data::expected_gradient_y);
-	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
-}
-
-BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
-	math::MatrixXv2f vector_field(2, 2);
-	vector_field << //@formatter:off
-			math::Vector2f(0.0f, 0.0f), math::Vector2f(1.0f, -1.0f),
-			math::Vector2f(-1.0f, 1.0f), math::Vector2f(1.0f, 1.0f);
-																									//@formatter:on
-
-	math::MatrixXm2f gradient;
-	math::gradient(gradient, vector_field);
-
-	math::MatrixXm2f expected_gradient(2, 2);
-	expected_gradient << math::Matrix2f(1.0f, -1.0f, -1.0f, 1.0f), math::Matrix2f(1.0f, 0.0f, -1.0f, 2.0f),
-			math::Matrix2f(2.0f, -1.0f, 0.0f, 1.0f), math::Matrix2f(2.0f, 0.0f, 0.0f, 2.0f);
-
-	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
-}
-
-BOOST_AUTO_TEST_CASE(vector_field_gradient_test02) {
-	math::MatrixXm2f gradient;
-	math::gradient(gradient, test_data::vector_field);
-	BOOST_REQUIRE(math::almost_equal(gradient, test_data::expected_vector_field_gradient, 1e-6));
-}
 
 BOOST_AUTO_TEST_CASE(max_norm_test01) {
 	math::MatrixXv2f vector_field(4, 4);
@@ -215,7 +93,7 @@ BOOST_AUTO_TEST_CASE(test_pad_replicate01) {
 				 {{3.0f, 12.0f, 21.0f},
 				  {6.0f, 15.0f, 24.0f},
 				  {9.0f, 18.0f, 27.0f}}}
-	);  // @formatter:on
+	);        // @formatter:on
 
 	math::Tensor3f expected_output(5, 5, 5);
 	expected_output.setValues(  // @formatter:off
@@ -247,11 +125,118 @@ BOOST_AUTO_TEST_CASE(test_pad_replicate01) {
 			  { 3.0f,  3.0f, 12.0f, 21.0f, 21.0f},
 			  { 6.0f,  6.0f, 15.0f, 24.0f, 24.0f},
 			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f},
-			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f}}});  // @formatter:on
+			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f}}});        // @formatter:on
 
 	math::Tensor3f output = math::pad_replicate(input, 1);
 
 	BOOST_REQUIRE(math::almost_equal_verbose(output, expected_output, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_scale_matrix) {
+	eig::MatrixXf a(2, 2);
+	a << 1.0f, 2.0f, 3.0f, 4.0f;
+	eig::MatrixXf a_scaled = math::scale(a, 2.0f);
+	eig::MatrixXf expected_output(2, 2);
+	expected_output << 2.0f, 4.0f, 6.0f, 8.0f;
+	BOOST_REQUIRE(math::almost_equal_verbose(a_scaled, expected_output, 1e-6));
+
+	eig::MatrixXd b(1, 2);
+	b << 1.0, 2.0;
+	eig::MatrixXd b_scaled = math::scale(b, 2.0);
+	eig::MatrixXd expected_output2(1, 2);
+	expected_output2 << 2.0, 4.0;
+	BOOST_REQUIRE(math::almost_equal_verbose(b_scaled, expected_output2, 1e-6));
+
+	math::MatrixXv2f c(1, 2);
+	c << math::Vector2f(1.0f, 2.0f), math::Vector2f(3.0f, 4.0f);
+	math::MatrixXv2f c_scaled = math::scale(c, -2.0f);
+	math::MatrixXv2f expected_output3(1, 2);
+	expected_output3 << math::Vector2f(-2.0f, -4.0f), math::Vector2f(-6.0f, -8.0f);
+	BOOST_REQUIRE(math::almost_equal_verbose(c_scaled, expected_output3, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_scale_tensor) {
+	math::Tensor3f a(1, 2, 2);
+	a.setValues( { { { 1.0f, 2.0f },
+			{ 3.0f, 4.0f } } });
+	math::Tensor3f a_scaled = math::scale(a, 3.0f);
+	math::Tensor3f expected_output(1, 2, 2);
+	expected_output.setValues(
+			{ { { 3.0f, 6.0f },
+					{ 9.0f, 12.0f } } }
+			);
+	BOOST_REQUIRE(math::almost_equal_verbose(a_scaled, expected_output, 1e-6));
+
+	math::Tensor3v3f b(1, 2, 2);
+	b.setValues( { { { math::Vector3f(1.0f, 2.0f, 3.0f), math::Vector3f(4.0f, 5.0f, 6.0f) },
+			{ math::Vector3f(7.0f, 8.0f, 9.0f), math::Vector3f(10.0f, 11.0f, 12.0f) } } });
+	math::Tensor3v3f b_scaled = math::scale(b, -0.5f);
+	math::Tensor3v3f expected_output2(1, 2, 2);
+	expected_output2.setValues( { { { math::Vector3f(-0.5f, -1.0f, -1.5f), math::Vector3f(-2.0f, -2.5f, -3.0f) },
+			{ math::Vector3f(-3.5f, -4.0f, -4.5f), math::Vector3f(-5.0f, -5.5f, -6.0f) } } });
+	BOOST_REQUIRE(math::almost_equal_verbose(b_scaled, expected_output2, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_cwise_product_matrix) {
+	math::MatrixXv2f a(1, 2);
+	a << math::Vector2f(1.0f, 2.0f), math::Vector2f(8.0f, 4.0f);
+	eig::MatrixXf b(1, 2);
+	b << 0.5, -0.25f;
+	math::MatrixXv2f c = math::cwise_product(a, b);
+	math::MatrixXv2f expected_c(1, 2);
+	expected_c << math::Vector2f(0.5f, 1.0f), math::Vector2f(-2.0f, -1.0f);
+	BOOST_REQUIRE(math::almost_equal_verbose(c, expected_c, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_cwise_product_tensor) {
+	math::Tensor3v3f a(1, 2, 2);
+	a.setValues( { { { math::Vector3f(1.0f, 2.0f, 3.0f), math::Vector3f(4.0f, 5.0f, 6.0f) },
+			{ math::Vector3f(7.0f, 8.0f, 9.0f), math::Vector3f(10.0f, 11.0f, 12.0f) } } });
+	math::Tensor3f b(1, 2, 2);
+	b.setValues( { { { 2.0f, 0.5f },
+			{ -0.5f, 1.0f } } });
+	math::Tensor3v3f c = math::cwise_product(a, b);
+	math::Tensor3v3f expected_c(1, 2, 2);
+	expected_c.setValues( { { { math::Vector3f(2.0f, 4.0f, 6.0f), math::Vector3f(2.0f, 2.5f, 3.0f) },
+			{ math::Vector3f(-3.5f, -4.0f, -4.5f), math::Vector3f(10.0f, 11.0f, 12.0f) } } });
+	BOOST_REQUIRE(math::almost_equal_verbose(c, expected_c, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_cwise_add_constant_matrix) {
+	math::MatrixXv2f a(1, 2);
+	a << math::Vector2f(1.0f, 2.0f), math::Vector2f(3.0f, 4.0f);
+	math::MatrixXv2f a_plus = math::cwise_add_constant(a, math::Vector2f(1.0f, 2.0f));
+	math::MatrixXv2f expected_output(1, 2);
+	expected_output << math::Vector2f(2.0f, 4.0f), math::Vector2f(4.0f, 6.0f);
+	BOOST_REQUIRE(math::almost_equal_verbose(a_plus, expected_output, 1e-6));
+
+	eig::MatrixXf b(2, 2);
+	b << 1.0f, 2.0f, 3.0f, 4.0f;
+	eig::MatrixXf b_minus_one = math::cwise_add_constant(b, -1.0f);
+	eig::MatrixXf expected_output2(2, 2);
+	expected_output2 << 0.0f, 1.0f, 2.0f, 3.0f;
+	BOOST_REQUIRE(math::almost_equal_verbose(b_minus_one, expected_output2, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_cwise_add_constant_tensor) {
+	math::Tensor3f a(1, 2, 2);
+	a.setValues( { { { 1.0f, 2.0f },
+			{ 3.0f, 4.0f } } });
+	math::Tensor3f a_plus = math::cwise_add_constant(a, 1.5f);
+	math::Tensor3f expected_a_plus(1,2,2);
+	expected_a_plus.setValues( { { { 2.5f, 3.5f },
+		{ 4.5f, 5.5f } } });
+	BOOST_REQUIRE(math::almost_equal_verbose(a_plus, expected_a_plus, 1e-6));
+
+	math::Tensor3v3f b(1, 2, 2);
+	b.setValues( { { { math::Vector3f(1.0f, 2.0f, 3.0f), math::Vector3f(4.0f, 5.0f, 6.0f) },
+			{ math::Vector3f(7.0f, 8.0f, 9.0f), math::Vector3f(10.0f, 11.0f, 12.0f) } } });
+	math::Tensor3v3f b_plus = math::cwise_add_constant(b, math::Vector3f(2.0f, 1.0f, -1.0f));
+	math::Tensor3v3f expected_b_plus(1,2,2);
+	expected_b_plus.setValues( { { { math::Vector3f(3.0f, 3.0f, 2.0f), math::Vector3f(6.0f, 6.0f, 5.0f) },
+		{ math::Vector3f(9.0f, 9.0f, 8.0f), math::Vector3f(12.0, 12.0f, 11.0f) } } });
+
+	BOOST_REQUIRE(math::almost_equal_verbose(b_plus, expected_b_plus, 1e-6));
 }
 
 BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test01) {
