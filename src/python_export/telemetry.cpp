@@ -74,6 +74,8 @@ void export_telemetry_utilities() {
 			.def(bp::self_ns::str(bp::self_ns::self))
 			;
 
+	bp::def("build_warp_delta_statistics2d", &telemetry::build_warp_delta_statistics<math::Vector2i, eig::MatrixXf, math::MatrixXv2f>);
+
 	bp::class_<telemetry::TsdfDifferenceStatistics2d>("TsdfDifferenceStatistics2d", bp::init<>())
 			.def(bp::init<float, float, float, float, math::Vector2i>(
 			bp::args("difference_min",
