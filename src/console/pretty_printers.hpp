@@ -20,10 +20,20 @@
 
 #pragma once
 
+//stdlib
 #include <iostream>
+
+//libraries
+#include <Eigen/Dense>
+#include <unsupported/Eigen/CXX11/Tensor>
+
+//local
 #include "../math/typedefs.hpp"
 
-std::ostream& operator<<(std::ostream& os, const math::Tensor3f& tensor)
+namespace eig = Eigen;
+
+template<typename Scalar>
+std::ostream& operator<<(std::ostream& os, const eig::Tensor<Scalar,3,eig::ColMajor>& tensor)
 {
 	std::ios_base::fmtflags original_flags(os.flags());
 	os.precision(6);
@@ -31,7 +41,7 @@ std::ostream& operator<<(std::ostream& os, const math::Tensor3f& tensor)
 	for(int z = 0; z < tensor.dimension(2); z++){
 		for(int y = 0; y < tensor.dimension(1); y++){
 			for(int x =0; x < tensor.dimension(0); x++){
-				os << tensor(x,y,z) << " ";
+				os << tensor(x,y,z) << "| ";
 			}
 			os << std::endl;
 		}
@@ -40,6 +50,8 @@ std::ostream& operator<<(std::ostream& os, const math::Tensor3f& tensor)
 	os.flags(original_flags);
     return os;
 }
+
+
 namespace console{
 void print_initializer_list(std::ostream& os, const math::Tensor3f& tensor, int precision = 4)
 {

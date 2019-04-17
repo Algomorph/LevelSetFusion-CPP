@@ -18,7 +18,7 @@
 #include <Eigen/Eigen>
 
 #include "../../src/math/stacking.hpp"
-#include "../src/math/typedefs.hpp"
+#include "../../src/math/typedefs.hpp"
 
 namespace test_data {
 namespace eig = Eigen;
