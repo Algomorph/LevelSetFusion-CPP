@@ -138,8 +138,8 @@ template<typename TMatrix>
 static inline
 bool compare_matrix_dimensions_verbose(TMatrix matrix_a, TMatrix matrix_b) {
 	return compare_matrix_dimensions(matrix_a, matrix_b, [](TMatrix matrix_a, TMatrix matrix_b) -> void {
-		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.cols() << " columns by " << matrix_a.rows()
-		<< " rows, Matrix b: " << matrix_b.cols() << " columns by " << matrix_b.rows() << " rows."
+		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.rows() << " rows by " << matrix_a.cols()
+		<< " rows, Matrix b: " << matrix_b.rows() << " rows by " << matrix_b.cols() << " columns."
 		<< std::endl;
 	}
 			);

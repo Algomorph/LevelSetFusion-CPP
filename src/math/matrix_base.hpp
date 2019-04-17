@@ -45,6 +45,11 @@ template <class T> struct Matrix2_{
 
 template <class T> struct Matrix3_{
 	union { // Warning: see the header in this file for the special matrix order
+		struct {
+			T m00, m01, m02; // |0, 3, 6|
+			T m10, m11, m12; // |1, 4, 7|
+			T m20, m21, m22; // |2, 5, 8|
+		};
 		struct { //ordered struct representation
 			T yx00, yx01, yx02; // |0, 3, 6|
 			T yx10, yx11, yx12; // |1, 4, 7|

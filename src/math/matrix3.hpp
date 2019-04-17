@@ -122,7 +122,7 @@ public:
 	}
 
 	// Sum of all elements
-	_CPU_AND_GPU_CODE_ inline T sum() const { return std::accumulate(this->values, this->values+9, 0); }
+	_CPU_AND_GPU_CODE_ inline T sum() const { return std::accumulate(this->values, this->values+9, static_cast<T>(0)); }
 
 	// Matrix determinant
 	_CPU_AND_GPU_CODE_ inline T det() const {
