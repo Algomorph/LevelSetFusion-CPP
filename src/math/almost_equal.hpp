@@ -45,6 +45,9 @@ template<typename ElementType, typename ToleranceType>
 bool almost_equal(math::Matrix2<ElementType> a, math::Matrix2<ElementType> b, ToleranceType tolerance);
 
 template<typename ElementType, typename ToleranceType>
+bool almost_equal(math::Matrix3<ElementType> a, math::Matrix3<ElementType> b, ToleranceType tolerance);
+
+template<typename ElementType, typename ToleranceType>
 bool almost_equal(Eigen::Matrix<ElementType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> a,
 		Eigen::Matrix<ElementType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> b, ToleranceType tolerance);
 

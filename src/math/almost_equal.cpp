@@ -48,7 +48,7 @@ bool almost_equal(double a, double b, double tolerance) {
 	return almost_equal_absolute(a, b, tolerance);
 }
 
-template bool almost_equal<float, float>(math::Vector2f a, math::Vector2f b, float tolerance);
+template bool almost_equal<float, float>(math::Vector2f a, math::Vector2f b, float tolerance);  // @formatter: off
 template bool almost_equal<float, float>(math::Vector3f a, math::Vector3f b, float tolerance);
 template bool almost_equal<float, float>(math::Matrix2f a, math::Matrix2f b, float tolerance);
 template bool almost_equal<float, double>(math::Vector2f a, math::Vector2f b, double tolerance);
@@ -62,23 +62,15 @@ template bool almost_equal_verbose<float, float>(eig::MatrixXf matrix_a, eig::Ma
 template bool almost_equal_verbose<float, double>(eig::MatrixXf matrix_a, eig::MatrixXf matrix_b, double tolerance);
 template bool almost_equal_verbose<double, double>(eig::MatrixXd matrix_a, eig::MatrixXd matrix_b, double tolerance);
 
-template bool almost_equal<math::Vector2f, float>(math::MatrixXv2f matrix_a, math::MatrixXv2f matrix_b,
-		float tolerance);
-template bool almost_equal<math::Vector2f, double>(math::MatrixXv2f matrix_a,
-		math::MatrixXv2f matrix_b, double tolerance);
-template bool almost_equal_verbose<math::Vector2f, float>(math::MatrixXv2f matrix_a, math::MatrixXv2f matrix_b,
-		float tolerance);
-template bool almost_equal_verbose<math::Vector2f, double>(math::MatrixXv2f matrix_a,
-		math::MatrixXv2f matrix_b, double tolerance);
+template bool almost_equal<math::Vector2f, float>(math::MatrixXv2f matrix_a, math::MatrixXv2f matrix_b,float tolerance);
+template bool almost_equal<math::Vector2f, double>(math::MatrixXv2f matrix_a,math::MatrixXv2f matrix_b, double tolerance);
+template bool almost_equal_verbose<math::Vector2f, float>(math::MatrixXv2f matrix_a, math::MatrixXv2f matrix_b,float tolerance);
+template bool almost_equal_verbose<math::Vector2f, double>(math::MatrixXv2f matrix_a,math::MatrixXv2f matrix_b, double tolerance);
 
-template bool almost_equal<math::Matrix2f, float>(math::MatrixXm2f matrix_a, math::MatrixXm2f matrix_b,
-		float tolerance);
-template bool almost_equal<math::Matrix2f, double>(math::MatrixXm2f matrix_a, math::MatrixXm2f matrix_b,
-		double tolerance);
-template bool almost_equal_verbose<math::Matrix2f, float>(math::MatrixXm2f matrix_a, math::MatrixXm2f matrix_b,
-		float tolerance);
-template bool almost_equal_verbose<math::Matrix2f, double>(math::MatrixXm2f matrix_a, math::MatrixXm2f matrix_b,
-		double tolerance);
+template bool almost_equal<math::Matrix2f, float>(math::MatrixXm2f matrix_a, math::MatrixXm2f matrix_b,float tolerance);
+template bool almost_equal<math::Matrix2f, double>(math::MatrixXm2f matrix_a, math::MatrixXm2f matrix_b,double tolerance);
+template bool almost_equal_verbose<math::Matrix2f, float>(math::MatrixXm2f matrix_a, math::MatrixXm2f matrix_b,float tolerance);
+template bool almost_equal_verbose<math::Matrix2f, double>(math::MatrixXm2f matrix_a, math::MatrixXm2f matrix_b,double tolerance);
 
 template bool almost_equal<float, float>(math::Tensor3f tensor_a, math::Tensor3f tensor_b, float tolerance);
 template bool almost_equal<float, double>(math::Tensor3f tensor_a, math::Tensor3f tensor_b, double tolerance);
@@ -89,6 +81,11 @@ template bool almost_equal<math::Vector3f, float>(math::Tensor3v3f tensor_a, mat
 template bool almost_equal<math::Vector3f, double>(math::Tensor3v3f tensor_a, math::Tensor3v3f tensor_b, double tolerance);
 template bool almost_equal_verbose<math::Vector3f, float>(math::Tensor3v3f tensor_a, math::Tensor3v3f tensor_b, float tolerance);
 template bool almost_equal_verbose<math::Vector3f, double>(math::Tensor3v3f tensor_a, math::Tensor3v3f tensor_b, double tolerance);
+
+template bool almost_equal<math::Matrix3f, float>(math::Tensor3m3f tensor_a, math::Tensor3m3f tensor_b, float tolerance);
+template bool almost_equal<math::Matrix3f, double>(math::Tensor3m3f tensor_a, math::Tensor3m3f tensor_b, double tolerance);
+template bool almost_equal_verbose<math::Matrix3f, float>(math::Tensor3m3f tensor_a, math::Tensor3m3f tensor_b, float tolerance);
+template bool almost_equal_verbose<math::Matrix3f, double>(math::Tensor3m3f tensor_a, math::Tensor3m3f tensor_b, double tolerance);  // @formatter: on
 
 }//namespace math
 
