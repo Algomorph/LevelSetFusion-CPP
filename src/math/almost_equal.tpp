@@ -77,6 +77,14 @@ bool almost_equal<float, float>(math::Matrix2f a, math::Matrix2f b, float tolera
 }
 
 template<>
+bool almost_equal<float, float>(math::Matrix3f a, math::Matrix3f b, float tolerance) {
+	for(int i_entry = 0; i_entry < 9; i_entry++){
+		if(!almost_equal_absolute(a.values[i_entry], b.values[i_entry], tolerance)) return false;
+	}
+	return true;
+}
+
+template<>
 bool almost_equal<float, double>(math::Vector2f a, math::Vector2f b, double tol_in) {
 	float tolerance = static_cast<float>(tol_in);
 	return almost_equal_absolute(a.x, b.x, tolerance) && almost_equal_absolute(a.y, b.y, tolerance);
@@ -95,6 +103,15 @@ bool almost_equal<float, double>(math::Matrix2f a, math::Matrix2f b, double tol_
 	float tolerance = static_cast<float>(tol_in);
 	return almost_equal_absolute(a.xy00, b.xy00, tolerance) && almost_equal_absolute(a.xy01, b.xy01, tolerance) &&
 			almost_equal_absolute(a.xy10, b.xy10, tolerance) && almost_equal_absolute(a.xy11, b.xy11, tolerance);
+}
+
+template<>
+bool almost_equal<float, double>(math::Matrix3f a, math::Matrix3f b, double tol_in) {
+	float tolerance = static_cast<float>(tol_in);
+	for(int i_entry = 0; i_entry < 9; i_entry++){
+		if(!almost_equal_absolute(a.values[i_entry], b.values[i_entry], tolerance)) return false;
+	}
+	return true;
 }
 //endregion
 //region ==================== GENERIC MATRIX/TENSOR COMPARISON =========================================================

@@ -27,7 +27,7 @@ namespace math{
 
 
 template<typename Scalar, typename NestedContainer>
-void nested_sum(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& summed,
+void cwise_nested_sum(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& summed,
 		const Eigen::Matrix<NestedContainer, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field){
 	summed = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>(field.rows(), field.cols());
 #pragma omp parallel for
@@ -37,7 +37,7 @@ void nested_sum(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::Col
 }
 
 template<typename Scalar, typename NestedContainer>
-void nested_sum(Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& summed,
+void cwise_nested_sum(Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& summed,
 		const Eigen::Tensor<NestedContainer, 3, Eigen::ColMajor>& field){
 	summed = Eigen::Tensor<Scalar, 3, Eigen::ColMajor>(field.dimensions());
 #pragma omp parallel for
@@ -48,13 +48,13 @@ void nested_sum(Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& summed,
 
 template<typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
-square(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field){
+cwise_square(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field){
 	return field.array().square();
 }
 
 template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
-square(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+cwise_square(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
 	return field.square();
 }
 

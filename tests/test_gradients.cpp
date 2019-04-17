@@ -23,6 +23,7 @@
 //stdlib
 //_DEBUG
 #include <iostream>
+#include "../src/console/pretty_printers.hpp"
 
 //libraries
 #include <boost/test/unit_test.hpp>
@@ -33,10 +34,10 @@
 #include "data/test_data_gradients.hpp"
 
 //test targets
+#include "../src/math/checks.hpp"
 #include "../src/math/gradients.hpp"
 #include "../src/math/almost_equal.hpp"
 #include "../src/math/typedefs.hpp"
-
 
 BOOST_AUTO_TEST_CASE(scalar_field_gradient_test01) {
 	eig::MatrixXf field(2, 2);
@@ -118,7 +119,7 @@ BOOST_AUTO_TEST_CASE(scalar_field_gradient_test05) {
 					0.45062608f, 0.16872265f),
 			math::Vector2f(1.02331373f, -0.73450874f), math::Vector2f(0.30989146f, 0.03700753f), math::Vector2f(
 					-0.40353082f, -0.81714937f);
-																																		// @formatter:on
+																																					// @formatter:on
 	math::MatrixXv2f gradient;
 	math::gradient(gradient, static_cast<eig::MatrixXf>(field));
 
@@ -139,12 +140,12 @@ BOOST_AUTO_TEST_CASE(scalar_field_gradient_test06) {
 	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
 }
 
-BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
+BOOST_AUTO_TEST_CASE(test_vector_field_gradient01) {
 	math::MatrixXv2f vector_field(2, 2);
 	vector_field << //@formatter:off
 			math::Vector2f(0.0f, 0.0f), math::Vector2f(1.0f, -1.0f),
 			math::Vector2f(-1.0f, 1.0f), math::Vector2f(1.0f, 1.0f);
-																																		//@formatter:on
+																																					//@formatter:on
 
 	math::MatrixXm2f gradient;
 	math::gradient(gradient, vector_field);
@@ -156,10 +157,82 @@ BOOST_AUTO_TEST_CASE(vector_field_gradient_test01) {
 	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
 }
 
-BOOST_AUTO_TEST_CASE(vector_field_gradient_test02) {
+BOOST_AUTO_TEST_CASE(test_vector_field_gradient02) {
 	math::MatrixXm2f gradient;
 	math::gradient(gradient, test_data::vector_field);
 	BOOST_REQUIRE(math::almost_equal(gradient, test_data::expected_vector_field_gradient, 1e-6));
 }
 
+BOOST_AUTO_TEST_CASE(test_scalar_field_graident_tensor){
+	math::Tensor3f scalar_field(4,3,2);
+	scalar_field.setValues(  // @formatter:off
+		{{{1.0f, 13.0f},
+		  {5.0f, 17.0f},
+		  {9.0f, 21.0f}},
+		 {{2.0f, 14.0f},
+		  {6.0f, 18.0f},
+		  {10.0f, 22.0f}},
+		 {{3.0f, 15.0f},
+		  {7.0f, 19.0f},
+		  {11.0f, 23.0f}},
+		 {{4.0f, 16.0f},
+		  {8.0f, 20.0f},
+		  {12.0f, 24.0f}}}
+	); // @formatter:on
+	math::Tensor3v3f gradient;
+	math::gradient(gradient, scalar_field);
+	BOOST_REQUIRE(math::are_dimensions_equal(scalar_field, gradient));
+	math::Vector3f exp_out_elem(1.0f, 4.0f, 12.0f);
+	math::Tensor3v3f expected_gradient = gradient.constant(exp_out_elem);
+	BOOST_REQUIRE(math::almost_equal(gradient, expected_gradient, 1e-6));
+}
+
+BOOST_AUTO_TEST_CASE(test_gradient_matrix_matrix) {
+	math::MatrixXv2f vector_field(3, 3);
+	vector_field <<
+			math::Vector2f(1.0f, 2.0f),
+			math::Vector2f(3.0f, 4.0f),
+			math::Vector2f(5.0f, 6.0f),
+
+			math::Vector2f(7.0f, 8.0f),
+			math::Vector2f(9.0f, 10.0f),
+			math::Vector2f(11.0f, 12.0f),
+
+			math::Vector2f(13.0f, 14.0f),
+			math::Vector2f(15.0f, 16.0f),
+			math::Vector2f(17.0f, 18.0f);
+	math::MatrixXm2f vector_field_gradient;
+	math::gradient(vector_field_gradient, vector_field);
+	math::MatrixXm2f expected_vector_field_gradient(3,3);
+	expected_vector_field_gradient <<
+		math::Matrix2f(2.0f, 6.0f, 2.0f, 6.0f), math::Matrix2f(2.0f, 6.0f, 2.0f, 6.0f), math::Matrix2f(2.0f, 6.0f, 2.0f, 6.0f),
+		math::Matrix2f(2.0f, 6.0f, 2.0f, 6.0f), math::Matrix2f(2.0f, 6.0f, 2.0f, 6.0f), math::Matrix2f(2.0f, 6.0f, 2.0f, 6.0f),
+		math::Matrix2f(2.0f, 6.0f, 2.0f, 6.0f), math::Matrix2f(2.0f, 6.0f, 2.0f, 6.0f), math::Matrix2f(2.0f, 6.0f, 2.0f, 6.0f);
+	BOOST_REQUIRE(math::almost_equal(vector_field_gradient, expected_vector_field_gradient, 1e-6));
+}
+
+static inline
+void gen_arange_tensor3v3f(math::Tensor3v3f& vector_field){
+	float counter = 1.0f;
+	for (int z = 0; z < vector_field.dimension(2); z++) {
+		for (int y = 0; y < vector_field.dimension(1); y++) {
+			for (int x = 0; x < vector_field.dimension(0); x++) {
+				vector_field(x, y, z) = math::Vector3f(counter, counter + 1.0f, counter + 2.0f);
+				counter += 3.0f;
+			}
+		}
+	}
+}
+
+
+BOOST_AUTO_TEST_CASE(test_gradient_matrix_tensor) {
+	math::Tensor3v3f vector_field(4, 4, 5);
+	gen_arange_tensor3v3f(vector_field);
+	math::Tensor3m3f vector_field_gradient;
+	math::gradient(vector_field_gradient, vector_field);
+	math::Matrix3f exp_out_elem(3.0f, 3.0f, 3.0f,  12.0f, 12.0f, 12.0f, 48.0f, 48.0f,48.0f);
+	BOOST_REQUIRE(math::are_dimensions_equal(vector_field,vector_field_gradient));
+	math::Tensor3m3f expected_vector_field_gradient = vector_field_gradient.constant(exp_out_elem);
+	BOOST_REQUIRE(math::almost_equal_verbose(vector_field_gradient, expected_vector_field_gradient, 1e-6));
+}
 
