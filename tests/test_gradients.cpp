@@ -266,3 +266,27 @@ BOOST_AUTO_TEST_CASE(test_laplacian_matrix) {
 	math::MatrixXv2f expected_b_laplacian = math::stack_as_xv2f(expected_b_laplacian_layer,expected_b_laplacian_layer);
 	BOOST_REQUIRE(math::almost_equal_verbose(b_laplacian, expected_b_laplacian, 1e-6));
 }
+
+BOOST_AUTO_TEST_CASE(test_laplacian_tensor){
+	float value = 1.0f;
+	math::Tensor3v3f a(4,4,4);
+	bool neg = true;
+	for (int z = 0; z < a.dimension(2); z++){
+		neg = !neg;
+		for (int y = 0; y < a.dimension(1); y++){
+			neg = !neg;
+			for (int x = 0; x < a.dimension(0); x++){
+				if (neg){
+					a(x, y, z) = math::Vector3f(-value);
+				} else {
+					a(x, y, z) = math::Vector3f(value);
+				}
+				value += 1.0f;
+				neg = !neg;
+			}
+		}
+	}
+	math::Tensor3v3f a_laplacian;
+	math::laplacian(a_laplacian, a);
+	BOOST_REQUIRE(math::almost_equal_verbose(a_laplacian, test_data::expected_tensorV3_gradient, 1e-6));
+}

@@ -347,6 +347,29 @@ static math::MatrixXv2f vector_field = [] {
 	return field;
 }();
 
+static math::Tensor3v3f expected_tensorV3_gradient = []{
+	math::Tensor3v3f exp(4,4,4);
+	exp.setValues(  // @formatter:off
+			{{{math::Vector3f(27.0f, 27.0f, 27.0f), math::Vector3f(-141.0f, -141.0f, -141.0f), math::Vector3f(269.0f, 269.0f, 269.0f), math::Vector3f(-283.0f, -283.0f, -283.0f)},
+			  {math::Vector3f(-57.0f, -57.0f, -57.0f), math::Vector3f(211.0f, 211.0f, 211.0f), math::Vector3f(-371.0f, -371.0f, -371.0f), math::Vector3f(409.0f, 409.0f, 409.0f)},
+			  {math::Vector3f(89.0f, 89.0f, 89.0f), math::Vector3f(-251.0f, -251.0f, -251.0f), math::Vector3f(411.0f, 411.0f, 411.0f), math::Vector3f(-441.0f, -441.0f, -441.0f)},
+			  {math::Vector3f(-91.0f, -91.0f, -91.0f), math::Vector3f(229.0f, 229.0f, 229.0f), math::Vector3f(-357.0f, -357.0f, -357.0f), math::Vector3f(347.0f, 347.0f, 347.0f)}},
+			 {{math::Vector3f(-36.0f, -36.0f, -36.0f), math::Vector3f(184.0f, 184.0f, 184.0f), math::Vector3f(-344.0f, -344.0f, -344.0f), math::Vector3f(388.0f, 388.0f, 388.0f)},
+			  {math::Vector3f(76.0f, 76.0f, 76.0f), math::Vector3f(-264.0f, -264.0f, -264.0f), math::Vector3f(456.0f, 456.0f, 456.0f), math::Vector3f(-524.0f, -524.0f, -524.0f)},
+			  {math::Vector3f(-116.0f, -116.0f, -116.0f), math::Vector3f(312.0f, 312.0f, 312.0f), math::Vector3f(-504.0f, -504.0f, -504.0f), math::Vector3f(564.0f, 564.0f, 564.0f)},
+			  {math::Vector3f(124.0f, 124.0f, 124.0f), math::Vector3f(-296.0f, -296.0f, -296.0f), math::Vector3f(456.0f, 456.0f, 456.0f), math::Vector3f(-476.0f, -476.0f, -476.0f)}},
+			 {{math::Vector3f(44.0f, 44.0f, 44.0f), math::Vector3f(-194.0f, -194.0f, -194.0f), math::Vector3f(354.0f, 354.0f, 354.0f), math::Vector3f(-396.0f, -396.0f, -396.0f)},
+			  {math::Vector3f(-86.0f, -86.0f, -86.0f), math::Vector3f(276.0f, 276.0f, 276.0f), math::Vector3f(-468.0f, -468.0f, -468.0f), math::Vector3f(534.0f, 534.0f, 534.0f)},
+			  {math::Vector3f(126.0f, 126.0f, 126.0f), math::Vector3f(-324.0f, -324.0f, -324.0f), math::Vector3f(516.0f, 516.0f, 516.0f), math::Vector3f(-574.0f, -574.0f, -574.0f)},
+			  {math::Vector3f(-132.0f, -132.0f, -132.0f), math::Vector3f(306.0f, 306.0f, 306.0f), math::Vector3f(-466.0f, -466.0f, -466.0f), math::Vector3f(484.0f, 484.0f, 484.0f)}},
+			 {{math::Vector3f(-43.0f, -43.0f, -43.0f), math::Vector3f(163.0f, 163.0f, 163.0f), math::Vector3f(-291.0f, -291.0f, -291.0f), math::Vector3f(299.0f, 299.0f, 299.0f)},
+			  {math::Vector3f(79.0f, 79.0f, 79.0f), math::Vector3f(-239.0f, -239.0f, -239.0f), math::Vector3f(399.0f, 399.0f, 399.0f), math::Vector3f(-431.0f, -431.0f, -431.0f)},
+			  {math::Vector3f(-111.0f, -111.0f, -111.0f), math::Vector3f(279.0f, 279.0f, 279.0f), math::Vector3f(-439.0f, -439.0f, -439.0f), math::Vector3f(463.0f, 463.0f, 463.0f)},
+			  {math::Vector3f(107.0f, 107.0f, 107.0f), math::Vector3f(-251.0f, -251.0f, -251.0f), math::Vector3f(379.0f, 379.0f, 379.0f), math::Vector3f(-363.0f, -363.0f, -363.0f)}}}
+	);  // @formatter:on
+	return exp;
+}();
+
 }  // namespace test_data
 
 
