@@ -34,6 +34,7 @@
 namespace math {
 
 template<typename Scalar>
+
 struct ValueAndCoordinates2d {
 	ValueAndCoordinates2d() = default;
 	ValueAndCoordinates2d(Scalar squared_norm, math::Vector2i coordinates) :
@@ -118,7 +119,7 @@ void locate_min_norm(typename Scalar::Scalar& min_norm, math::Vector2i& coordina
 			new_best.coordinates.x = i_element / column_count;
 			new_best.coordinates.y = i_element % column_count;
 		} while (new_best.value < last_best.value
-				&& squared_norm_and_coordinates.compare_exchange_strong(last_best, new_best));
+				&& !squared_norm_and_coordinates.compare_exchange_strong(last_best, new_best));
 	}
 	ValueAndCoordinates2d<typename Scalar::Scalar> last_best = squared_norm_and_coordinates.load(); // @suppress("Invalid arguments")
 	min_norm = std::sqrt(last_best.value);
@@ -176,7 +177,7 @@ void locate_maximum(Scalar& maximum, math::Vector3i& coordinates,
 				!max_norm_and_coordinate.compare_exchange_strong(last_max_norm, new_norm));
 	}
 	ValueAndCoordinates3d<Scalar> last_max_norm = max_norm_and_coordinate.load();
-	maximum = std::sqrt(last_max_norm.value);
+	maximum = last_max_norm.value;
 	coordinates = last_max_norm.coordinates;
 }
 
@@ -184,13 +185,13 @@ template<typename Container, typename OutType>
 static inline
 OutType max_norm_aux(const Container& vector_field) {
 	std::atomic<OutType> max_norm_container(0);
+
 #pragma omp parallel for
 	for (eig::Index i_element = 0; i_element < vector_field.size(); i_element++) {
 		float squared_length = math::squared_norm(vector_field(i_element)); // @suppress("Function cannot be resolved")
 		float max_squared_norm = max_norm_container.load();
 		while (squared_length > max_squared_norm
-				&& max_norm_container.compare_exchange_weak(max_squared_norm, squared_length))
-			;
+				&& !max_norm_container.compare_exchange_weak(max_squared_norm, squared_length));
 	}
 	return std::sqrt(max_norm_container.load());
 }
@@ -214,7 +215,7 @@ OutType min_norm_aux(const Container& vector_field) {
 		OutType squared_length = math::squared_norm(vector_field(i_element)); // @suppress("Function cannot be resolved")
 		OutType min_squared_norm = min_norm_container.load();
 		while (squared_length < min_squared_norm
-				&& min_norm_container.compare_exchange_weak(min_squared_norm, squared_length))
+				&& !min_norm_container.compare_exchange_weak(min_squared_norm, squared_length))
 			;
 	}
 	return std::sqrt(min_norm_container.load());
