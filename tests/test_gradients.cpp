@@ -38,6 +38,7 @@
 #include "../src/math/gradients.hpp"
 #include "../src/math/almost_equal.hpp"
 #include "../src/math/typedefs.hpp"
+#include "../src/math/stacking.hpp"
 
 BOOST_AUTO_TEST_CASE(scalar_field_gradient_test01) {
 	eig::MatrixXf field(2, 2);
@@ -236,3 +237,29 @@ BOOST_AUTO_TEST_CASE(test_gradient_matrix_tensor) {
 	BOOST_REQUIRE(math::almost_equal_verbose(vector_field_gradient, expected_vector_field_gradient, 1e-6));
 }
 
+BOOST_AUTO_TEST_CASE(test_laplacian_matrix) {
+	eig::MatrixXf a(4,4);
+	//fill matrix arange-style and flipping values
+	float value = 1.0f;
+	bool neg = false;
+	for (int i_row = 0; i_row < a.rows(); i_row++){
+		for (int i_col = 0; i_col < a.cols(); i_col++){
+			if (neg){
+				a(i_row, i_col) = -value;
+			}else{
+				a(i_row, i_col) = value;
+			}
+			value += 1.0f;
+			neg = !neg;
+		}
+	}
+
+	std::cout << a << std::endl;
+
+	math::MatrixXv2f b = math::stack_as_xv2f(a,a);
+	math::MatrixXv2f b_laplacian;
+	math::laplacian(b_laplacian, b);
+
+	std::cout << b_laplacian << std::endl;
+
+}
