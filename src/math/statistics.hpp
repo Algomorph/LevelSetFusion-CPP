@@ -36,14 +36,14 @@ namespace math {
  * @param[in] vector_field the vector field to look at
  */
 template<typename Scalar>
-void locate_max_norm(float& max_norm, math::Vector2i& coordinates,
+void locate_max_norm(typename Scalar::Scalar& max_norm, math::Vector2i& coordinates,
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field);
 /**
  * Locates the maximum L2 norm (length) of the vector in the given field.
  * @overload
  */
 template<typename Scalar>
-void locate_max_norm(float& max_norm, math::Vector3i& coordinates,
+void locate_max_norm(typename Scalar::Scalar& max_norm, math::Vector3i& coordinates,
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
 /**
  * Locates the minimum L2 norm (length) of the vector in the given field.
@@ -52,7 +52,7 @@ void locate_max_norm(float& max_norm, math::Vector3i& coordinates,
  * @param[in] vector_field the vector field to look at
  */
 template<typename Scalar>
-void locate_min_norm(float& min_norm, math::Vector2i& coordinates,
+void locate_min_norm(typename Scalar::Scalar& min_norm, math::Vector2i& coordinates,
 		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field);
 
 /**
@@ -60,8 +60,8 @@ void locate_min_norm(float& min_norm, math::Vector2i& coordinates,
  * @overload
  */
 template<typename Scalar>
-void locate_min_norm(float& min_norm, math::Vector3i& coordinates,
-		const Eigen::Tensor<Scalar, 3, Eigen::Dynamic>& vector_field);
+void locate_min_norm(typename Scalar::Scalar& min_norm, math::Vector3i& coordinates,
+		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
 
 /**
  * Locates the maximum in the given field.
@@ -70,13 +70,12 @@ void locate_min_norm(float& min_norm, math::Vector3i& coordinates,
  * @param[in] scalar_field the scalar field to look at
  */
 template<typename Scalar>
-void locate_maximum(float& maximum, math::Vector3i& coordinates,
+void locate_maximum(Scalar& maximum, math::Vector3i& coordinates,
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& scalar_field);
 
 //uses traversal function/functor combo, otherwise the same as locate_max_norm
 void locate_max_norm2(float& max_norm, math::Vector2i& coordinates, const math::MatrixXv2f& vector_field);
 
-//TODO: change return types to "Scalar" instead of "float"
 /**
  * Locate the maximum L2 norm (length) of the vector in the given field.
  * @param[out] min_norm length of the shortest vector
@@ -84,13 +83,13 @@ void locate_max_norm2(float& max_norm, math::Vector2i& coordinates, const math::
  * @param[in] vector_field the field to look at
  */
 template<typename Scalar>
-float max_norm(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field);
+typename Scalar::Scalar max_norm(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field);
 /**
  * Locate the maximum L2 norm (length) of the vector in the given field.
  * @override
  */
 template<typename Scalar>
-float max_norm(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
+typename Scalar::Scalar max_norm(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
 /**
  * Locate the minimum L2 norm (length) of the vector in the given field.
  * @param[out] min_norm length of the shortest vector
@@ -98,13 +97,13 @@ float max_norm(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
  * @param[in] vector_field the field to look at
  */
 template<typename Scalar>
-float min_norm(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field);
+typename Scalar::Scalar min_norm(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& vector_field);
 /**
  * Locate the minimum L2 norm (length) of the vector in the given field.
  * @override
  */
 template<typename Scalar>
-float min_norm(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
+typename Scalar::Scalar min_norm(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
 
 template<typename Scalar>
 Scalar mean(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field);

@@ -290,3 +290,5 @@ BOOST_AUTO_TEST_CASE(test_laplacian_tensor){
 	math::laplacian(a_laplacian, a);
 	BOOST_REQUIRE(math::almost_equal_verbose(a_laplacian, test_data::expected_tensorV3_gradient, 1e-6));
 }
+
+

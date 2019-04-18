@@ -81,6 +81,51 @@ BOOST_AUTO_TEST_CASE(mean_and_std_test01) {
 	BOOST_REQUIRE_CLOSE(std, 0.26306444f, 1e-8);
 }
 
+BOOST_AUTO_TEST_CASE(test_ratio_of_vector_lengths_above_threshold_matrix) {
+	math::MatrixXv2f a(2, 2);
+	a << math::Vector2f(1.0f, 0.0f), math::Vector2f(0.4f, 0.0f),
+			math::Vector2f(0.4f, 0.1f), math::Vector2f(0.3f, 0.2f);
+	float ratio = math::ratio_of_vector_lengths_above_threshold(a, 0.5f);
+	float expected_ratio = 0.25;
+	BOOST_REQUIRE_EQUAL(ratio, expected_ratio);
+}
+
+BOOST_AUTO_TEST_CASE(test_mean_and_std_vector_length_matrix) {
+	math::MatrixXv2f a(2, 2);
+	a << math::Vector2f(-2.0f, 0.0f), math::Vector2f(1.0f, 0.0f),
+			math::Vector2f(2.0f, 0.0f), math::Vector2f(3.0f, 0.0f);
+	float mean, standard_deviation;
+	mean_and_std_vector_length(mean, standard_deviation, a);
+	float expected_mean = 2.0f;
+	float expected_standard_deviation = 0.7071067812f;
+	BOOST_REQUIRE_EQUAL(mean, expected_mean);
+	BOOST_REQUIRE_EQUAL(standard_deviation, expected_standard_deviation);
+}
+
+BOOST_AUTO_TEST_CASE(test_minimum_and_maximum_norm_matrix) {
+	math::MatrixXv2f a = test_data::min_max_vector_field_2d;
+	float min_norm, max_norm;
+	math::Vector2i max_location, min_location;
+	math::locate_max_norm(max_norm, max_location, a);
+	BOOST_REQUIRE_CLOSE(max_norm, 1.25495625, 1e-6);
+	BOOST_REQUIRE_EQUAL(max_location, math::Vector2i(0, 0));
+	math::locate_min_norm(min_norm, min_location, a);
+	BOOST_REQUIRE_CLOSE(min_norm, 0.306537092, 1e-6);
+	BOOST_REQUIRE_EQUAL(min_location, math::Vector2i(0, 2));
+}
+
+BOOST_AUTO_TEST_CASE(test_minimum_and_maximum_norm_tensor) {
+	math::Tensor3v3f a = test_data::min_max_vector_field_3d;
+	float min_norm, max_norm;
+	math::Vector3i max_location, min_location;
+	math::locate_max_norm(max_norm, max_location, a);
+	BOOST_REQUIRE_CLOSE(max_norm, 1.5980518, 1e-6);
+	BOOST_REQUIRE_EQUAL(max_location, math::Vector3i(0, 6, 8));
+	math::locate_min_norm(min_norm, min_location, a);
+	BOOST_REQUIRE_CLOSE(min_norm, 0.129753634, 1e-6);
+	BOOST_REQUIRE_EQUAL(min_location, math::Vector3i(0, 9, 3));
+}
+
 BOOST_AUTO_TEST_CASE(test_pad_replicate01) {
 	math::Tensor3f input(3, 3, 3);
 	input.setValues(  // @formatter:off
@@ -93,7 +138,7 @@ BOOST_AUTO_TEST_CASE(test_pad_replicate01) {
 				 {{3.0f, 12.0f, 21.0f},
 				  {6.0f, 15.0f, 24.0f},
 				  {9.0f, 18.0f, 27.0f}}}
-	);              // @formatter:on
+	);                // @formatter:on
 
 	math::Tensor3f expected_output(5, 5, 5);
 	expected_output.setValues(  // @formatter:off
@@ -125,7 +170,7 @@ BOOST_AUTO_TEST_CASE(test_pad_replicate01) {
 			  { 3.0f,  3.0f, 12.0f, 21.0f, 21.0f},
 			  { 6.0f,  6.0f, 15.0f, 24.0f, 24.0f},
 			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f},
-			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f}}});              // @formatter:on
+			  { 9.0f,  9.0f, 18.0f, 27.0f, 27.0f}}});                // @formatter:on
 
 	math::Tensor3f output = math::pad_replicate(input, 1);
 
@@ -263,7 +308,7 @@ BOOST_AUTO_TEST_CASE(test_cwise_nested_sum_tensor) {
 	a.setValues(  // @formatter:off
 			{{{math::Vector3f(1.0f,2.0f,3.0f), math::Vector3f(-1.0f, 4.0f, -2.0f), math::Vector3f(0.5f,0.5f, 0.5f)},
 			  {math::Vector3f(-34.0f, 24.0f, 0.0f), math::Vector3f(0.1, 0.2, 0.7), math::Vector3f(0.5, 0.5f, -1.0f)}}}
-	);        // @formatter:on
+	);          // @formatter:on
 	math::Tensor3f b(1, 2, 3);
 	math::cwise_nested_sum(b, a);
 	math::Tensor3f expected_b(1, 2, 3);
@@ -273,73 +318,52 @@ BOOST_AUTO_TEST_CASE(test_cwise_nested_sum_tensor) {
 	math::Tensor3m3f c(1, 2, 2);
 	c.setValues(
 			{ { { math::Matrix3f(1.0f, 0.0f, 0.0f, 2.0f, 3.0f, 0.0f, 4.0f, 0.0f, 0.0f),
-				  math::Matrix3f(0.0f, 0.5f, -0.5f, 0.6f, 0.0f, 0.0f, 0.0f, -0.4f, 0.0f) } ,
-			    { math::Matrix3f(0.0f, 1.0f, 0.0f, 3.0f, 3.0f, 4.0f, 0.0f, 0.0f, 0.0f),
-				  math::Matrix3f(0.0f, 0.0f, 0.5f, 0.0f, 0.0f, -0.5f, 0.0f, 0.7f, -0.4f) } } });
+					math::Matrix3f(0.0f, 0.5f, -0.5f, 0.6f, 0.0f, 0.0f, 0.0f, -0.4f, 0.0f) },
+					{ math::Matrix3f(0.0f, 1.0f, 0.0f, 3.0f, 3.0f, 4.0f, 0.0f, 0.0f, 0.0f),
+							math::Matrix3f(0.0f, 0.0f, 0.5f, 0.0f, 0.0f, -0.5f, 0.0f, 0.7f, -0.4f) } } });
 	math::Tensor3f d;
 	math::cwise_nested_sum(d, c);
 	math::Tensor3f expected_d(1, 2, 2);
-	expected_d.setValues( { { { 10.0f, 0.2f } , { 11.0f, 0.3f } } });
+	expected_d.setValues( { { { 10.0f, 0.2f }, { 11.0f, 0.3f } } });
 	BOOST_REQUIRE(math::almost_equal_verbose(d, expected_d, 1e-6));
 }
 
-BOOST_AUTO_TEST_CASE(test_cwise_square_matrix){
+BOOST_AUTO_TEST_CASE(test_cwise_square_matrix) {
 	eig::MatrixXf a(2, 2);
 	a << 1.0f, 2.0f, 3.0f, 4.0f;
 	eig::MatrixXf a_squared = math::cwise_square(a);
-	eig::MatrixXf expected_a_squared(2,2);
+	eig::MatrixXf expected_a_squared(2, 2);
 	expected_a_squared << 1.0f, 4.0f, 9.0f, 16.0f;
-	BOOST_REQUIRE(math::almost_equal_verbose(a_squared,expected_a_squared, 1e-6));
+	BOOST_REQUIRE(math::almost_equal_verbose(a_squared, expected_a_squared, 1e-6));
 }
 
-BOOST_AUTO_TEST_CASE(test_cwise_square_tensor){
-	math::Tensor3f a(2,2,2);
-	a.setValues({{{1.0f,2.0f},{0.5f,0.1f}},{{3.0f,4.0f},{5.0f,6.0f}}});
+BOOST_AUTO_TEST_CASE(test_cwise_square_tensor) {
+	math::Tensor3f a(2, 2, 2);
+	a.setValues( { { { 1.0f, 2.0f }, { 0.5f, 0.1f } }, { { 3.0f, 4.0f }, { 5.0f, 6.0f } } });
 	math::Tensor3f a_squared = math::cwise_square(a);
-	math::Tensor3f expected_a_squared(2,2,2);
-	expected_a_squared.setValues({{{1.0f,4.0f},{0.25f,0.01f}},{{9.0f,16.0f},{25.0f,36.0f}}});
-	BOOST_REQUIRE(math::almost_equal_verbose(a_squared,expected_a_squared, 1e-6));
+	math::Tensor3f expected_a_squared(2, 2, 2);
+	expected_a_squared.setValues( { { { 1.0f, 4.0f }, { 0.25f, 0.01f } }, { { 9.0f, 16.0f }, { 25.0f, 36.0f } } });
+	BOOST_REQUIRE(math::almost_equal_verbose(a_squared, expected_a_squared, 1e-6));
 }
 
-BOOST_AUTO_TEST_CASE(test_field_like_matrix){
-	eig::MatrixXf a(23,34);
+BOOST_AUTO_TEST_CASE(test_field_like_matrix) {
+	eig::MatrixXf a(23, 34);
 	math::MatrixXv2f b = math::vector_field_like(a);
 	eig::MatrixXf c = math::scalar_field_like(a);
 	math::MatrixXv2f d = math::vector_field_like(b);
 
-	BOOST_REQUIRE(math::are_dimensions_equal(a,b));
-	BOOST_REQUIRE(math::are_dimensions_equal(c,b));
-	BOOST_REQUIRE(math::are_dimensions_equal(d,b));
+	BOOST_REQUIRE(math::are_dimensions_equal(a, b));
+	BOOST_REQUIRE(math::are_dimensions_equal(c, b));
+	BOOST_REQUIRE(math::are_dimensions_equal(d, b));
 }
 
-BOOST_AUTO_TEST_CASE(test_field_like_tensor){
-	math::Tensor3f a(9,23,34);
+BOOST_AUTO_TEST_CASE(test_field_like_tensor) {
+	math::Tensor3f a(9, 23, 34);
 	math::Tensor3v3f b = math::vector_field_like(a);
 	math::Tensor3f c = math::scalar_field_like(a);
 	math::Tensor3v3f d = math::vector_field_like(b);
 
-	BOOST_REQUIRE(math::are_dimensions_equal(a,b));
-	BOOST_REQUIRE(math::are_dimensions_equal(c,b));
-	BOOST_REQUIRE(math::are_dimensions_equal(d,b));
-}
-
-BOOST_AUTO_TEST_CASE(test_ratio_of_vector_lengths_above_threshold_matrix){
-	math::MatrixXv2f a(2,2);
-	a << math::Vector2f(1.0f, 0.0f), math::Vector2f(0.4f, 0.0f),
-			math::Vector2f(0.4f, 0.1f), math::Vector2f(0.3f, 0.2f);
-	float ratio = math::ratio_of_vector_lengths_above_threshold(a, 0.5f);
-	float expected_ratio = 0.25;
-	BOOST_REQUIRE_EQUAL(ratio, expected_ratio);
-}
-
-BOOST_AUTO_TEST_CASE(test_mean_and_std_vector_length_matrix){
-	math::MatrixXv2f a(2,2);
-	a << math::Vector2f(-2.0f, 0.0f), math::Vector2f(1.0f, 0.0f),
-			math::Vector2f(2.0f, 0.0f), math::Vector2f(3.0f, 0.0f);
-	float mean, standard_deviation;
-	mean_and_std_vector_length(mean, standard_deviation, a);
-	float expected_mean = 2.0f;
-	float expected_standard_deviation = 0.7071067812f;
-	BOOST_REQUIRE_EQUAL(mean,expected_mean);
-	BOOST_REQUIRE_EQUAL(standard_deviation,expected_standard_deviation);
+	BOOST_REQUIRE(math::are_dimensions_equal(a, b));
+	BOOST_REQUIRE(math::are_dimensions_equal(c, b));
+	BOOST_REQUIRE(math::are_dimensions_equal(d, b));
 }
