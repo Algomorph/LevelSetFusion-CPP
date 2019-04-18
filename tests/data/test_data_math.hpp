@@ -117,7 +117,7 @@ static math::Tensor3v3f min_max_vector_field_3d = []{
 		return a;
 }();
 
-static math::Tensor3f min_max_scalar_field_3d = []{
+static math::Tensor3f random_scalar_field_3d = []{
 		math::Tensor3f a(4,2,2);
 		a.setValues(  // @formatter:off
 		{{{0.27834353f, 0.39645594f},
@@ -128,6 +128,16 @@ static math::Tensor3f min_max_scalar_field_3d = []{
 		  {0.616307f, 0.11654199f}},
 		 {{0.76239586f, 0.81117475f},
 		  {0.48138294f, 0.60255134f}}}); // @formatter:on
+		return a;
+}();
+
+static eig::MatrixXf random_scalar_field_2d = []{
+		eig::MatrixXf a(4,4);
+		a <<
+		0.84790075f, 0.76386386f, 0.60447234f, 0.2530578f,
+		0.56469995f, 0.847191f, 0.15223363f, 0.02558647f,
+		0.6342359f, 0.5695135f, 0.29049844f, 0.84639096f,
+		0.80475414f, 0.6251008f, 0.51707244f, 0.9885183f;
 		return a;
 }();
 
