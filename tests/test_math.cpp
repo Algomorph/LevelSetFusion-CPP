@@ -108,9 +108,11 @@ BOOST_AUTO_TEST_CASE(test_minimum_and_maximum_norm_matrix) {
 	math::Vector2i max_location, min_location;
 	math::locate_max_norm(max_norm, max_location, a);
 	BOOST_REQUIRE_CLOSE(max_norm, 1.25495625, 1e-6);
+	BOOST_REQUIRE_CLOSE(max_norm, math::max_norm(a), 1e-6);
 	BOOST_REQUIRE_EQUAL(max_location, math::Vector2i(0, 0));
 	math::locate_min_norm(min_norm, min_location, a);
 	BOOST_REQUIRE_CLOSE(min_norm, 0.306537092, 1e-6);
+	BOOST_REQUIRE_CLOSE(min_norm, math::min_norm(a), 1e-6);
 	BOOST_REQUIRE_EQUAL(min_location, math::Vector2i(0, 2));
 }
 
@@ -120,9 +122,11 @@ BOOST_AUTO_TEST_CASE(test_minimum_and_maximum_norm_tensor) {
 	math::Vector3i max_location, min_location;
 	math::locate_max_norm(max_norm, max_location, a);
 	BOOST_REQUIRE_CLOSE(max_norm, 1.5980518, 1e-6);
+	BOOST_REQUIRE_CLOSE(max_norm, math::max_norm(a), 1e-6);
 	BOOST_REQUIRE_EQUAL(max_location, math::Vector3i(0, 6, 8));
 	math::locate_min_norm(min_norm, min_location, a);
 	BOOST_REQUIRE_CLOSE(min_norm, 0.129753634, 1e-6);
+	BOOST_REQUIRE_CLOSE(min_norm, math::min_norm(a), 1e-6);
 	BOOST_REQUIRE_EQUAL(min_location, math::Vector3i(0, 9, 3));
 }
 
