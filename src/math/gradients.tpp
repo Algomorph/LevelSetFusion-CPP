@@ -137,17 +137,17 @@ inline void vector_field_laplacian_3d_aux(
 			ElementType prev_row_val = field(x, 0, z);
 			ElementType row_val = field(x, 1, z);
 
-			laplacian(x, 0, z) = LaplacelikeOperatorFunctor::apply_border_operator(row_val, prev_row_val);
+			laplacian(x, 0, z) += LaplacelikeOperatorFunctor::apply_border_operator(row_val, prev_row_val);
 			int y;
 			for (y = 1; y < y_size - 1; y++) {
 				ElementType next_row_val = field(x, y + 1, z);
 				//previous/next column values will be used later
-				laplacian(x, y, z) = LaplacelikeOperatorFunctor::apply_row_operator(next_row_val, row_val,
+				laplacian(x, y, z) += LaplacelikeOperatorFunctor::apply_row_operator(next_row_val, row_val,
 						prev_row_val);
 				prev_row_val = row_val;
 				row_val = next_row_val;
 			}
-			laplacian(x, y, z) = LaplacelikeOperatorFunctor::apply_border_operator(prev_row_val, row_val);
+			laplacian(x, y, z) += LaplacelikeOperatorFunctor::apply_border_operator(prev_row_val, row_val);
 		}
 	}
 #pragma omp parallel for
@@ -156,17 +156,17 @@ inline void vector_field_laplacian_3d_aux(
 			ElementType prev_row_val = field(x, y, 0);
 			ElementType row_val = field(x, y, 1);
 
-			laplacian(x, y, 0) = LaplacelikeOperatorFunctor::apply_border_operator(row_val, prev_row_val);
+			laplacian(x, y, 0) += LaplacelikeOperatorFunctor::apply_border_operator(row_val, prev_row_val);
 			int z;
 			for (z = 1; z < z_size - 1; z++) {
 				ElementType next_row_val = field(x, y, z + 1);
 				//previous/next column values will be used later
-				laplacian(x, y, z) = LaplacelikeOperatorFunctor::apply_row_operator(next_row_val, row_val,
+				laplacian(x, y, z) += LaplacelikeOperatorFunctor::apply_row_operator(next_row_val, row_val,
 						prev_row_val);
 				prev_row_val = row_val;
 				row_val = next_row_val;
 			}
-			laplacian(x, y, z) = LaplacelikeOperatorFunctor::apply_border_operator(prev_row_val, row_val);
+			laplacian(x, y, z) += LaplacelikeOperatorFunctor::apply_border_operator(prev_row_val, row_val);
 		}
 	}
 }
