@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE(test_gradient_matrix_tensor) {
 
 BOOST_AUTO_TEST_CASE(test_laplacian_matrix) {
 	eig::MatrixXf a(4,4);
-	//fill matrix arange-style and flipping values
+	//fill matrix arange-style and flipping value signs for even/odd entries
 	float value = 1.0f;
 	bool neg = false;
 	for (int i_row = 0; i_row < a.rows(); i_row++){
@@ -254,12 +254,15 @@ BOOST_AUTO_TEST_CASE(test_laplacian_matrix) {
 		}
 	}
 
-	std::cout << a << std::endl;
-
 	math::MatrixXv2f b = math::stack_as_xv2f(a,a);
 	math::MatrixXv2f b_laplacian;
 	math::laplacian(b_laplacian, b);
-
-	std::cout << b_laplacian << std::endl;
-
+	eig::MatrixXf expected_b_laplacian_layer(4,4);
+	expected_b_laplacian_layer <<
+			1.0, 4.0, -8.0, 3.0,
+			-11.0, 24.0, -28.0, 15.0,
+			-19.0, 40.0, -44.0, 23.0,
+			-31.0, 60.0, -64.0, 35.0;
+	math::MatrixXv2f expected_b_laplacian = math::stack_as_xv2f(expected_b_laplacian_layer,expected_b_laplacian_layer);
+	BOOST_REQUIRE(math::almost_equal_verbose(b_laplacian, expected_b_laplacian, 1e-6));
 }

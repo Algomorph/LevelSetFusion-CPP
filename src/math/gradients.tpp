@@ -36,7 +36,7 @@ struct LaplaceOperatorFunctor {
 
 	inline static ElementType
 	apply_column_operator(ElementType next_col_val, ElementType col_val, ElementType prev_col_val) {
-		return next_col_val + prev_col_val;
+		return next_col_val - 2 * col_val + prev_col_val;
 	}
 };
 
@@ -54,7 +54,7 @@ struct NegativeLaplaceOperatorFunctor {
 
 	inline static ElementType
 	apply_column_operator(ElementType next_col_val, ElementType col_val, ElementType prev_col_val) {
-		return -next_col_val - prev_col_val;
+		return -next_col_val + 2 * col_val - prev_col_val;
 	}
 };
 
