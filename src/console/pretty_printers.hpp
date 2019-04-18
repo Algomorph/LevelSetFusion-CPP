@@ -22,6 +22,8 @@
 
 //stdlib
 #include <iostream>
+#include <utility>
+
 
 //libraries
 #include <Eigen/Dense>
@@ -87,8 +89,10 @@ void print_initializer_list(std::ostream& os, const math::Tensor3f& tensor, int 
 	os.flags(original_flags);
 }
 
-void print_initializer_list(std::ostream& os, const math::MatrixXv2f& matrix, bool use_scientific=false, int precision = 4)
-{
+template<typename PrintElementInitializerFunction, typename Scalar>
+void print_initializer_list_aux(std::ostream& os, const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& matrix,
+		PrintElementInitializerFunction&& print_function,
+		bool use_scientific=false, int precision = 4){
 	std::ios_base::fmtflags original_flags(os.flags());
 	if(!use_scientific){
 		os.precision(precision);
@@ -97,36 +101,39 @@ void print_initializer_list(std::ostream& os, const math::MatrixXv2f& matrix, bo
 	int last_x = matrix.cols()-1;
 	for(int y = 0; y < matrix.rows(); y++){
 		for(int x = 0; x < last_x; x++){
-			os << "math::Vector2f(" << matrix(y,x).x << "f, " << matrix(y,x).y << "f), ";
+			std::forward<PrintElementInitializerFunction>(print_function)(os, matrix(y,x));
+			os << ", ";
 		}
+		std::forward<PrintElementInitializerFunction>(print_function)(os, matrix(y,last_x));
 		if(y == matrix.rows() - 1){
-			os << "math::Vector2f(" << matrix(y,last_x).x << "f, " << matrix(y,last_x).y << "f);" << std::endl;
+			os << ";";
 		}else{
-			os << "math::Vector2f(" << matrix(y,last_x).x << "f, " << matrix(y,last_x).y << "f)," << std::endl;
+			os << "," << std::endl;
 		}
 	}
 	os.flags(original_flags);
 }
 
+void print_initializer_list(std::ostream& os, const eig::MatrixXf& matrix, bool use_scientific=false, int precision = 4)
+{
+	print_initializer_list_aux(os, matrix, [](std::ostream& _os, float s)-> void {
+		_os << s;
+	}, use_scientific, precision);
+}
+
+void print_initializer_list(std::ostream& os, const math::MatrixXv2f& matrix, bool use_scientific=false, int precision = 4)
+{
+	print_initializer_list_aux(os, matrix, [](std::ostream& _os, math::Vector2f v)-> void {
+		_os << "math::Vector2f(" << v.x << "f, " << v.y << "f)";
+	}, use_scientific, precision);
+}
+
 void print_initializer_list(std::ostream& os, const math::MatrixXm2f& matrix, bool use_scientific=false, int precision = 4)
 {
-	std::ios_base::fmtflags original_flags(os.flags());
-	if(!use_scientific){
-		os.precision(precision);
-		os << std::fixed;
-	}
-	int last_x = matrix.cols()-1;
-	for(int y = 0; y < matrix.rows(); y++){
-		for(int x = 0; x < last_x; x++){
-			os << "math::Matrix2f(" << matrix(y,x).xy00 << "f, " << matrix(y,x).xy01 << "f, " << matrix(y,x).xy10 << "f, " << matrix(y,x).xy11 << "f), ";
-		}
-		if(y == matrix.rows() - 1){
-			os << "math::Matrix2f(" << matrix(y,last_x).xy00 << "f, " << matrix(y,last_x).xy01 << "f, " << matrix(y,last_x).xy10 << "f, " << matrix(y,last_x).xy11 << "f);" << std::endl;
-		}else{
-			os << "math::Matrix2f(" << matrix(y,last_x).xy00 << "f, " << matrix(y,last_x).xy01 << "f, " << matrix(y,last_x).xy10 << "f, " << matrix(y,last_x).xy11 << "f)," << std::endl;
-		}
-	}
-	os.flags(original_flags);
+	print_initializer_list_aux(os, matrix, [](std::ostream& _os, math::Matrix2f m)-> void {
+		_os << "math::Matrix2f(" << m.xy00 << "f, " << m.xy01 << "f, " << m.xy10 << "f, " << m.xy11 << "f)";
+	}, use_scientific, precision);
 }
+
 } //end namespace console
 
