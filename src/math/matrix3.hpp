@@ -21,6 +21,7 @@ template<class T>
 class Matrix3 : public Matrix3_< T >
 {
 public:
+	typedef T Scalar;
 	_CPU_AND_GPU_CODE_ Matrix3() {}
 	_CPU_AND_GPU_CODE_ Matrix3(T t) { set_values(t); }
 	_CPU_AND_GPU_CODE_ Matrix3(const T *values)	{ set_values(values); }
