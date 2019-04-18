@@ -117,5 +117,19 @@ static math::Tensor3v3f min_max_vector_field_3d = []{
 		return a;
 }();
 
+static math::Tensor3f min_max_scalar_field_3d = []{
+		math::Tensor3f a(4,2,2);
+		a.setValues(  // @formatter:off
+		{{{0.27834353f, 0.39645594f},
+		  {0.2151391f, 0.7547714f}},
+		 {{0.20948082f, 0.9190089f},
+		  {0.2720658f, 0.90341747f}},
+		 {{0.524159f, 0.30052534f},
+		  {0.616307f, 0.11654199f}},
+		 {{0.76239586f, 0.81117475f},
+		  {0.48138294f, 0.60255134f}}}); // @formatter:on
+		return a;
+}();
+
 
 }//namespace test_data
