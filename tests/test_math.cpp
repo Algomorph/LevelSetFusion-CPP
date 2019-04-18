@@ -131,12 +131,26 @@ BOOST_AUTO_TEST_CASE(test_minimum_and_maximum_norm_tensor) {
 }
 
 BOOST_AUTO_TEST_CASE(test_locate_maximum_tensor) {
-	math::Tensor3f a = test_data::min_max_scalar_field_3d;
+	math::Tensor3f a = test_data::random_scalar_field_3d;
 	float max;
 	math::Vector3i max_location;
 	math::locate_maximum(max, max_location, a);
 	BOOST_REQUIRE_CLOSE(max, 0.9190089f, 1e-6);
 	BOOST_REQUIRE_EQUAL(max_location, math::Vector3i(1, 0, 1));
+}
+
+BOOST_AUTO_TEST_CASE(test_mean_and_std){
+	math::Tensor3f a = test_data::random_scalar_field_3d;
+	float a_mean = math::mean(a);
+	BOOST_REQUIRE_CLOSE(a_mean, 0.51023257f, 1e-6);
+	float a_std = math::std(a);
+	BOOST_REQUIRE_CLOSE(a_std, 0.25695175f, 1e-6);
+
+	eig::MatrixXf b = test_data::random_scalar_field_2d;
+	float b_mean = math::mean(b);
+	BOOST_REQUIRE_CLOSE(b_mean, 0.58344316f, 1e-6);
+	float b_std = math::std(b);
+	BOOST_REQUIRE_CLOSE(b_std, 0.268803269f, 1e-6);
 }
 
 
