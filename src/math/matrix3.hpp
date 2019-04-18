@@ -21,9 +21,10 @@ template<class T>
 class Matrix3 : public Matrix3_< T >
 {
 public:
+	typedef T Scalar;
 	_CPU_AND_GPU_CODE_ Matrix3() {}
-	_CPU_AND_GPU_CODE_ Matrix3(T t) { setValues(t); }
-	_CPU_AND_GPU_CODE_ Matrix3(const T *m)	{ setValues(m); }
+	_CPU_AND_GPU_CODE_ Matrix3(T t) { set_values(t); }
+	_CPU_AND_GPU_CODE_ Matrix3(const T *values)	{ set_values(values); }
 	_CPU_AND_GPU_CODE_ Matrix3(T a00, T a01, T a02, T a10, T a11, T a12, T a20, T a21, T a22)	{
 		this->m00 = a00; this->m01 = a01; this->m02 = a02;
 		this->m10 = a10; this->m11 = a11; this->m12 = a12;
@@ -39,12 +40,12 @@ public:
 	_CPU_AND_GPU_CODE_ inline const T &operator()(int x, int y) const	{ return at(x, y); }
 	_CPU_AND_GPU_CODE_ inline T &operator()(Vector2<int> pnt)	{ return at(pnt.x, pnt.y); }
 	_CPU_AND_GPU_CODE_ inline const T &operator()(Vector2<int> pnt) const	{ return at(pnt.x, pnt.y); }
-	_CPU_AND_GPU_CODE_ inline T &at(int x, int y) { return this->m[x * 3 + y]; }
+	_CPU_AND_GPU_CODE_ inline T &at(int x, int y) { return this->values[x * 3 + y]; }
 	_CPU_AND_GPU_CODE_ inline const T &at(int x, int y) const { return this->values[x * 3 + y]; }
 
 	// set values
 	_CPU_AND_GPU_CODE_ inline void set_values(const T *mp) { memcpy(this->values, mp, sizeof(T) * 9); }
-	_CPU_AND_GPU_CODE_ inline void set_values(const T r)	{ for (int i = 0; i < 9; i++)	this->m[i] = r; }
+	_CPU_AND_GPU_CODE_ inline void set_values(const T r)	{ for (int i = 0; i < 9; i++)	this->values[i] = r; }
 	_CPU_AND_GPU_CODE_ inline void set_zeros() { memset(this->values, 0, sizeof(T) * 9); }
 	_CPU_AND_GPU_CODE_ inline void set_identity() { set_zeros(); this->m00 = this->m11 = this->m22 = 1; }
 	_CPU_AND_GPU_CODE_ inline void set_scale(T s) { this->m00 = this->m11 = this->m22 = s; }
@@ -71,25 +72,25 @@ public:
 	}
 
 	_CPU_AND_GPU_CODE_ inline friend Matrix3 operator + (const Matrix3 &lhs, const Matrix3 &rhs) {
-		Matrix3 res(lhs.m);
+		Matrix3 res(lhs.values);
 		return res += rhs;
 	}
 
 	_CPU_AND_GPU_CODE_ inline friend Matrix3 operator - (const Matrix3 &lhs, const Matrix3 &rhs) {
-		Matrix3 res(lhs.m);
+		Matrix3 res(lhs.values);
 		return res -= rhs;
 	}
 
 	_CPU_AND_GPU_CODE_ inline Vector3<T> operator *(const Vector3<T> &rhs) const {
 		Vector3<T> r;
-		r[0] = this->m[0] * rhs[0] + this->m[3] * rhs[1] + this->m[6] * rhs[2];
-		r[1] = this->m[1] * rhs[0] + this->m[4] * rhs[1] + this->m[7] * rhs[2];
-		r[2] = this->m[2] * rhs[0] + this->m[5] * rhs[1] + this->m[8] * rhs[2];
+		r[0] = this->values[0] * rhs[0] + this->values[3] * rhs[1] + this->values[6] * rhs[2];
+		r[1] = this->values[1] * rhs[0] + this->values[4] * rhs[1] + this->values[7] * rhs[2];
+		r[2] = this->values[2] * rhs[0] + this->values[5] * rhs[1] + this->values[8] * rhs[2];
 		return r;
 	}
 
 	_CPU_AND_GPU_CODE_ inline Matrix3 operator *(const T &r) const {
-		Matrix3 res(this->m);
+		Matrix3 res(this->values);
 		return res *= r;
 	}
 
@@ -100,29 +101,29 @@ public:
 		return r;
 	}
 
-	_CPU_AND_GPU_CODE_ inline Matrix3& operator += (const T &r) { for (int i = 0; i < 9; ++i) this->m[i] += r; return *this; }
-	_CPU_AND_GPU_CODE_ inline Matrix3& operator -= (const T &r) { for (int i = 0; i < 9; ++i) this->m[i] -= r; return *this; }
-	_CPU_AND_GPU_CODE_ inline Matrix3& operator *= (const T &r) { for (int i = 0; i < 9; ++i) this->m[i] *= r; return *this; }
-	_CPU_AND_GPU_CODE_ inline Matrix3& operator /= (const T &r) { for (int i = 0; i < 9; ++i) this->m[i] /= r; return *this; }
-	_CPU_AND_GPU_CODE_ inline Matrix3& operator += (const Matrix3 &mat) { for (int i = 0; i < 9; ++i) this->m[i] += mat.m[i]; return *this; }
-	_CPU_AND_GPU_CODE_ inline Matrix3& operator -= (const Matrix3 &mat) { for (int i = 0; i < 9; ++i) this->m[i] -= mat.m[i]; return *this; }
+	_CPU_AND_GPU_CODE_ inline Matrix3& operator += (const T &r) { for (int i = 0; i < 9; ++i) this->values[i] += r; return *this; }
+	_CPU_AND_GPU_CODE_ inline Matrix3& operator -= (const T &r) { for (int i = 0; i < 9; ++i) this->values[i] -= r; return *this; }
+	_CPU_AND_GPU_CODE_ inline Matrix3& operator *= (const T &r) { for (int i = 0; i < 9; ++i) this->values[i] *= r; return *this; }
+	_CPU_AND_GPU_CODE_ inline Matrix3& operator /= (const T &r) { for (int i = 0; i < 9; ++i) this->values[i] /= r; return *this; }
+	_CPU_AND_GPU_CODE_ inline Matrix3& operator += (const Matrix3 &mat) { for (int i = 0; i < 9; ++i) this->values[i] += mat.values[i]; return *this; }
+	_CPU_AND_GPU_CODE_ inline Matrix3& operator -= (const Matrix3 &mat) { for (int i = 0; i < 9; ++i) this->values[i] -= mat.values[i]; return *this; }
 
 	_CPU_AND_GPU_CODE_ inline friend bool operator == (const Matrix3 &lhs, const Matrix3 &rhs) {
-		bool r = lhs.m[0] == rhs.m[0];
+		bool r = lhs.values[0] == rhs.values[0];
 		for (int i = 1; i < 9; i++)
-			r &= lhs.m[i] == rhs.m[i];
+			r &= lhs.values[i] == rhs.values[i];
 		return r;
 	}
 
 	_CPU_AND_GPU_CODE_ inline friend bool operator != (const Matrix3 &lhs, const Matrix3 &rhs) {
-		bool r = lhs.m[0] != rhs.m[0];
+		bool r = lhs.values[0] != rhs.values[0];
 		for (int i = 1; i < 9; i++)
-			r |= lhs.m[i] != rhs.m[i];
+			r |= lhs.values[i] != rhs.values[i];
 		return r;
 	}
 
 	// Sum of all elements
-	_CPU_AND_GPU_CODE_ inline T sum() const { return std::accumulate(this->values, this->values+9, 0); }
+	_CPU_AND_GPU_CODE_ inline T sum() const { return std::accumulate(this->values, this->values+9, static_cast<T>(0)); }
 
 	// Matrix determinant
 	_CPU_AND_GPU_CODE_ inline T det() const {
@@ -151,7 +152,7 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const Matrix3<T>& dt)	{
 		for (int y = 0; y < 3; y++)
-			os << dt(0, y) << ", " << dt(1, y) << ", " << dt(2, y) << "\n";
+			os << dt(0, y) << ", " << dt(1, y) << ", " << dt(2, y) << " \\ ";
 		return os;
 	}
 };

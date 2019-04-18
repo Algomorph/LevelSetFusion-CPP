@@ -331,7 +331,7 @@ add_library(${MODULE_NAME} SHARED
 			src/console/progress_bar.cpp
 			src/console/progress_bar.hpp
 
-            src/error_handling/throw_assert.hpp
+      src/error_handling/throw_assert.hpp
 
 			src/rigid_optimization/sdf_2_sdf_optimizer2d.cpp
 			src/rigid_optimization/sdf_2_sdf_optimizer2d.hpp
@@ -399,7 +399,7 @@ install(TARGETS ${MODULE_NAME}
         LIBRARY DESTINATION ${PYTHON3_PACKAGES_PATH} COMPONENT python
         ${PYTHON_INSTALL_ARCHIVE}
         )
-        
+
 # uninstall target
 if(NOT TARGET uninstall)
     configure_file(
@@ -418,7 +418,7 @@ add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
 enable_testing()
 
 # TODO: this is beginnning to look like a lot of DRY violations -- good source material for a CMake macro or function
-# that would set up a single test based on the sources  
+# that would set up a single test based on the sources
 
 set (COMMON_TEST_SOURCES
 	tests/common.hpp
@@ -439,35 +439,15 @@ macro (LSF_ADD_TEST)
 	add_test(NAME ${LSF_ADD_TEST_NAME} COMMAND test_${LSF_ADD_TEST_NAME})
 endmacro()
 
-lsf_add_test(
-	NAME tsdf SOURCES
-	tests/test_tsdf.cpp
-	tests/data/test_data_tsdf.hpp
-)
-
-lsf_add_test(
-	NAME math SOURCES
-	tests/test_math.cpp
-	tests/data/test_data_math.hpp
-)
-
-lsf_add_test(
-	NAME slavcheva_optimizer SOURCES
-	tests/test_slavcheva_optimizer.cpp
-	tests/data/test_data_slavcheva_optimizer.hpp
-)
-
-lsf_add_test(
-	NAME hierarchical_optimizer SOURCES
-	tests/test_hierarchical_optimizer.cpp
-	tests/data/test_data_hierarchical_optimizer.hpp
-)
-
-lsf_add_test(
-	NAME image_io SOURCES
-	tests/test_image_io.cpp
-	tests/data/test_data_image_io.hpp
-)
+lsf_add_test(NAME checks SOURCES tests/test_checks.cpp)
+lsf_add_test(NAME tsdf SOURCES tests/test_tsdf.cpp tests/data/test_data_tsdf.hpp)
+lsf_add_test(NAME math SOURCES tests/test_math.cpp tests/data/test_data_math.hpp)
+lsf_add_test(NAME convolution SOURCES tests/test_convolution.cpp tests/data/test_data_convolution.hpp)
+lsf_add_test(NAME resampling SOURCES tests/test_resampling.cpp)
+lsf_add_test(NAME gradients SOURCES tests/test_gradients.cpp tests/data/test_data_gradients.hpp)
+lsf_add_test(NAME slavcheva_optimizer SOURCES tests/test_slavcheva_optimizer.cpp tests/data/test_data_slavcheva_optimizer.hpp)
+lsf_add_test(NAME hierarchical_optimizer SOURCES tests/test_hierarchical_optimizer.cpp tests/data/test_data_hierarchical_optimizer.hpp)
+lsf_add_test(NAME image_io SOURCES tests/test_image_io.cpp tests/data/test_data_image_io.hpp)
 
 # copy test data
 file(GLOB PNG_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/*.png")

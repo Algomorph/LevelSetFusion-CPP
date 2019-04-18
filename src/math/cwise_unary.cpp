@@ -25,10 +25,11 @@
 namespace eig = Eigen;
 
 namespace math{
-
-template void nested_sum<float,math::Matrix2f>(eig::MatrixXf& summed, const math::MatrixXm2f& field);
-template void nested_sum<float,math::Matrix3f>(math::Tensor3f& summed, const math::Tensor3m3f& field);
-template eig::MatrixXf square(const eig::MatrixXf& field);
-template math::Tensor3f square(const math::Tensor3f& field);
+template void cwise_nested_sum<float,math::Vector2f>(eig::MatrixXf& summed, const math::MatrixXv2f& field);
+template void cwise_nested_sum<float,math::Matrix2f>(eig::MatrixXf& summed, const math::MatrixXm2f& field);
+template void cwise_nested_sum<float,math::Vector3f>(math::Tensor3f& summed, const math::Tensor3v3f& field);
+template void cwise_nested_sum<float,math::Matrix3f>(math::Tensor3f& summed, const math::Tensor3m3f& field);
+template eig::MatrixXf cwise_square(const eig::MatrixXf& field);
+template math::Tensor3f  cwise_square(const math::Tensor3f& field);
 
 }  // namespace math

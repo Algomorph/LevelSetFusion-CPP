@@ -1,5 +1,5 @@
 /*
- * collection_comparison.tpp
+7 * collection_comparison.tpp
  *
  *  Created on: Mar 26, 2019
  *      Author: Gregory Kramida
@@ -77,6 +77,14 @@ bool almost_equal<float, float>(math::Matrix2f a, math::Matrix2f b, float tolera
 }
 
 template<>
+bool almost_equal<float, float>(math::Matrix3f a, math::Matrix3f b, float tolerance) {
+	for(int i_entry = 0; i_entry < 9; i_entry++){
+		if(!almost_equal_absolute(a.values[i_entry], b.values[i_entry], tolerance)) return false;
+	}
+	return true;
+}
+
+template<>
 bool almost_equal<float, double>(math::Vector2f a, math::Vector2f b, double tol_in) {
 	float tolerance = static_cast<float>(tol_in);
 	return almost_equal_absolute(a.x, b.x, tolerance) && almost_equal_absolute(a.y, b.y, tolerance);
@@ -96,6 +104,15 @@ bool almost_equal<float, double>(math::Matrix2f a, math::Matrix2f b, double tol_
 	return almost_equal_absolute(a.xy00, b.xy00, tolerance) && almost_equal_absolute(a.xy01, b.xy01, tolerance) &&
 			almost_equal_absolute(a.xy10, b.xy10, tolerance) && almost_equal_absolute(a.xy11, b.xy11, tolerance);
 }
+
+template<>
+bool almost_equal<float, double>(math::Matrix3f a, math::Matrix3f b, double tol_in) {
+	float tolerance = static_cast<float>(tol_in);
+	for(int i_entry = 0; i_entry < 9; i_entry++){
+		if(!almost_equal_absolute(a.values[i_entry], b.values[i_entry], tolerance)) return false;
+	}
+	return true;
+}
 //endregion
 //region ==================== GENERIC MATRIX/TENSOR COMPARISON =========================================================
 template<typename TEigenContainer, typename ToleranceType, typename LambdaCompareDimensions,
@@ -105,7 +122,9 @@ bool almost_equal_generic(TEigenContainer container_a, TEigenContainer container
 		LambdaPrintLocalError&& print_local_error,
 		ToleranceType tolerance
 		) {
-	std::forward<LambdaCompareDimensions>(compare_dimensions)(container_a, container_b);
+	if(!std::forward<LambdaCompareDimensions>(compare_dimensions)(container_a, container_b)){
+		return false;
+	}
 	for (Eigen::Index index = 0; index < container_a.size(); index++) {
 		if (!almost_equal(container_a(index), container_b(index), tolerance)) {
 			std::forward<LambdaPrintLocalError>(print_local_error)(container_a, container_b, index);
@@ -121,9 +140,6 @@ static inline
 bool compare_matrix_dimensions(TMatrix matrix_a, TMatrix matrix_b, TReportFunction&& report_function) {
 	if (matrix_a.rows() != matrix_b.rows() || matrix_a.cols() != matrix_b.cols()) {
 		std::forward<TReportFunction>(report_function)(matrix_a, matrix_b);
-		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.cols() << " columns by " << matrix_a.rows()
-				<< " rows, Matrix b: " << matrix_b.cols() << " columns by " << matrix_b.rows() << " rows."
-				<< std::endl;
 		return false;
 	}
 	return true;
@@ -139,8 +155,8 @@ template<typename TMatrix>
 static inline
 bool compare_matrix_dimensions_verbose(TMatrix matrix_a, TMatrix matrix_b) {
 	return compare_matrix_dimensions(matrix_a, matrix_b, [](TMatrix matrix_a, TMatrix matrix_b) -> void {
-		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.cols() << " columns by " << matrix_a.rows()
-		<< " rows, Matrix b: " << matrix_b.cols() << " columns by " << matrix_b.rows() << " rows."
+		std::cout << "Matrix dimensions don't match. Matrix a: " << matrix_a.rows() << " rows by " << matrix_a.cols()
+		<< " rows, Matrix b: " << matrix_b.rows() << " rows by " << matrix_b.cols() << " columns."
 		<< std::endl;
 	}
 			);

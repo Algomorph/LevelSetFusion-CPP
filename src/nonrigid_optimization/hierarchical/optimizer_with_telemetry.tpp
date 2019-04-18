@@ -139,8 +139,8 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_iteration
 		MatrixContainer gradient_gradient;
 		math::gradient(gradient_gradient, gradient);
 		ScalarContainer gg_sum;
-		math::nested_sum(gg_sum, gradient_gradient);
-		float gradient_aggregate_mean = math::mean(math::square(gg_sum));
+		math::cwise_nested_sum(gg_sum, gradient_gradient);
+		float gradient_aggregate_mean = math::mean(math::cwise_square(gg_sum));
 		normalized_tikhonov_energy = energy_factor * 0.5 * gradient_aggregate_mean;
 	}
 	Optimizer<ScalarContainer,VectorContainer>::optimize_iteration(
@@ -169,7 +169,7 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_iteration
 			std::cout << " [std diff.: " << std_dev << "]";
 		}
 		if (this->verbosity_parameters.print_iteration_data_energy) {
-			float normalized_data_energy = energy_factor * math::mean(math::square(diff));
+			float normalized_data_energy = energy_factor * math::mean(math::cwise_square(diff));
 			std::cout << " [norm. data energy: " << normalized_data_energy << "]";
 		}
 		if (this->verbosity_parameters.print_iteration_tikhonov_energy && this->tikhonov_term_enabled) {

@@ -30,4 +30,5 @@ namespace math{
 	void convolve_with_kernel_preserve_zeros(math::MatrixXv2f& field, const eig::VectorXf& kernel_1d);
 	void convolve_with_kernel(math::MatrixXv2f& field, const eig::VectorXf& kernel_1d);
 	void convolve_with_kernel(math::Tensor3v3f& field, const eig::VectorXf& kernel_1d);
+	void convolve_with_kernel_x(math::Tensor3v3f& field, const eig::VectorXf& kernel_1d);
 }//namespace math

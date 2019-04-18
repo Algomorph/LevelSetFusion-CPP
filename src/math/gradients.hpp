@@ -21,10 +21,10 @@
 namespace math {
 
 /**
- * @brief Calculate the 2nd-order discrete finite central differences with h=1 over the vector field and store
+ * @brief Calculate the sum of 2nd-order discrete finite central differences with h=1 over the vector field and store
  * the results in a vector field.
  * @details Laplacian is the sum of said differences at each location. For edge locations, first-order forward and backward
- * differences are used instead as appropriate.
+ * differences are used instead as appropriate (under assumption that edge values repeat).
  * @param[out] laplacian output
  * @param[in] field input
  */
@@ -33,7 +33,7 @@ void laplacian(
 		Eigen::Matrix<math::Vector2<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& laplacian,
 		const Eigen::Matrix<math::Vector2<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>& field);
 /**
- * @brief Calculate the discrete laplacian (2nd order derivative approximation) over the vector field and store
+ * @brief Calculate the discrete laplacian (sum of 2nd order derivative approximations) over the vector field and store
  * the results in a vector field.
  * @overload
  */
