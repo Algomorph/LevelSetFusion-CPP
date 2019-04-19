@@ -26,6 +26,7 @@
 #include <lsf_config.h>
 #include "ewa.hpp"
 #include "ewa_common.hpp"
+#include "common.hpp"
 #include "../math/conics.hpp"
 
 namespace tsdf {

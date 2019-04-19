@@ -36,16 +36,6 @@ inline eig::Matrix3f compute_covariance_camera_space(float voxel_size, const eig
 	return covariance_camera_space;
 }
 
-inline float compute_TSDF_value(float signed_distance, float narrow_band_half_width){
-	if (signed_distance < -narrow_band_half_width) {
-		return -1.0;
-	} else if (signed_distance > narrow_band_half_width) {
-		return 1.0;
-	} else {
-		return signed_distance / narrow_band_half_width;
-	}
-}
-
 inline bool compute_sampling_bounds(
 		int& x_sample_start,
 		int& x_sample_end,
@@ -72,16 +62,6 @@ inline bool compute_sampling_bounds(
 	y_sample_start = std::max(0, y_sample_start);
 	y_sample_end = std::min(static_cast<int>(depth_image.rows()), y_sample_end);
 	return true;
-}
-
-inline bool is_voxel_out_of_bounds(const eig::Vector2f& voxel_image,
-		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,
-		int margin = 3){
-	if (voxel_image(0) < -margin || voxel_image(0) >= depth_image.cols() + margin ||
-			voxel_image(1) < -margin || voxel_image(1) >= depth_image.rows() + margin){
-		return true;
-	}
-	return false;
 }
 
 inline bool compute_sampling_bounds_inclusive(

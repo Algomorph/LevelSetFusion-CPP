@@ -28,7 +28,7 @@ namespace eig = Eigen;
 
 namespace tsdf {
 
-constexpr float near_clipping_distance = 0.05; //m
+
 
 eig::Tensor<float, 3> generate_TSDF_3D_EWA_image(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image,

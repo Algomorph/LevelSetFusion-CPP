@@ -1,4 +1,4 @@
-//  ================================================================
+//  =================================================7===============
 //  Created by Fei Shan on 03/19/19.
 //  ================================================================
 
@@ -7,8 +7,7 @@
 
 //local
 #include "tsdf.hpp"
-#include "ewa_common.hpp"
-#include "ewa.hpp"
+#include "common.hpp"
 
 namespace tsdf {
 
@@ -69,13 +68,8 @@ eig::MatrixXf generate_TSDF_2D(
 
         float signed_distance_to_voxel_along_camera_ray = depth - ray_distance;
 
-        if (signed_distance_to_voxel_along_camera_ray < -narrow_band_half_width) {
-            field(y_field, x_field) = -1.0f;
-        } else if (signed_distance_to_voxel_along_camera_ray > narrow_band_half_width) {
-            field(y_field, x_field) = 1.0f;
-        } else {
-            field(y_field, x_field) = signed_distance_to_voxel_along_camera_ray/narrow_band_half_width;
-        }
+        field(y_field, x_field) = compute_TSDF_value(signed_distance_to_voxel_along_camera_ray, narrow_band_half_width);
+
     }
 
     return field;

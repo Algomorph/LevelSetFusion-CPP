@@ -29,9 +29,11 @@
 
 //local
 #include <lsf_config.h>
+#include "common.hpp"
 #include "ewa.hpp"
 #include "ewa_common.hpp"
 #include "../math/conics.hpp"
+
 
 
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
@@ -98,12 +100,10 @@ eig::Tensor<float, 3> generate_TSDF_3D_EWA_image(
 
 #pragma omp parallel for
 	for (int i_element = 0; i_element < voxel_count; i_element++) {
-
-		div_t z_stride_division_result = std::div(i_element, z_stride);
-		int z_field = z_stride_division_result.quot;
-		div_t y_stride_division_result = std::div(z_stride_division_result.rem, y_stride);
-		int y_field = y_stride_division_result.quot;
-		int x_field = y_stride_division_result.rem;
+		int z_field = i_element / z_stride;
+		int remainder = i_element % z_stride;
+		int y_field = remainder / y_stride;
+		int x_field = remainder % y_stride;
 
 		float x_voxel = (x_field + array_offset(0)) * voxel_size;
 		float y_voxel = (y_field + array_offset(1)) * voxel_size;
