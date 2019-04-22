@@ -22,6 +22,9 @@
 
 //standard library
 #include <climits>
+//_DEBUG
+#include <iostream>
+#include "../src/console/pretty_printers.hpp"
 
 //libraries
 #include <boost/test/unit_test.hpp>
@@ -54,26 +57,6 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 			0.0f, 700.0f, 240.0f,
 			0.0f, 0.0f, 1.0f;
 
-//	eig::MatrixXf field = tsdf::generate_TSDF_2D_EWA_image(
-//			1, // y coord
-//			depth_image,
-//			0.001f, //depth unit ratio
-//			camera_intrinsic_matrix,
-//			eig::Matrix4f::Identity(), //camera pose
-//			offset,
-//			16, //field size
-//			0.004f, //voxel size
-//			20 // narrow band width
-//			);
-//	Scalar depth_unit_ratio = 0.001; //meters
-//	Mat3 projection_matrix;
-//	Scalar near_clipping_distance = 0.05; //meters
-//	Coordinates array_offset = Coordinates(-64); //voxels
-//	Coordinates field_shape = Coordinates(128); //voxels
-//	Scalar voxel_size = 0.004; //meters
-//	int narrow_band_width_voxels = 20; //voxels
-//	InterpolationMethod interpolation_method = InterpolationMethod::NONE;
-//	Scalar smoothing_factor = 0.5; // gaussian covariance scale for EWA
 	eig::Vector2i field_shape;
 	field_shape << 16, 16;
 	tsdf::Parameters2d parameters(
@@ -85,7 +68,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 			0.004f, //voxel size
 			20, //narrow band width
 			tsdf::InterpolationMethod::EWA_IMAGE_SPACE,
-			1.0 // gaussian covariance scale
+			1.0f // gaussian covariance scale
 			);
 	tsdf::Generator2d generator(parameters);
 	eig::MatrixXf field = generator.generate(depth_image, eig::Matrix4f::Identity(), 1);
@@ -97,50 +80,51 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation02) {
 	math::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
-	bool test_full_image = true;
+	bool test_full_image = false;
 
 	eig::Matrix3f camera_intrinsic_matrix;
 	camera_intrinsic_matrix <<
 			700.0f, 0.0f, 320.0f,
 			0.0f, 700.0f, 240.0f,
 			0.0f, 0.0f, 1.0f;
-	eig::Vector3i offset;
-	offset << -256, -256, 0;
+	math::Vector2i offset(-256, 0);
 	int chunk_x_start = 210, chunk_y_start = 103;
 	int chunk_size = 16;
-	eig::Vector3i offset_chunk_from_image;
-	offset_chunk_from_image << chunk_x_start, 0.0f, chunk_y_start;
-	eig::Vector3i offset_chunk = offset + offset_chunk_from_image;
+	math::Vector2i offset_chunk_from_image(chunk_x_start, chunk_y_start);
+	math::Vector2i offset_chunk = offset + offset_chunk_from_image;
 
 	eig::MatrixXf field_chunk;
 	if (test_full_image) {
-		eig::MatrixXf field = tsdf::generate_TSDF_2D_EWA_image(
-				200, // y coord
-				depth_image,
+		tsdf::Parameters2d parameters(
 				0.001f, //depth unit ratio
-				camera_intrinsic_matrix,
-				eig::Matrix4f::Identity(), //camera pose
+				camera_intrinsic_matrix, //projection matrix
+				0.05f, //near clipping distance
 				offset,
-				512, //field size
+				math::Vector2i(512, 512), //shape
 				0.004f, //voxel size
-				20 // narrow band width
+				20, //narrow band width
+				tsdf::InterpolationMethod::EWA_IMAGE_SPACE,
+				1.0f // gaussian covariance scale
 				);
+		tsdf::Generator2d generator(parameters);
+		eig::MatrixXf field = generator.generate(depth_image, eig::Matrix4f::Identity(), 200);
 
 		field_chunk = field.block(chunk_y_start, chunk_x_start, chunk_size, chunk_size);
 	} else {
-		field_chunk = tsdf::generate_TSDF_2D_EWA_image(
-				200, // y coord
-				depth_image,
-				0.001f, //depth unit ratio
-				camera_intrinsic_matrix,
-				eig::Matrix4f::Identity(), //camera pose
-				offset_chunk,
-				chunk_size, //field size
-				0.004f, //voxel size
-				20 // narrow band width
-				);
+		tsdf::Parameters2d parameters(
+						0.001f, //depth unit ratio
+						camera_intrinsic_matrix, //projection matrix
+						0.05f, //near clipping distance
+						offset_chunk,
+						math::Vector2i(chunk_size, chunk_size), //shape
+						0.004f, //voxel size
+						20, //narrow band width
+						tsdf::InterpolationMethod::EWA_IMAGE_SPACE,
+						1.0f // gaussian covariance scale
+						);
+		tsdf::Generator2d generator(parameters);
+		field_chunk = generator.generate(depth_image, eig::Matrix4f::Identity(), 200);
 	}
-
 	BOOST_REQUIRE(math::almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
 }
 
@@ -148,7 +132,7 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation05) {
 	math::MatrixXus depth_image;
 	bool image_read = read_image_helper(depth_image, "zigzag2_depth_00108.png");
 	BOOST_REQUIRE(image_read);
-	bool test_full_image = true;
+	bool test_full_image = false;
 
 	eig::Matrix3f camera_intrinsic_matrix;
 	camera_intrinsic_matrix <<
@@ -191,6 +175,8 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation05) {
 				20 // narrow band width
 				);
 	}
+
+	console::print_initializer_list(std::cout,field_chunk,true);
 	//TODO: add data for this test
 	//BOOST_REQUIRE(math::almost_equal_verbose(field_chunk, test_data::out_sdf_chunk, 1e-6f));
 }

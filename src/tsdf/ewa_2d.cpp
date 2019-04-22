@@ -137,6 +137,7 @@ eig::MatrixXf generate_TSDF_2D_EWA_image(
 				squared_radius_threshold, depth_unit_ratio, narrow_band_half_width,
 				depth_image);
 
+
 	}
 
 	return field;
@@ -356,6 +357,44 @@ eig::MatrixXf generate_TSDF_2D_EWA_TSDF_inclusive(
 		if (!compute_sampling_bounds_inclusive(sampling_bounds, bounds_max, voxel_image, depth_image)) {
 			continue;
 		}
+//		float weights_sum = 0.0f;
+//		float TSDF_sum = 0.0f;
+//
+//		// collect sample readings
+//		for (int x_sample = sampling_bounds.x_start; x_sample < sampling_bounds.x_end; x_sample++) {
+//			for (int y_sample = sampling_bounds.y_start; y_sample < sampling_bounds.y_end; y_sample++) {
+//				eig::Vector2f sample_centered;
+//				sample_centered <<
+//						static_cast<float>(x_sample) - voxel_image(0),
+//						static_cast<float>(y_sample) - voxel_image(1);
+//				float dist_sq = sample_centered.transpose() * ellipse_matrix * sample_centered;
+//				//TODO: potential speedup -- remove range checking
+//				if (dist_sq > squared_radius_threshold) {
+//					continue;
+//				}
+//				float weight = std::exp(-0.5f * dist_sq);
+//
+//				if (y_sample < 0 || y_sample >= depth_image.rows() ||
+//						x_sample < 0 || x_sample >= depth_image.cols()) {
+//					TSDF_sum += weight * 1.0f;
+//				} else {
+//					float surface_depth = static_cast<float>(depth_image(y_sample, x_sample)) * depth_unit_ratio;
+//					if (surface_depth <= 0.0f) {
+//						continue;
+//					}
+//					float signed_distance = surface_depth - voxel_camera[2];
+//					TSDF_sum += weight * compute_TSDF_value(signed_distance, narrow_band_half_width);
+//				}
+//				weights_sum += weight;
+//			}
+//		}
+//
+//		//TODO: potential speedup -- is it even possible for this condition to be true?
+//		if (weights_sum == 0.0f) {
+//			continue;
+//		}
+//
+//		field(y_field, x_field) = TSDF_sum / weights_sum;
 		field(y_field, x_field) = compute_voxel_EWA_voxel_space_inclusive(
 				sampling_bounds, voxel_image, voxel_camera, ellipse_matrix,
 				squared_radius_threshold, depth_unit_ratio, narrow_band_half_width,
