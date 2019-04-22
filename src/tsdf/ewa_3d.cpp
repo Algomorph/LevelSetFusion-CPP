@@ -33,11 +33,7 @@
 #include "ewa.hpp"
 #include "ewa_common.hpp"
 #include "../math/conics.hpp"
-
-
-
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
-//local
 #include "../console/progress_bar.hpp"
 #endif
 
@@ -151,48 +147,15 @@ eig::Tensor<float, 3> generate_TSDF_3D_EWA_image(
 				squared_radius_threshold);
 
 		// compute sampling bounds
-		int x_sample_start, x_sample_end, y_sample_start, y_sample_end;
-		if (!compute_sampling_bounds(x_sample_start, x_sample_end, y_sample_start, y_sample_end,
-				bounds_max, voxel_image, depth_image)) {
+		math::Extent2d sampling_bounds;
+		if (!compute_sampling_bounds(sampling_bounds, bounds_max, voxel_image, depth_image)) {
 			continue;
 		}
 
-		float weights_sum = 0.0f;
-		float depth_sum = 0.0f;
-
-
-		// collect sample readings
-		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
-			for (int y_sample = y_sample_start; y_sample < y_sample_end; y_sample++) {
-				eig::Vector2f sample_centered;
-				sample_centered <<
-						static_cast<float>(x_sample) - voxel_image(0),
-						static_cast<float>(y_sample) - voxel_image(1);
-				float dist_sq = sample_centered.transpose() * ellipse_matrix * sample_centered;
-				//TODO: potential speedup -- remove check
-				if (dist_sq > squared_radius_threshold) {
-					continue;
-				}
-				float weight = std::exp(-0.5f * dist_sq);
-				float surface_depth = static_cast<float>(depth_image(y_sample, x_sample)) * depth_unit_ratio;
-				if (surface_depth <= 0.0f) {
-					continue;
-				}
-				depth_sum += weight * surface_depth;
-				weights_sum += weight;
-			}
-		}
-		if (depth_sum <= 0.0) {
-			continue;
-		}
-
-		float final_depth = depth_sum / weights_sum;
-
-		// signed distance from surface to voxel along camera axis
-		// TODO: try with "along ray" and compare. Newcombe et al. in KinectFusion claim there won't be a difference...
-		float signed_distance = final_depth - voxel_camera[2];
-
-		field(x_field, y_field, z_field) = compute_TSDF_value(signed_distance, narrow_band_half_width);
+		field(x_field, y_field, z_field) = compute_voxel_EWA_image_space(
+				sampling_bounds, voxel_image, voxel_camera, ellipse_matrix,
+				squared_radius_threshold, depth_unit_ratio, narrow_band_half_width,
+				depth_image);
 
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
 		++processed_voxel_count;

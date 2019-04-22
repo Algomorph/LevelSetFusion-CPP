@@ -37,23 +37,34 @@ enum class InterpolationMethod {
 //	BILINEAR_IMAGE_SPACE = 1,
 //	BILINEAR_TSDF_SPACE = 2,
 //	EWA_IMAGE_SPACE = 3,
-//	EWA_TSDF_SPACE = 4,
-	EWA_TSDF_SPACE_INCLUSIVE = 5
+//	EWA_VOXEL_SPACE = 4,
+	EWA_VOXEL_SPACE_INCLUSIVE = 5
 };
 
 template<typename ScalarContainer>
 struct Parameters {
 	typedef typename math::ContainerWrapper<ScalarContainer>::Coordinates Coordinates;
 	typedef typename ScalarContainer::Scalar Scalar;
-
-	Scalar near_clipping_distance = 0.05;
-	Scalar depth_unit_ratio;
-	Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor> projection_matrix;
-	Coordinates array_offset;
-	Coordinates field_shape;
-	Scalar voxel_size;
-	int narrow_band_width_voxels;
-	InterpolationMethod interpolation_method;
+	typedef Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor> Mat3;
+	Parameters(Scalar depth_unit_ratio = (Scalar)0.001,
+			Mat3 projection_matrix = Mat3::Identity(),
+			Scalar near_clipping_distance = 0.05,
+			Coordinates array_offset = Coordinates(-64),
+			Coordinates field_shape = Coordinates(128),
+			Scalar voxel_size = 0.004,
+			int narrow_band_width_voxels = 20,
+			InterpolationMethod interpolation_method = InterpolationMethod::NONE,
+			Scalar smoothing_factor = 0.5
+			);
+	Scalar depth_unit_ratio = 0.001; //meters
+	Mat3 projection_matrix;
+	Scalar near_clipping_distance = 0.05; //meters
+	Coordinates array_offset = Coordinates(-64); //voxels
+	Coordinates field_shape = Coordinates(128); //voxels
+	Scalar voxel_size = 0.004; //meters
+	int narrow_band_width_voxels = 20; //voxels
+	InterpolationMethod interpolation_method = InterpolationMethod::NONE;
+	Scalar smoothing_factor = 0.5; // gaussian covariance scale for EWA
 };
 
 template<typename Generator, typename ScalarContainer>
@@ -82,6 +93,11 @@ class Generator<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::Col
 public:
 	typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> Mat;
 	using GeneratorCRTP<Generator<Mat>, Mat>::GeneratorCRTP;
+	typedef eig::Matrix<Scalar,4,1> Vec4;
+	typedef eig::Matrix<Scalar,3,1> Vec3;
+	typedef eig::Matrix<Scalar,2,1> Vec2;
+	typedef eig::Matrix<Scalar,3,3> Mat3;
+	typedef eig::Matrix<Scalar,2,2> Mat2;
 
 private:
 	Mat generate__none(
@@ -89,7 +105,7 @@ private:
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
 			int image_y_coordinate = 0);
 
-	Mat generate__ewa_tsdf_space_inclusive(
+	Mat generate__ewa_voxel_space_inclusive(
 			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
 			int image_y_coordinate = 0);
@@ -103,6 +119,11 @@ public:
 	typedef Eigen::Tensor<Scalar, 3, Eigen::ColMajor> Ts;
 	using GeneratorCRTP<Generator<Ts>, Ts>::GeneratorCRTP;
 	Generator(const Parameters<Eigen::Tensor<Scalar, 3, Eigen::ColMajor> >& parameters);
+	typedef eig::Matrix<Scalar,4,1> Vec4;
+	typedef eig::Matrix<Scalar,3,1> Vec3;
+	typedef eig::Matrix<Scalar,2,1> Vec2;
+	typedef eig::Matrix<Scalar,3,3> Mat3;
+	typedef eig::Matrix<Scalar,2,2> Mat2;
 
 private:
 	Ts generate__none(
@@ -110,7 +131,12 @@ private:
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
 			int image_y_coordinate = 0);
 
-	Ts generate__ewa_tsdf_space_inclusive(
+	Ts generate__ewa_image_space(
+				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+				const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+				int image_y_coordinate = 0);
+
+	Ts generate__ewa_voxel_space_inclusive(
 			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
 			int image_y_coordinate = 0);

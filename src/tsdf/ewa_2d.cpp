@@ -83,9 +83,8 @@ eig::MatrixXf generate_TSDF_2D_EWA_image(
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		// Any MatrixXf in Eigen is column-major
 		// i_element = x * column_count + y
-		div_t division_result = std::div(i_element, field_size);
-		int x_field = division_result.quot;
-		int y_field = division_result.rem;
+		int x_field = i_element / field_size;
+		int y_field = i_element % field_size;
 
 		float x_voxel = (x_field + array_offset(0)) * voxel_size;
 		float z_voxel = (y_field + array_offset(2)) * voxel_size;
@@ -129,9 +128,8 @@ eig::MatrixXf generate_TSDF_2D_EWA_image(
 				squared_radius_threshold);
 
 		// compute sampling bounds
-		int x_sample_start, x_sample_end, y_sample_start, y_sample_end;
-		if (!compute_sampling_bounds(x_sample_start, x_sample_end, y_sample_start, y_sample_end,
-				bounds_max, voxel_image, depth_image)) {
+		math::Extent2d sampling_bounds;
+		if (!compute_sampling_bounds(sampling_bounds, bounds_max, voxel_image, depth_image)) {
 			continue;
 		}
 		float weights_sum = 0.0f;
@@ -139,8 +137,8 @@ eig::MatrixXf generate_TSDF_2D_EWA_image(
 
 
 		// collect sample readings
-		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
-			for (int y_sample = y_sample_start; y_sample < y_sample_end; y_sample++) {
+		for (int x_sample = sampling_bounds.x_start; x_sample < sampling_bounds.x_end; x_sample++) {
+			for (int y_sample = sampling_bounds.y_start; y_sample < sampling_bounds.y_end; y_sample++) {
 				eig::Vector2f sample_centered;
 				sample_centered <<
 						static_cast<float>(x_sample) - voxel_image(0),
@@ -226,9 +224,8 @@ eig::MatrixXf generate_TSDF_2D_EWA_TSDF(
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		// Any MatrixXf in Eigen is column-major
 		// i_element = x * column_count + y
-		div_t division_result = std::div(i_element, field_size);
-		int x_field = division_result.quot;
-		int y_field = division_result.rem;
+		int x_field = i_element / field_size;
+		int y_field = i_element % field_size;
 
 		float x_voxel = (x_field + array_offset(0)) * voxel_size;
 		float z_voxel = (y_field + array_offset(2)) * voxel_size;
@@ -272,17 +269,16 @@ eig::MatrixXf generate_TSDF_2D_EWA_TSDF(
 				squared_radius_threshold);
 
 		// compute sampling bounds
-		int x_sample_start, x_sample_end, y_sample_start, y_sample_end;
-		if (!compute_sampling_bounds(x_sample_start, x_sample_end, y_sample_start, y_sample_end,
-				bounds_max, voxel_image, depth_image)) {
+		math::Extent2d sampling_bounds;
+		if (!compute_sampling_bounds(sampling_bounds, bounds_max, voxel_image, depth_image)) {
 			continue;
 		}
 		float weights_sum = 0.0f;
 		float TSDF_sum = 0.0f;
 
 		// collect sample readings
-		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
-			for (int y_sample = y_sample_start; y_sample < y_sample_end; y_sample++) {
+		for (int x_sample = sampling_bounds.x_start; x_sample < sampling_bounds.x_end; x_sample++) {
+			for (int y_sample = sampling_bounds.y_start; y_sample < sampling_bounds.y_end; y_sample++) {
 				eig::Vector2f sample_centered;
 				sample_centered <<
 						static_cast<float>(x_sample) - voxel_image(0),
@@ -365,9 +361,8 @@ eig::MatrixXf generate_TSDF_2D_EWA_TSDF_inclusive(
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		// Any MatrixXf in Eigen is column-major
 		// i_element = x * column_count + y
-		div_t division_result = std::div(i_element, field_size);
-		int x_field = division_result.quot;
-		int y_field = division_result.rem;
+		int x_field = i_element / field_size;
+		int y_field = i_element % field_size;
 
 		float x_voxel = (x_field + array_offset(0)) * voxel_size;
 		float z_voxel = (y_field + array_offset(2)) * voxel_size;
@@ -411,10 +406,8 @@ eig::MatrixXf generate_TSDF_2D_EWA_TSDF_inclusive(
 				squared_radius_threshold);
 
 		// compute sampling bounds
-		int x_sample_start, x_sample_end, y_sample_start, y_sample_end;
-
-		if (!compute_sampling_bounds_inclusive(x_sample_start, x_sample_end, y_sample_start, y_sample_end,
-				bounds_max, voxel_image, depth_image)) {
+		math::Extent2d sampling_bounds;
+		if (!compute_sampling_bounds_inclusive(sampling_bounds, bounds_max, voxel_image, depth_image)) {
 			continue;
 		}
 
@@ -422,8 +415,8 @@ eig::MatrixXf generate_TSDF_2D_EWA_TSDF_inclusive(
 		float TSDF_sum = 0.0f;
 
 		// collect sample readings
-		for (int x_sample = x_sample_start; x_sample < x_sample_end; x_sample++) {
-			for (int y_sample = y_sample_start; y_sample < y_sample_end; y_sample++) {
+		for (int x_sample = sampling_bounds.x_start; x_sample < sampling_bounds.x_end; x_sample++) {
+			for (int y_sample = sampling_bounds.y_start; y_sample < sampling_bounds.y_end; y_sample++) {
 				eig::Vector2f sample_centered;
 				sample_centered <<
 						static_cast<float>(x_sample) - voxel_image(0),
@@ -537,14 +530,12 @@ eig::MatrixXf sampling_area_heatmap_2D_EWA_image(
 				squared_radius_threshold);
 
 		// compute sampling bounds
-		int x_sample_start, x_sample_end, y_sample_start, y_sample_end;
-		if (!compute_sampling_bounds(x_sample_start, x_sample_end, y_sample_start, y_sample_end,
-				bounds_max, voxel_image, depth_image)) {
+		math::Extent2d sampling_bounds;
+		if (!compute_sampling_bounds(sampling_bounds,bounds_max, voxel_image, depth_image)) {
 			continue;
 		}
 
-		int sampling_area = compute_sampling_area(x_sample_start, x_sample_end, y_sample_start, y_sample_end);
-		sampling_area_heatmap(y_field, x_field) = static_cast<float>(sampling_area);
+		sampling_area_heatmap(y_field, x_field) = static_cast<float>(sampling_bounds.area());
 
 	}
 

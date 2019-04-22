@@ -273,6 +273,7 @@ add_library(${MODULE_NAME} SHARED
 			src/math/cwise_binary.hpp
 			src/math/cwise_binary.tpp
 			src/math/cwise_binary.cpp
+			src/math/extent.hpp
 			src/math/field_like.hpp
 			src/math/field_like.tpp
 			src/math/field_like.cpp
@@ -318,6 +319,7 @@ add_library(${MODULE_NAME} SHARED
 			src/tsdf/tsdf_2d.cpp
 			src/tsdf/generator.hpp
 			src/tsdf/generator.tpp
+			src/tsdf/generator.cpp
 			src/tsdf/generator_tensor.tpp
 			src/tsdf/generator_tensor.cpp
 			src/tsdf/generator_matrix.tpp

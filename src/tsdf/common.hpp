@@ -27,17 +27,19 @@ namespace tsdf{
 
 constexpr float near_clipping_distance = 0.05; //m
 
-inline float compute_TSDF_value(float signed_distance, float narrow_band_half_width){
+template<typename Scalar>
+inline Scalar compute_TSDF_value(Scalar signed_distance, Scalar narrow_band_half_width){
 	if (signed_distance < -narrow_band_half_width) {
-		return -1.0;
+		return (Scalar)-1.0;
 	} else if (signed_distance > narrow_band_half_width) {
-		return 1.0;
+		return (Scalar)1.0;
 	} else {
 		return signed_distance / narrow_band_half_width;
 	}
 }
 
-inline bool is_voxel_out_of_bounds(const Eigen::Vector2f& voxel_image,
+template<typename Scalar>
+inline bool is_voxel_out_of_bounds(const Eigen::Matrix<Scalar,2,1>& voxel_image,
 		const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 		int margin = 3){
 	if (voxel_image(0) < -margin || voxel_image(0) >= depth_image.cols() + margin ||

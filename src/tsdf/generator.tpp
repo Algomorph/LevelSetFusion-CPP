@@ -32,6 +32,29 @@ namespace tsdf {
 
 namespace eig = Eigen;
 
+template<typename ScalarContainer>
+Parameters<ScalarContainer>::Parameters(Scalar depth_unit_ratio,
+		Mat3 projection_matrix,
+		Scalar near_clipping_distance,
+		Coordinates array_offset,
+		Coordinates field_shape,
+		Scalar voxel_size,
+		int narrow_band_width_voxels,
+		InterpolationMethod interpolation_method,
+		Scalar smoothing_factor
+		) :
+		depth_unit_ratio(depth_unit_ratio),
+		projection_matrix(projection_matrix),
+		near_clipping_distance(near_clipping_distance),
+		array_offset(array_offset),
+		field_shape(field_shape),
+		voxel_size(voxel_size),
+		narrow_band_width_voxels(narrow_band_width_voxels),
+		interpolation_method(interpolation_method),
+		smoothing_factor(smoothing_factor)
+		{}
+
+
 template<typename Generator, typename ScalarContainer>
 GeneratorCRTP<Generator, ScalarContainer>::GeneratorCRTP(const Parameters<ScalarContainer>& parameters) :
 		parameters(parameters) {
@@ -57,11 +80,11 @@ ScalarContainer GeneratorCRTP<Generator, ScalarContainer>::generate(
 //	case InterpolationMethod::EWA_IMAGE_SPACE:
 //		static_cast<Generator const&>(*this).generate__ewa_image_space(depth_image,camera_pose,image_y_coordinate);
 //		break;
-//	case InterpolationMethod::EWA_TSDF_SPACE:
+//	case InterpolationMethod::EWA_VOXEL_SPACE:
 //		static_cast<Generator const&>(*this).generate__ewa_tsdf_space(depth_image,camera_pose,image_y_coordinate);
 //		break;
-	case InterpolationMethod::EWA_TSDF_SPACE_INCLUSIVE:
-		static_cast<Generator const&>(*this).generate__ewa_tsdf_space_inclusive(depth_image,camera_pose,image_y_coordinate);
+	case InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE:
+		static_cast<Generator const&>(*this).generate__ewa_voxel_space_inclusive(depth_image,camera_pose,image_y_coordinate);
 		break;
 	default:
 		throw_assert(false, "Unknown InterpolationMethod enum value, " << parameters.interpolation_method)
