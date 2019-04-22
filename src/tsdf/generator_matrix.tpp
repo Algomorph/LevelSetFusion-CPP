@@ -173,7 +173,7 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 			continue;
 		}
 
-		field(y_field, x_field) = compute_voxel_EWA_voxel_space(
+		field(y_field, x_field) = compute_voxel_EWA_voxel_space_inclusive(
 				sampling_bounds, voxel_image, voxel_camera, ellipse_matrix,
 				squared_radius_threshold, p.depth_unit_ratio, narrow_band_half_width,
 				depth_image);
