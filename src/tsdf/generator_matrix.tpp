@@ -26,21 +26,19 @@
 #include "../math/conics.hpp"
 #include "ewa_common.hpp"
 
-namespace tsdf{
-
+namespace tsdf {
 
 template<typename Scalar>
 Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
 Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__none(
-			const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
-			const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
-			int image_y_coordinate){
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
+		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
+		int image_y_coordinate) {
 
 	const Parameters<Mat>& p = this->parameters;
 
-
 	Mat field(p.field_shape.y, p.field_shape.x);
-	std::fill_n(field.data(), field.size(), (Scalar)1.0);
+	std::fill_n(field.data(), field.size(), (Scalar) 1.0);
 	Scalar narrow_band_half_width = (static_cast<Scalar>(p.narrow_band_width_voxels) / 2.) * p.voxel_size;
 
 	Scalar w_voxel = 1.0f;
@@ -50,7 +48,7 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 
 	int x_size = p.field_shape.x;
 
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		// Any MatrixXf in Eigen is column-major
 		// i_element = x * column_count + y
@@ -95,16 +93,17 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 }
 
 template<typename Scalar>
+template<typename SamplingBoundsFunction, typename VoxelValueFunction>
 Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
-Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__ewa_voxel_space_inclusive(
-			const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
-			const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
-			int image_y_coordinate){
-
+Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__ewa_aux(
+		SamplingBoundsFunction&& compute_sampling_bounds, VoxelValueFunction&& compute_voxel_value,
+		const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+		const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+		int image_y_coordinate) {
 	const Parameters<Mat>& p = this->parameters;
 
 	Mat field(p.field_shape.y, p.field_shape.x);
-	std::fill_n(field.data(), field.size(), (Scalar)1.0);
+	std::fill_n(field.data(), field.size(), (Scalar) 1.0);
 	Scalar narrow_band_half_width = (static_cast<Scalar>(p.narrow_band_width_voxels) / 2.0) * p.voxel_size;
 
 	Scalar w_voxel = 1.0f;
@@ -119,7 +118,7 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 
 	Mat2 image_space_scaling_matrix = p.projection_matrix.block(0, 0, 2, 2);
 
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (int i_element = 0; i_element < matrix_size; i_element++) {
 		// Any MatrixXf in Eigen is column-major
 		// i_element = x * column_count + y
@@ -169,11 +168,12 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 
 		// compute sampling bounds
 		math::Extent2d sampling_bounds;
-		if (!compute_sampling_bounds_inclusive(sampling_bounds, bounds_max, voxel_image, depth_image)) {
+		if (!std::forward<SamplingBoundsFunction>(compute_sampling_bounds)(sampling_bounds, bounds_max, voxel_image,
+				depth_image)) {
 			continue;
 		}
 
-		field(y_field, x_field) = compute_voxel_EWA_voxel_space_inclusive(
+		field(y_field, x_field) = std::forward<VoxelValueFunction>(compute_voxel_value)(
 				sampling_bounds, voxel_image, voxel_camera, ellipse_matrix,
 				squared_radius_threshold, p.depth_unit_ratio, narrow_band_half_width,
 				depth_image);
@@ -182,7 +182,35 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 	return field;
 }
 
+template<typename Scalar>
+Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
+Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__ewa_image_space(
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
+		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
+		int image_y_coordinate) {
+	return this->generate__ewa_aux(compute_sampling_bounds<Scalar>, compute_voxel_EWA_image_space<Scalar>,
+			depth_image, camera_pose, image_y_coordinate);
+}
 
-}//namespace tsdf
+template<typename Scalar>
+Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
+Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__ewa_voxel_space(
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
+		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
+		int image_y_coordinate) {
+	return this->generate__ewa_aux(compute_sampling_bounds<Scalar>,
+			compute_voxel_EWA_voxel_space<Scalar>, depth_image, camera_pose, image_y_coordinate);
+}
 
+template<typename Scalar>
+Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
+Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__ewa_voxel_space_inclusive(
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
+		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
+		int image_y_coordinate) {
+	return this->generate__ewa_aux(compute_sampling_bounds_inclusive<Scalar>,
+			compute_voxel_EWA_voxel_space_inclusive<Scalar>, depth_image, camera_pose, image_y_coordinate);
+}
+
+}		//namespace tsdf
 

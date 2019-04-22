@@ -35,9 +35,9 @@ namespace tsdf {
 enum class InterpolationMethod {
 	NONE = 0,
 //	BILINEAR_IMAGE_SPACE = 1,
-//	BILINEAR_TSDF_SPACE = 2,
-//	EWA_IMAGE_SPACE = 3,
-//	EWA_VOXEL_SPACE = 4,
+//	BILINEAR_VOXEL_SPACE = 2,
+	EWA_IMAGE_SPACE = 3,
+	EWA_VOXEL_SPACE = 4,
 	EWA_VOXEL_SPACE_INCLUSIVE = 5
 };
 
@@ -105,6 +105,22 @@ private:
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
 			int image_y_coordinate = 0);
 
+	template <typename SamplingBoundsFunction, typename VoxelValueFunction>
+	Mat generate__ewa_aux(SamplingBoundsFunction&& compute_sampling_bounds, VoxelValueFunction&& compute_voxel_value,
+					const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+					const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+					int image_y_coordinate);
+
+	Mat generate__ewa_image_space(
+					const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+					const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+					int image_y_coordinate = 0);
+
+	Mat generate__ewa_voxel_space(
+				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+				const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+				int image_y_coordinate = 0);
+
 	Mat generate__ewa_voxel_space_inclusive(
 			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
@@ -131,7 +147,18 @@ private:
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
 			int image_y_coordinate = 0);
 
+	template <typename SamplingBoundsFunction, typename VoxelValueFunction>
+	Ts generate__ewa_aux(SamplingBoundsFunction&& compute_sampling_bounds, VoxelValueFunction&& compute_voxel_value,
+					const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+					const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+					int image_y_coordinate);
+
 	Ts generate__ewa_image_space(
+				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+				const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+				int image_y_coordinate = 0);
+
+	Ts generate__ewa_voxel_space(
 				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 				const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
 				int image_y_coordinate = 0);

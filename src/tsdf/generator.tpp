@@ -74,15 +74,15 @@ ScalarContainer GeneratorCRTP<Generator, ScalarContainer>::generate(
 //	case InterpolationMethod::BILINEAR_IMAGE_SPACE:
 //		static_cast<Generator const&>(*this).generate__bilinear_image_space(depth_image,camera_pose,image_y_coordinate);
 //		break;
-//	case InterpolationMethod::BILINEAR_TSDF_SPACE:
+//	case InterpolationMethod::BILINEAR_VOXEL_SPACE:
 //		static_cast<Generator const&>(*this).generate__bilinear_tsdf_space(depth_image,camera_pose,image_y_coordinate);
 //		break;
-//	case InterpolationMethod::EWA_IMAGE_SPACE:
-//		static_cast<Generator const&>(*this).generate__ewa_image_space(depth_image,camera_pose,image_y_coordinate);
-//		break;
-//	case InterpolationMethod::EWA_VOXEL_SPACE:
-//		static_cast<Generator const&>(*this).generate__ewa_tsdf_space(depth_image,camera_pose,image_y_coordinate);
-//		break;
+	case InterpolationMethod::EWA_IMAGE_SPACE:
+		static_cast<Generator const&>(*this).generate__ewa_image_space(depth_image,camera_pose,image_y_coordinate);
+		break;
+	case InterpolationMethod::EWA_VOXEL_SPACE:
+		static_cast<Generator const&>(*this).generate__ewa_tsdf_space(depth_image,camera_pose,image_y_coordinate);
+		break;
 	case InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE:
 		static_cast<Generator const&>(*this).generate__ewa_voxel_space_inclusive(depth_image,camera_pose,image_y_coordinate);
 		break;
