@@ -22,6 +22,7 @@
 
 namespace tsdf{
 
+template class GeneratorCRTP<Generator<math::Tensor3f>,math::Tensor3f>;
 template class Generator<math::Tensor3f>;
 
 }

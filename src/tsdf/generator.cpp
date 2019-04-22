@@ -19,8 +19,11 @@
  */
 
 //local
-#include "generator.hpp"
+#include "generator.tpp"
 namespace tsdf{
+
+template struct Parameters<math::MatrixXf>;
+template struct Parameters<math::Tensor3f>;
 
 }  // namespace tsdf
 

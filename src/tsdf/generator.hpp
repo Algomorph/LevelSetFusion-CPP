@@ -48,15 +48,15 @@ struct Parameters {
 	typedef Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor> Mat3;
 	Parameters(Scalar depth_unit_ratio = (Scalar)0.001,
 			Mat3 projection_matrix = Mat3::Identity(),
-			Scalar near_clipping_distance = 0.05,
+			Scalar near_clipping_distance = (Scalar)0.05,
 			Coordinates array_offset = Coordinates(-64),
 			Coordinates field_shape = Coordinates(128),
-			Scalar voxel_size = 0.004,
+			Scalar voxel_size = (Scalar)0.004,
 			int narrow_band_width_voxels = 20,
 			InterpolationMethod interpolation_method = InterpolationMethod::NONE,
-			Scalar smoothing_factor = 0.5
+			Scalar smoothing_factor = (Scalar)1.0
 			);
-	Scalar depth_unit_ratio = 0.001; //meters
+	Scalar depth_unit_ratio = (Scalar)0.001; //meters
 	Mat3 projection_matrix;
 	Scalar near_clipping_distance = 0.05; //meters
 	Coordinates array_offset = Coordinates(-64); //voxels
@@ -64,7 +64,7 @@ struct Parameters {
 	Scalar voxel_size = 0.004; //meters
 	int narrow_band_width_voxels = 20; //voxels
 	InterpolationMethod interpolation_method = InterpolationMethod::NONE;
-	Scalar smoothing_factor = 0.5; // gaussian covariance scale for EWA
+	Scalar smoothing_factor = (Scalar)1.0; // gaussian covariance scale for EWA
 };
 
 template<typename Generator, typename ScalarContainer>
@@ -77,8 +77,9 @@ public:
 
 	ScalarContainer generate(
 			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
-			const Eigen::Matrix<ContainerScalar, 4, 4, Eigen::ColMajor>& camera_pose,
-			int image_y_coordinate = 0);
+			const Eigen::Matrix<ContainerScalar, 4, 4, Eigen::ColMajor>& camera_pose =
+					Eigen::Matrix<ContainerScalar, 4, 4, Eigen::ColMajor>::Identity(),
+			int image_y_coordinate = 0) const;
 };
 
 template<typename ScalarContainer>
@@ -99,32 +100,31 @@ public:
 	typedef eig::Matrix<Scalar,3,3> Mat3;
 	typedef eig::Matrix<Scalar,2,2> Mat2;
 
-private:
 	Mat generate__none(
 			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-			int image_y_coordinate = 0);
-
-	template <typename SamplingBoundsFunction, typename VoxelValueFunction>
-	Mat generate__ewa_aux(SamplingBoundsFunction&& compute_sampling_bounds, VoxelValueFunction&& compute_voxel_value,
-					const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
-					const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-					int image_y_coordinate);
+			int image_y_coordinate = 0) const;
 
 	Mat generate__ewa_image_space(
 					const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 					const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-					int image_y_coordinate = 0);
+					int image_y_coordinate = 0) const;
 
 	Mat generate__ewa_voxel_space(
 				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 				const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-				int image_y_coordinate = 0);
+				int image_y_coordinate = 0) const;
 
 	Mat generate__ewa_voxel_space_inclusive(
 			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-			int image_y_coordinate = 0);
+			int image_y_coordinate = 0) const;
+private:
+	template <typename SamplingBoundsFunction, typename VoxelValueFunction>
+	Mat generate__ewa_aux(SamplingBoundsFunction&& compute_sampling_bounds, VoxelValueFunction&& compute_voxel_value,
+					const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+					const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+					int image_y_coordinate) const;
 };
 
 template<typename Scalar>
@@ -141,33 +141,36 @@ public:
 	typedef eig::Matrix<Scalar,3,3> Mat3;
 	typedef eig::Matrix<Scalar,2,2> Mat2;
 
-private:
 	Ts generate__none(
 			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-			int image_y_coordinate = 0);
-
-	template <typename SamplingBoundsFunction, typename VoxelValueFunction>
-	Ts generate__ewa_aux(SamplingBoundsFunction&& compute_sampling_bounds, VoxelValueFunction&& compute_voxel_value,
-					const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
-					const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-					int image_y_coordinate);
+			int image_y_coordinate = 0) const;
 
 	Ts generate__ewa_image_space(
 				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 				const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-				int image_y_coordinate = 0);
+				int image_y_coordinate = 0) const;
 
 	Ts generate__ewa_voxel_space(
 				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 				const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-				int image_y_coordinate = 0);
+				int image_y_coordinate = 0) const;
 
 	Ts generate__ewa_voxel_space_inclusive(
 			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-			int image_y_coordinate = 0);
-
+			int image_y_coordinate = 0) const;
+private:
+template <typename SamplingBoundsFunction, typename VoxelValueFunction>
+Ts generate__ewa_aux(SamplingBoundsFunction&& compute_sampling_bounds, VoxelValueFunction&& compute_voxel_value,
+				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+				const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+				int image_y_coordinate) const;
 };
+
+typedef Parameters<eig::MatrixXf> Parameters2d;
+typedef Parameters<math::Tensor3f> Parameters3d;
+typedef Generator<eig::MatrixXf> Generator2d;
+typedef Generator<math::Tensor3f> Generator3d;
 
 }  // namespace tsdf

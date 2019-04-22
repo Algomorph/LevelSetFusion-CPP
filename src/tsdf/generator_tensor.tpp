@@ -38,7 +38,7 @@ Eigen::Tensor<Scalar, 3, eig::ColMajor>
 Generator<eig::Tensor<Scalar, 3, eig::ColMajor> >::generate__none(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
 		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 	const Parameters<Ts>& p = this->parameters;
 
 	Ts field(p.field_shape.x, p.field_shape.y, p.field_shape.z);
@@ -104,7 +104,7 @@ Generator<eig::Tensor<Scalar, 3, eig::ColMajor> >::generate__ewa_aux(SamplingBou
 		VoxelValueFunction&& compute_voxel_value,
 		const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 		const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 	const Parameters<Ts>& p = this->parameters;
 
 	Ts field(p.field_shape.x, p.field_shape.y, p.field_shape.z);
@@ -220,7 +220,7 @@ Eigen::Tensor<Scalar, 3, eig::ColMajor>
 Generator<eig::Tensor<Scalar, 3, eig::ColMajor>>::generate__ewa_image_space(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
 		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 	return this->generate__ewa_aux(compute_sampling_bounds<Scalar>, compute_voxel_EWA_image_space<Scalar>,
 			depth_image, camera_pose, image_y_coordinate);
 }
@@ -230,7 +230,7 @@ Eigen::Tensor<Scalar, 3, eig::ColMajor>
 Generator<eig::Tensor<Scalar, 3, eig::ColMajor>>::generate__ewa_voxel_space(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
 		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 	return this->generate__ewa_aux(compute_sampling_bounds<Scalar>, compute_voxel_EWA_voxel_space<Scalar>,
 			depth_image, camera_pose, image_y_coordinate);
 }
@@ -240,7 +240,7 @@ Eigen::Tensor<Scalar, 3, eig::ColMajor>
 Generator<eig::Tensor<Scalar, 3, eig::ColMajor>>::generate__ewa_voxel_space_inclusive(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
 		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 	return this->generate__ewa_aux(compute_sampling_bounds_inclusive<Scalar>,
 			compute_voxel_EWA_voxel_space_inclusive<Scalar>,
 			depth_image, camera_pose, image_y_coordinate);

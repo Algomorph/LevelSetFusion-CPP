@@ -33,7 +33,7 @@ Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
 Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__none(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
 		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 
 	const Parameters<Mat>& p = this->parameters;
 
@@ -99,7 +99,7 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 		SamplingBoundsFunction&& compute_sampling_bounds, VoxelValueFunction&& compute_voxel_value,
 		const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 		const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 	const Parameters<Mat>& p = this->parameters;
 
 	Mat field(p.field_shape.y, p.field_shape.x);
@@ -112,7 +112,7 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 	Mat3 covariance_camera_space =
 			compute_covariance_camera_space(p.voxel_size, camera_pose, p.smoothing_factor);
 
-	Scalar squared_radius_threshold = 4.0 * p.voxel_size * p.smoothing_factor;
+	Scalar squared_radius_threshold = static_cast<Scalar>(4.0) * p.voxel_size * p.smoothing_factor;
 	int matrix_size = static_cast<int>(field.size());
 	int x_size = p.field_shape.x;
 
@@ -187,7 +187,7 @@ Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
 Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__ewa_image_space(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
 		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 	return this->generate__ewa_aux(compute_sampling_bounds<Scalar>, compute_voxel_EWA_image_space<Scalar>,
 			depth_image, camera_pose, image_y_coordinate);
 }
@@ -197,7 +197,7 @@ Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
 Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__ewa_voxel_space(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
 		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 	return this->generate__ewa_aux(compute_sampling_bounds<Scalar>,
 			compute_voxel_EWA_voxel_space<Scalar>, depth_image, camera_pose, image_y_coordinate);
 }
@@ -207,7 +207,7 @@ Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
 Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__ewa_voxel_space_inclusive(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
 		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 	return this->generate__ewa_aux(compute_sampling_bounds_inclusive<Scalar>,
 			compute_voxel_EWA_voxel_space_inclusive<Scalar>, depth_image, camera_pose, image_y_coordinate);
 }

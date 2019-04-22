@@ -34,6 +34,8 @@
 //test targets
 #include "../src/tsdf/tsdf.hpp"
 #include "../src/tsdf/ewa.hpp"
+
+#include "../src/tsdf/generator.hpp"
 #include "../src/math/typedefs.hpp"
 #include "../src/math/almost_equal.hpp"
 #include "../src/image_io/png_eigen.hpp"
@@ -51,20 +53,42 @@ BOOST_AUTO_TEST_CASE(test_EWA_2D_generation01) {
 			700.0f, 0.0f, 320.0f,
 			0.0f, 700.0f, 240.0f,
 			0.0f, 0.0f, 1.0f;
-	eig::Vector3i offset;
-	offset << 94, -256, 804;
 
-	eig::MatrixXf field = tsdf::generate_TSDF_2D_EWA_image(
-			1, // y coord
-			depth_image,
+//	eig::MatrixXf field = tsdf::generate_TSDF_2D_EWA_image(
+//			1, // y coord
+//			depth_image,
+//			0.001f, //depth unit ratio
+//			camera_intrinsic_matrix,
+//			eig::Matrix4f::Identity(), //camera pose
+//			offset,
+//			16, //field size
+//			0.004f, //voxel size
+//			20 // narrow band width
+//			);
+//	Scalar depth_unit_ratio = 0.001; //meters
+//	Mat3 projection_matrix;
+//	Scalar near_clipping_distance = 0.05; //meters
+//	Coordinates array_offset = Coordinates(-64); //voxels
+//	Coordinates field_shape = Coordinates(128); //voxels
+//	Scalar voxel_size = 0.004; //meters
+//	int narrow_band_width_voxels = 20; //voxels
+//	InterpolationMethod interpolation_method = InterpolationMethod::NONE;
+//	Scalar smoothing_factor = 0.5; // gaussian covariance scale for EWA
+	eig::Vector2i field_shape;
+	field_shape << 16, 16;
+	tsdf::Parameters2d parameters(
 			0.001f, //depth unit ratio
-			camera_intrinsic_matrix,
-			eig::Matrix4f::Identity(), //camera pose
-			offset,
-			16, //field size
+			camera_intrinsic_matrix, //projection matrix
+			0.05f, //near clipping distance
+			math::Vector2i(94, 804), //offset
+			math::Vector2i(16, 16), //shape
 			0.004f, //voxel size
-			20 // narrow band width
+			20, //narrow band width
+			tsdf::InterpolationMethod::EWA_IMAGE_SPACE,
+			1.0 // gaussian covariance scale
 			);
+	tsdf::Generator2d generator(parameters);
+	eig::MatrixXf field = generator.generate(depth_image, eig::Matrix4f::Identity(), 1);
 
 	BOOST_REQUIRE(math::almost_equal_verbose(field, test_data::out_sdf_field, 1e-6f));
 }

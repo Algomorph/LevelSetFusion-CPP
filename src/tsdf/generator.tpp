@@ -64,12 +64,11 @@ template<typename Generator, typename ScalarContainer>
 ScalarContainer GeneratorCRTP<Generator, ScalarContainer>::generate(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
 		const eig::Matrix<ContainerScalar, 4, 4, eig::ColMajor>& camera_pose,
-		int image_y_coordinate) {
+		int image_y_coordinate) const {
 
 	switch (parameters.interpolation_method) {
 	case InterpolationMethod::NONE:
-		static_cast<Generator const&>(*this).generate__none(depth_image,camera_pose,image_y_coordinate);
-		break;
+		return static_cast<Generator const&>(*this).generate__none(depth_image,camera_pose,image_y_coordinate);
 		//TODO: some time in the distant future, maybe, ...
 //	case InterpolationMethod::BILINEAR_IMAGE_SPACE:
 //		static_cast<Generator const&>(*this).generate__bilinear_image_space(depth_image,camera_pose,image_y_coordinate);
@@ -78,17 +77,16 @@ ScalarContainer GeneratorCRTP<Generator, ScalarContainer>::generate(
 //		static_cast<Generator const&>(*this).generate__bilinear_tsdf_space(depth_image,camera_pose,image_y_coordinate);
 //		break;
 	case InterpolationMethod::EWA_IMAGE_SPACE:
-		static_cast<Generator const&>(*this).generate__ewa_image_space(depth_image,camera_pose,image_y_coordinate);
+		return static_cast<Generator const&>(*this).generate__ewa_image_space(depth_image,camera_pose,image_y_coordinate);
 		break;
 	case InterpolationMethod::EWA_VOXEL_SPACE:
-		static_cast<Generator const&>(*this).generate__ewa_tsdf_space(depth_image,camera_pose,image_y_coordinate);
+		return static_cast<Generator const&>(*this).generate__ewa_voxel_space(depth_image,camera_pose,image_y_coordinate);
 		break;
 	case InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE:
-		static_cast<Generator const&>(*this).generate__ewa_voxel_space_inclusive(depth_image,camera_pose,image_y_coordinate);
+		return static_cast<Generator const&>(*this).generate__ewa_voxel_space_inclusive(depth_image,camera_pose,image_y_coordinate);
 		break;
 	default:
-		throw_assert(false, "Unknown InterpolationMethod enum value, " << parameters.interpolation_method)
-		;
+		throw_assert(false, "Unknown InterpolationMethod enum value, " << static_cast<int>(parameters.interpolation_method));
 	}
 }
 
