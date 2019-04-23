@@ -27,60 +27,14 @@
 //local
 #include "../math/container_traits.hpp"
 #include "../math/typedefs.hpp"
-
+#include "generator_crtp.hpp"
+#include "parameters.hpp"
 
 
 namespace tsdf {
 
-enum class InterpolationMethod {
-	NONE = 0,
-//	BILINEAR_IMAGE_SPACE = 1,
-//	BILINEAR_VOXEL_SPACE = 2,
-	EWA_IMAGE_SPACE = 3,
-	EWA_VOXEL_SPACE = 4,
-	EWA_VOXEL_SPACE_INCLUSIVE = 5
-};
 
-template<typename ScalarContainer>
-struct Parameters {
-	typedef typename math::ContainerWrapper<ScalarContainer>::Coordinates Coordinates;
-	typedef typename ScalarContainer::Scalar Scalar;
-	typedef Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor> Mat3;
-	Parameters(Scalar depth_unit_ratio = (Scalar)0.001,
-			Mat3 projection_matrix = Mat3::Identity(),
-			Scalar near_clipping_distance = (Scalar)0.05,
-			Coordinates array_offset = Coordinates(-64),
-			Coordinates field_shape = Coordinates(128),
-			Scalar voxel_size = (Scalar)0.004,
-			int narrow_band_width_voxels = 20,
-			InterpolationMethod interpolation_method = InterpolationMethod::NONE,
-			Scalar smoothing_factor = (Scalar)1.0
-			);
-	Scalar depth_unit_ratio = (Scalar)0.001; //meters
-	Mat3 projection_matrix;
-	Scalar near_clipping_distance = 0.05; //meters
-	Coordinates array_offset = Coordinates(-64); //voxels
-	Coordinates field_shape = Coordinates(128); //voxels
-	Scalar voxel_size = 0.004; //meters
-	int narrow_band_width_voxels = 20; //voxels
-	InterpolationMethod interpolation_method = InterpolationMethod::NONE;
-	Scalar smoothing_factor = (Scalar)1.0; // gaussian covariance scale for EWA
-};
 
-template<typename Generator, typename ScalarContainer>
-class GeneratorCRTP {
-public:
-	GeneratorCRTP(const Parameters<ScalarContainer>& parameters);
-
-	const Parameters<ScalarContainer> parameters;
-	typedef typename ScalarContainer::Scalar ContainerScalar;
-
-	ScalarContainer generate(
-			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
-			const Eigen::Matrix<ContainerScalar, 4, 4, Eigen::ColMajor>& camera_pose =
-					Eigen::Matrix<ContainerScalar, 4, 4, Eigen::ColMajor>::Identity(),
-			int image_y_coordinate = 0) const;
-};
 
 template<typename ScalarContainer>
 class Generator {
@@ -134,7 +88,6 @@ class Generator<Eigen::Tensor<Scalar, 3, Eigen::ColMajor> > :
 public:
 	typedef Eigen::Tensor<Scalar, 3, Eigen::ColMajor> Ts;
 	using GeneratorCRTP<Generator<Ts>, Ts>::GeneratorCRTP;
-	Generator(const Parameters<Eigen::Tensor<Scalar, 3, Eigen::ColMajor> >& parameters);
 	typedef eig::Matrix<Scalar,4,1> Vec4;
 	typedef eig::Matrix<Scalar,3,1> Vec3;
 	typedef eig::Matrix<Scalar,2,1> Vec2;

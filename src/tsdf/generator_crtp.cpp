@@ -1,7 +1,7 @@
 /*
- * generator.cpp
+ * generator_crtp.cpp
  *
- *  Created on: Apr 22, 2019
+ *  Created on: Apr 23, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -18,13 +18,13 @@
  *   limitations under the License.
  */
 
-//local
-#include "generator.tpp"
-namespace tsdf{
+#include "generator.hpp"
+#include "generator_crtp.tpp"
 
-template struct Parameters<math::MatrixXf>;
-template struct Parameters<math::Tensor3f>;
+
+namespace tsdf {
+
+template class GeneratorCRTP<Generator<eig::MatrixXf>,eig::MatrixXf>;
+template class GeneratorCRTP<Generator<math::Tensor3f>,math::Tensor3f>;
 
 }  // namespace tsdf
-
-

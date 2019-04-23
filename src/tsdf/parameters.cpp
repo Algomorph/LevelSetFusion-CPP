@@ -1,7 +1,7 @@
 /*
- * generator_none_tensor.cpp
+ * parameters.cpp
  *
- *  Created on: Apr 19, 2019
+ *  Created on: Apr 23, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -18,12 +18,13 @@
  *   limitations under the License.
  */
 
-#include "generator_tensor.tpp"
+#include "parameters.tpp"
 
 namespace tsdf{
 
-template class Generator<math::Tensor3f>;
+template struct Parameters<math::MatrixXf>;
+template struct Parameters<math::Tensor3f>;
 
-}
+}  // namespace tsdf
 
 

@@ -23,7 +23,6 @@
 
 namespace tsdf{
 
-template class GeneratorCRTP<Generator<eig::MatrixXf>,eig::MatrixXf>;
 template class Generator<eig::MatrixXf>;
 
 }

@@ -31,8 +31,7 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 	pe::export_math_types();
 	pe::export_math_functions();
 
-	pe::export_ewa();
-	pe::export_tsdf();
+	pe::pe_tsdf::export_algorithms();
 
 	pe::export_telemetry_utilities();
 

@@ -25,41 +25,31 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 
 //local
-#include "generator.hpp"
+#include "generator_crtp.hpp"
 #include "../error_handling/throw_assert.hpp"
+#include "interpolation_method.hpp"
 
 namespace tsdf {
 
 namespace eig = Eigen;
-
-template<typename ScalarContainer>
-Parameters<ScalarContainer>::Parameters(Scalar depth_unit_ratio,
-		Mat3 projection_matrix,
-		Scalar near_clipping_distance,
-		Coordinates array_offset,
-		Coordinates field_shape,
-		Scalar voxel_size,
-		int narrow_band_width_voxels,
-		InterpolationMethod interpolation_method,
-		Scalar smoothing_factor
-		) :
-		depth_unit_ratio(depth_unit_ratio),
-		projection_matrix(projection_matrix),
-		near_clipping_distance(near_clipping_distance),
-		array_offset(array_offset),
-		field_shape(field_shape),
-		voxel_size(voxel_size),
-		narrow_band_width_voxels(narrow_band_width_voxels),
-		interpolation_method(interpolation_method),
-		smoothing_factor(smoothing_factor)
-		{}
-
 
 template<typename Generator, typename ScalarContainer>
 GeneratorCRTP<Generator, ScalarContainer>::GeneratorCRTP(const Parameters<ScalarContainer>& parameters) :
 		parameters(parameters) {
 }
 
+/**
+ * @brief Generate a discrete implicit TSDF (Truncated Signed Distance Function) from the give depth image presumed to
+ * have been taken at the specified camera pose.
+ * @details Each voxel will contain the distance to the nearest surface, in voxels,
+ * truncated to +/- 1.0. Uses voxel size, truncation bounds, and other parameters that the generator was initialized
+ * with. For 2D versions of the algorithm, a coordinate is specified to limit usage of the depth image to a single pixel
+ * row.
+ * @param depth_image a 16-bit depth image
+ * @param camera_pose pose of the camera relative to world
+ * @param image_y_coordinate - (2D case only) row of the depth image to use
+ * @return the generated TSDF voxel grid.
+ */
 template<typename Generator, typename ScalarContainer>
 ScalarContainer GeneratorCRTP<Generator, ScalarContainer>::generate(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
@@ -68,7 +58,7 @@ ScalarContainer GeneratorCRTP<Generator, ScalarContainer>::generate(
 
 	switch (parameters.interpolation_method) {
 	case InterpolationMethod::NONE:
-		return static_cast<Generator const&>(*this).generate__none(depth_image,camera_pose,image_y_coordinate);
+		return static_cast<Generator const&>(*this).generate__none(depth_image, camera_pose, image_y_coordinate);
 		//TODO: some time in the distant future, maybe, ...
 //	case InterpolationMethod::BILINEAR_IMAGE_SPACE:
 //		static_cast<Generator const&>(*this).generate__bilinear_image_space(depth_image,camera_pose,image_y_coordinate);
@@ -77,19 +67,23 @@ ScalarContainer GeneratorCRTP<Generator, ScalarContainer>::generate(
 //		static_cast<Generator const&>(*this).generate__bilinear_tsdf_space(depth_image,camera_pose,image_y_coordinate);
 //		break;
 	case InterpolationMethod::EWA_IMAGE_SPACE:
-		return static_cast<Generator const&>(*this).generate__ewa_image_space(depth_image,camera_pose,image_y_coordinate);
+		return static_cast<Generator const&>(*this).generate__ewa_image_space(depth_image, camera_pose,
+				image_y_coordinate);
 		break;
 	case InterpolationMethod::EWA_VOXEL_SPACE:
-		return static_cast<Generator const&>(*this).generate__ewa_voxel_space(depth_image,camera_pose,image_y_coordinate);
+		return static_cast<Generator const&>(*this).generate__ewa_voxel_space(depth_image, camera_pose,
+				image_y_coordinate);
 		break;
 	case InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE:
-		return static_cast<Generator const&>(*this).generate__ewa_voxel_space_inclusive(depth_image,camera_pose,image_y_coordinate);
+		return static_cast<Generator const&>(*this).generate__ewa_voxel_space_inclusive(depth_image, camera_pose,
+				image_y_coordinate);
 		break;
 	default:
-		throw_assert(false, "Unknown InterpolationMethod enum value, " << static_cast<int>(parameters.interpolation_method));
+		throw_assert(false,
+				"Unknown InterpolationMethod enum value, " << static_cast<int>(parameters.interpolation_method))
+		;
 	}
 }
-
 
 }  // namespace tsdf
 

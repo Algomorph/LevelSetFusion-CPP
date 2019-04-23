@@ -21,7 +21,7 @@
 #pragma once
 
 //local
-#include "generator.tpp"
+#include "generator.hpp"
 #include "common.hpp"
 #include "../math/conics.hpp"
 #include "ewa_common.hpp"
@@ -38,11 +38,11 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 	const Parameters<Mat>& p = this->parameters;
 
 	Mat field(p.field_shape.y, p.field_shape.x);
-	std::fill_n(field.data(), field.size(), (Scalar) 1.0);
+	std::fill_n(field.data(), field.size(), static_cast<Scalar>(1.0));
 	Scalar narrow_band_half_width = (static_cast<Scalar>(p.narrow_band_width_voxels) / 2.) * p.voxel_size;
 
-	Scalar w_voxel = 1.0f;
-	Scalar y_voxel = 0.0f;
+	Scalar w_voxel = static_cast<Scalar>(1.0);
+	Scalar y_voxel = static_cast<Scalar>(0.0);
 
 	int matrix_size = static_cast<int>(field.size());
 
@@ -76,10 +76,10 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 		// TODO: there is difference between voxel_camera.norm() and voxel_camera(2).
 		Scalar ray_distance = voxel_camera(2);
 
-		int image_x_coordinate = int(voxel_image(0) + 0.5);
+		int image_x_coordinate = int(voxel_image(0) + static_cast<Scalar>(0.5));
 		Scalar depth = static_cast<float>(depth_image(image_y_coordinate, image_x_coordinate)) * p.depth_unit_ratio;
 
-		if (depth <= 0.0f) {
+		if (depth <= static_cast<Scalar>(0.0)) {
 			continue;
 		}
 

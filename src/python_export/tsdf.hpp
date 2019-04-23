@@ -21,8 +21,8 @@
 #pragma once
 
 namespace python_export{
-
-void export_ewa();
-void export_tsdf();
-
+//pe_tsdf used instead of tsdf to avoid namespace naming conflicts
+namespace pe_tsdf{
+void export_algorithms();
+} // namespace pe_tsdf
 }//namespace python_export

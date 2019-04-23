@@ -60,7 +60,7 @@ class Sdf2SdfOptimizer2d {
     eig::Vector3f optimize(int image_y_coordinate,
                            const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& canonical_depth_image,
                            const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
-                           const TSDFGenerationParameters tsdf_generation_parameters,
+                           const TSDFGenerationParameters& tsdf_generation_parameters,
                            float eta = 0.01f);
 
     private:

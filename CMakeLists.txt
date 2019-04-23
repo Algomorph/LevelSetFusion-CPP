@@ -310,20 +310,21 @@ add_library(${MODULE_NAME} SHARED
 
 			# tsdf: utilities for generating TSDF voxel grids in various ways
 			src/tsdf/common.hpp
-			src/tsdf/ewa_2d.cpp
-			src/tsdf/ewa_3d.cpp
+			src/tsdf/ewa_2d_viz.cpp
 			src/tsdf/ewa_3d_viz.cpp
 			src/tsdf/ewa_common.hpp
-			src/tsdf/ewa.hpp
-			src/tsdf/tsdf.hpp
-			src/tsdf/tsdf_2d.cpp
+			src/tsdf/ewa_viz.hpp
 			src/tsdf/generator.hpp
-			src/tsdf/generator.tpp
-			src/tsdf/generator.cpp
+			src/tsdf/generator_crtp.hpp
+			src/tsdf/generator_crtp.tpp
+			src/tsdf/generator_crtp.cpp
 			src/tsdf/generator_tensor.tpp
 			src/tsdf/generator_tensor.cpp
 			src/tsdf/generator_matrix.tpp
 			src/tsdf/generator_matrix.cpp
+			src/tsdf/parameters.hpp
+			src/tsdf/parameters.tpp
+			src/tsdf/parameters.cpp
 
 			# image_io: minimalistic image reading / writing
 			src/image_io/stb_image.h

@@ -19,11 +19,13 @@
  */
 
 #pragma once
+
+//stdlib
 #include <atomic>
 
 //local
 #include <lsf_config.h>
-#include "generator.tpp"
+#include "generator.hpp"
 #include "common.hpp"
 #include "ewa_common.hpp"
 #include "../math/conics.hpp"

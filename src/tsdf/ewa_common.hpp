@@ -185,7 +185,6 @@ Scalar compute_voxel_EWA_voxel_space(
 	return TSDF_sum / weights_sum;
 }
 
-
 template<typename Scalar>
 inline
 Scalar compute_voxel_EWA_voxel_space_inclusive(
@@ -196,10 +195,11 @@ Scalar compute_voxel_EWA_voxel_space_inclusive(
 		const Scalar& squared_radius_threshold,
 		const Scalar& depth_unit_ratio,
 		const Scalar& narrow_band_half_width,
-		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& depth_image){
+		const eig::Matrix<uint16_t, eig::Dynamic, eig::Dynamic>& depth_image){
 	Scalar weights_sum = static_cast<Scalar>(0.0);
 	Scalar TSDF_sum = static_cast<Scalar>(0.0);
 
+	// collect sample readings
 	for (int x_sample = sampling_bounds.x_start; x_sample < sampling_bounds.x_end; x_sample++) {
 		for (int y_sample = sampling_bounds.y_start; y_sample < sampling_bounds.y_end; y_sample++) {
 			eig::Matrix<Scalar,2,1> sample_centered;
@@ -215,9 +215,9 @@ Scalar compute_voxel_EWA_voxel_space_inclusive(
 
 			if (y_sample < 0 || y_sample >= depth_image.rows() ||
 					x_sample < 0 || x_sample >= depth_image.cols()) {
-				TSDF_sum += weight;// * 1.0;
+				TSDF_sum += weight;  // (* 1.0)
 			} else {
-				Scalar surface_depth = static_cast<Scalar>(depth_image(y_sample, x_sample));
+				Scalar surface_depth = static_cast<Scalar>(depth_image(y_sample, x_sample)) * depth_unit_ratio;
 				if (surface_depth <= static_cast<Scalar>(0.0)) {
 					continue;
 				}
@@ -227,14 +227,13 @@ Scalar compute_voxel_EWA_voxel_space_inclusive(
 			weights_sum += weight;
 		}
 	}
+
 	//TODO: potential speedup -- is it even possible for this condition to be true?
 	if (weights_sum == static_cast<Scalar>(0.0)) {
 		return static_cast<Scalar>(1.0);
 	}
-
 	return TSDF_sum / weights_sum;
 }
-
 
 }//namespace tsdf
 
