@@ -38,18 +38,7 @@ GeneratorCRTP<Generator, ScalarContainer>::GeneratorCRTP(const Parameters<Scalar
 		parameters(parameters) {
 }
 
-/**
- * @brief Generate a discrete implicit TSDF (Truncated Signed Distance Function) from the give depth image presumed to
- * have been taken at the specified camera pose.
- * @details Each voxel will contain the distance to the nearest surface, in voxels,
- * truncated to +/- 1.0. Uses voxel size, truncation bounds, and other parameters that the generator was initialized
- * with. For 2D versions of the algorithm, a coordinate is specified to limit usage of the depth image to a single pixel
- * row.
- * @param depth_image a 16-bit depth image
- * @param camera_pose pose of the camera relative to world
- * @param image_y_coordinate - (2D case only) row of the depth image to use
- * @return the generated TSDF voxel grid.
- */
+
 template<typename Generator, typename ScalarContainer>
 ScalarContainer GeneratorCRTP<Generator, ScalarContainer>::generate(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,

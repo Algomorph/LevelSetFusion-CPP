@@ -50,28 +50,28 @@ void export_algorithms() {
 			.value("EWA_IMAGE_SPACE", tsdf::InterpolationMethod::EWA_IMAGE_SPACE)
 			.value("EWA_VOXEL_SPACE", tsdf::InterpolationMethod::EWA_VOXEL_SPACE)
 			.value("EWA_VOXEL_SPACE_INCLUSIVE", tsdf::InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE);
-//	Scalar depth_unit_ratio = (Scalar)0.001; //meters
-//	Mat3 projection_matrix;
-//	Scalar near_clipping_distance = 0.05; //meters
-//	Coordinates array_offset = Coordinates(-64); //voxels
-//	Coordinates field_shape = Coordinates(128); //voxels
-//	Scalar voxel_size = 0.004; //meters
-//	int narrow_band_width_voxels = 20; //voxels
-//	InterpolationMethod interpolation_method = InterpolationMethod::NONE;
-//	Scalar smoothing_factor = (Scalar)1.0; // gaussian covariance scale for EWA
-	bp::class_<tsdf::Parameters2d>("Parameters2d",
-			bp::init<bp::optional<
-			float,
-			Eigen::Matrix3f,
-			float,
-			math::Vector2i,
-			math::Vector2i,
-			float,
-			int,
-			tsdf::InterpolationMethod,
-			float
-			>>());
 
+	bp::class_<tsdf::Parameters2d>("Parameters2d",
+			bp::init<bp::optional<float,Eigen::Matrix3f,float,math::Vector2i, math::Vector2i, float, int,
+				tsdf::InterpolationMethod,float>>(bp::args("depth_unit_ratio","projection_matrix",
+						"near_clipping_distance", "array_offset", "field_shape","voxel_size","narrow_band_width_voxels",
+						"interpolation_method","smoothing_factor")))
+			.add_property("depth_unit_ratio", &tsdf::Parameters2d::depth_unit_ratio)
+			.add_property("projection_matrix", &tsdf::Parameters2d::projection_matrix)
+			.add_property("near_clipping_distance", &tsdf::Parameters2d::near_clipping_distance)
+			.add_property("array_offset", &tsdf::Parameters2d::array_offset)
+			.add_property("field_shape", &tsdf::Parameters2d::field_shape)
+			.add_property("voxel_size", &tsdf::Parameters2d::voxel_size)
+			.add_property("narrow_band_width_voxels", &tsdf::Parameters2d::narrow_band_width_voxels)
+			.add_property("interpolation_method", &tsdf::Parameters2d::interpolation_method)
+			.add_property("smoothing_factor", &tsdf::Parameters2d::smoothing_factor);
+
+	bp::class_<tsdf::Generator2d>("Generator2d",
+			bp::init<tsdf::Parameters2d>("parameters"))
+		.def("generate", &tsdf::Generator2d::generate,
+				"Generate a discrete implicit TSDF (Truncated Signed Distance "
+				"Function) from the give depth image presumed to have been taken at the specified camera pose.",
+				bp::args("depth_image","camera_pose","image_y_coordinate"));
 
 	bp::def("generate_tsdf_3d_ewa_image_visualization", &tsdf::generate_TSDF_3D_EWA_image_visualization,
 			"Draw a visualization of voxel sampling over image space using Elliptical Weighed Average resampling approach."
