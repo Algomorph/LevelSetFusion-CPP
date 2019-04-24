@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_no_interpolation_1) {
 				math::Vector2i(16, 16), //shape
 				0.004f, //voxel size
 				20, //narrow band width
-				tsdf::InterpolationMethod::NONE
+				tsdf::FilteringMethod::NONE
 				);
 	tsdf::Generator2d generator(parameters);
 	eig::MatrixXf field = generator.generate(depth_image, eig::Matrix4f::Identity(), 200);
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_no_interpolation_2) {
 					math::Vector2i(16, 16), //shape
 					0.004f, //voxel size
 					20, //narrow band width
-					tsdf::InterpolationMethod::NONE
+					tsdf::FilteringMethod::NONE
 					);
 	tsdf::Generator2d generator(parameters);
 	eig::MatrixXf field = generator.generate(depth_image, camera_extrinsic_matrix, 200);
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_EWA_2D_image_space_1) {
 			math::Vector2i(16, 16), //shape
 			0.004f, //voxel size
 			20, //narrow band width
-			tsdf::InterpolationMethod::EWA_IMAGE_SPACE,
+			tsdf::FilteringMethod::EWA_IMAGE_SPACE,
 			1.0f // gaussian covariance scale
 			);
 	tsdf::Generator2d generator(parameters);
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_EWA_2D_image_space_2) {
 				math::Vector2i(512, 512), //shape
 				0.004f, //voxel size
 				20, //narrow band width
-				tsdf::InterpolationMethod::EWA_IMAGE_SPACE,
+				tsdf::FilteringMethod::EWA_IMAGE_SPACE,
 				1.0f // gaussian covariance scale
 				);
 		tsdf::Generator2d generator(parameters);
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_EWA_2D_image_space_2) {
 				math::Vector2i(chunk_size, chunk_size), //shape
 				0.004f, //voxel size
 				20, //narrow band width
-				tsdf::InterpolationMethod::EWA_IMAGE_SPACE,
+				tsdf::FilteringMethod::EWA_IMAGE_SPACE,
 				1.0f // gaussian covariance scale
 				);
 		tsdf::Generator2d generator(parameters);
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_EWA_2D_voxel_space_inclusive_1) {
 				math::Vector2i(512, 512), //shape
 				0.004f, //voxel size
 				20, //narrow band width
-				tsdf::InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE,
+				tsdf::FilteringMethod::EWA_VOXEL_SPACE_INCLUSIVE,
 				1.0f // gaussian covariance scale
 				);
 		tsdf::Generator2d generator(parameters);
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_EWA_2D_voxel_space_inclusive_1) {
 				math::Vector2i(chunk_size, chunk_size), //shape
 				0.004f, //voxel size
 				20, //narrow band width
-				tsdf::InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE,
+				tsdf::FilteringMethod::EWA_VOXEL_SPACE_INCLUSIVE,
 				1.0f // gaussian covariance scale
 				);
 		tsdf::Generator2d generator(parameters);
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_EWA_2D_voxel_space_inclusive_2) {
 				math::Vector2i(512, 512), //shape
 				0.004f, //voxel size
 				20, //narrow band width
-				tsdf::InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE,
+				tsdf::FilteringMethod::EWA_VOXEL_SPACE_INCLUSIVE,
 				1.0f // gaussian covariance scale
 				);
 		tsdf::Generator2d generator(parameters);
@@ -267,7 +267,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_EWA_2D_voxel_space_inclusive_2) {
 				math::Vector2i(chunk_size, chunk_size), //shape
 				0.004f, //voxel size
 				20, //narrow band width
-				tsdf::InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE,
+				tsdf::FilteringMethod::EWA_VOXEL_SPACE_INCLUSIVE,
 				1.0f // gaussian covariance scale
 				);
 		tsdf::Generator2d generator(parameters);
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_EWA_3D_image_space_1) {
 						field_shape, //dimensions of the voxel grid
 						0.004f, //voxel size
 						20, //narrow band width
-						tsdf::InterpolationMethod::EWA_IMAGE_SPACE,
+						tsdf::FilteringMethod::EWA_IMAGE_SPACE,
 						1.0f // gaussian covariance scale
 						);
 	tsdf::Generator3d generator(parameters);
@@ -324,7 +324,7 @@ BOOST_AUTO_TEST_CASE(test_tsdf_generation_EWA_3D_image_space_2) {
 							field_shape, //dimensions of the voxel grid
 							0.004f, //voxel size
 							20, //narrow band width
-							tsdf::InterpolationMethod::EWA_IMAGE_SPACE,
+							tsdf::FilteringMethod::EWA_IMAGE_SPACE,
 							0.5f // gaussian covariance scale
 							);
 	tsdf::Generator3d generator(parameters);

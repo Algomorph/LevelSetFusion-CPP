@@ -35,12 +35,10 @@ namespace tsdf {
  * [2] M. Zwicker, H. Pfister, J. Van Baar, and M. Gross, “EWA volume splatting,” in Visualization, 2001.
  *     VIS’01. Proceedings, 2001, pp. 29–538.
  **/
-enum class InterpolationMethod {
+enum class FilteringMethod {
 	NONE = 0,                    //!< NONE no interpolation method
-// TODO: add support for these
-//	BILINEAR_IMAGE_SPACE = 1,
-//	BILINEAR_VOXEL_SPACE = 2,
-
+	BILINEAR_IMAGE_SPACE = 1, //!< BILINEAR_IMAGE_SPACE (not yet supported)
+	BILINEAR_VOXEL_SPACE = 2, //!< BILINEAR_VOXEL_SPACE (not yet supported)
 	EWA_IMAGE_SPACE = 3, //!< EWA_IMAGE_SPACE the samples from the weighted-average filtered depth-image values compose a "filtered" depth value, which is then truncated
 	EWA_VOXEL_SPACE = 4, //!< EWA_VOXEL_SPACE the samples from the weighted-average filtered depth-image values are first truncated, then combined into a final TSDF value. Samples are gathered only for voxels that can be projected directly onto the image.
 	EWA_VOXEL_SPACE_INCLUSIVE = 5 //!< EWA_VOXEL_SPACE_INCLUSIVE the samples from the weighted-average filtered depth-image values are first truncated, then combined into a final TSDF value. Samples are gathered for any voxel which intersects with the influence are of a potential filter.

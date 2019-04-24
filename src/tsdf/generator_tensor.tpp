@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "ewa_common.hpp"
 #include "../math/conics.hpp"
+#include "../error_handling/throw_assert.hpp"
 #ifdef SDF_GENERATION_CONSOLE_PROGRESS_REPORTS
 #include "../console/progress_bar.hpp"
 #endif
@@ -96,6 +97,30 @@ Generator<eig::Tensor<Scalar, 3, eig::ColMajor> >::generate__none(
 
 	}
 
+	return field;
+}
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, eig::ColMajor>
+Generator<eig::Tensor<Scalar, 3, eig::ColMajor> >::generate__bilinear_image_space(
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
+		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
+		int image_y_coordinate) const {
+	Ts field;
+	//TODO: finish this
+	throw_assert(false,"Not yet implemented");
+	return field;
+}
+
+template<typename Scalar>
+Eigen::Tensor<Scalar, 3, eig::ColMajor>
+Generator<eig::Tensor<Scalar, 3, eig::ColMajor> >::generate__bilinear_voxel_space(
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
+		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
+		int image_y_coordinate) const {
+	Ts field;
+	//TODO: finish this
+	throw_assert(false,"Not yet implemented");
 	return field;
 }
 

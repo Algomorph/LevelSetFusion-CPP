@@ -42,18 +42,17 @@ struct TSDF_scope_dummy{
 
 void export_algorithms() {
 	bp::scope tsdf_scope = bp::class_<TSDF_scope_dummy>("tsdf", bp::no_init);
-	bp::enum_<tsdf::InterpolationMethod>("InterpolationMethod")
-			.value("NONE", tsdf::InterpolationMethod::NONE)
-			//TODO: to be supported later
-//			.value("BILINEAR_IMAGE_SPACE", tsdf::InterpolationMethod::BILINEAR_IMAGE_SPACE)
-//			.value("BILINEAR_VOXEL_SPACE", tsdf::InterpolationMethod::BILINEAR_VOXEL_SPACE)
-			.value("EWA_IMAGE_SPACE", tsdf::InterpolationMethod::EWA_IMAGE_SPACE)
-			.value("EWA_VOXEL_SPACE", tsdf::InterpolationMethod::EWA_VOXEL_SPACE)
-			.value("EWA_VOXEL_SPACE_INCLUSIVE", tsdf::InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE);
+	bp::enum_<tsdf::FilteringMethod>("FilteringMethod")
+			.value("NONE", tsdf::FilteringMethod::NONE)
+			.value("BILINEAR_IMAGE_SPACE", tsdf::FilteringMethod::BILINEAR_IMAGE_SPACE)
+			.value("BILINEAR_VOXEL_SPACE", tsdf::FilteringMethod::BILINEAR_VOXEL_SPACE)
+			.value("EWA_IMAGE_SPACE", tsdf::FilteringMethod::EWA_IMAGE_SPACE)
+			.value("EWA_VOXEL_SPACE", tsdf::FilteringMethod::EWA_VOXEL_SPACE)
+			.value("EWA_VOXEL_SPACE_INCLUSIVE", tsdf::FilteringMethod::EWA_VOXEL_SPACE_INCLUSIVE);
 
 	bp::class_<tsdf::Parameters2d>("Parameters2d",
 			bp::init<bp::optional<float,Eigen::Matrix3f,float,math::Vector2i, math::Vector2i, float, int,
-				tsdf::InterpolationMethod,float>>(bp::args("depth_unit_ratio","projection_matrix",
+				tsdf::FilteringMethod,float>>(bp::args("depth_unit_ratio","projection_matrix",
 						"near_clipping_distance", "array_offset", "field_shape","voxel_size","narrow_band_width_voxels",
 						"interpolation_method","smoothing_factor")))
 			.add_property("depth_unit_ratio", &tsdf::Parameters2d::depth_unit_ratio)

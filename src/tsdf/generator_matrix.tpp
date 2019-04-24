@@ -25,6 +25,7 @@
 #include "common.hpp"
 #include "../math/conics.hpp"
 #include "ewa_common.hpp"
+#include "../error_handling/throw_assert.hpp"
 
 namespace tsdf {
 
@@ -89,6 +90,30 @@ Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::gene
 
 	}
 
+	return field;
+}
+
+template<typename Scalar>
+Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
+Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__bilinear_image_space(
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
+		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
+		int image_y_coordinate) const {
+	Mat field;
+	//TODO: finish this
+	throw_assert(false, "Not yet implemented");
+	return field;
+}
+
+template<typename Scalar>
+Eigen::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>
+Generator<eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> >::generate__bilinear_voxel_space(
+		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
+		const eig::Matrix<Scalar, 4, 4, eig::ColMajor>& camera_pose,
+		int image_y_coordinate) const {
+	Mat field;
+	//TODO: finish this
+	throw_assert(false, "Not yet implemented");
 	return field;
 }
 

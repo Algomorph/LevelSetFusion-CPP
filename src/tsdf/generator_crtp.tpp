@@ -38,7 +38,6 @@ GeneratorCRTP<Generator, ScalarContainer>::GeneratorCRTP(const Parameters<Scalar
 		parameters(parameters) {
 }
 
-
 template<typename Generator, typename ScalarContainer>
 ScalarContainer GeneratorCRTP<Generator, ScalarContainer>::generate(
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic, eig::ColMajor>& depth_image,
@@ -46,24 +45,23 @@ ScalarContainer GeneratorCRTP<Generator, ScalarContainer>::generate(
 		int image_y_coordinate) const {
 
 	switch (parameters.interpolation_method) {
-	case InterpolationMethod::NONE:
+	case FilteringMethod::NONE:
 		return static_cast<Generator const&>(*this).generate__none(depth_image, camera_pose, image_y_coordinate);
-		//TODO: some time in the distant future, maybe, ...
-//	case InterpolationMethod::BILINEAR_IMAGE_SPACE:
-//		static_cast<Generator const&>(*this).generate__bilinear_image_space(depth_image,camera_pose,image_y_coordinate);
-//		break;
-//	case InterpolationMethod::BILINEAR_VOXEL_SPACE:
-//		static_cast<Generator const&>(*this).generate__bilinear_tsdf_space(depth_image,camera_pose,image_y_coordinate);
-//		break;
-	case InterpolationMethod::EWA_IMAGE_SPACE:
+	case FilteringMethod::BILINEAR_IMAGE_SPACE:
+		return static_cast<Generator const&>(*this).generate__bilinear_image_space(depth_image, camera_pose,
+				image_y_coordinate);
+	case FilteringMethod::BILINEAR_VOXEL_SPACE:
+		return static_cast<Generator const&>(*this).generate__bilinear_voxel_space(depth_image, camera_pose,
+				image_y_coordinate);
+	case FilteringMethod::EWA_IMAGE_SPACE:
 		return static_cast<Generator const&>(*this).generate__ewa_image_space(depth_image, camera_pose,
 				image_y_coordinate);
 		break;
-	case InterpolationMethod::EWA_VOXEL_SPACE:
+	case FilteringMethod::EWA_VOXEL_SPACE:
 		return static_cast<Generator const&>(*this).generate__ewa_voxel_space(depth_image, camera_pose,
 				image_y_coordinate);
 		break;
-	case InterpolationMethod::EWA_VOXEL_SPACE_INCLUSIVE:
+	case FilteringMethod::EWA_VOXEL_SPACE_INCLUSIVE:
 		return static_cast<Generator const&>(*this).generate__ewa_voxel_space_inclusive(depth_image, camera_pose,
 				image_y_coordinate);
 		break;

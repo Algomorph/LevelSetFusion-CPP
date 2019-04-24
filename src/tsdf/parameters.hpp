@@ -40,7 +40,7 @@ struct Parameters {
 			Coordinates field_shape = Coordinates(128),
 			Scalar voxel_size = (Scalar)0.004,
 			int narrow_band_width_voxels = 20,
-			InterpolationMethod interpolation_method = InterpolationMethod::NONE,
+			FilteringMethod interpolation_method = FilteringMethod::NONE,
 			Scalar smoothing_factor = (Scalar)1.0
 			);
 	Scalar depth_unit_ratio = (Scalar)0.001; //meters
@@ -50,7 +50,7 @@ struct Parameters {
 	Coordinates field_shape = Coordinates(128); //voxels
 	Scalar voxel_size = 0.004; //meters
 	int narrow_band_width_voxels = 20; //voxels
-	InterpolationMethod interpolation_method = InterpolationMethod::NONE;
+	FilteringMethod interpolation_method = FilteringMethod::NONE;
 	Scalar smoothing_factor = (Scalar)1.0; // gaussian covariance scale for EWA
 };
 

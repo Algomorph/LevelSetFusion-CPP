@@ -32,7 +32,7 @@ Parameters<ScalarContainer>::Parameters(Scalar depth_unit_ratio,
 		Coordinates field_shape,
 		Scalar voxel_size,
 		int narrow_band_width_voxels,
-		InterpolationMethod interpolation_method,
+		FilteringMethod interpolation_method,
 		Scalar smoothing_factor
 		) :
 		depth_unit_ratio(depth_unit_ratio),

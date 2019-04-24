@@ -59,6 +59,16 @@ public:
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
 			int image_y_coordinate = 0) const;
 
+	Mat generate__bilinear_image_space(
+			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+			int image_y_coordinate = 0) const;
+
+	Mat generate__bilinear_voxel_space(
+				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+				const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+				int image_y_coordinate = 0) const;
+
 	Mat generate__ewa_image_space(
 					const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 					const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
@@ -98,6 +108,16 @@ public:
 			const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
 			const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
 			int image_y_coordinate = 0) const;
+
+	Ts generate__bilinear_image_space(
+				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+				const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+				int image_y_coordinate = 0) const;
+
+	Ts generate__bilinear_voxel_space(
+					const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
+					const Eigen::Matrix<Scalar, 4, 4, Eigen::ColMajor>& camera_pose,
+					int image_y_coordinate = 0) const;
 
 	Ts generate__ewa_image_space(
 				const Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& depth_image,
