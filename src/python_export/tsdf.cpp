@@ -65,12 +65,34 @@ void export_algorithms() {
 			.def_readwrite("interpolation_method", &tsdf::Parameters2d::interpolation_method)
 			.def_readwrite("smoothing_factor", &tsdf::Parameters2d::smoothing_factor);
 
+	bp::class_<tsdf::Parameters3d>("Parameters3d",
+				bp::init<bp::optional<float,Eigen::Matrix3f,float,math::Vector3i, math::Vector3i, float, int,
+					tsdf::FilteringMethod,float>>(bp::args("depth_unit_ratio","projection_matrix",
+							"near_clipping_distance", "array_offset", "field_shape","voxel_size","narrow_band_width_voxels",
+							"interpolation_method","smoothing_factor")))
+				.def_readwrite("depth_unit_ratio", &tsdf::Parameters3d::depth_unit_ratio)
+				.def_readwrite("projection_matrix", &tsdf::Parameters3d::projection_matrix)
+				.def_readwrite("near_clipping_distance", &tsdf::Parameters3d::near_clipping_distance)
+				.def_readwrite("array_offset", &tsdf::Parameters3d::array_offset)
+				.def_readwrite("field_shape", &tsdf::Parameters3d::field_shape)
+				.def_readwrite("voxel_size", &tsdf::Parameters3d::voxel_size)
+				.def_readwrite("narrow_band_width_voxels", &tsdf::Parameters3d::narrow_band_width_voxels)
+				.def_readwrite("interpolation_method", &tsdf::Parameters3d::interpolation_method)
+				.def_readwrite("smoothing_factor", &tsdf::Parameters3d::smoothing_factor);
+
 	bp::class_<tsdf::Generator2d>("Generator2d",
 			bp::init<tsdf::Parameters2d>("parameters"))
 		.def("generate", &tsdf::Generator2d::generate,
 				"Generate a discrete implicit TSDF (Truncated Signed Distance "
 				"Function) from the give depth image presumed to have been taken at the specified camera pose.",
 				bp::args("depth_image","camera_pose","image_y_coordinate"));
+
+	bp::class_<tsdf::Generator3d>("Generator3d",
+				bp::init<tsdf::Parameters3d>("parameters"))
+			.def("generate", &tsdf::Generator3d::generate,
+					"Generate a discrete implicit TSDF (Truncated Signed Distance "
+					"Function) from the give depth image presumed to have been taken at the specified camera pose.",
+					bp::args("depth_image","camera_pose","image_y_coordinate"));
 
 	bp::def("generate_tsdf_3d_ewa_image_visualization", &tsdf::generate_TSDF_3D_EWA_image_visualization,
 			"Draw a visualization of voxel sampling over image space using Elliptical Weighed Average resampling approach."
