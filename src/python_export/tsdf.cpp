@@ -55,15 +55,15 @@ void export_algorithms() {
 				tsdf::FilteringMethod,float>>(bp::args("depth_unit_ratio","projection_matrix",
 						"near_clipping_distance", "array_offset", "field_shape","voxel_size","narrow_band_width_voxels",
 						"interpolation_method","smoothing_factor")))
-			.add_property("depth_unit_ratio", &tsdf::Parameters2d::depth_unit_ratio)
-			.add_property("projection_matrix", &tsdf::Parameters2d::projection_matrix)
-			.add_property("near_clipping_distance", &tsdf::Parameters2d::near_clipping_distance)
-			.add_property("array_offset", &tsdf::Parameters2d::array_offset)
-			.add_property("field_shape", &tsdf::Parameters2d::field_shape)
-			.add_property("voxel_size", &tsdf::Parameters2d::voxel_size)
-			.add_property("narrow_band_width_voxels", &tsdf::Parameters2d::narrow_band_width_voxels)
-			.add_property("interpolation_method", &tsdf::Parameters2d::interpolation_method)
-			.add_property("smoothing_factor", &tsdf::Parameters2d::smoothing_factor);
+			.def_readwrite("depth_unit_ratio", &tsdf::Parameters2d::depth_unit_ratio)
+			.def_readwrite("projection_matrix", &tsdf::Parameters2d::projection_matrix)
+			.def_readwrite("near_clipping_distance", &tsdf::Parameters2d::near_clipping_distance)
+			.def_readwrite("array_offset", &tsdf::Parameters2d::array_offset)
+			.def_readwrite("field_shape", &tsdf::Parameters2d::field_shape)
+			.def_readwrite("voxel_size", &tsdf::Parameters2d::voxel_size)
+			.def_readwrite("narrow_band_width_voxels", &tsdf::Parameters2d::narrow_band_width_voxels)
+			.def_readwrite("interpolation_method", &tsdf::Parameters2d::interpolation_method)
+			.def_readwrite("smoothing_factor", &tsdf::Parameters2d::smoothing_factor);
 
 	bp::class_<tsdf::Generator2d>("Generator2d",
 			bp::init<tsdf::Parameters2d>("parameters"))
