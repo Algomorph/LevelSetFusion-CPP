@@ -1,7 +1,7 @@
 /*
- * tsdf.hpp
+ * generator_crtp.cpp
  *
- *  Created on: Feb 1, 2019
+ *  Created on: Apr 23, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -18,11 +18,13 @@
  *   limitations under the License.
  */
 
-#pragma once
+#include "generator.hpp"
+#include "generator_crtp.tpp"
 
-namespace python_export{
-//pe_tsdf used instead of tsdf to avoid namespace naming conflicts
-namespace pe_tsdf{
-void export_algorithms();
-} // namespace pe_tsdf
-}//namespace python_export
+
+namespace tsdf {
+
+template class GeneratorCRTP<Generator<eig::MatrixXf>,eig::MatrixXf>;
+template class GeneratorCRTP<Generator<math::Tensor3f>,math::Tensor3f>;
+
+}  // namespace tsdf

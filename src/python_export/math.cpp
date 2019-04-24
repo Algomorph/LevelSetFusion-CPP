@@ -44,6 +44,12 @@ void export_math_types() {
 			.def_readwrite("u", &math::Vector2i::u)
 			.def_readwrite("v", &math::Vector2i::v)
 			;
+	bp::class_<math::Vector3i>("Vector3i", bp::init<int, int, int>())
+				.def(bp::init<int>())
+				.def_readwrite("x", &math::Vector3i::x)
+				.def_readwrite("y", &math::Vector3i::y)
+				.def_readwrite("z", &math::Vector3i::z)
+				;
 
 	bp::class_<math::Vector2f>("Vector2f", bp::init<float, float>())
 			.def(bp::init<float>())

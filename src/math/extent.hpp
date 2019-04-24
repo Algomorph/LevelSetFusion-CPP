@@ -1,7 +1,7 @@
 /*
- * tsdf.hpp
+ * extent.hpp
  *
- *  Created on: Feb 1, 2019
+ *  Created on: Apr 22, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -20,9 +20,22 @@
 
 #pragma once
 
-namespace python_export{
-//pe_tsdf used instead of tsdf to avoid namespace naming conflicts
-namespace pe_tsdf{
-void export_algorithms();
-} // namespace pe_tsdf
-}//namespace python_export
+namespace math{
+struct Extent2d{
+	int x_start = 0;
+	int x_end = 0;
+	int y_start = 0;
+	int y_end = 0;
+
+	int area(){
+		return (y_end - y_start) * (x_end - x_start);
+	}
+
+	bool empty(){
+		return this->area() == 0;
+	}
+};
+
+}//namespace math
+
+

@@ -1,7 +1,7 @@
 /*
- * tsdf.hpp
+ * parameters.cpp
  *
- *  Created on: Feb 1, 2019
+ *  Created on: Apr 23, 2019
  *      Author: Gregory Kramida
  *   Copyright: 2019 Gregory Kramida
  *
@@ -18,11 +18,13 @@
  *   limitations under the License.
  */
 
-#pragma once
+#include "parameters.tpp"
 
-namespace python_export{
-//pe_tsdf used instead of tsdf to avoid namespace naming conflicts
-namespace pe_tsdf{
-void export_algorithms();
-} // namespace pe_tsdf
-}//namespace python_export
+namespace tsdf{
+
+template struct Parameters<math::MatrixXf>;
+template struct Parameters<math::Tensor3f>;
+
+}  // namespace tsdf
+
+
