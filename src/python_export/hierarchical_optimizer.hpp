@@ -22,6 +22,7 @@
 
 namespace python_export{
 namespace hierarchical_optimizer{
-	void export_algorithms();
+	void export_algorithms_2d();
+	void export_algorithms_3d();
 } // namespace hierarchical_optimizer
 } // namespace python_export

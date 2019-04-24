@@ -31,7 +31,7 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 	pe::export_math_types();
 	pe::export_math_functions();
 
-	pe::pe_tsdf::export_algorithms();
+	pe::tsdf::export_algorithms();
 
 	pe::export_telemetry_utilities();
 
@@ -39,7 +39,8 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 	pe::slavcheva::export_setting_singletons();
 	pe::slavcheva::export_algorithms();
 
-	pe::hierarchical_optimizer::export_algorithms();
+	pe::hierarchical_optimizer::export_algorithms_2d();
+	pe::hierarchical_optimizer::export_algorithms_3d();
 
 	pe::sdf_2_sdf_optimizer::export_algorithms();
 }

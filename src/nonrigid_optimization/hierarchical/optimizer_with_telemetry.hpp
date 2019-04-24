@@ -120,6 +120,7 @@ private:
 };
 
 typedef OptimizerWithTelemetry<Eigen::MatrixXf,math::MatrixXv2f> OptimizerWithTelemetry2d;
+typedef OptimizerWithTelemetry<math::Tensor3f,math::Tensor3v3f> OptimizerWithTelemetry3d;
 
 } // namespace hierarchical
 } // namespace nonrigid_optimization

@@ -33,68 +33,69 @@
 #include "../tsdf/parameters.hpp"
 
 namespace bp = boost::python;
+namespace impl = tsdf;
 
 namespace python_export {
-namespace pe_tsdf {
+namespace tsdf {
 struct TSDF_scope_dummy{
 
 };
 
 void export_algorithms() {
 	bp::scope tsdf_scope = bp::class_<TSDF_scope_dummy>("tsdf", bp::no_init);
-	bp::enum_<tsdf::FilteringMethod>("FilteringMethod")
-			.value("NONE", tsdf::FilteringMethod::NONE)
-			.value("BILINEAR_IMAGE_SPACE", tsdf::FilteringMethod::BILINEAR_IMAGE_SPACE)
-			.value("BILINEAR_VOXEL_SPACE", tsdf::FilteringMethod::BILINEAR_VOXEL_SPACE)
-			.value("EWA_IMAGE_SPACE", tsdf::FilteringMethod::EWA_IMAGE_SPACE)
-			.value("EWA_VOXEL_SPACE", tsdf::FilteringMethod::EWA_VOXEL_SPACE)
-			.value("EWA_VOXEL_SPACE_INCLUSIVE", tsdf::FilteringMethod::EWA_VOXEL_SPACE_INCLUSIVE);
+	bp::enum_<impl::FilteringMethod>("FilteringMethod")
+			.value("NONE", impl::FilteringMethod::NONE)
+			.value("BILINEAR_IMAGE_SPACE", impl::FilteringMethod::BILINEAR_IMAGE_SPACE)
+			.value("BILINEAR_VOXEL_SPACE", impl::FilteringMethod::BILINEAR_VOXEL_SPACE)
+			.value("EWA_IMAGE_SPACE", impl::FilteringMethod::EWA_IMAGE_SPACE)
+			.value("EWA_VOXEL_SPACE", impl::FilteringMethod::EWA_VOXEL_SPACE)
+			.value("EWA_VOXEL_SPACE_INCLUSIVE", impl::FilteringMethod::EWA_VOXEL_SPACE_INCLUSIVE);
 
-	bp::class_<tsdf::Parameters2d>("Parameters2d",
+	bp::class_<impl::Parameters2d>("Parameters2d",
 			bp::init<bp::optional<float,Eigen::Matrix3f,float,math::Vector2i, math::Vector2i, float, int,
-				tsdf::FilteringMethod,float>>(bp::args("depth_unit_ratio","projection_matrix",
+				impl::FilteringMethod,float>>(bp::args("depth_unit_ratio","projection_matrix",
 						"near_clipping_distance", "array_offset", "field_shape","voxel_size","narrow_band_width_voxels",
 						"interpolation_method","smoothing_factor")))
-			.def_readwrite("depth_unit_ratio", &tsdf::Parameters2d::depth_unit_ratio)
-			.def_readwrite("projection_matrix", &tsdf::Parameters2d::projection_matrix)
-			.def_readwrite("near_clipping_distance", &tsdf::Parameters2d::near_clipping_distance)
-			.def_readwrite("array_offset", &tsdf::Parameters2d::array_offset)
-			.def_readwrite("field_shape", &tsdf::Parameters2d::field_shape)
-			.def_readwrite("voxel_size", &tsdf::Parameters2d::voxel_size)
-			.def_readwrite("narrow_band_width_voxels", &tsdf::Parameters2d::narrow_band_width_voxels)
-			.def_readwrite("interpolation_method", &tsdf::Parameters2d::interpolation_method)
-			.def_readwrite("smoothing_factor", &tsdf::Parameters2d::smoothing_factor);
+			.def_readwrite("depth_unit_ratio", &impl::Parameters2d::depth_unit_ratio)
+			.def_readwrite("projection_matrix", &impl::Parameters2d::projection_matrix)
+			.def_readwrite("near_clipping_distance", &impl::Parameters2d::near_clipping_distance)
+			.def_readwrite("array_offset", &impl::Parameters2d::array_offset)
+			.def_readwrite("field_shape", &impl::Parameters2d::field_shape)
+			.def_readwrite("voxel_size", &impl::Parameters2d::voxel_size)
+			.def_readwrite("narrow_band_width_voxels", &impl::Parameters2d::narrow_band_width_voxels)
+			.def_readwrite("interpolation_method", &impl::Parameters2d::interpolation_method)
+			.def_readwrite("smoothing_factor", &impl::Parameters2d::smoothing_factor);
 
-	bp::class_<tsdf::Parameters3d>("Parameters3d",
+	bp::class_<impl::Parameters3d>("Parameters3d",
 				bp::init<bp::optional<float,Eigen::Matrix3f,float,math::Vector3i, math::Vector3i, float, int,
-					tsdf::FilteringMethod,float>>(bp::args("depth_unit_ratio","projection_matrix",
+					impl::FilteringMethod,float>>(bp::args("depth_unit_ratio","projection_matrix",
 							"near_clipping_distance", "array_offset", "field_shape","voxel_size","narrow_band_width_voxels",
 							"interpolation_method","smoothing_factor")))
-				.def_readwrite("depth_unit_ratio", &tsdf::Parameters3d::depth_unit_ratio)
-				.def_readwrite("projection_matrix", &tsdf::Parameters3d::projection_matrix)
-				.def_readwrite("near_clipping_distance", &tsdf::Parameters3d::near_clipping_distance)
-				.def_readwrite("array_offset", &tsdf::Parameters3d::array_offset)
-				.def_readwrite("field_shape", &tsdf::Parameters3d::field_shape)
-				.def_readwrite("voxel_size", &tsdf::Parameters3d::voxel_size)
-				.def_readwrite("narrow_band_width_voxels", &tsdf::Parameters3d::narrow_band_width_voxels)
-				.def_readwrite("interpolation_method", &tsdf::Parameters3d::interpolation_method)
-				.def_readwrite("smoothing_factor", &tsdf::Parameters3d::smoothing_factor);
+				.def_readwrite("depth_unit_ratio", &impl::Parameters3d::depth_unit_ratio)
+				.def_readwrite("projection_matrix", &impl::Parameters3d::projection_matrix)
+				.def_readwrite("near_clipping_distance", &impl::Parameters3d::near_clipping_distance)
+				.def_readwrite("array_offset", &impl::Parameters3d::array_offset)
+				.def_readwrite("field_shape", &impl::Parameters3d::field_shape)
+				.def_readwrite("voxel_size", &impl::Parameters3d::voxel_size)
+				.def_readwrite("narrow_band_width_voxels", &impl::Parameters3d::narrow_band_width_voxels)
+				.def_readwrite("interpolation_method", &impl::Parameters3d::interpolation_method)
+				.def_readwrite("smoothing_factor", &impl::Parameters3d::smoothing_factor);
 
-	bp::class_<tsdf::Generator2d>("Generator2d",
-			bp::init<tsdf::Parameters2d>("parameters"))
-		.def("generate", &tsdf::Generator2d::generate,
+	bp::class_<impl::Generator2d>("Generator2d",
+			bp::init<impl::Parameters2d>("parameters"))
+		.def("generate", &impl::Generator2d::generate,
 				"Generate a discrete implicit TSDF (Truncated Signed Distance "
 				"Function) from the give depth image presumed to have been taken at the specified camera pose.",
 				bp::args("depth_image","camera_pose","image_y_coordinate"));
 
-	bp::class_<tsdf::Generator3d>("Generator3d",
-				bp::init<tsdf::Parameters3d>("parameters"))
-			.def("generate", &tsdf::Generator3d::generate,
+	bp::class_<impl::Generator3d>("Generator3d",
+				bp::init<impl::Parameters3d>("parameters"))
+			.def("generate", &impl::Generator3d::generate,
 					"Generate a discrete implicit TSDF (Truncated Signed Distance "
 					"Function) from the give depth image presumed to have been taken at the specified camera pose.",
 					bp::args("depth_image","camera_pose","image_y_coordinate"));
 
-	bp::def("generate_tsdf_3d_ewa_image_visualization", &tsdf::generate_TSDF_3D_EWA_image_visualization,
+	bp::def("generate_tsdf_3d_ewa_image_visualization", &impl::generate_TSDF_3D_EWA_image_visualization,
 			"Draw a visualization of voxel sampling over image space using Elliptical Weighed Average resampling approach."
 					"To limit the density, only ellipses corresponding to voxels with abs(TSDF value) below the given truncation "
 					"threshold will be drawn."
@@ -112,7 +113,7 @@ void export_algorithms() {
 					"gaussian_covariance_scale"));
 
 	//DEBUG
-	bp::def("sampling_area_heatmap_2d_ewa_image", &tsdf::sampling_area_heatmap_2D_EWA_image,
+	bp::def("sampling_area_heatmap_2d_ewa_image", &impl::sampling_area_heatmap_2D_EWA_image,
 			"DEBUGGING PURPOSE ONLY -- compute matrix of 2D EWA sampling areas for each pixel (~2d voxel) in resulting TSDF",
 			bp::args("image_y_coordinate",
 					"depth_image",
