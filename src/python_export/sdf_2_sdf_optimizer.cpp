@@ -35,7 +35,6 @@ namespace python_export {
                                      bp::args("image_y_coordinate",
                                               "canonical_depth_image",
                                               "live_depth_image",
-                                              "tsdf_generation_parameters",
                                               "eta",
 											  "initial_camera_pose"));
                 bp::class_<ro::Sdf2SdfOptimizer2d::VerbosityParameters>("VerbosityParameters",

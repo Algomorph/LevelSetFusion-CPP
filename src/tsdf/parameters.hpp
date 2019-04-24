@@ -40,7 +40,7 @@ struct Parameters {
 			Coordinates field_shape = Coordinates(128),
 			Scalar voxel_size = (Scalar)0.004,
 			int narrow_band_width_voxels = 20,
-			FilteringMethod interpolation_method = FilteringMethod::NONE,
+			FilteringMethod interpolation_method = FilteringMethod::NONE, //TODO: refactor to filtering_method
 			Scalar smoothing_factor = (Scalar)1.0
 			);
 	Scalar depth_unit_ratio = (Scalar)0.001; //meters
