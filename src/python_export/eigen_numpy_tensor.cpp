@@ -19,9 +19,10 @@
  */
 
 //standard library
-
 #include <array>
 #include <cstdlib>
+//_DEBUG
+#include <iostream>
 
 //libraries
 #include <boost/python.hpp>
@@ -74,6 +75,36 @@ struct EigenTensorToPython {
 				tensor.size(),
 				static_cast<Eigen::StorageOptions>(TensorType::Layout) == Eigen::RowMajor);
 		free(shape);
+		return (PyObject*) python_array;
+
+	}
+};
+
+template<>
+struct EigenTensorToPython<math::Tensor3v3f> {
+	static PyObject* convert(const math::Tensor3v3f& tensor) {
+
+		const int num_dimensions = math::Tensor3v3f::NumDimensions;
+		npy_intp* shape_orig = static_cast<npy_intp*>(malloc(sizeof(npy_intp) * num_dimensions));
+		npy_intp* shape_dest = static_cast<npy_intp*>(malloc(sizeof(npy_intp) * (num_dimensions+1)));
+		//npy_int shape2[num_dimensions]; //will error, check
+		for (int i_dimension = 0; i_dimension < num_dimensions; i_dimension++) {
+			shape_orig[i_dimension] = static_cast<npy_intp>(tensor.dimension(i_dimension));
+			shape_dest[i_dimension] = static_cast<npy_intp>(tensor.dimension(i_dimension));
+		}
+		shape_dest[num_dimensions] = 3;
+
+		PyArrayObject* python_array = (PyArrayObject*) PyArray_SimpleNew(
+				num_dimensions+1, shape_dest, NumpyEquivalentType<typename math::Tensor3v3f::Scalar>::type_code);
+
+		copy_tensor(tensor.data(),
+				(typename math::Tensor3v3f::Scalar*) PyArray_DATA(python_array),
+				num_dimensions,
+				shape_orig,
+				tensor.size(),
+				static_cast<Eigen::StorageOptions>(math::Tensor3v3f::Layout) == Eigen::RowMajor);
+		free(shape_orig);
+		free(shape_dest);
 		return (PyObject*) python_array;
 
 	}
@@ -160,6 +191,7 @@ struct EigenTensorFromPython {
 	}
 };
 
+
 #if PY_VERSION_HEX >= 0x03000000
 void*
 #else
@@ -181,6 +213,7 @@ setup_Eigen_tensor_converters() {
 
 	bp::to_python_converter<Eigen::Tensor<float, 3, RowMajor>, EigenTensorToPython<Eigen::Tensor<float, 3, RowMajor>>>();
 	bp::to_python_converter<Eigen::Tensor<float, 4, RowMajor>, EigenTensorToPython<Eigen::Tensor<float, 4, RowMajor>>>();
+	bp::to_python_converter<math::Tensor3v3f, EigenTensorToPython<math::Tensor3v3f> >();
 
 #if PY_VERSION_HEX >= 0x03000000
 	return 0;

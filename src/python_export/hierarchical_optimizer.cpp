@@ -36,8 +36,17 @@ typedef impl::OptimizerWithTelemetry3d HierarchicalOptimizer3d;
 
 namespace python_export {
 namespace hierarchical_optimizer {
+
+math::Tensor3v3f test_function(){
+	math::Tensor3v3f a(1, 2, 2);
+	a.setValues( { { { math::Vector3f(1.0f, 2.0f, 3.0f), math::Vector3f(4.0f, 5.0f, 6.0f) },
+			{ math::Vector3f(7.0f, 8.0f, 9.0f), math::Vector3f(10.0f, 11.0f, 12.0f) } } });
+	return a;
+}
+
 void export_algorithms_2d() {
 	{
+		bp::def("test_function", test_function);
 		bp::scope outer =
 				bp::class_<HierarchicalOptimizer2d>("HierarchicalOptimizer2d",
 						bp::init<bp::optional<

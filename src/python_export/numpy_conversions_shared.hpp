@@ -71,7 +71,19 @@ struct NumpyEquivalentType<math::Vector2<float>> {
 	};
 };
 template<>
+struct NumpyEquivalentType<math::Vector3<float>> {
+	enum {
+		type_code = NPY_FLOAT
+	};
+};
+template<>
 struct NumpyEquivalentType<math::Matrix2<float>> {
+	enum {
+		type_code = NPY_FLOAT
+	};
+};
+template<>
+struct NumpyEquivalentType<math::Matrix3<float>> {
 	enum {
 		type_code = NPY_FLOAT
 	};
@@ -156,9 +168,8 @@ static void copy_tensor(
 			int ix_subelement = ix_element;
 			int remaining_offset = 0;
 			for (size_t ix_dim = 0; ix_dim < remaining_dims.size(); ix_dim++) {
-				div_t division_result = div(ix_subelement, remaining_dims[ix_dim]);
-				ix_subelement = division_result.quot;
-				int coord = division_result.rem;
+				int coord = ix_subelement % remaining_dims[ix_dim];
+				ix_subelement = ix_subelement / remaining_dims[ix_dim];
 				remaining_offset += coord * strides[ix_dim];
 			}
 			*dest = source[row_and_col_offset + remaining_offset];
