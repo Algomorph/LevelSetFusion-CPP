@@ -21,8 +21,6 @@
 //standard library
 #include <array>
 #include <cstdlib>
-//_DEBUG
-#include <iostream>
 
 //libraries
 #include <boost/python.hpp>

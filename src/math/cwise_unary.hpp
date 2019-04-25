@@ -43,4 +43,18 @@ template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
 cwise_square(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field);
 
+template<typename Scalar>
+inline
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+cwise_abs(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& field){
+	return field.array().abs();
+}
+
+template<typename Scalar>
+inline
+Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
+cwise_abs(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& field){
+	return field.abs();
+}
+
 }  // namespace math

@@ -52,14 +52,6 @@ struct TsdfDifferenceStatistics {
 			float difference_standard_deviation,
 			Coordinates biggest_difference_location
 			);
-	TsdfDifferenceStatistics(
-			const eig::MatrixXf& canonical_field,
-			const eig::MatrixXf& live_field
-			);
-	TsdfDifferenceStatistics(
-			const math::Tensor3f& canonical_field,
-			const math::Tensor3f& live_field
-			);
 
 	eig::VectorXf to_array();
 
@@ -68,6 +60,10 @@ struct TsdfDifferenceStatistics {
 };
 template<typename Coordinates>
 std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics<Coordinates> &ts);
+
+template<typename Coordinates, typename ScalarContainer>
+TsdfDifferenceStatistics<Coordinates> build_tsdf_difference_statistics(const ScalarContainer& canonical_field,
+		const ScalarContainer& live_field);
 
 typedef TsdfDifferenceStatistics<math::Vector2i> TsdfDifferenceStatistics2d;
 typedef TsdfDifferenceStatistics<math::Vector3i> TsdfDifferenceStatistics3d;

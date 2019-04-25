@@ -111,7 +111,9 @@ void OptimizerWithTelemetry<ScalarContainer,VectorContainer>::optimize_level(
 				live_pyramid_level,
 				this->maximum_warp_update_threshold,
 				FLT_MAX);
-		telemetry::TsdfDifferenceStatistics<Coordinates> tsdf_difference_statistics(canonical_pyramid_level, live_pyramid_level);
+		telemetry::TsdfDifferenceStatistics<Coordinates> tsdf_difference_statistics =
+				telemetry::build_tsdf_difference_statistics<Coordinates,ScalarContainer>(canonical_pyramid_level,
+						live_pyramid_level);
 		int current_iteration = this->get_current_iteration();
 		this->per_level_convergence_reports.push_back( {
 				current_iteration,

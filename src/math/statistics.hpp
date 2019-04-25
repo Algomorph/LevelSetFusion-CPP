@@ -62,7 +62,6 @@ void locate_min_norm(typename Scalar::Scalar& min_norm, math::Vector2i& coordina
 template<typename Scalar>
 void locate_min_norm(typename Scalar::Scalar& min_norm, math::Vector3i& coordinates,
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& vector_field);
-
 /**
  * Locates the maximum in the given field.
  * @param[out] maximum the maximum coefficient
@@ -70,8 +69,41 @@ void locate_min_norm(typename Scalar::Scalar& min_norm, math::Vector3i& coordina
  * @param[in] scalar_field the scalar field to look at
  */
 template<typename Scalar>
+void locate_maximum(Scalar& maximum, math::Vector2i& coordinates,
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& scalar_field);
+/**
+ * Locates the maximum in the given field.
+ * @overload
+ */
+template<typename Scalar>
 void locate_maximum(Scalar& maximum, math::Vector3i& coordinates,
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& scalar_field);
+
+template<typename Scalar>
+inline
+Scalar maximum(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& scalar_field){
+	return static_cast<Eigen::Tensor<Scalar,0,Eigen::ColMajor> >(scalar_field.maximum())(0);
+}
+
+template<typename Scalar>
+inline
+Scalar maximum(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& scalar_field){
+	return scalar_field.maxCoeff();
+}
+
+template<typename Scalar>
+inline
+Scalar minimum(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& scalar_field){
+	return static_cast<Eigen::Tensor<Scalar,0,Eigen::ColMajor> >(scalar_field.minimum())(0);
+}
+
+template<typename Scalar>
+inline
+Scalar minimum(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& scalar_field){
+	return scalar_field.minCoeff();
+}
+
+
 
 //uses traversal function/functor combo, otherwise the same as locate_max_norm
 void locate_max_norm2(float& max_norm, math::Vector2i& coordinates, const math::MatrixXv2f& vector_field);

@@ -24,6 +24,7 @@
 #include "../math/statistics.hpp"
 #include "../math/almost_equal.hpp"
 #include "../math/cwise_binary.hpp"
+#include "../math/cwise_unary.hpp"
 
 namespace telemetry {
 
@@ -41,43 +42,6 @@ TsdfDifferenceStatistics<Coordinates>::TsdfDifferenceStatistics(
 				difference_standard_deviation(difference_standard_deviation),
 				biggest_difference_location(biggest_difference_location)
 {
-}
-
-template<>
-TsdfDifferenceStatistics<math::Vector2i>::TsdfDifferenceStatistics(const eig::MatrixXf& canonical_field,
-		const eig::MatrixXf& live_field) {
-	eig::ArrayXXf diff = (live_field.array() - canonical_field.array()).abs().eval();
-	float diff_min = diff.minCoeff();
-	eig::ArrayXXf::Index max_row, max_col;
-	float diff_max = diff.maxCoeff(&max_row, &max_col);
-	float diff_mean = diff.mean();
-	float diff_std = std::sqrt((diff - diff_mean).square().sum() / (static_cast<float>(diff.size()) - 1.0f));
-	math::Vector2i diff_max_loc(max_col, max_row);
-
-	this->difference_min = diff_min;
-	this->difference_max = diff_max;
-	this->difference_mean = diff_mean;
-	this->difference_standard_deviation = diff_std;
-	this->biggest_difference_location = diff_max_loc;
-}
-
-template<>
-TsdfDifferenceStatistics<math::Vector3i>::TsdfDifferenceStatistics(const math::Tensor3f& canonical_field,
-		const math::Tensor3f& live_field) {
-
-	math::Tensor3f diff = (live_field - canonical_field).abs().eval();
-	float diff_min = static_cast<math::Tensor0f>(diff.minimum())(0);
-	math::Vector3i max_location; float diff_max;
-	math::locate_maximum(diff_max, max_location, diff);
-	float diff_mean = static_cast<math::Tensor0f>(diff.mean())(0);
-	float divisor = static_cast<float>(diff.size()) - 1.0f;
-	float diff_std = std::sqrt(static_cast<math::Tensor0f>((diff - diff.constant(diff_mean)).square().sum())(0) / divisor);
-
-	this->difference_min = diff_min;
-	this->difference_max = diff_max;
-	this->difference_mean = diff_mean;
-	this->difference_standard_deviation = diff_std;
-	this->biggest_difference_location = max_location;
 }
 
 template<typename Coordinates>
@@ -117,6 +81,19 @@ std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics<Coor
 			<< std::endl << "  greatest diff at: (" << ts.biggest_difference_location << ")"
 			;
 	return ostr;
+}
+
+template<typename Coordinates, typename ScalarContainer>
+TsdfDifferenceStatistics<Coordinates> build_tsdf_difference_statistics(const ScalarContainer& canonical_field,
+		const ScalarContainer& live_field){
+	ScalarContainer diff = math::cwise_abs(math::cwise_subtract(live_field,canonical_field)).eval();
+	typename ScalarContainer::Scalar diff_min = math::minimum(diff);
+	Coordinates max_location; float diff_max;
+	math::locate_maximum(diff_max, max_location, diff);
+	float diff_mean = math::mean(diff);
+	float diff_std = math::std(diff);
+
+	return TsdfDifferenceStatistics<Coordinates>(diff_min, diff_max, diff_mean, diff_std, max_location);
 }
 
 } //namespace telemetry

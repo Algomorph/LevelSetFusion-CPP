@@ -63,5 +63,6 @@ private:
 };
 
 typedef OptimizationIterationData<eig::MatrixXf, math::MatrixXv2f> OptimizationIterationData2d;
+typedef OptimizationIterationData<math::Tensor3f, math::Tensor3v3f> OptimizationIterationData3d;
 
 } //namespace telemetry

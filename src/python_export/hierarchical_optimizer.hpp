@@ -22,7 +22,9 @@
 
 namespace python_export{
 namespace hierarchical_optimizer{
-	void export_algorithms_2d();
-	void export_algorithms_3d();
+
+template<typename ScalarContainer, typename VectorContainer>
+void export_algorithms(const char* suffix);
+
 } // namespace hierarchical_optimizer
 } // namespace python_export

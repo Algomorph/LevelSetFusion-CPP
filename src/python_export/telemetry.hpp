@@ -19,9 +19,12 @@
  */
 
 #pragma once
+//system
+#include <string>
 
 namespace python_export {
 
-void export_telemetry_utilities();
+template<typename Coordinates, typename ScalarContainer, typename VectorContainer>
+void export_telemetry_utilities(const char* suffix);
 
 } //namespace python_export

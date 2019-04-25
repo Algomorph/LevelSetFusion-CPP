@@ -99,7 +99,8 @@ eig::MatrixXf SobolevOptimizer2d::optimize(const eig::MatrixXf& live_field, cons
 
 	//log end-of-optimization results if requested
 	if (SobolevOptimizer2d::shared_parameters().enable_convergence_reporting) {
-		telemetry::TsdfDifferenceStatistics2d tsdf_difference_statistics(canonical_field, warped_live_field);
+		telemetry::TsdfDifferenceStatistics2d tsdf_difference_statistics =
+				telemetry::build_tsdf_difference_statistics<math::Vector2i,eig::MatrixXf>(canonical_field, warped_live_field);
 		telemetry::WarpDeltaStatistics2d current_warp_statistics = telemetry::build_warp_delta_statistics
 				<math::Vector2i, eig::MatrixXf, math::MatrixXv2f>
 				(warp_field,
