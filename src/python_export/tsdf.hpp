@@ -22,7 +22,7 @@
 
 namespace python_export{
 //pe_tsdf used instead of tsdf to avoid namespace naming conflicts
-namespace pe_tsdf{
+namespace tsdf{
 void export_algorithms();
 } // namespace pe_tsdf
 }//namespace python_export

@@ -29,6 +29,11 @@ template struct TsdfDifferenceStatistics<math::Vector3i>;
 template std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics<math::Vector2i> &ts);
 template std::ostream &operator<<(std::ostream &ostr, const TsdfDifferenceStatistics<math::Vector3i> &ts);
 
+template TsdfDifferenceStatistics<math::Vector2i> build_tsdf_difference_statistics<math::Vector2i, eig::MatrixXf>(
+		const eig::MatrixXf& canonical_field, const eig::MatrixXf& live_field);
+template TsdfDifferenceStatistics<math::Vector3i> build_tsdf_difference_statistics<math::Vector3i, math::Tensor3f>(
+		const math::Tensor3f& canonical_field, const math::Tensor3f& live_field);
+
 }  // namespace telemetry
 
 

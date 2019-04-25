@@ -155,6 +155,12 @@ void locate_min_norm(typename Scalar::Scalar& min_norm, math::Vector3i& coordina
 }
 
 template<typename Scalar>
+void locate_maximum(Scalar& maximum, math::Vector2i& coordinates,
+		const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& scalar_field){
+	maximum = scalar_field.maxCoeff(&coordinates.y, &coordinates.x);
+}
+
+template<typename Scalar>
 void locate_maximum(Scalar& maximum, math::Vector3i& coordinates,
 		const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& scalar_field) {
 	int matrix_size = static_cast<int>(scalar_field.size());

@@ -54,6 +54,42 @@ template<typename Scalar>
 Eigen::Tensor<Scalar, 3, Eigen::ColMajor>
 cwise_add_constant(const Eigen::Tensor<Scalar, 3, Eigen::ColMajor>& container, Scalar constant);
 
+template<typename ScalarMajor, typename ScalarMinor>
+inline
+Eigen::Matrix<ScalarMajor, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+cwise_add(
+		const Eigen::Matrix<ScalarMajor, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& container_a,
+		const Eigen::Matrix<ScalarMinor, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& container_b){
+	return (container_a.array() + container_b.array()).matrix();
+}
+
+template<typename ScalarMajor, typename ScalarMinor>
+inline
+Eigen::Tensor<ScalarMajor, 3, Eigen::ColMajor>
+cwise_add(
+		const Eigen::Tensor<ScalarMajor, 3, Eigen::ColMajor>& container_a,
+		const Eigen::Tensor<ScalarMinor, 3, Eigen::ColMajor>& container_b){
+	return container_a + container_b;
+}
+
+template<typename ScalarMajor, typename ScalarMinor>
+inline
+Eigen::Matrix<ScalarMajor, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
+cwise_subtract(
+		const Eigen::Matrix<ScalarMajor, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& container_a,
+		const Eigen::Matrix<ScalarMinor, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>& container_b){
+	return (container_a.array() - container_b.array()).matrix();
+}
+
+template<typename ScalarMajor, typename ScalarMinor>
+inline
+Eigen::Tensor<ScalarMajor, 3, Eigen::ColMajor>
+cwise_subtract(
+		const Eigen::Tensor<ScalarMajor, 3, Eigen::ColMajor>& container_a,
+		const Eigen::Tensor<ScalarMinor, 3, Eigen::ColMajor>& container_b){
+	return container_a - container_b;
+}
+
 }  // namespace math
 
 

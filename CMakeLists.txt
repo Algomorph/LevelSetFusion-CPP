@@ -192,6 +192,7 @@ add_library(${MODULE_NAME} SHARED
 			src/python_export/hierarchical_optimizer.hpp
 			src/python_export/hierarchical_optimizer.cpp
 			src/python_export/telemetry.hpp
+			src/python_export/telemetry.tpp
 			src/python_export/telemetry.cpp
 			src/python_export/math.hpp
 			src/python_export/math.cpp
