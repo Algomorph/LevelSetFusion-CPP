@@ -48,7 +48,6 @@ namespace nro = nonrigid_optimization;
 
 BOOST_AUTO_TEST_CASE(pyramid2d_test01) {
 	// corresponds to test_contstruct_scalar_pyramid for Python
-
 	eig::MatrixXf tile(8, 8);
 	tile <<
 			1.0f, 2.0f, 5.0f, 6.0f, -1.0f, -2.0f, -5.0f, -6.0f,
@@ -108,6 +107,25 @@ BOOST_AUTO_TEST_CASE(pyramid2d_test01) {
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(1)(0, 1), l1_01);
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(1)(1, 1), l1_11);
 	BOOST_REQUIRE_EQUAL(pyramid.get_level(0)(0, 0), 5.0f/4.0f);
+}
+
+BOOST_AUTO_TEST_CASE(pyramid2d_test02) {
+	eig::MatrixXf tile(8, 8);
+		tile <<
+				1.0f, 2.0f, 5.0f, 6.0f, -1.0f, -2.0f, -5.0f, -6.0f,
+				3.0f, 4.0f, 7.0f, 8.0f, -3.0f, -4.0f, -7.0f, -8.0f,
+				-1.0f, -2.0f, -5.0f, -6.0f, 1.0f, 2.0f, 5.0f, 6.0f,
+				-3.0f, -4.0f, -7.0f, -8.0f, 3.0f, 4.0f, 7.0f, 8.0f,
+				1.0f, 2.0f, 5.0f, 6.0f, 5.0f, 5.0f, 5.0f, 5.0f,
+				3.0f, 4.0f, 7.0f, 8.0f, 5.0f, 5.0f, 5.0f, 5.0f,
+				-1.0f, -2.0f, -5.0f, -6.0f, 5.0f, 5.0f, 5.0f, 5.0f,
+				-3.0f, -4.0f, -7.0f, -8.0f, 5.0f, 5.0f, 5.0f, 5.0f;
+	nro_h::Pyramid<eig::MatrixXf> pyramid(tile, 1);
+	BOOST_REQUIRE_EQUAL(pyramid.get_level_count(), (unsigned)1);
+	BOOST_REQUIRE_EQUAL(pyramid.get_level(0)(0,0), 1.0f);
+	BOOST_REQUIRE_EQUAL(pyramid.get_level(0)(0,1), 2.0f);
+	BOOST_REQUIRE_EQUAL(pyramid.get_level(0)(5,2), 7.0f);
+
 }
 
 BOOST_AUTO_TEST_CASE(pyramid3d_test01) {
