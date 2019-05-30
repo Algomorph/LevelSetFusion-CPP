@@ -33,7 +33,7 @@ namespace python_export {
                                 .def("optimize", &ro::Sdf2SdfOptimizer2d::optimize,
                                      "Find optimal twist to map given live SDF to given canonical SDF",
                                      bp::args("image_y_coordinate",
-                                              "canonical_depth_image",
+                                              "canonical_field",
                                               "live_depth_image",
                                               "eta",
 											  "initial_camera_pose"));

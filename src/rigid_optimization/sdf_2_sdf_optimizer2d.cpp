@@ -50,14 +50,11 @@ Sdf2SdfOptimizer2d::VerbosityParameters::VerbosityParameters(
 }
 ;
 
-eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
-		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& canonical_depth_image,
+eig::Matrix3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
+		const eig::MatrixXf canonical_field,
 		const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
 		float eta,
 		const eig::Matrix4f& initial_camera_pose) {
-
-	eig::MatrixXf canonical_field =
-			this->tsdf_generator.generate(canonical_depth_image, eig::Matrix4f::Identity(), image_y_coordinate);
 
 	eig::MatrixXf canonical_weight = canonical_field.replicate(1, 1);
 	for (int i = 0; i < canonical_weight.rows(); ++i) { // Determine weight based on thickness
@@ -122,7 +119,9 @@ eig::Vector3f Sdf2SdfOptimizer2d::optimize(int image_y_coordinate,
 		}
 	}
 
-	return twist;
+
+    eig::Matrix3f twist_matrix2d = math::transformation_vector_to_matrix2d(twist);
+	return twist_matrix2d;
 }
 
 }
