@@ -1,5 +1,5 @@
 /*
- * sdf2sdf_optimizer2d.cpp
+ * sdf2sdf_optimizer2d.hpp
  *
  *  Created on: Mar 05, 2019
  *      Author: Fei Shan
