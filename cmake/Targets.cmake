@@ -187,6 +187,8 @@ set(MODULE_SOURCES
 	src/rigid_optimization/sdf_2_sdf_optimizer2d.hpp
 	src/rigid_optimization/sdf_gradient_wrt_transformation2d.cpp
 	src/rigid_optimization/sdf_gradient_wrt_transformation2d.hpp
+	src/rigid_optimization/sdf_2_sdf_optimizer.hpp
+	src/rigid_optimization/sdf_2_sdf_optimizer.cpp
 )
 
 if (${CMAKE_VERSION} VERSION_LESS 3.8 OR (MSVC_IDE AND ${CMAKE_VERSION} VERSION_LESS 3.9))
