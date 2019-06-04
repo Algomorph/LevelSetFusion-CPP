@@ -19,7 +19,7 @@ namespace math{
  * @param[in] 3 by 1 vector input
  */
 template<typename Scalar>
-eig::Matrix<Scalar, 3, 3> transformation_vector_to_matrix(const eig::Matrix<Scalar, 3, 1> &twist);
+eig::Matrix<Scalar, 3, 3> transformation_vector_to_matrix(const eig::Matrix<Scalar, 3, 1>& twist);
 
 /**
  * @brief Transform the transformation vector to corresponding transformation matrix in 3D.
