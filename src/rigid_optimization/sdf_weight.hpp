@@ -18,9 +18,9 @@ namespace eig = Eigen;
 namespace rigid_optimization {
 
 template<typename Scalar>
-eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> sdf_weight(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>& field, Scalar eta);
+eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> sdf_weight(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>& field, const Scalar& eta);
 
 template<typename Scalar>
-eig::Tensor<Scalar, 3, eig::ColMajor> sdf_weight(const eig::Tensor<Scalar, 3, eig::ColMajor>& field, Scalar eta);
+eig::Tensor<Scalar, 3, eig::ColMajor> sdf_weight(const eig::Tensor<Scalar, 3, eig::ColMajor>& field, const Scalar& eta);
 
 }

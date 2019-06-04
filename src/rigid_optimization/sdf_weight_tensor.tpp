@@ -15,7 +15,7 @@ namespace eig = Eigen;
 namespace rigid_optimization {
 
 template<typename Scalar>
-eig::Tensor<Scalar, 3, eig::ColMajor> sdf_weight(const eig::Tensor<Scalar, 3, eig::ColMajor>& field, Scalar eta){
+eig::Tensor<Scalar, 3, eig::ColMajor> sdf_weight(const eig::Tensor<Scalar, 3, eig::ColMajor>& field, const Scalar& eta){
 
     eig::Tensor<Scalar, 3, eig::ColMajor> weight = field.replicate(1, 1);
 
