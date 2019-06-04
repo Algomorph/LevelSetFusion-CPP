@@ -10,20 +10,20 @@ namespace eig = Eigen;
 
 namespace math {
 
-template<>
-eig::Matrix3f transformation_vector_to_matrix<eig::Vector3f, eig::Matrix3f>(const eig::Vector3f& twist) {
+template<typename Scalar>
+eig::Matrix<Scalar, 3, 3> transformation_vector_to_matrix(const eig::Matrix<Scalar, 3, 1>& twist) {
     double(theta) = twist(2);
-    eig::Matrix3f twist_matrix;
+    eig::Matrix<Scalar, 3, 3> twist_matrix;
     twist_matrix << cos(theta), -sin(theta), twist(0),
                     sin(theta), cos(theta),  twist(1),
                     0.f,        0.f,         1.f;
     return twist_matrix;
 }
 
-template<>
-eig::Matrix4f transformation_vector_to_matrix<eig::Matrix<float, 6, 1>, eig::Matrix4f>(const eig::Matrix<float, 6, 1>& twist){
-    eig::Vector3f translation = twist.head<3>();
-    eig::Vector3f rotation = twist.tail<3>();
+template<typename Scalar>
+eig::Matrix<Scalar, 4, 4> transformation_vector_to_matrix(const eig::Matrix<Scalar, 6, 1>& twist){
+    eig::Matrix<Scalar, 3, 1> translation = twist.head(3);
+    eig::Matrix<Scalar, 3, 1> rotation = twist.tail(3);
     float theta = rotation.norm();
 
     if (std::abs(theta) > 1e-14) {
@@ -36,9 +36,9 @@ eig::Matrix4f transformation_vector_to_matrix<eig::Matrix<float, 6, 1>, eig::Mat
                          sin(theta/2) * rotation(1),
                          sin(theta/2) * rotation(2));
 
-    eig::Matrix3f rotation_matrix = q.toRotationMatrix();
+    eig::Matrix<Scalar, 3, 3> rotation_matrix = q.toRotationMatrix();
 
-    eig::Matrix4f twist_matrix;
+    eig::Matrix<Scalar, 4, 4> twist_matrix;
 
     twist_matrix << rotation_matrix(0, 0), rotation_matrix(0, 1), rotation_matrix(0, 2), translation(0),
                     rotation_matrix(1, 0), rotation_matrix(1, 1), rotation_matrix(1, 2), translation(1),
