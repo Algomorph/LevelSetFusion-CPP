@@ -11,7 +11,7 @@ namespace eig = Eigen;
 
 namespace rigid_optimization{
 
-template eig::Matrix<float, eig::Dynamic, eig::Dynamic, eig::ColMajor> sdf_weight<float>(const eig::Matrix<float, eig::Dynamic, eig::Dynamic, eig::ColMajor>& field, float eta);
+template eig::Matrix<float, eig::Dynamic, eig::Dynamic, eig::ColMajor> sdf_weight<float>(const eig::Matrix<float, eig::Dynamic, eig::Dynamic, eig::ColMajor>& field, const float& eta);
 
 }
 
