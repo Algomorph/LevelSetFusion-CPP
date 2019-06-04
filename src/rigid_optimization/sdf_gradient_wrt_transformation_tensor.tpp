@@ -15,7 +15,6 @@
 #include "../math/gradients.hpp"
 #include "../math/transformation.hpp"
 
-
 namespace eig = Eigen;
 
 namespace rigid_optimization {
@@ -25,7 +24,10 @@ void gradient_wrt_twist(const eig::Tensor<Scalar, 3>& live_field,
                         const eig::Matrix<float, 6, 1>& twist,
                         const eig::Vector3i& array_offset,
                         const float& voxel_size,
-                        eig::Tensor<eig::Matrix<Scalar, 6, 1>, 3>& gradient_field){
+                        const eig::Tensor<Scalar, 3>& canonical_field, // canonical_field is only used to calculate vector_b.
+                        eig::Tensor<eig::Matrix<Scalar, 6, 1>, 3>& gradient_field,
+                        eig::Matrix<Scalar, 6, 6>& matrix_A,
+                        eig::Matrix<Scalar, 6, 1>& vector_b){
 
     eig::Tensor<math::Vector3<Scalar>, 3> gradient_first_term;
     math::gradient(gradient_first_term, live_field);
@@ -65,6 +67,11 @@ void gradient_wrt_twist(const eig::Tensor<Scalar, 3>& live_field,
                                                           gradient_first_term(x_field, y_field, z_field)[2]).transpose()
                                              * gradient_second_term;
         gradient_field(x_field, y_field, z_field) = gradient/voxel_size;
+
+        matrix_A += gradient_field(x_field, y_field, z_field) * gradient_field(x_field, y_field, z_field).transpose();
+
+        vector_b += (canonical_field(x_field, y_field, z_field) - live_field(x_field, y_field, z_field) + gradient_field(x_field, y_field, z_field).transpose() * twist)
+                    * gradient_field(x_field, y_field, z_field);
     }
 }
 ;

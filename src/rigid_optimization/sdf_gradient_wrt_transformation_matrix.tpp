@@ -15,7 +15,6 @@
 #include "../math/gradients.hpp"
 #include "../math/transformation.hpp"
 
-
 namespace eig = Eigen;
 
 namespace rigid_optimization {
@@ -25,7 +24,10 @@ void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& l
                         const eig::Vector3f& twist,
                         const eig::Vector3i& array_offset,
                         const float& voxel_size,
-                        eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic>& gradient_field) {
+                        const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field, // canonical_field is only used to calculate vector_b.
+                        eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic>& gradient_field, // gradient_field is the gradient of live_field.
+                        eig::Matrix<Scalar, 3, 3>& matrix_A,
+                        eig::Matrix<Scalar, 3, 1>& vector_b) {
 
     eig::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic> gradient_first_term;
     math::gradient(gradient_first_term, live_field);
@@ -58,6 +60,11 @@ void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& l
                                                                        gradient_first_term(y_field, x_field)[1]).transpose()
                                              * gradient_second_term;
         gradient_field(y_field, x_field) = gradient/voxel_size;
+
+        matrix_A += gradient_field(y_field, x_field) * gradient_field(y_field, x_field).transpose();
+
+        vector_b += (canonical_field(y_field, x_field) - live_field(y_field, x_field) + gradient_field(y_field, x_field).transpose() * twist)
+                    * gradient_field(y_field, x_field);
     }
 }
 ;
