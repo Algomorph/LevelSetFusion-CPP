@@ -9,6 +9,7 @@
 
 //libraries
 #include <Eigen/Eigen>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 //local
 #include "../math/typedefs.hpp"
@@ -49,7 +50,8 @@ public:
                             live_depth_image,
                             eta,
                             initial_camera_pose,
-                            image_y_coordinate);
+                            image_y_coordinate,
+                            tsdf_generator);
     };
 
 private:
@@ -63,13 +65,15 @@ private:
                                const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
                                float eta,
                                const eig::Matrix4f& initial_camera_pose,
-                               int image_y_coordinate);
+                               int image_y_coordinate,
+                               const tsdf::Generator2d& generator);
     // 3D
     eig::Matrix4f optimizeImpl(const eig::Tensor<Scalar, 3>& canonical_field,
                                const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
                                float eta,
                                const eig::Matrix4f& initial_camera_pose,
-                               int image_y_coordinate);
+                               int image_y_coordinate,
+                               const tsdf::Generator3d& generator);
 
 };
 

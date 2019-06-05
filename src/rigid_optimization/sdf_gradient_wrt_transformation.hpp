@@ -7,6 +7,7 @@
 
 //libraries
 #include "Eigen/Eigen"
+#include <unsupported/Eigen/CXX11/Tensor>
 
 namespace eig = Eigen;
 
