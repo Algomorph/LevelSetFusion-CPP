@@ -19,9 +19,9 @@ eig::Tensor<Scalar, 3, eig::ColMajor> sdf_weight(const eig::Tensor<Scalar, 3, ei
 
     eig::Tensor<Scalar, 3, eig::ColMajor> weight = field.replicate(1, 1);
 
-    int x_size = field.dymention(0);
-    int y_size = field.dymention(1);
-//    int z_size = field.dymention(2);
+    int x_size = field.dimension(0);
+    int y_size = field.dimension(1);
+//    int z_size = field.dimension(2);
 
     int y_stride = x_size;
     int z_stride = y_stride * y_size;

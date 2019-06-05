@@ -36,9 +36,9 @@ void gradient_wrt_twist(const eig::Tensor<Scalar, 3>& live_field,
 
     float x_voxel, y_voxel, z_voxel, w_voxel = 1;
 
-    int x_size = live_field.dymention(0);
-    int y_size = live_field.dymention(1);
-//    int z_size = live_field.dymention(2);
+    int x_size = live_field.dimension(0);
+    int y_size = live_field.dimension(1);
+//    int z_size = live_field.dimension(2);
 
     int y_stride = x_size;
     int z_stride = y_stride * y_size;
