@@ -19,7 +19,8 @@ namespace rigid_optimization {
             const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor>& field,
             const Scalar& eta){
 
-        eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> weight = field.replicate(1, 1);
+        eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic, eig::ColMajor> weight;
+        weight.setZero();
 
         int matrix_size = static_cast<int>(weight.size());
 

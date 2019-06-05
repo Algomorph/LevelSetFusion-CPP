@@ -54,18 +54,19 @@ eig::Matrix3f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters
         const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
         float eta,
         const eig::Matrix4f& initial_camera_pose,
-        int image_y_coordinate) {
+        int image_y_coordinate,
+        const tsdf::Generator2d& generator) {
 
     eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic> canonical_weight = sdf_weight(canonical_field, eta);
 
     eig::Vector3f twist;
-    std::fill_n(twist.data(), twist.size(), (Scalar) 0.0);
+    twist.setZero();
 
     for (int iteration_count = 0; iteration_count < maximum_iteration_count; ++iteration_count) {
         eig::Matrix3f matrix_A;
-        std::fill_n(matrix_A.data(), matrix_A.size(), (Scalar) 0.0);
+        matrix_A.setZero();
         eig::Vector3f vector_b;
-        std::fill_n(vector_b.data(), vector_b.size(), (Scalar) 0.0);
+        vector_b.setZero();
 
         // 2D case, add constrain.
         eig::Matrix<float, 6, 1> twist3d;
@@ -73,21 +74,21 @@ eig::Matrix3f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters
 
         eig::Matrix4f twist_matrix3d = math::transformation_vector_to_matrix(twist3d);
 
-        eig::MatrixXf live_field = this->tsdf_generator.generate(live_depth_image,
-                                                                 twist_matrix3d,
-                                                                 image_y_coordinate);
+        eig::MatrixXf live_field = generator.generate(live_depth_image,
+                                                      twist_matrix3d,
+                                                      image_y_coordinate);
         eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic> live_weight = sdf_weight(live_field, eta);
 
         eig::Matrix<eig::Vector3f, eig::Dynamic, eig::Dynamic> live_gradient(live_field.rows(),
                                                                              live_field.cols());
-        eig::Vector3i offset(tsdf_generator.parameters.array_offset.x,
+        eig::Vector3i offset(generator.parameters.array_offset.x,
                              0,
-                             tsdf_generator.parameters.array_offset.y);
+                             generator.parameters.array_offset.y);
 
         gradient_wrt_twist(live_field,
                            twist,
                            offset,
-                           tsdf_generator.parameters.voxel_size,
+                           generator.parameters.voxel_size,
                            canonical_field,
                            live_gradient,
                            matrix_A,
@@ -124,44 +125,56 @@ eig::Matrix4f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters
         const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
         float eta,
         const eig::Matrix4f& initial_camera_pose,
-        int image_y_coordinate) {
+        int image_y_coordinate,
+        const tsdf::Generator3d& generator) {
 
     eig::Tensor<Scalar, 3> canonical_weight = sdf_weight(canonical_field, eta);
 
     eig::Matrix<float, 6, 1> twist;
-    std::fill_n(twist.data(), twist.size(), (Scalar) 0.0);
+    twist.setZero();
 
     for (int iteration_count = 0; iteration_count < maximum_iteration_count; ++iteration_count) {
         eig::Matrix<float, 6, 6> matrix_A;
-        std::fill_n(matrix_A.data(), matrix_A.size(), (Scalar) 0.0);
+        matrix_A.setZero();
         eig::Matrix<float, 6, 1> vector_b;
-        std::fill_n(vector_b.data(), vector_b.size(), (Scalar) 0.0);
+        vector_b.setZero();
 
         eig::Matrix4f twist_matrix3d = math::transformation_vector_to_matrix(twist);
 
-        eig::Tensor<Scalar, 3> live_field = this->tsdf_generator.generate(live_depth_image,
-                                                                          twist_matrix3d,
-                                                                          image_y_coordinate);
+        eig::Tensor<Scalar, 3> live_field = generator.generate(live_depth_image,
+                                                               twist_matrix3d,
+                                                               image_y_coordinate);
         eig::Tensor<Scalar, 3> live_weight = sdf_weight(live_field, eta);
 
         eig::Tensor<eig::Matrix<float, 6, 1>, 3> live_gradient(live_field.dimension(0),
                                                                live_field.dimension(1),
                                                                live_field.dimension(2));
-        eig::Vector3i offset(tsdf_generator.parameters.array_offset.x,
-                             tsdf_generator.parameters.array_offset.y,
-                             tsdf_generator.parameters.array_offset.z);
+        eig::Vector3i offset(generator.parameters.array_offset.x,
+                             generator.parameters.array_offset.y,
+                             generator.parameters.array_offset.z);
 
         gradient_wrt_twist(live_field,
                            twist,
                            offset,
-                           tsdf_generator.parameters.voxel_size,
+                           generator.parameters.voxel_size,
                            canonical_field,
                            live_gradient,
                            matrix_A,
                            vector_b);
 
-        float energy = .5f * (canonical_field.cwiseProduct(canonical_weight) -
-                              live_field.cwiseProduct(live_weight)).array().pow(2.f).sum();
+        int voxel_count = static_cast<int>(canonical_field.size());
+        float energy = 0.f;
+
+        for (int i_element = 0; i_element < voxel_count; i_element++) {
+            float difference = canonical_field.data()[i_element] * canonical_weight.data()[i_element]
+                               - live_field.data()[i_element] * live_weight.data()[i_element];
+
+            energy += 0.5f * difference * difference;
+        }
+
+//        float energy = .5f * (canonical_field.cwiseProduct(canonical_weight) -
+//                              live_field.cwiseProduct(live_weight)).array().pow(2.f).sum();
+
         eig::Matrix<float, 6, 1> optimal_twist = matrix_A.inverse() * vector_b;
         twist = twist + this->rate * (optimal_twist - twist);
 
