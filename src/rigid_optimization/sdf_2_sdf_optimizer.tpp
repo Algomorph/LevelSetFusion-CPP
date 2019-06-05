@@ -47,6 +47,7 @@ Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters, TsdfGenerato
 }
 ;
 
+// 2D
 template<typename Scalar, typename ScalarContainer, typename TsdfGenerationParameters, typename TsdfGenerator, typename Transformation>
 eig::Matrix3f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters, TsdfGenerator, Transformation>::optimizeImpl(
         const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field,
@@ -116,6 +117,7 @@ eig::Matrix3f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters
 }
 ;
 
+// 3D
 template<typename Scalar, typename ScalarContainer, typename TsdfGenerationParameters, typename TsdfGenerator, typename Transformation>
 eig::Matrix4f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters, TsdfGenerator, Transformation>::optimizeImpl(
         const eig::Tensor<Scalar, 3>& canonical_field,
