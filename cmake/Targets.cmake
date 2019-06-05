@@ -144,8 +144,9 @@ set(MODULE_SOURCES
 	src/math/vector_operations.hpp
 	src/math/vector2.hpp
 	src/math/vector3.hpp
-    src/math/transformation.cpp
-    src/math/transformation.hpp
+	src/math/transformation.hpp
+    src/math/transformation.tpp
+	src/math/transformation.cpp
 
 	# tsdf: utilities for generating TSDF voxel grids in various ways
 	src/tsdf/common.hpp
@@ -183,12 +184,20 @@ set(MODULE_SOURCES
 	src/error_handling/throw_assert.hpp
 	
 	#rigid_optimization: rigid tracker from SDF-to-SDF fusion
-	src/rigid_optimization/sdf_2_sdf_optimizer2d.cpp
-	src/rigid_optimization/sdf_2_sdf_optimizer2d.hpp
-	src/rigid_optimization/sdf_gradient_wrt_transformation2d.cpp
-	src/rigid_optimization/sdf_gradient_wrt_transformation2d.hpp
 	src/rigid_optimization/sdf_2_sdf_optimizer.hpp
+	src/rigid_optimization/sdf_2_sdf_optimizer.tpp
 	src/rigid_optimization/sdf_2_sdf_optimizer.cpp
+	src/rigid_optimization/sdf_gradient_wrt_transformation.hpp
+	src/rigid_optimization/sdf_gradient_wrt_transformation_matrix.tpp
+	src/rigid_optimization/sdf_gradient_wrt_transformation_matrix.cpp
+	src/rigid_optimization/sdf_gradient_wrt_transformation_tensor.tpp
+	src/rigid_optimization/sdf_gradient_wrt_transformation_tensor.cpp
+	src/rigid_optimization/sdf_weight.hpp
+	src/rigid_optimization/sdf_weight_matrix.tpp
+	src/rigid_optimization/sdf_weight_matrix.cpp
+	src/rigid_optimization/sdf_weight_tensor.tpp
+	src/rigid_optimization/sdf_weight_tensor.cpp
+
 )
 
 if (${CMAKE_VERSION} VERSION_LESS 3.8 OR (MSVC_IDE AND ${CMAKE_VERSION} VERSION_LESS 3.9))

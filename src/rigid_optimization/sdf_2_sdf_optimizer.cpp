@@ -1,8 +1,18 @@
-//
-// Created by fei on 6/3/19.
-//
+/*
+ * sdf2sdf_optimizer.cpp
+ *
+ *  Created on: May 31, 2019
+ *      Author: Fei Shan
+ */
 
-#ifndef LEVELSETFUSIONOPTIMIZATION_SDF_2_SDF_OPTIMIZER_H
-#define LEVELSETFUSIONOPTIMIZATION_SDF_2_SDF_OPTIMIZER_H
+//local
+#include "sdf_2_sdf_optimizer.tpp"
 
-#endif //LEVELSETFUSIONOPTIMIZATION_SDF_2_SDF_OPTIMIZER_H
+#include "../math/typedefs.hpp"
+
+namespace rigid_optimization {
+
+template class Sdf2SdfOptimizer<float, eig::MatrixXf, tsdf::Parameters2d, tsdf::Generator2d, eig::Matrix3f>;
+template class Sdf2SdfOptimizer<float, math::Tensor3f, tsdf::Parameters3d, tsdf::Generator3d, eig::Matrix4f>;
+
+}
