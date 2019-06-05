@@ -144,9 +144,9 @@ eig::Matrix4f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters
                                                                           image_y_coordinate);
         eig::Tensor<Scalar, 3> live_weight = sdf_weight(live_field, eta);
 
-        eig::Tensor<eig::Matrix<float, 6, 1>, 3> live_gradient(live_field.dimentions(0),
-                                                               live_field.dimentions(1),
-                                                               live_field.dimentions(2));
+        eig::Tensor<eig::Matrix<float, 6, 1>, 3> live_gradient(live_field.dimension(0),
+                                                               live_field.dimension(1),
+                                                               live_field.dimension(2));
         eig::Vector3i offset(tsdf_generator.parameters.array_offset.x,
                              tsdf_generator.parameters.array_offset.y,
                              tsdf_generator.parameters.array_offset.z);
