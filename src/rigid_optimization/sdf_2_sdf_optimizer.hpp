@@ -18,7 +18,7 @@ namespace eig = Eigen;
 
 namespace rigid_optimization {
 
-template<typename ScalarContainer, typename VectorContainer, typename TsdfGenerationParameters, typename TsdfGenerator>
+template<typename Scalar, typename ScalarContainer, typename TsdfGenerationParameters, typename TsdfGenerator, typename Transformation>
 class Sdf2SdfOptimizer {
 public:
     struct VerbosityParameters {
@@ -39,45 +39,54 @@ public:
 
     virtual ~Sdf2SdfOptimizer() = default;
 
-//    eig::Matrix3f optimize(int image_y_coordinate,
-//                           const ScalarContainer canonical_field,
-//                           const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
-//                           float eta = 0.01f,
-//                           const eig::Matrix4f& initial_camera_pose = eig::Matrix4f::Identity());
-//
-//
-//    eig::Matrix4f optimize(const ScalarContainer canonical_field,
-//                           const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
-//                           float eta = 0.01f,
-//                           const eig::Matrix4f& initial_camera_pose = eig::Matrix4f::Identity());
+    Transformation optimize(const ScalarContainer& canonical_field,
+                            const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
+                            float eta = 0.01f,
+                            const eig::Matrix4f& initial_camera_pose = eig::Matrix4f::Identity(),
+                            int image_y_coordinate = 0) {
+        // Overload.
+        return optimizeImpl(canonical_field,
+                            live_depth_image,
+                            eta,
+                            initial_camera_pose,
+                            image_y_coordinate);
+    };
+
 private:
     const float rate = 0.5f;
     const int maximum_iteration_count = 60;
     const TsdfGenerator tsdf_generator;
     const Sdf2SdfOptimizer::VerbosityParameters verbosity_parameters;
 
+    // 2D
+    eig::Matrix3f optimizeImpl(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field,
+                               const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
+                               float eta,
+                               const eig::Matrix4f& initial_camera_pose,
+                               int image_y_coordinate);
+    // 3D
+    eig::Matrix4f optimizeImpl(const eig::Tensor<Scalar, 3>& canonical_field,
+                               const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
+                               float eta,
+                               const eig::Matrix4f& initial_camera_pose,
+                               int image_y_coordinate);
+
 };
 
-template<>
-class Sdf2SdfOptimizer<eig::MatrixXf, math::MatrixXv3f, tsdf::Parameters2d, tsdf::Generator2d> {
-public:
-    eig::Matrix3f optimize(int image_y_coordinate,
-                           const eig::MatrixXf canonical_field,
-                           const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
-                           float eta = 0.01f,
-                           const eig::Matrix4f& initial_camera_pose = eig::Matrix4f::Identity());
-};
-
-
-template<>
-class Sdf2SdfOptimizer<math::Tensor3f, math::Tensor3v6f, tsdf::Parameters3d, tsdf::Generator3d> {
-public:
-    eig::Matrix4f optimize(const math::Tensor3f canonical_field,
-                           const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
-                           float eta = 0.01f,
-                           const eig::Matrix4f& initial_camera_pose = eig::Matrix4f::Identity());
-};
-
-
+//template<typename Scalar, typename Transformation>
+//Transformation Sdf2SdfOptimizer<Scalar, tsdf::Parameters2d, tsdf::Generator2d, Transformation>::optimize(
+//        const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field,
+//        const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
+//        float eta = 0.01f,
+//        const eig::Matrix4f& initial_camera_pose = eig::Matrix4f::Identity(),
+//        int image_y_coordinate = 0);
+//
+//template<typename Scalar, typename Transformation>
+//Transformation Sdf2SdfOptimizer<Scalar, tsdf::Parameters3d, tsdf::Generator3d, Transformation>::optimize(
+//        const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field,
+//        const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
+//        float eta = 0.01f,
+//        const eig::Matrix4f& initial_camera_pose = eig::Matrix4f::Identity(),
+//        int image_y_coordinate = 0);
 
 }
