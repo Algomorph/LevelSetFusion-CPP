@@ -73,20 +73,4 @@ private:
 
 };
 
-//template<typename Scalar, typename Transformation>
-//Transformation Sdf2SdfOptimizer<Scalar, tsdf::Parameters2d, tsdf::Generator2d, Transformation>::optimize(
-//        const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field,
-//        const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
-//        float eta = 0.01f,
-//        const eig::Matrix4f& initial_camera_pose = eig::Matrix4f::Identity(),
-//        int image_y_coordinate = 0);
-//
-//template<typename Scalar, typename Transformation>
-//Transformation Sdf2SdfOptimizer<Scalar, tsdf::Parameters3d, tsdf::Generator3d, Transformation>::optimize(
-//        const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field,
-//        const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
-//        float eta = 0.01f,
-//        const eig::Matrix4f& initial_camera_pose = eig::Matrix4f::Identity(),
-//        int image_y_coordinate = 0);
-
 }
