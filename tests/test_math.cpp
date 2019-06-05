@@ -404,7 +404,7 @@ BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test01) {
 	Matrix<float, 6, 1> vector;
 	vector << 0.f, 0.f, 0.f, 0.f, 0.f, 0.f;
 	MatrixXf matrix(4, 4);
-	matrix = math::transformation_vector_to_matrix3d(vector);
+	matrix = math::transformation_vector_to_matrix(vector);
 	MatrixXf expected_matrix(4, 4);
 	expected_matrix << 1.f, 0.f, 0.f, 0.f,
 			           0.f, 1.f, 0.f, 0.f,
@@ -419,7 +419,7 @@ BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test02) {
 	Matrix<float, 6, 1> vector;
 	vector << 0.f, 0.f, 0.f, 0.f, M_PI/3, 0.f;
 	MatrixXf matrix(4, 4);
-	matrix = math::transformation_vector_to_matrix3d(vector);
+	matrix = math::transformation_vector_to_matrix(vector);
 	MatrixXf expected_matrix(4, 4);
 	expected_matrix << 0.5f, 0.f, 0.8660254f, 0.f,
 			           0.f, 1.f, 0.f, 0.f,
@@ -434,7 +434,7 @@ BOOST_AUTO_TEST_CASE(transformation_vector_to_matrix3d_test03) {
 	Matrix<float, 6, 1> vector;
 	vector << -0.03258679, 0.f, 0.00103423f, 0.f, 0.06314822f, 0.f;
 	MatrixXf matrix(4, 4);
-	matrix = math::transformation_vector_to_matrix3d(vector);
+	matrix = math::transformation_vector_to_matrix(vector);
 	MatrixXf expected_matrix(4, 4);
 	expected_matrix << 0.99800682f, 0.f, 0.06310626f, -0.03258679f,
 	                   0.f, 1.f, 0.f, 0.f,
