@@ -9,7 +9,10 @@
 
 
 namespace python_export{
-    namespace sdf_2_sdf_optimizer{
-        void export_algorithms();
-    } // namespace hierarchical_optimizer
+namespace sdf_2_sdf_optimizer{
+
+template<typename Scalar, typename ScalarContainer, typename TsdfGenerationParameters, typename TsdfGenerator, typename Transformation>
+void export_algorithms(const char* suffix);
+
+} // namespace hierarchical_optimizer
 } // namespace python_export

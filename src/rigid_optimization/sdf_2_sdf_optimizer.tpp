@@ -93,7 +93,7 @@ eig::Matrix3f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters
                            live_gradient,
                            matrix_A,
                            vector_b);
-
+        // TODO: energy can be calculated inside gradient calculation.
         float energy = .5f * (canonical_field.cwiseProduct(canonical_weight) -
                               live_field.cwiseProduct(live_weight)).array().pow(2.f).sum();
         eig::Vector3f optimal_twist = matrix_A.inverse() * vector_b;
@@ -161,7 +161,7 @@ eig::Matrix4f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters
                            live_gradient,
                            matrix_A,
                            vector_b);
-
+        // TODO: energy can be calculated inside gradient calculation.
         int voxel_count = static_cast<int>(canonical_field.size());
         float energy = 0.f;
 
