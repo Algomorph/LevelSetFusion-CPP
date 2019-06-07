@@ -11,6 +11,6 @@ namespace eig = Eigen;
 
 namespace rigid_optimization{
 
-template eig::Tensor<float, 3, eig::ColMajor> sdf_weight<float>(const eig::Tensor<float, 3, eig::ColMajor>& field, const float& eta);
+template eig::Tensor<float, 3, eig::ColMajor> sdf_weight<float>(const eig::Tensor<float, 3, eig::ColMajor>& field, float eta);
 
 }

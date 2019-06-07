@@ -23,13 +23,16 @@ template <typename Scalar>
 void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& live_field,
                         const eig::Vector3f& twist,
                         const eig::Vector3i& array_offset,
-                        const float& voxel_size,
+                        float voxel_size,
                         const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field, // canonical_field is only used to calculate vector_b.
                         eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic>& gradient_field, // gradient_field is the gradient of live_field.
                         eig::Matrix<Scalar, 3, 3>& matrix_A,
                         eig::Matrix<Scalar, 3, 1>& vector_b) {
 
-    eig::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic> gradient_first_term;
+    int x_size = live_field.cols();
+    int y_size = live_field.rows();
+
+    eig::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic> gradient_first_term(y_size, x_size);
     math::gradient(gradient_first_term, live_field);
     eig::Vector3f inv_twist = -twist;
     eig::Matrix3f inv_twist_matrix2d = math::transformation_vector_to_matrix(inv_twist);
@@ -37,8 +40,6 @@ void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& l
     float x_voxel, z_voxel, w_voxel = 1.f;
 
     int matrix_size = static_cast<int>(live_field.size());
-
-    int x_size = live_field.cols();
 
 #pragma omp parallel for
     for (int i_element = 0; i_element < matrix_size; i_element++) {

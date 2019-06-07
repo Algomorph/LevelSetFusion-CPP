@@ -48,6 +48,7 @@ lsf_add_test(NAME gradients SOURCES tests/test_gradients.cpp tests/data/test_dat
 lsf_add_test(NAME slavcheva_optimizer SOURCES tests/test_slavcheva_optimizer.cpp tests/data/test_data_slavcheva_optimizer.hpp)
 lsf_add_test(NAME hierarchical_optimizer SOURCES tests/test_hierarchical_optimizer.cpp tests/data/test_data_hierarchical_optimizer.hpp)
 lsf_add_test(NAME image_io SOURCES tests/test_image_io.cpp tests/data/test_data_image_io.hpp)
+lsf_add_test(NAME sdf_2_sdf_optimizer SOURCES tests/test_sdf_2_sdf_optimizer.cpp)
 
 # copy test data
 file(GLOB PNG_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/*.png")

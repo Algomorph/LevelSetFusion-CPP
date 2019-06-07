@@ -15,14 +15,14 @@ namespace eig = Eigen;
 namespace rigid_optimization {
 
 template<typename Scalar>
-eig::Tensor<Scalar, 3, eig::ColMajor> sdf_weight(const eig::Tensor<Scalar, 3, eig::ColMajor>& field, const Scalar& eta){
-
-    eig::Tensor<Scalar, 3, eig::ColMajor> weight;
-    weight.setZero();
+eig::Tensor<Scalar, 3, eig::ColMajor> sdf_weight(const eig::Tensor<Scalar, 3, eig::ColMajor>& field, Scalar eta){
 
     int x_size = field.dimension(0);
     int y_size = field.dimension(1);
-//    int z_size = field.dimension(2);
+    int z_size = field.dimension(2);
+
+    eig::Tensor<Scalar, 3, eig::ColMajor> weight(x_size, y_size, z_size);
+    weight.setZero();
 
     int y_stride = x_size;
     int z_stride = y_stride * y_size;
