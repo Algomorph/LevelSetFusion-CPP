@@ -41,7 +41,6 @@ void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& l
 
     int matrix_size = static_cast<int>(live_field.size());
 
-#pragma omp parallel for
     for (int i_element = 0; i_element < matrix_size; i_element++) {
         // Any MatrixXf in Eigen is column-major
         // i_element = x * column_count + y

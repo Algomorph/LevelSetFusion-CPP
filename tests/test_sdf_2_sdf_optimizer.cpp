@@ -34,5 +34,5 @@ BOOST_AUTO_TEST_CASE(test_sdf_weight01) {
     eig::MatrixXf expected_weight = field;
     eig::MatrixXf weight = ro::sdf_weight(field, eta);
 
-    BOOST_REQUIRE(math::almost_equal_verbose(weight, expected_weight, 1e-6));
+    BOOST_REQUIRE(math::almost_equal_verbose(weight, expected_weight, 1e-14));
 }

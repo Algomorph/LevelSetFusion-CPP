@@ -63,8 +63,8 @@ void gradient_wrt_twist(const eig::Tensor<Scalar, 3>& live_field,
                                 Scalar(0.f), Scalar(1.f), Scalar(0.f), -Scalar(trans_point[2]), Scalar(0.f), Scalar(trans_point[0]),
                                 Scalar(0.f), Scalar(0.f), Scalar(1.f), Scalar(trans_point[1]), -Scalar(trans_point[0]), Scalar(0.f);
         eig::Matrix<Scalar, 6, 1> gradient = eig::Vector3f(gradient_first_term(x_field, y_field, z_field)[0],
-                                                          gradient_first_term(x_field, y_field, z_field)[1],
-                                                          gradient_first_term(x_field, y_field, z_field)[2]).transpose()
+                                                           gradient_first_term(x_field, y_field, z_field)[1],
+                                                           gradient_first_term(x_field, y_field, z_field)[2]).transpose()
                                              * gradient_second_term;
         gradient_field(x_field, y_field, z_field) = gradient/voxel_size;
 

@@ -66,9 +66,9 @@ void export_math_functions(){
 			"Computes the mean vector length for all vectors in the given field", bp::args("vector_field"));
 
 	// TODO: transformation_vector_to_matrix() function can take more than float type.
-	bp::def<Eigen::Matrix<float, 3, 3> (*)(const Eigen::Matrix<float, 3, 1>&)>("transformation_vector_to_matrix", &math::transformation_vector_to_matrix,
+	bp::def<Eigen::Matrix<float, 3, 3> (*)(const Eigen::Matrix<float, 3, 1>&)>("transformation_vector_to_matrix2d", &math::transformation_vector_to_matrix,
           "Convert 6X1 or 3X1 transformation vector to 4X4 or 3X3 matrix in homogeneous coordinates", bp::args("vector"));
-    bp::def<Eigen::Matrix<float, 4, 4> (*)(const Eigen::Matrix<float, 6, 1>&)>("transformation_vector_to_matrix", &math::transformation_vector_to_matrix,
+    bp::def<Eigen::Matrix<float, 4, 4> (*)(const Eigen::Matrix<float, 6, 1>&)>("transformation_vector_to_matrix3d", &math::transformation_vector_to_matrix,
           "Convert 6X1 or 3X1 transformation vector to 4X4 or 3X3 matrix in homogeneous coordinates", bp::args("vector"));
 }
 
