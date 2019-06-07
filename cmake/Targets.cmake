@@ -41,6 +41,7 @@ set(MODULE_SOURCES
 	src/python_export/tsdf.hpp
 	src/python_export/tsdf.cpp
 	src/python_export/sdf_2_sdf_optimizer.hpp
+	src/python_export/sdf_2_sdf_optimizer.tpp
 	src/python_export/sdf_2_sdf_optimizer.cpp
 
 	#### nonrigid_optimization: namespace for algorithms performing non-rigid optimization on TSDF grids #######

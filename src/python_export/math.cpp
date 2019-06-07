@@ -65,8 +65,11 @@ void export_math_functions(){
 	bp::def("mean_vector_length", &math::mean_vector_length,
 			"Computes the mean vector length for all vectors in the given field", bp::args("vector_field"));
 
-	bp::def("transformation_vector_to_matrix3d", &math::transformation_vector_to_matrix3d,
-			"Convert 6X1 transformation vector to 4X4 matrix in homogeneous coordinates", bp::args("vector"));
+	// TODO: transformation_vector_to_matrix() function can take more than float type.
+	bp::def<Eigen::Matrix<float, 3, 3> (*)(const Eigen::Matrix<float, 3, 1>&)>("transformation_vector_to_matrix", &math::transformation_vector_to_matrix,
+          "Convert 6X1 or 3X1 transformation vector to 4X4 or 3X3 matrix in homogeneous coordinates", bp::args("vector"));
+    bp::def<Eigen::Matrix<float, 4, 4> (*)(const Eigen::Matrix<float, 6, 1>&)>("transformation_vector_to_matrix", &math::transformation_vector_to_matrix,
+          "Convert 6X1 or 3X1 transformation vector to 4X4 or 3X3 matrix in homogeneous coordinates", bp::args("vector"));
 }
 
 } // namespace python_export
