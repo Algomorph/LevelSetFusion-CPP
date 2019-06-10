@@ -7,6 +7,7 @@
 
 //libraries
 #include <Eigen/Eigen>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 namespace eig = Eigen;
 
@@ -30,4 +31,27 @@ eig::Matrix<Scalar, 3, 3> transformation_vector_to_matrix(const eig::Matrix<Scal
 template<typename Scalar>
 eig::Matrix<Scalar, 4, 4> transformation_vector_to_matrix(const eig::Matrix<Scalar, 6, 1>& twist);
 
+template <typename Scalar>
+eig::Matrix<Scalar, 3, 3> init_transformation_matrix(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& field);
+
+template <typename Scalar>
+eig::Matrix<Scalar, 4, 4> init_transformation_matrix(const eig::Tensor<Scalar, 3>& field);
+
+template <typename Scalar>
+eig::Matrix<Scalar, 3, 1> init_transformation_vector(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& field);
+
+template <typename Scalar>
+eig::Matrix<Scalar, 6, 1> init_transformation_vector(const eig::Tensor<Scalar, 3>& field);
+
+template <typename Scalar>
+eig::Matrix<Scalar, 6, 1> to_3d_transformation_vector(const eig::Matrix<Scalar, 3, 1>& twist);
+
+template <typename Scalar>
+eig::Matrix<Scalar, 6, 1> to_3d_transformation_vector(const eig::Matrix<Scalar, 6, 1>& twist); // Stay the same
+
+template <typename Scalar>
+eig::Matrix<Scalar, 3, 1> to_2d_transformation_vector(const eig::Matrix<Scalar, 6, 1>& twist);
+
+template <typename Scalar>
+eig::Matrix<Scalar, 3, 1> to_2d_transformation_vector(const eig::Matrix<Scalar, 3, 1>& twist); // Stay the same
 }
