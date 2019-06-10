@@ -19,10 +19,10 @@ namespace eig = Eigen;
 
 namespace rigid_optimization {
 
-template <typename Scalar>
+template <typename Scalar, typename Coordinates>
 void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& live_field,
-                        const eig::Vector3f& twist,
-                        const eig::Vector3i& array_offset,
+                        const eig::Matrix<Scalar, 3, 1>& twist,
+                        const Coordinates& array_offset,
                         float voxel_size,
                         const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field, // canonical_field is only used to calculate vector_b.
                         eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic>& gradient_field, // gradient_field is the gradient of live_field.
@@ -48,7 +48,7 @@ void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& l
         int y_field = i_element % x_size;
 
         x_voxel = (x_field + array_offset[0]) * voxel_size; // x coordinate
-        z_voxel = (y_field + array_offset[2]) * voxel_size; // z coordinate
+        z_voxel = (y_field + array_offset[1]) * voxel_size; // z coordinate
 
         eig::Vector3f point(x_voxel, z_voxel, w_voxel);
         eig::Vector3f trans_point = inv_twist_matrix2d * point;
@@ -66,6 +66,15 @@ void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& l
         vector_b += (canonical_field(y_field, x_field) - live_field(y_field, x_field) + gradient_field(y_field, x_field).transpose() * twist)
                     * gradient_field(y_field, x_field);
     }
+}
+;
+
+template <typename Scalar>
+eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic> init_gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& live_field){
+    eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic> gradient(live_field.rows(),
+                                                                                live_field.cols());
+    gradient.setZero();
+    return gradient;
 }
 ;
 

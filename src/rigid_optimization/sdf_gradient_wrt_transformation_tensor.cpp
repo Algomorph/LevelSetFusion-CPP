@@ -10,7 +10,7 @@
 
 namespace rigid_optimization {
 
-template void gradient_wrt_twist<float>(const eig::Tensor<float, 3>& live_field,
+template void gradient_wrt_twist<float, eig::Vector3i>(const eig::Tensor<float, 3>& live_field,
                                  const eig::Matrix<float, 6, 1>& twist,
                                  const eig::Vector3i& array_offset,
                                  float voxel_size,
@@ -19,4 +19,5 @@ template void gradient_wrt_twist<float>(const eig::Tensor<float, 3>& live_field,
                                  eig::Matrix<float, 6, 6>& matrix_A,
                                  eig::Matrix<float, 6, 1>& vector_b);
 
+template eig::Tensor<eig::Matrix<float, 6, 1>, 3> init_gradient_wrt_twist<float>(const eig::Tensor<float, 3>& live_field);
 }
