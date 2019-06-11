@@ -96,8 +96,7 @@ Sdf2SdfOptimizer<ScalarContainer, VectorContainer>::optimize(
 
             energy += 0.5f * difference * difference;
         }
-//        float energy = .5f * (canonical_field.cwiseProduct(canonical_weight) -
-//                              live_field.cwiseProduct(live_weight)).array().pow(2.f).sum();
+
         eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic> optimal_twist(twist.size(), 1);
         optimal_twist = matrix_A.inverse() * vector_b;
         twist = twist + this->rate * (optimal_twist - twist);

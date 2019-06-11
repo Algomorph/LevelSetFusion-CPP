@@ -80,7 +80,6 @@ eig::Tensor<eig::Matrix<Scalar, 6, 1>, 3> init_gradient_wrt_twist(const eig::Ten
     eig::Tensor<eig::Matrix<Scalar, 6, 1>, 3> gradient(live_field.dimension(0),
                                                        live_field.dimension(1),
                                                        live_field.dimension(2));
-    gradient.setZero();
     return gradient;
 }
 ;

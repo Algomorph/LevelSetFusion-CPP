@@ -73,7 +73,6 @@ template <typename Scalar>
 eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic> init_gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& live_field){
     eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic> gradient(live_field.rows(),
                                                                                 live_field.cols());
-    gradient.setZero();
     return gradient;
 }
 ;
