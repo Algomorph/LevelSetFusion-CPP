@@ -36,9 +36,14 @@ template<typename Scalar>
 class ContainerWrapper<Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> >{
 public:
 	static const int DimensionCount = 2;
+	static const int DegreeOfFreedom = 3;
 	typedef math::Vector2i Coordinates;
 	typedef Eigen::Matrix<math::Vector2<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> VectorContainer;
 	typedef Eigen::Matrix<math::Matrix2<Scalar>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixContainer;
+    typedef Eigen::Matrix<Scalar, 3, 1> TransformationVector;
+    typedef Eigen::Matrix<Scalar, 3, 3> TransformationMatrix;
+    typedef Eigen::Matrix<Scalar, 3, 3> Sdf2SdfOptimizerCoefficientA;
+//    typedef Eigen::Matrix<Scalar, 3, 1> Sdf2SdfOptimizerCoefficientB;
 };
 
 template<typename Scalar, int DimensionCountIn>
@@ -52,9 +57,14 @@ template<typename Scalar>
 class ContainerWrapper<Eigen::Tensor<Scalar, 3, Eigen::ColMajor>>{
 public:
 	static const int DimensionCount = 3;
+    static const int DegreeOfFreedom = 6;
 	typedef math::Vector3i Coordinates;
 	typedef Eigen::Tensor<math::Vector3<Scalar>,3,Eigen::ColMajor> VectorContainer;
 	typedef Eigen::Tensor<math::Matrix3<Scalar>,3,Eigen::ColMajor> MatrixContainer;
+    typedef Eigen::Matrix<Scalar, 6, 1> TransformationVector;
+	typedef Eigen::Matrix<Scalar, 4, 4> TransformationMatrix;
+    typedef Eigen::Matrix<Scalar, 6, 6> Sdf2SdfOptimizerCoefficientA;
+//    typedef Eigen::Matrix<Scalar, 6, 1> Sdf2SdfOptimizerCoefficientB;
 };
 
 } // namespace math

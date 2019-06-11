@@ -13,8 +13,8 @@ namespace ro = rigid_optimization;
 namespace python_export {
 namespace sdf_2_sdf_optimizer {
 
-template void export_algorithms<float, eig::MatrixXf, tsdf::Parameters2d, tsdf::Generator2d, eig::Matrix3f>(const char* suffix);
-template void export_algorithms<float, math::Tensor3f, tsdf::Parameters3d, tsdf::Generator3d, eig::Matrix4f>(const char* suffix);
+template void export_algorithms<eig::MatrixXf, eig::Matrix<eig::Matrix<float, 3, 1>, eig::Dynamic, eig::Dynamic>>(const char* suffix);
+template void export_algorithms<math::Tensor3f, eig::Tensor<eig::Matrix<float, 6, 1>, 3>>(const char* suffix);
 
 }
 }

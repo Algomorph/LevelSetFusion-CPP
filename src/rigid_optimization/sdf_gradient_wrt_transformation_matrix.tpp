@@ -23,7 +23,7 @@ template <typename Scalar, typename Coordinates>
 void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& live_field,
                         const eig::Matrix<Scalar, 3, 1>& twist,
                         const Coordinates& array_offset,
-                        float voxel_size,
+                        const Scalar& voxel_size,
                         const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field, // canonical_field is only used to calculate vector_b.
                         eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic>& gradient_field, // gradient_field is the gradient of live_field.
                         eig::Matrix<Scalar, 3, 3>& matrix_A,

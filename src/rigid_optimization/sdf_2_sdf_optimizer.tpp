@@ -19,8 +19,8 @@
 
 namespace rigid_optimization {
 
-template<typename Scalar, typename ScalarContainer, typename TsdfGenerationParameters, typename TsdfGenerator, typename Transformation>
-Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters, TsdfGenerator, Transformation>::Sdf2SdfOptimizer(
+template<typename ScalarContainer, typename VectorContainer>
+Sdf2SdfOptimizer<ScalarContainer, VectorContainer>::Sdf2SdfOptimizer(
         float rate,
         int maximum_iteration_count,
         TsdfGenerationParameters tsdf_generation_parameters,
@@ -33,8 +33,8 @@ Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters, TsdfGenerato
 }
 ;
 
-template<typename Scalar, typename ScalarContainer, typename TsdfGenerationParameters, typename TsdfGenerator, typename Transformation>
-Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters, TsdfGenerator, Transformation>::VerbosityParameters::VerbosityParameters(
+template<typename ScalarContainer, typename VectorContainer>
+Sdf2SdfOptimizer<ScalarContainer, VectorContainer>::VerbosityParameters::VerbosityParameters(
         bool print_iteration_max_warp_update,
         bool print_iteration_energy) :
         print_iteration_max_warp_update(print_iteration_max_warp_update),
@@ -47,116 +47,41 @@ Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters, TsdfGenerato
 }
 ;
 
-// 2D
-template<typename Scalar, typename ScalarContainer, typename TsdfGenerationParameters, typename TsdfGenerator, typename Transformation>
-eig::Matrix3f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters, TsdfGenerator, Transformation>::optimizeImpl(
-        const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field,
+template<typename ScalarContainer, typename VectorContainer>
+typename math::ContainerWrapper<ScalarContainer>::TransformationMatrix
+Sdf2SdfOptimizer<ScalarContainer, VectorContainer>::optimize(
+        const ScalarContainer& canonical_field,
         const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
         float eta,
         const eig::Matrix4f& initial_camera_pose,
-        int image_y_coordinate,
-        const tsdf::Generator2d& generator) {
+        int image_y_coordinate) {
 
-    eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic> canonical_weight = sdf_weight(canonical_field, eta);
+    ScalarContainer canonical_weight = sdf_weight(canonical_field, eta);
 
-    eig::Vector3f twist;
-    twist.setZero();
+    TransformationVector twist = math::init_transformation_vector(canonical_field);
 
     for (int iteration_count = 0; iteration_count < maximum_iteration_count; ++iteration_count) {
-        eig::Matrix3f matrix_A;
+        OptimizerCoefficient matrix_A;
         matrix_A.setZero();
-        eig::Vector3f vector_b;
+        TransformationVector vector_b;
         vector_b.setZero();
 
-        // 2D case, add constrain.
-        eig::Matrix<float, 6, 1> twist3d;
-        twist3d << twist(0), 0.0f, twist(1), 0.0f, twist(2), 0.0f;
+        // Expand in 2D case.
+        eig::Matrix<Scalar, 6, 1> twist3d = math::to_3d_transformation_vector(twist);
 
-        eig::Matrix4f twist_matrix3d = math::transformation_vector_to_matrix(twist3d);
+        eig::Matrix<Scalar, 4, 4> twist_matrix3d = math::transformation_vector_to_matrix(twist3d);
 
-        eig::MatrixXf live_field = generator.generate(live_depth_image,
-                                                      twist_matrix3d,
-                                                      image_y_coordinate);
-        eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic> live_weight = sdf_weight(live_field, eta);
+        ScalarContainer live_field = tsdf_generator.generate(live_depth_image,
+                                                             twist_matrix3d,
+                                                             image_y_coordinate);
+        ScalarContainer live_weight = sdf_weight(live_field, eta);
 
-        eig::Matrix<eig::Vector3f, eig::Dynamic, eig::Dynamic> live_gradient(live_field.rows(),
-                                                                             live_field.cols());
-        eig::Vector3i offset(generator.parameters.array_offset.x,
-                             0,
-                             generator.parameters.array_offset.y);
+        VectorContainer live_gradient = init_gradient_wrt_twist(live_field);
 
         gradient_wrt_twist(live_field,
                            twist,
-                           offset,
-                           generator.parameters.voxel_size,
-                           canonical_field,
-                           live_gradient,
-                           matrix_A,
-                           vector_b);
-        // TODO: energy can be calculated inside gradient calculation.
-        float energy = .5f * (canonical_field.cwiseProduct(canonical_weight) -
-                              live_field.cwiseProduct(live_weight)).array().pow(2.f).sum();
-        eig::Vector3f optimal_twist = matrix_A.inverse() * vector_b;
-        twist = twist + this->rate * (optimal_twist - twist);
-
-        if (this->verbosity_parameters.print_per_iteration_info) {
-            std::cout << "[ITERATION " << iteration_count << " COMPLETED]\n";
-            if (this->verbosity_parameters.print_iteration_max_warp_update) {
-                std::cout << " [optimize twist:" << optimal_twist.transpose() << "]\n";
-                std::cout << " [twist:" << twist.transpose() << "]\n";
-            }
-            if (this->verbosity_parameters.print_iteration_energy) {
-                std::cout << " [energy: " << energy << "]\n\n" << std::endl;
-            }
-
-        }
-
-    }
-
-    eig::Matrix3f twist_matrix = math::transformation_vector_to_matrix(twist);
-    return twist_matrix;
-}
-;
-
-// 3D
-template<typename Scalar, typename ScalarContainer, typename TsdfGenerationParameters, typename TsdfGenerator, typename Transformation>
-eig::Matrix4f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters, TsdfGenerator, Transformation>::optimizeImpl(
-        const eig::Tensor<Scalar, 3>& canonical_field,
-        const eig::Matrix<unsigned short, eig::Dynamic, eig::Dynamic>& live_depth_image,
-        float eta,
-        const eig::Matrix4f& initial_camera_pose,
-        int image_y_coordinate,
-        const tsdf::Generator3d& generator) {
-
-    eig::Tensor<Scalar, 3> canonical_weight = sdf_weight(canonical_field, eta);
-
-    eig::Matrix<float, 6, 1> twist;
-    twist.setZero();
-
-    for (int iteration_count = 0; iteration_count < maximum_iteration_count; ++iteration_count) {
-        eig::Matrix<float, 6, 6> matrix_A;
-        matrix_A.setZero();
-        eig::Matrix<float, 6, 1> vector_b;
-        vector_b.setZero();
-
-        eig::Matrix4f twist_matrix3d = math::transformation_vector_to_matrix(twist);
-
-        eig::Tensor<Scalar, 3> live_field = generator.generate(live_depth_image,
-                                                               twist_matrix3d,
-                                                               image_y_coordinate);
-        eig::Tensor<Scalar, 3> live_weight = sdf_weight(live_field, eta);
-
-        eig::Tensor<eig::Matrix<float, 6, 1>, 3> live_gradient(live_field.dimension(0),
-                                                               live_field.dimension(1),
-                                                               live_field.dimension(2));
-        eig::Vector3i offset(generator.parameters.array_offset.x,
-                             generator.parameters.array_offset.y,
-                             generator.parameters.array_offset.z);
-
-        gradient_wrt_twist(live_field,
-                           twist,
-                           offset,
-                           generator.parameters.voxel_size,
+                           tsdf_generator.parameters.array_offset,
+                           tsdf_generator.parameters.voxel_size,
                            canonical_field,
                            live_gradient,
                            matrix_A,
@@ -171,11 +96,10 @@ eig::Matrix4f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters
 
             energy += 0.5f * difference * difference;
         }
-
 //        float energy = .5f * (canonical_field.cwiseProduct(canonical_weight) -
 //                              live_field.cwiseProduct(live_weight)).array().pow(2.f).sum();
-
-        eig::Matrix<float, 6, 1> optimal_twist = matrix_A.inverse() * vector_b;
+        eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic> optimal_twist(twist.size(), 1);
+        optimal_twist = matrix_A.inverse() * vector_b;
         twist = twist + this->rate * (optimal_twist - twist);
 
         if (this->verbosity_parameters.print_per_iteration_info) {
@@ -192,7 +116,7 @@ eig::Matrix4f Sdf2SdfOptimizer<Scalar, ScalarContainer, TsdfGenerationParameters
 
     }
 
-    eig::Matrix4f twist_matrix = math::transformation_vector_to_matrix(twist);
+    TransformationMatrix twist_matrix = math::transformation_vector_to_matrix(twist);
     return twist_matrix;
 }
 ;

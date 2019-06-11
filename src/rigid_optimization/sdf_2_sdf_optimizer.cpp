@@ -12,7 +12,7 @@
 
 namespace rigid_optimization {
 
-template class Sdf2SdfOptimizer<float, eig::MatrixXf, tsdf::Parameters2d, tsdf::Generator2d, eig::Matrix3f>;
-template class Sdf2SdfOptimizer<float, math::Tensor3f, tsdf::Parameters3d, tsdf::Generator3d, eig::Matrix4f>;
+template class Sdf2SdfOptimizer<eig::MatrixXf, eig::Matrix<eig::Matrix<float, 3, 1>, eig::Dynamic, eig::Dynamic>>;
+template class Sdf2SdfOptimizer<math::Tensor3f, eig::Tensor<eig::Matrix<float, 6, 1>, 3>>;
 
 }

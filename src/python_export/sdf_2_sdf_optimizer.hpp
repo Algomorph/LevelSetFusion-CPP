@@ -11,7 +11,7 @@
 namespace python_export{
 namespace sdf_2_sdf_optimizer{
 
-template<typename Scalar, typename ScalarContainer, typename TsdfGenerationParameters, typename TsdfGenerator, typename Transformation>
+template<typename ScalarContainer, typename VectorContainer>
 void export_algorithms(const char* suffix);
 
 } // namespace hierarchical_optimizer

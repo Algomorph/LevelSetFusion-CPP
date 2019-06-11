@@ -47,6 +47,6 @@ BOOST_PYTHON_MODULE ( MODULE_NAME )
 	pe::hierarchical_optimizer::export_algorithms<eig::MatrixXf, math::MatrixXv2f>("2d");
 	pe::hierarchical_optimizer::export_algorithms<math::Tensor3f, math::Tensor3v3f>("3d");
 
-	pe::sdf_2_sdf_optimizer::export_algorithms<float, eig::MatrixXf, tsdf::Parameters2d, tsdf::Generator2d, eig::Matrix3f>("2d");
-	pe::sdf_2_sdf_optimizer::export_algorithms<float, math::Tensor3f, tsdf::Parameters3d, tsdf::Generator3d, eig::Matrix4f>("3d");
+	pe::sdf_2_sdf_optimizer::export_algorithms<eig::MatrixXf, eig::Matrix<eig::Matrix<float, 3, 1>, eig::Dynamic, eig::Dynamic>>("2d");
+	pe::sdf_2_sdf_optimizer::export_algorithms<math::Tensor3f, eig::Tensor<eig::Matrix<float, 6, 1>, 3>>("3d");
 }
