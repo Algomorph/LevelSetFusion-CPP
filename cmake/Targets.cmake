@@ -174,6 +174,7 @@ set(MODULE_SOURCES
 	src/image_io/imageio_stb_image.cpp
 	src/image_io/png_eigen.hpp
 	src/image_io/png_eigen.cpp
+	src/image_io/tinyexr.h
 
 	# console: utilities for printing things to the console in better ways
 	src/console/colors.hpp

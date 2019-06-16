@@ -38,7 +38,7 @@ void gradient_wrt_twist(const eig::Tensor<Scalar, 3>& live_field,
     eig::Matrix<float, 6, 1> inv_twist = -twist;
     eig::Matrix4f inv_twist_matrix3d = math::transformation_vector_to_matrix(inv_twist);
 
-    float x_voxel, y_voxel, z_voxel, w_voxel = 1;
+    float x_voxel, y_voxel, z_voxel, w_voxel = 1.f;
 
     int y_stride = x_size;
     int z_stride = y_stride * y_size;

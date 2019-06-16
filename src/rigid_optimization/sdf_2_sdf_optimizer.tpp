@@ -58,7 +58,8 @@ Sdf2SdfOptimizer<ScalarContainer, VectorContainer>::optimize(
 
     ScalarContainer canonical_weight = sdf_weight(canonical_field, eta);
 
-    TransformationVector twist = math::init_transformation_vector(canonical_field);
+    TransformationVector twist;
+    twist.setZero();
 
     for (int iteration_count = 0; iteration_count < maximum_iteration_count; ++iteration_count) {
         OptimizerCoefficient matrix_A;

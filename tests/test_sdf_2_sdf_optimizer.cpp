@@ -16,16 +16,48 @@
 #include <boost/python.hpp>
 #include <Eigen/Eigen>
 
-//test data
+//local
+#include "../src/tsdf/generator.hpp"
+#include "../src/math/typedefs.hpp"
+#include "../src/math/almost_equal.hpp"
+#define TINYEXR_IMPLEMENTATION
+#include "../src/image_io/tinyexr.h"
 
 //test targets
-#include "../src/math/almost_equal.hpp"
 #include "../src/rigid_optimization/sdf_weight.hpp"
 #include "../src/rigid_optimization/sdf_gradient_wrt_transformation.hpp"
 #include "../src/rigid_optimization/sdf_2_sdf_optimizer.hpp"
 
 namespace eig = Eigen;
 namespace ro = rigid_optimization;
+
+eig::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> load_exr_helper(const char* frame_path) {
+    float* out; // width * height * RGBA
+    int width;
+    int height;
+
+    const char* err = nullptr; // or nullptr in C++11
+
+    int ret = LoadEXR(&out, &width, &height, frame_path, &err);
+
+    eig::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> frame(height, width);
+
+    if (ret != TINYEXR_SUCCESS) {
+        if (err) {
+            fprintf(stderr, "ERR : %s\n", err);
+            FreeEXRErrorMessage(err); // release memory of error message.
+        }
+    } else {
+
+        for (int i = 0; i < width * height; ++i) {
+            unsigned short pixel = static_cast<unsigned short>(*(out+4*i));
+            if (pixel == 0) { pixel = USHRT_MAX; }
+            std::fill(frame.data()+i, frame.data()+i+1, pixel);
+        }
+        free(out); // relase memory of image data
+    }
+    return frame;
+}
 
 BOOST_AUTO_TEST_CASE(test_sdf_weight01) {
     eig::MatrixXf field(4, 4);
@@ -37,33 +69,45 @@ BOOST_AUTO_TEST_CASE(test_sdf_weight01) {
     BOOST_REQUIRE(math::almost_equal_verbose(weight, expected_weight, 1e-14));
 }
 
-BOOST_AUTO_TEST_CASE(test_sdf_gradient01) {
-    eig::MatrixXf live_field = eig::MatrixXf(32, 32);
-    live_field.setZero();
+BOOST_AUTO_TEST_CASE(test_sdf_2_sdf_optimizer01) {
+    const char* canonical_frame_path = "../tests/data/depth_000000.exr";
+    const char* live_frame_path = "../tests/data/depth_000003.exr";
 
-    eig::MatrixXf canonical_field = eig::MatrixXf(32, 32);
-    live_field.setZero();
+    eig::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> canonical_frame = load_exr_helper(canonical_frame_path);
+    eig::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> live_frame = load_exr_helper(live_frame_path);
 
-    eig::Vector3f twist;
-    twist.setZero();
+    eig::Matrix3f camera_intrinsic_matrix;
+    camera_intrinsic_matrix << 570.3999633789062, 0., 320.,  // FX = 570.3999633789062 CX = 320.0
+                               0., 570.3999633789062, 240.,  // FY = 570.3999633789062 CY = 240.0
+                               0., 0., 1.;
+    float voxel_size = 0.004f;
+    int narrow_band_width_voxels = 2;
+    math::Vector3i offset(-16, -16, 110);
+    math::Vector3i field_shape(32, 32, 32);
+    float eta = 0.01f;
+    eig::Matrix4f camera_position;
+    camera_position.setIdentity();
 
-    math::Vector2i array_offset = math::Vector2i(0);
+    ro::Sdf2SdfOptimizer<eig::Tensor<float, 3>, eig::Tensor<eig::Matrix<float, 6, 1>, 3>>::VerbosityParameters verbosity_parameters(true, true);
 
-    float voxel_size = 32.f;
+    tsdf::Parameters3d parameters(0.001f, //depth unit ratio
+                                  camera_intrinsic_matrix, //projection matrix
+                                  0.05f, //near clipping distance
+                                  offset, //offset of scene from world origin
+                                  field_shape, //dimensions of the voxel grid
+                                  voxel_size, //voxel size
+                                  narrow_band_width_voxels, //narrow band width
+                                  tsdf::FilteringMethod::NONE
+                                  );
+    tsdf::Generator3d generator(parameters);
+    eig::Tensor<float, 3> canonical_field = generator.generate(canonical_frame, camera_position);
 
-    eig::Matrix<eig::Vector3f, eig::Dynamic, eig::Dynamic> gradient_field(live_field.rows(), live_field.cols());
-
-    eig::Matrix3f matrix_A;
-    matrix_A.setZero();
-    eig::Vector3f vector_b;
-    vector_b.setZero();
-
-    ro::gradient_wrt_twist(live_field,
-                           twist,
-                           array_offset,
-                           voxel_size,
-                           canonical_field, // canonical_field is only used to calculate vector_b.
-                           gradient_field, // gradient_field is the gradient of live_field.
-                           matrix_A,
-                           vector_b);
+    ro::Sdf2SdfOptimizer<eig::Tensor<float, 3>, eig::Tensor<eig::Matrix<float, 6, 1>, 3>> optimizer(0.5f,
+                                                                                                    60,
+                                                                                                    parameters,
+                                                                                                    verbosity_parameters);
+    optimizer.optimize(canonical_field,
+                       live_frame,
+                       eta,
+                       camera_position);
 }
