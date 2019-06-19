@@ -20,26 +20,28 @@ namespace eig = Eigen;
 namespace rigid_optimization {
 
 template <typename Scalar, typename Coordinates>
-void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& live_field,
-                        const eig::Matrix<Scalar, 3, 1>& twist,
-                        const Coordinates& array_offset,
-                        const Scalar& voxel_size,
-                        const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field, // canonical_field is only used to calculate vector_b.
-                        eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic>& gradient_field, // gradient_field is the gradient of live_field.
-                        eig::Matrix<Scalar, 3, 3>& matrix_A,
-                        eig::Matrix<Scalar, 3, 1>& vector_b) {
+float gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& live_field,
+                         const eig::Matrix<Scalar, 3, 1>& twist,
+                         const Coordinates& array_offset,
+                         const Scalar& voxel_size,
+                         const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& canonical_field, // canonical_field is only used to calculate vector_b.
+                         eig::Matrix<eig::Matrix<Scalar, 3, 1>, eig::Dynamic, eig::Dynamic>& gradient_field, // gradient_field is the gradient of live_field.
+                         eig::Matrix<Scalar, 3, 3>& matrix_A,
+                         eig::Matrix<Scalar, 3, 1>& vector_b) {
 
     int x_size = live_field.cols();
     int y_size = live_field.rows();
 
-    eig::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic> gradient_first_term(y_size, x_size);
-    math::gradient(gradient_first_term, live_field);
+    eig::Matrix<math::Vector2<Scalar>, Eigen::Dynamic, Eigen::Dynamic> gradient_first_term_field(y_size, x_size);
+    math::gradient(gradient_first_term_field, live_field);
     eig::Vector3f inv_twist = -twist;
     eig::Matrix3f inv_twist_matrix2d = math::transformation_vector_to_matrix(inv_twist);
 
     float x_voxel, z_voxel, w_voxel = 1.f;
 
     int matrix_size = static_cast<int>(live_field.size());
+
+    float energy = 0;
 
     for (int i_element = 0; i_element < matrix_size; i_element++) {
         // Any MatrixXf in Eigen is column-major
@@ -56,16 +58,24 @@ void gradient_wrt_twist(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& l
         gradient_second_term << Scalar(1.f), Scalar(0.f), Scalar(trans_point[1]),
                                 Scalar(0.f), Scalar(1.f), Scalar(-trans_point[0]);
 
-        eig::Matrix<Scalar, 3, 1> gradient = eig::Matrix<Scalar, 2, 1>(gradient_first_term(y_field, x_field)[0],
-                                                                       gradient_first_term(y_field, x_field)[1]).transpose()
-                                             * gradient_second_term;
-        gradient_field(y_field, x_field) = gradient/voxel_size;
+        eig::Matrix<Scalar, 1, 2> gradient_first_term = eig::Matrix<Scalar, 1, 2>(gradient_first_term_field(y_field, x_field)[0],
+                                                                                  gradient_first_term_field(y_field, x_field)[1])/voxel_size;
+        eig::Matrix<Scalar, 3, 1> gradient = gradient_first_term * gradient_second_term;
+        gradient_field(y_field, x_field) = gradient;
 
         matrix_A += gradient_field(y_field, x_field) * gradient_field(y_field, x_field).transpose();
 
         vector_b += (canonical_field(y_field, x_field) - live_field(y_field, x_field) + gradient_field(y_field, x_field).transpose() * twist)
                     * gradient_field(y_field, x_field);
+
+        float voxel_wise_difference = canonical_field(y_field, x_field) * (canonical_field(y_field, x_field) > -0.01)
+                                      - live_field(y_field, x_field) * (live_field(y_field, x_field) > -0.01);
+
+        energy += 0.5 * voxel_wise_difference * voxel_wise_difference;
+
     }
+
+    return energy;
 }
 ;
 

@@ -47,6 +47,21 @@ eig::Matrix<Scalar, 4, 4> transformation_vector_to_matrix(const eig::Matrix<Scal
     return twist_matrix;
 }
 
+template<typename Scalar>
+eig::Matrix<Scalar, 4, 4> inverse_transformation_matrix(const eig::Matrix<Scalar, 4, 4>& twist_matrix){
+    eig::Matrix<Scalar, 3, 1> inv_translation;
+    inv_translation << -twist_matrix(0, 0)*twist_matrix(0, 3)-twist_matrix(1, 0)*twist_matrix(1, 3)-twist_matrix(2, 0)*twist_matrix(2, 3),
+                       -twist_matrix(0, 1)*twist_matrix(0, 3)-twist_matrix(1, 1)*twist_matrix(1, 3)-twist_matrix(2, 1)*twist_matrix(2, 3),
+                       -twist_matrix(0, 2)*twist_matrix(0, 3)-twist_matrix(1, 2)*twist_matrix(1, 3)-twist_matrix(2, 2)*twist_matrix(2, 3);
+
+    eig::Matrix<Scalar, 4, 4> inv_twist_matrix;
+    inv_twist_matrix << twist_matrix(0, 0), twist_matrix(1, 0), twist_matrix(2, 0), inv_translation(0),
+                        twist_matrix(0, 1), twist_matrix(1, 1), twist_matrix(2, 1), inv_translation(1),
+                        twist_matrix(0, 2), twist_matrix(1, 2), twist_matrix(2, 2), inv_translation(2),
+                        twist_matrix(3, 0), twist_matrix(3, 1), twist_matrix(3, 2), twist_matrix(3, 3);
+    return inv_twist_matrix;
+}
+
 template <typename Scalar>
 eig::Matrix<Scalar, 3, 3> init_transformation_matrix(const eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic>& field){
     eig::Matrix<Scalar, 3, 3> matrix;

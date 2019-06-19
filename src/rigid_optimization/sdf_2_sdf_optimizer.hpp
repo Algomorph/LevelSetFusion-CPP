@@ -63,4 +63,7 @@ private:
 
 };
 
+typedef Sdf2SdfOptimizer<eig::MatrixXf, eig::Matrix<eig::Matrix<float, 3, 1>, eig::Dynamic, eig::Dynamic>> Sdf2SdfOptimizer2d;
+typedef Sdf2SdfOptimizer<math::Tensor3f, eig::Tensor<eig::Matrix<float, 6, 1>, 3>> Sdf2SdfOptimizer3d;
+
 }

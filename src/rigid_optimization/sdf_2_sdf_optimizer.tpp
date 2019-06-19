@@ -79,28 +79,18 @@ Sdf2SdfOptimizer<ScalarContainer, VectorContainer>::optimize(
 
         VectorContainer live_gradient = init_gradient_wrt_twist(live_field);
 
-        gradient_wrt_twist(live_field,
-                           twist,
-                           tsdf_generator.parameters.array_offset,
-                           tsdf_generator.parameters.voxel_size,
-                           canonical_field,
-                           live_gradient,
-                           matrix_A,
-                           vector_b);
-        // TODO: energy can be calculated inside gradient calculation.
-        int voxel_count = static_cast<int>(canonical_field.size());
-        float energy = 0.f;
-
-        for (int i_element = 0; i_element < voxel_count; i_element++) {
-            float difference = canonical_field.data()[i_element] * canonical_weight.data()[i_element]
-                               - live_field.data()[i_element] * live_weight.data()[i_element];
-
-            energy += 0.5f * difference * difference;
-        }
+        float energy = gradient_wrt_twist(live_field,
+                                          twist,
+                                          tsdf_generator.parameters.array_offset,
+                                          tsdf_generator.parameters.voxel_size,
+                                          canonical_field,
+                                          live_gradient,
+                                          matrix_A,
+                                          vector_b);
 
         eig::Matrix<Scalar, eig::Dynamic, eig::Dynamic> optimal_twist(twist.size(), 1);
         optimal_twist = matrix_A.inverse() * vector_b;
-        twist = twist + this->rate * (optimal_twist - twist);
+        twist += this->rate * (optimal_twist - twist);
 
         if (this->verbosity_parameters.print_per_iteration_info) {
             std::cout << "[ITERATION " << iteration_count << " COMPLETED]\n";

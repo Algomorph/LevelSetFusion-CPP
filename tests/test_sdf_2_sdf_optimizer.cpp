@@ -42,6 +42,9 @@ eig::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> loa
 
     eig::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> frame(height, width);
 
+    unsigned short pixel_min = USHRT_MAX;
+    unsigned short pixel_max = 0;
+
     if (ret != TINYEXR_SUCCESS) {
         if (err) {
             fprintf(stderr, "ERR : %s\n", err);
@@ -50,7 +53,11 @@ eig::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> loa
     } else {
 
         for (int i = 0; i < width * height; ++i) {
-            unsigned short pixel = static_cast<unsigned short>(*(out+4*i));
+            unsigned short pixel = static_cast<unsigned short>(out[4*i]);
+
+            if (pixel < pixel_min && pixel > 0) { pixel_min = pixel; } // 449
+            if (pixel > pixel_max) { pixel_max = pixel; } // 501
+
             if (pixel == 0) { pixel = USHRT_MAX; }
             std::fill(frame.data()+i, frame.data()+i+1, pixel);
         }
@@ -77,18 +84,18 @@ BOOST_AUTO_TEST_CASE(test_sdf_2_sdf_optimizer01) {
     eig::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> live_frame = load_exr_helper(live_frame_path);
 
     eig::Matrix3f camera_intrinsic_matrix;
-    camera_intrinsic_matrix << 570.3999633789062, 0., 320.,  // FX = 570.3999633789062 CX = 320.0
-                               0., 570.3999633789062, 240.,  // FY = 570.3999633789062 CY = 240.0
-                               0., 0., 1.;
+    camera_intrinsic_matrix << 570.3999633789062f, 0.f,                320.f,  // FX = 570.3999633789062 CX = 320.0
+                               0.f,                570.3999633789062f, 240.f,  // FY = 570.3999633789062 CY = 240.0
+                               0.f,                0.f,                1.f;
     float voxel_size = 0.004f;
-    int narrow_band_width_voxels = 2;
-    math::Vector3i offset(-16, -16, 110);
-    math::Vector3i field_shape(32, 32, 32);
+    int narrow_band_width_voxels = 1;
+    math::Vector3i offset(-16, -12, 111);
+    math::Vector3i field_shape(31, 34, 17);
     float eta = 0.01f;
     eig::Matrix4f camera_position;
     camera_position.setIdentity();
 
-    ro::Sdf2SdfOptimizer<eig::Tensor<float, 3>, eig::Tensor<eig::Matrix<float, 6, 1>, 3>>::VerbosityParameters verbosity_parameters(true, true);
+    ro::Sdf2SdfOptimizer3d::VerbosityParameters verbosity_parameters(true, true);
 
     tsdf::Parameters3d parameters(0.001f, //depth unit ratio
                                   camera_intrinsic_matrix, //projection matrix
@@ -103,7 +110,7 @@ BOOST_AUTO_TEST_CASE(test_sdf_2_sdf_optimizer01) {
     eig::Tensor<float, 3> canonical_field = generator.generate(canonical_frame, camera_position);
 
     ro::Sdf2SdfOptimizer<eig::Tensor<float, 3>, eig::Tensor<eig::Matrix<float, 6, 1>, 3>> optimizer(0.5f,
-                                                                                                    60,
+                                                                                                    20,
                                                                                                     parameters,
                                                                                                     verbosity_parameters);
     optimizer.optimize(canonical_field,

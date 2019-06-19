@@ -28,6 +28,10 @@ eig::Matrix<Scalar, 3, 3> transformation_vector_to_matrix(const eig::Matrix<Scal
  * @param[out] 4 by 4 matrix output
  * @param[in] 6 by 1 vector input
  */
+
+template<typename Scalar>
+eig::Matrix<Scalar, 4, 4> inverse_transformation_matrix(const eig::Matrix<Scalar, 4, 4>& twist_matrix);
+
 template<typename Scalar>
 eig::Matrix<Scalar, 4, 4> transformation_vector_to_matrix(const eig::Matrix<Scalar, 6, 1>& twist);
 
